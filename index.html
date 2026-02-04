@@ -161,14 +161,16 @@ auth.signInWithEmailAndPassword(email,pass)
 const doc=await db.collection("users").doc(cred.user.email).get();
 if(!doc.exists||doc.data().role!=="admin_v2"){
 await auth.signOut();
-loginError.innerText="Không có quyền!";
+document.getElementById("loginError").innerText="Không có quyền!";
+
 return;
 }
 loginScreen.remove();
 document.getElementById("adminPanel").style.display="block";
 loadLinks();
 })
-.catch(()=>loginError.innerText="Sai tài khoản!");
+document.getElementById("loginError").innerText="Sai tài khoản!";
+
 }
 
 auth.onAuthStateChanged(u=>{
