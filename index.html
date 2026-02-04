@@ -98,7 +98,48 @@ button{
   </div>
 
   <div id="out" style="margin-top:20px;display:grid;grid-template-columns:repeat(2,1fr);gap:15px;"></div>
+  <hr style="margin:40px 0;border:1px solid #333;">
+
+<h3>🔗 Quản lý Share Link V2</h3>
+
+<button id="createLinkBtn" style="width:auto;padding:8px 16px;font-size:14px;background:#16a34a;border-radius:8px;margin-top:10px;">
+  + Tạo link mới
+</button>
+
+<div id="shareLinksBox" style="margin-top:20px;display:grid;gap:15px;"></div>
+
 </div>
+// ==================== SHARE LINK V2 ====================
+
+function generateLinkId(length = 10) {
+  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
+document.getElementById("createLinkBtn").addEventListener("click", async () => {
+
+  const id = generateLinkId();
+  const now = new Date();
+  const expire = new Date(now.getTime() + 60 * 60 * 1000); // 1 giờ
+
+  try {
+    await db.collection("ToolVeChaiV2_links").doc(id).set({
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      expireAt: expire,
+      createdBy: auth.currentUser ? auth.currentUser.email : "unknown"
+    });
+
+    alert("Tạo link thành công!");
+  } catch (e) {
+    console.error(e);
+    alert("Lỗi tạo link");
+  }
+
+});
 
 <script>
 const firebaseConfig = {
