@@ -139,22 +139,26 @@ function secureLogin(){
 
   auth.signInWithEmailAndPassword(email, pass)
     .then(async (cred)=>{
-      const doc = await db.collection("users").doc(cred.user.email).get();
-      if(!doc.exists || doc.data().role !== "admin_v2"){
-        await auth.signOut();
+
+      const snap = await db.collection("users")
+        .doc(email)
+        .get();
+
+      if(!snap.exists || snap.data().role !== "admin_v2"){
+        auth.signOut();
         loginError.innerText="Không có quyền!";
         return;
       }
+
+      currentAdmin = cred.user;
       loginScreen.remove();
+
     })
-    .catch(()=>loginError.innerText="Sai Gmail hoặc Password!");
+    .catch(()=>{
+      loginError.innerText="Sai Gmail hoặc Password!";
+    });
 }
 
-auth.onAuthStateChanged(user=>{
-  if(user){
-    currentAdmin = user;
-  }
-});
 
 
 
