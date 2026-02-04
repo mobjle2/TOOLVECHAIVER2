@@ -144,7 +144,7 @@ const userParam=params.get("u");
 if(userParam) runUserMode(userParam);
 
 async function runUserMode(id){
-const doc=await db.collection("shareLinks").doc(id).get();
+const doc=await db.collection("shareLinks_v2").doc(id).get();
 if(!doc.exists||!doc.data().active){
 document.body.innerHTML="🔒 Link không hợp lệ!";
 return;
@@ -226,13 +226,13 @@ ${x.vip?`<div class="badge ${vipClass}">👑 ${x.vip}</div>`:""}
 /* ===== SHARE LINK ===== */
 async function createLink(){
 const id=Date.now().toString(36)+Math.random().toString(36).substr(2,4);
-await db.collection("shareLinks").doc(id).set({active:true});
+await db.collection("shareLinks_v2").doc(id).set({active:true});
 alert("Đã tạo link!");
 loadLinks();
 }
 
 async function loadLinks(){
-const snap=await db.collection("shareLinks").get();
+const snap=await db.collection("shareLinks_v2").get();
 let html="";
 snap.forEach(doc=>{
 const d=doc.data();
@@ -256,12 +256,12 @@ alert("Đã copy link!");
 }
 
 async function toggleLink(id,current){
-await db.collection("shareLinks").doc(id).update({active:!current});
+await db.collection("shareLinks_v2").doc(id).update({active:!current});
 loadLinks();
 }
 
 async function deleteLink(id){
-await db.collection("shareLinks").doc(id).delete();
+await db.collection("shareLinks_v2").doc(id).delete();
 loadLinks();
 }
 </script>
