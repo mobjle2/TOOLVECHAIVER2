@@ -419,27 +419,66 @@ auth.onAuthStateChanged(user=>{
   }
 });
 
-  // ====== HỆ THỐNG LINK THỢ ======
+<!-- ====== HỆ THỐNG LINK THỢ ====== -->
+<script>
 function copyLink(role){
   const link = window.location.origin + window.location.pathname + "?tho=" + role;
   navigator.clipboard.writeText(link);
   alert("Đã copy link thợ " + role);
 }
 
-// Kiểm tra nếu là link thợ
 const params = new URLSearchParams(window.location.search);
 const tho = params.get("tho");
 
 if(tho){
-  // Ẩn phần tạo link nếu là thợ
   document.querySelectorAll("button").forEach(btn=>{
     if(btn.innerText.includes("Copy Link")){
       btn.style.display="none";
     }
   });
 }
-
 </script>
 
-</body>
+<!-- ====== FIREBASE SDK ====== -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+
+<!-- ====== FIREBASE CONFIG ====== -->
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCEL7BDXvmNi2dp1VNpua7b2plpTiTOK3U",
+  authDomain: "toolvechai.firebaseapp.com",
+  projectId: "toolvechai",
+  storageBucket: "toolvechai.firebasestorage.app",
+  messagingSenderId: "947125032083",
+  appId: "1:947125032083:web:a7335aa5fd446a44446966",
+  measurementId: "G-N4W751H36H"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+</script>
+
+<!-- ====== LOGIN FIREBASE ====== -->
+<script>
+function secureLogin(){
+  const email = document.getElementById("loginEmail").value.trim();
+  const pass = document.getElementById("loginPass").value.trim();
+
+  auth.signInWithEmailAndPassword(email, pass)
+    .then(() => {
+      document.getElementById("loginScreen").remove();
+    })
+    .catch(() => {
+      document.getElementById("loginError").innerText = "Sai tài khoản hoặc mật khẩu!";
+    });
+}
+
+auth.onAuthStateChanged(user=>{
+  if(user){
+    document.getElementById("loginScreen")?.remove();
+  }
+});
+</script>
+</body> 
 </html>
