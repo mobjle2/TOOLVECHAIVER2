@@ -419,13 +419,14 @@ async function importData(){
 
   const clean = code.toUpperCase().replace(/[^A-Z0-9]/g,"");
 
-await db.collection("codes").doc(code).set({
+await db.collection("codes_v2").doc(code).set({
   ...fields,
   code: code,
   search: clean,
-  prefix3: clean.slice(0,3),
-  suffix3: clean.slice(-3)
+  prefix4: clean.slice(0,4),
+  suffix4: clean.slice(-4)
 });
+
 
 
       console.log("Imported:", code);
