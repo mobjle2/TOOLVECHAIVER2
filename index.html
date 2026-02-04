@@ -400,20 +400,25 @@ function showVIP13(){
 const p1 = "Tr11";
 const p2 = "2233";
 const p3 = "44@";
-const allowedEmail = "lktrungnguyen@gmail.com";
-const allowedPassword = p1 + p2 + p3;
-
-window.secureLogin = function(){
+function secureLogin(){
   const email = document.getElementById("loginEmail").value.trim();
   const pass = document.getElementById("loginPass").value.trim();
 
-  if(email === allowedEmail && pass === allowedPassword){
-    document.getElementById("loginScreen").remove();
-  } else {
-    document.getElementById("loginError").innerText = "Sai Gmail hoặc Password!";
+  auth.signInWithEmailAndPassword(email, pass)
+    .then(() => {
+      document.getElementById("loginScreen").remove();
+    })
+    .catch(() => {
+      document.getElementById("loginError").innerText = "Sai tài khoản hoặc mật khẩu!";
+    });
+}
+
+auth.onAuthStateChanged(user=>{
+  if(user){
+    document.getElementById("loginScreen")?.remove();
   }
-};
-})();
+});
+
   // ====== HỆ THỐNG LINK THỢ ======
 function copyLink(role){
   const link = window.location.origin + window.location.pathname + "?tho=" + role;
