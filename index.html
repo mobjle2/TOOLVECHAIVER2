@@ -12,7 +12,6 @@
 <style>
 *{box-sizing:border-box;}
 body{font-family:Arial;background:#111;color:white;margin:0;}
-
 .container{max-width:900px;margin:auto;padding:20px;}
 
 input{
@@ -39,12 +38,7 @@ button{
   cursor:pointer;
 }
 
-.item{
-  background:#1a1a1a;
-  padding:15px;
-  border-radius:12px;
-}
-
+.item{background:#1a1a1a;padding:15px;border-radius:12px;}
 .badge{
   display:inline-block;
   padding:4px 10px;
@@ -54,8 +48,13 @@ button{
   margin-right:6px;
 }
 
-@media(min-width:900px){
-  #out{grid-template-columns:repeat(3,1fr)!important;}
+.share-btn{
+  width:auto;
+  padding:8px 16px;
+  font-size:14px;
+  background:#16a34a;
+  border-radius:8px;
+  margin-top:10px;
 }
 
 .mmc-badge{background:#0ea5e9;color:white;}
@@ -84,11 +83,23 @@ button{
 </div>
 
 <div class="container">
+
   <h2>🛠 Tool Ve Chai Check VIP V2</h2>
 
   <input id="q" placeholder="Nhập 4 ký tự hoặc full mã">
   <button onclick="check()">CHECK</button>
 
+  <div id="out" style="margin-top:20px;display:grid;grid-template-columns:repeat(2,1fr);gap:15px;"></div>
+
+  <hr style="margin:40px 0;border:1px solid #333;">
+
+  <h3>🔗 Quản lý Share Link V2</h3>
+  <button id="createLinkBtn" class="share-btn">+ Tạo link mới</button>
+  <div id="shareLinksBox" style="margin-top:20px;display:grid;gap:15px;"></div>
+
+  <hr style="margin:40px 0;border:1px solid #333;">
+
+  <!-- DI CHUYỂN XUỐNG CUỐI -->
   <div style="margin-top:20px;padding:15px;border-radius:12px;background:#1a1a1a;text-align:center;">
     ⚠ Tool chỉ mang tính tham khảo.
     <br>
@@ -97,49 +108,7 @@ button{
     STK: 9907373199
   </div>
 
-  <div id="out" style="margin-top:20px;display:grid;grid-template-columns:repeat(2,1fr);gap:15px;"></div>
-  <hr style="margin:40px 0;border:1px solid #333;">
-
-<h3>🔗 Quản lý Share Link V2</h3>
-
-<button id="createLinkBtn" style="width:auto;padding:8px 16px;font-size:14px;background:#16a34a;border-radius:8px;margin-top:10px;">
-  + Tạo link mới
-</button>
-
-<div id="shareLinksBox" style="margin-top:20px;display:grid;gap:15px;"></div>
-
 </div>
-// ==================== SHARE LINK V2 ====================
-
-function generateLinkId(length = 10) {
-  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-  let result = "";
-  for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return result;
-}
-
-document.getElementById("createLinkBtn").addEventListener("click", async () => {
-
-  const id = generateLinkId();
-  const now = new Date();
-  const expire = new Date(now.getTime() + 60 * 60 * 1000); // 1 giờ
-
-  try {
-    await db.collection("ToolVeChaiV2_links").doc(id).set({
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      expireAt: expire,
-      createdBy: auth.currentUser ? auth.currentUser.email : "unknown"
-    });
-
-    alert("Tạo link thành công!");
-  } catch (e) {
-    console.error(e);
-    alert("Lỗi tạo link");
-  }
-
-});
 
 <script>
 const firebaseConfig = {
@@ -152,8 +121,7 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-auth.setPersistence(firebase.auth.Auth.Persistence.NONE);
-
+/* LOGIN ỔN ĐỊNH */
 function secureLogin(){
   const email = loginEmail.value.trim();
   const pass = loginPass.value.trim();
@@ -171,10 +139,7 @@ function secureLogin(){
     .catch(()=>loginError.innerText="Sai Gmail hoặc Password!");
 }
 
-auth.onAuthStateChanged(user=>{
-  if(user) loginScreen.remove();
-});
-
+/* CHECK VIP */
 const mmcMap={
  MMC1:"16G",MMC2:"32G",MMC3:"64G",
  MMC4:"128G",MMC5:"256G",MMC6:"512G"
