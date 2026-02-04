@@ -131,7 +131,7 @@ const db = firebase.firestore();
 let currentAdmin = null;
 
 
-auth.setPersistence(firebase.auth.Auth.Persistence.NONE);
+
 
 function secureLogin(){
   const email = loginEmail.value.trim();
@@ -153,9 +153,9 @@ function secureLogin(){
 auth.onAuthStateChanged(user=>{
   if(user){
     currentAdmin = user;
-    loginScreen.remove();
   }
 });
+
 
 
 const mmcMap={
