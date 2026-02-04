@@ -136,7 +136,7 @@ projectId:"toolvechai"
 firebase.initializeApp(firebaseConfig);
 const auth=firebase.auth();
 const db=firebase.firestore();
-auth.setPersistence(firebase.auth.Auth.Persistence.NONE);
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
 const params=new URLSearchParams(window.location.search);
 const userParam=params.get("u");
