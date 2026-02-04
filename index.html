@@ -91,7 +91,7 @@ z-index:9999;
 
 <script>
 const firebaseConfig = {
-  apiKey: "AIzaSyCEL7BDXvmNi2dp1VNpua7b2plpTiTOK3U",
+  apiKey: "AIzaSy...",
   authDomain: "toolvechai.firebaseapp.com",
   projectId: "toolvechai"
 };
@@ -122,23 +122,20 @@ auth.onAuthStateChanged(function(user){
   }
 });
 
-// MAP MMC
-const mmcMap={
- MMC1:"16G",MMC2:"32G",MMC3:"64G",
- MMC4:"128G",MMC5:"256G",MMC6:"512G"
-};
-
-// CHECK GIỐNG TOOL CŨ
+// CHECK
 async function check(){
 
-  const key = q.value.toUpperCase().replace(/[^A-Z0-9]/g,"");
+  const key = document.getElementById("q").value
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g,"");
+
+  const out = document.getElementById("out");
   out.innerHTML = "";
 
   if(!key) return;
 
   let results = new Map();
 
-  // ===== 4 ký tự =====
   if(key.length === 4){
 
     const prefixSnap = await db.collection("codes")
@@ -151,10 +148,8 @@ async function check(){
 
     prefixSnap.forEach(doc=>results.set(doc.id,doc.data()));
     suffixSnap.forEach(doc=>results.set(doc.id,doc.data()));
-  }
 
-  // ===== Full mã =====
-  else {
+  } else {
 
     const snap = await db.collection("codes")
       .where("search","==",key)
@@ -178,12 +173,8 @@ async function check(){
     `;
   });
 }
-
-  }catch(e){
-    out.innerHTML = "❌ Lỗi quyền truy cập";
-  }
-}
 </script>
+
 
 </body>
 </html>
