@@ -176,7 +176,7 @@ document.getElementById("loginError").innerText="Sai tài khoản!";
 auth.onAuthStateChanged(async (u)=>{
   if(!u) return;
 
-  const doc = await db.collection("users").doc(u.email).get();
+const doc = await db.collection("users").doc(u.uid).get();
 
   if(doc.exists && doc.data().role === "admin_v2"){
       loginScreen.remove();
