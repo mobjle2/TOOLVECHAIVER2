@@ -68,6 +68,14 @@ button{
 .vip-11{background:#ff0000;color:white;}
 .vip-12{background:#990000;color:white;}
 .vip-13{background:#5b0000;color:white;}
+  .share-btn{
+  width:auto;
+  padding:10px 18px;
+  font-size:14px;
+  background:#16a34a;
+  border-radius:8px;
+}
+
 </style>
 </head>
 
@@ -102,7 +110,9 @@ button{
 
 <h3>🔗 Quản lý Share Link V2</h3>
 
-<button onclick="createShareLink()">+ Tạo link mới</button>
+<button class="share-btn" onclick="createShareLink()">
+  + Tạo link mới
+</button>
 
 <div id="shareLinksBox" style="margin-top:20px;display:grid;gap:15px;"></div>
 
@@ -213,6 +223,12 @@ function generateLinkId(length = 10) {
 }
 
 async function createShareLink(hours = 1) {
+
+  if (!auth.currentUser) {
+    alert("Chưa đăng nhập admin");
+    return;
+  }
+
   const id = generateLinkId();
 
   const now = new Date();
@@ -223,7 +239,10 @@ async function createShareLink(hours = 1) {
     expireAt: expire,
     createdBy: auth.currentUser.email
   });
+
+  alert("Tạo link thành công!");
 }
+
 
 // realtime load link list
 db.collection("ToolVeChaiV2_links")
