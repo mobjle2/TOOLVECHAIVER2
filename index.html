@@ -153,39 +153,6 @@ document.getElementById("loginScreen").remove();
 auth.signOut();
 }
 
-function secureLogin(){
-const email=loginEmail.value.trim();
-const pass=loginPass.value.trim();
-auth.signInWithEmailAndPassword(email,pass)
-.then(async cred=>{
-const doc=await db.collection("users").doc(cred.user.email).get();
-if(!doc.exists||doc.data().role!=="admin_v2"){
-await auth.signOut();
-document.getElementById("loginError").innerText="Không có quyền!";
-
-return;
-}
-loginScreen.remove();
-document.getElementById("adminPanel").style.display="block";
-loadLinks();
-})
-document.getElementById("loginError").innerText="Sai tài khoản!";
-
-}
-
-auth.onAuthStateChanged(async (u)=>{
-  if(!u) return;
-
-const doc = await db.collection("users").doc(u.uid).get();
-
-  if(doc.exists && doc.data().role === "admin_v2"){
-      loginScreen.remove();
-      document.getElementById("adminPanel").style.display="block";
-      loadLinks();
-  }else{
-      await auth.signOut();
-  }
-});
 
 
 const mmcMap={MMC1:"16G",MMC2:"32G",MMC3:"64G",MMC4:"128G",MMC5:"256G",MMC6:"512G"};
