@@ -128,6 +128,8 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
+let currentAdmin = null;
+
 
 auth.setPersistence(firebase.auth.Auth.Persistence.NONE);
 
@@ -149,8 +151,12 @@ function secureLogin(){
 }
 
 auth.onAuthStateChanged(user=>{
-  if(user) loginScreen.remove();
+  if(user){
+    currentAdmin = user;
+    loginScreen.remove();
+  }
 });
+
 
 const mmcMap={
  MMC1:"16G",MMC2:"32G",MMC3:"64G",
@@ -224,7 +230,7 @@ function generateLinkId(length = 10) {
 
 async function createShareLink(hours = 1) {
 
-  if (!auth.currentUser) {
+  if (!currentAdmin) {
     alert("Chưa đăng nhập admin");
     return;
   }
@@ -237,8 +243,12 @@ async function createShareLink(hours = 1) {
   await db.collection("ToolVeChaiV2_links").doc(id).set({
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     expireAt: expire,
-    createdBy: auth.currentUser.email
+    createdBy: currentAdmin.email
   });
+
+  alert("Tạo link thành công!");
+}
+
 
   alert("Tạo link thành công!");
 }
