@@ -98,6 +98,14 @@ button{
   </div>
 
   <div id="out" style="margin-top:20px;display:grid;grid-template-columns:repeat(2,1fr);gap:15px;"></div>
+  <hr style="margin:40px 0;border:1px solid #333;">
+
+<h3>🔗 Quản lý Share Link V2</h3>
+
+<button onclick="createShareLink()">+ Tạo link mới</button>
+
+<div id="shareLinksBox" style="margin-top:20px;display:grid;gap:15px;"></div>
+
 </div>
 
 <script>
@@ -191,6 +199,88 @@ async function check(){
     `;
   });
 }
+  // ==========================
+// SHARE LINK V2
+// ==========================
+
+function generateLinkId(length = 10) {
+  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
+async function createShareLink(hours = 1) {
+  const id = generateLinkId();
+
+  const now = new Date();
+  const expire = new Date(now.getTime() + hours * 60 * 60 * 1000);
+
+  await db.collection("ToolVeChaiV2_links").doc(id).set({
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    expireAt: expire,
+    createdBy: auth.currentUser.email
+  });
+}
+
+// realtime load link list
+db.collection("ToolVeChaiV2_links")
+  .orderBy("createdAt", "desc")
+  .onSnapshot(snapshot => {
+    const box = document.getElementById("shareLinksBox");
+    box.innerHTML = "";
+
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      const id = doc.id;
+
+      box.innerHTML += `
+        <div class="item">
+          <div style="font-weight:700;">ID: ${id}</div>
+          <div>⏳ Hết hạn: ${data.expireAt?.toDate().toLocaleString()}</div>
+          <div id="online-${id}">👥 Online: ...</div>
+          <button onclick="copyLink('${id}')">Copy</button>
+          <button onclick="resetLink('${id}')">🔄 Reset link</button>
+        </div>
+      `;
+
+      // load online count
+      db.collection("ToolVeChaiV2_sessions")
+        .where("linkId", "==", id)
+        .onSnapshot(snap => {
+          document.getElementById(`online-${id}`).innerText =
+            "👥 Online: " + snap.size;
+        });
+    });
+  });
+
+function copyLink(id) {
+  const link = window.location.origin +
+    "/TOOLVECHAIVER2/?share=" + id;
+
+  navigator.clipboard.writeText(link);
+  alert("Đã copy link!");
+}
+
+async function resetLink(id) {
+  // xóa sessions
+  const sessions = await db.collection("ToolVeChaiV2_sessions")
+    .where("linkId", "==", id)
+    .get();
+
+  const batch = db.batch();
+  sessions.forEach(doc => batch.delete(doc.ref));
+  await batch.commit();
+
+  // xóa link
+  await db.collection("ToolVeChaiV2_links").doc(id).delete();
+
+  // tạo link mới
+  createShareLink(1);
+}
+
 </script>
 
 </body>
