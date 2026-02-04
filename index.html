@@ -68,21 +68,11 @@ button{
 .vip-11{background:#ff0000;color:white;}
 .vip-12{background:#990000;color:white;}
 .vip-13{background:#5b0000;color:white;}
-
-.share-btn{
-  width:auto;
-  padding:8px 16px;
-  font-size:14px;
-  background:#16a34a;
-  border-radius:8px;
-  margin-top:10px;
-}
 </style>
 </head>
 
 <body>
 
-<!-- LOGIN SCREEN -->
 <div id="loginScreen" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000;display:flex;justify-content:center;align-items:center;z-index:9999;">
   <div style="width:360px;background:#111;padding:30px;border-radius:20px;border:1px solid gold;">
     <h2 style="text-align:center;color:gold;">🔐 Tool Ve Chai Admin V2</h2>
@@ -108,18 +98,6 @@ button{
   </div>
 
   <div id="out" style="margin-top:20px;display:grid;grid-template-columns:repeat(2,1fr);gap:15px;"></div>
-
-  <!-- SHARE LINK UI ONLY -->
-  <hr style="margin:40px 0;border:1px solid #333;">
-
-  <h3 style="margin-bottom:15px;">🔗 Quản lý Share Link V2</h3>
-
-  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-    <button class="share-btn">+ Tạo link mới</button>
-  </div>
-
-  <div id="shareLinksBox" style="margin-top:20px;display:grid;gap:15px;"></div>
-
 </div>
 
 <script>
@@ -133,7 +111,8 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-/* LOGIN GIỮ NGUYÊN – KHÔNG ĐỘNG */
+auth.setPersistence(firebase.auth.Auth.Persistence.NONE);
+
 function secureLogin(){
   const email = loginEmail.value.trim();
   const pass = loginPass.value.trim();
@@ -151,7 +130,10 @@ function secureLogin(){
     .catch(()=>loginError.innerText="Sai Gmail hoặc Password!");
 }
 
-/* CHECK VIP */
+auth.onAuthStateChanged(user=>{
+  if(user) loginScreen.remove();
+});
+
 const mmcMap={
  MMC1:"16G",MMC2:"32G",MMC3:"64G",
  MMC4:"128G",MMC5:"256G",MMC6:"512G"
