@@ -3,75 +3,78 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CHECK VIP</title>
+<title>CHECK VIP V2</title>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <style>
-/* ===== GIỮ NGUYÊN STYLE CỦA BẠN ===== */
 body{
+  font-family:Arial;
+  background:#111;
+  color:white;
   margin:0;
-  font-family:Segoe UI,Roboto,Arial;
-  background:radial-gradient(circle at top,#1a1a1a,#000);
-  color:#f1f5f9;
 }
 .container{
-  max-width:1000px;
-  margin:30px auto;
-  padding:0 16px;
-}
-.title{
-  text-align:center;
-  font-size:26px;
-  font-weight:700;
-  margin:30px 0;
-  background:linear-gradient(90deg,#FFD700,#ffae00,#FFD700);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
+  max-width:900px;
+  margin:auto;
+  padding:20px;
 }
 input{
   width:100%;
   padding:16px;
-  border-radius:30px;
-  border:1px solid rgba(255,215,0,0.3);
+  border-radius:12px;
+  border:1px solid #333;
   background:#111;
   color:white;
+  font-size:16px;
+  margin-top:15px;
 }
 button{
   width:100%;
   padding:16px;
-  border-radius:30px;
+  border-radius:12px;
   border:none;
-  margin-top:14px;
-  font-weight:700;
-  background:linear-gradient(45deg,#FFD700,#ffb700);
-  color:black;
+  background:#2563eb;
+  color:white;
+  font-weight:bold;
+  font-size:16px;
+  margin-top:15px;
+  cursor:pointer;
 }
 .item{
-  background:#111;
-  padding:20px;
-  border-radius:20px;
-  margin-top:15px;
+  background:#1a1a1a;
+  padding:15px;
+  margin-bottom:10px;
+  border-radius:10px;
 }
 .badge{
   display:inline-block;
-  padding:6px 14px;
-  border-radius:999px;
-  font-size:13px;
-  font-weight:700;
-  margin-top:10px;
-}
-.vip-13{
-  background:linear-gradient(90deg,#5b0000,#ff0000,#5b0000);
-  box-shadow:0 0 45px crimson;
+  padding:4px 10px;
+  border-radius:20px;
+  font-size:12px;
+  margin-top:5px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- LOGIN -->
-<div id="loginScreen" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000;display:flex;justify-content:center;align-items:center;z-index:9999;">
+<div id="loginScreen" style="
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:#000;
+display:flex;
+justify-content:center;
+align-items:center;
+z-index:9999;
+">
   <div style="width:360px;background:#111;padding:30px;border-radius:20px;border:1px solid gold;">
-    <h2 style="text-align:center;color:gold;">🔐 LOGIN REQUIRED</h2>
+    <h2 style="text-align:center;color:gold;">🔐 Tool Ve Chai Admin</h2>
     <input id="loginEmail" type="email" placeholder="Nhập Gmail">
     <input id="loginPass" type="password" placeholder="Nhập Password">
     <button onclick="secureLogin()">LOGIN</button>
@@ -80,25 +83,13 @@ button{
 </div>
 
 <div class="container">
-  <div class="title">👑 CHECK VIP SYSTEM</div>
-
-  <div style="text-align:center;margin-bottom:15px;">
-    <button onclick="copyLink('A')" style="width:auto;">📋 Copy Link Thợ A</button>
-    <button onclick="copyLink('B')" style="width:auto;">📋 Copy Link Thợ B</button>
-  </div>
-
-  <input id="q" placeholder="Nhập mã cần kiểm tra">
+  <h2>🛠 Tool Ve Chai Check VIP V2</h2>
+  <input id="q" placeholder="Nhập đúng 3 ký tự">
   <button onclick="check()">CHECK</button>
-  <div id="out"></div>
+  <div id="out" style="margin-top:20px;"></div>
 </div>
 
-<!-- FIREBASE SDK -->
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-
 <script>
-/* ===== FIREBASE INIT ===== */
 const firebaseConfig = {
   apiKey: "AIzaSyCEL7BDXvmNi2dp1VNpua7b2plpTiTOK3U",
   authDomain: "toolvechai.firebaseapp.com",
@@ -109,70 +100,89 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
+auth.setPersistence(firebase.auth.Auth.Persistence.NONE);
 
-/* ===== LOGIN ===== */
+// LOGIN
 function secureLogin(){
-  const email = loginEmail.value.trim();
-  const pass = loginPass.value.trim();
+  const email = document.getElementById("loginEmail").value;
+  const pass = document.getElementById("loginPass").value;
 
   auth.signInWithEmailAndPassword(email, pass)
-    .then(()=> loginScreen.remove())
-    .catch(()=> loginError.innerText="Sai tài khoản hoặc mật khẩu!");
+    .then(() => {
+      document.getElementById("loginScreen").remove();
+    })
+    .catch(() => {
+      document.getElementById("loginError").innerText = "Sai Gmail hoặc Password!";
+    });
 }
 
-auth.onAuthStateChanged(user=>{
-  if(user) loginScreen?.remove();
+auth.onAuthStateChanged(function(user){
+  if(user){
+    document.getElementById("loginScreen").remove();
+  }
 });
 
-/* ===== LINK THỢ ===== */
-function copyLink(role){
-  const link = window.location.origin + window.location.pathname + "?tho=" + role;
-  navigator.clipboard.writeText(link);
-  alert("Đã copy link thợ " + role);
-}
+// MAP MMC
+const mmcMap={
+ MMC1:"16G",MMC2:"32G",MMC3:"64G",
+ MMC4:"128G",MMC5:"256G",MMC6:"512G"
+};
 
-const params = new URLSearchParams(window.location.search);
-const tho = params.get("tho");
-
-if(tho){
-  document.querySelectorAll("button").forEach(btn=>{
-    if(btn.innerText.includes("Copy Link")){
-      btn.style.display="none";
-    }
-  });
-}
-
-/* ===== CHECK FIRESTORE ===== */
-function normalize(s){
-  return s.toUpperCase().replace(/[^A-Z0-9]/g,"");
-}
-
+// CHECK GIỐNG TOOL CŨ
 async function check(){
-  const key = normalize(q.value);
+
+  const q = document.getElementById("q");
+  const out = document.getElementById("out");
+
+  const key = q.value.toUpperCase().replace(/[^A-Z0-9]/g,"");
   out.innerHTML = "";
-  if(!key) return;
 
-  const snap = await db.collection("codes")
-    .where("search", ">=", key)
-    .where("search", "<=", key + "\uf8ff")
-    .get();
-
-  if(snap.empty){
-    out.innerHTML = `<div style="color:red;text-align:center;margin-top:20px;">❌ Không xác định mã</div>`;
+  if(key.length !== 3){
+    out.innerHTML = "⚠ Nhập đúng 3 ký tự";
     return;
   }
 
-  snap.forEach(doc=>{
-    const x = doc.data();
-    out.innerHTML += `
-      <div class="item">
-        <div style="font-weight:700;">⚡ ${x.code}</div>
-        ${x.mmc ? `<div class="badge">💾 ${x.mmc}</div>` : ""}
-        ${x.vip ? `<div class="badge ${x.vip==='VIP 13'?'vip-13':''}">👑 ${x.vip}</div>` : ""}
-      </div>
-    `;
-  });
+  try{
+
+    const prefixSnap = await db.collection("codes")
+      .where("prefix3", "==", key)
+      .get();
+
+    const suffixSnap = await db.collection("codes")
+      .where("suffix3", "==", key)
+      .get();
+
+    const results = new Map();
+
+    prefixSnap.forEach(doc => {
+      results.set(doc.id, doc.data());
+    });
+
+    suffixSnap.forEach(doc => {
+      results.set(doc.id, doc.data());
+    });
+
+    if(results.size === 0){
+      out.innerHTML = "❌ Không xác định mã";
+      return;
+    }
+
+    results.forEach(x => {
+
+      const size = mmcMap[x.mmc] || "";
+
+      out.innerHTML += `
+        <div class="item">
+          <div style="font-weight:700;">⚡ ${x.code}</div>
+          ${x.mmc ? `<div class="badge">💾 ${x.mmc} (${size})</div>` : ""}
+          ${x.vip ? `<div class="badge">👑 ${x.vip}</div>` : ""}
+        </div>
+      `;
+    });
+
+  }catch(e){
+    out.innerHTML = "❌ Lỗi quyền truy cập";
+  }
 }
 </script>
 
