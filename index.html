@@ -131,54 +131,53 @@ const mmcMap={
 // CHECK GIỐNG TOOL CŨ
 async function check(){
 
-  const q = document.getElementById("q");
-  const out = document.getElementById("out");
-
   const key = q.value.toUpperCase().replace(/[^A-Z0-9]/g,"");
   out.innerHTML = "";
 
-  if(key.length !== 3){
-    out.innerHTML = "⚠ Nhập đúng 3 ký tự";
-    return;
-  }
+  if(!key) return;
 
-  try{
+  let results = new Map();
+
+  // ===== 4 ký tự =====
+  if(key.length === 4){
 
     const prefixSnap = await db.collection("codes")
-      .where("prefix3", "==", key)
+      .where("prefix4","==",key)
       .get();
 
     const suffixSnap = await db.collection("codes")
-      .where("suffix3", "==", key)
+      .where("suffix4","==",key)
       .get();
 
-    const results = new Map();
+    prefixSnap.forEach(doc=>results.set(doc.id,doc.data()));
+    suffixSnap.forEach(doc=>results.set(doc.id,doc.data()));
+  }
 
-    prefixSnap.forEach(doc => {
-      results.set(doc.id, doc.data());
-    });
+  // ===== Full mã =====
+  else {
 
-    suffixSnap.forEach(doc => {
-      results.set(doc.id, doc.data());
-    });
+    const snap = await db.collection("codes")
+      .where("search","==",key)
+      .get();
 
-    if(results.size === 0){
-      out.innerHTML = "❌ Không xác định mã";
-      return;
-    }
+    snap.forEach(doc=>results.set(doc.id,doc.data()));
+  }
 
-    results.forEach(x => {
+  if(results.size === 0){
+    out.innerHTML = "❌ Không xác định mã";
+    return;
+  }
 
-      const size = mmcMap[x.mmc] || "";
-
-      out.innerHTML += `
-        <div class="item">
-          <div style="font-weight:700;">⚡ ${x.code}</div>
-          ${x.mmc ? `<div class="badge">💾 ${x.mmc} (${size})</div>` : ""}
-          ${x.vip ? `<div class="badge">👑 ${x.vip}</div>` : ""}
-        </div>
-      `;
-    });
+  results.forEach(x=>{
+    out.innerHTML += `
+      <div class="item">
+        <div style="font-weight:700;">⚡ ${x.code}</div>
+        ${x.mmc ? `<div class="badge">💾 ${x.mmc}</div>` : ""}
+        ${x.vip ? `<div class="badge">👑 ${x.vip}</div>` : ""}
+      </div>
+    `;
+  });
+}
 
   }catch(e){
     out.innerHTML = "❌ Lỗi quyền truy cập";
