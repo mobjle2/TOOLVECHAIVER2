@@ -155,24 +155,25 @@ async function check(){
 
   let results = new Map();
 
-  if(key.length === 4){
+ if(key.length === 4){
 
-    const prefixSnap = await db.collection("codes")
-      .where("prefix4","==",key)
-      .get();
+  const prefixSnap = await db.collection("codes_v2")
+    .where("prefix4","==",key)
+    .get();
 
-    const suffixSnap = await db.collection("codes")
-      .where("suffix4","==",key)
-      .get();
+  const suffixSnap = await db.collection("codes_v2")
+    .where("suffix4","==",key)
+    .get();
 
     prefixSnap.forEach(doc=>results.set(doc.id,doc.data()));
     suffixSnap.forEach(doc=>results.set(doc.id,doc.data()));
 
   } else {
 
-    const snap = await db.collection("codes")
-      .where("search","==",key)
-      .get();
+    const snap = await db.collection("codes_v2")
+  .where("search","==",key)
+  .get();
+
 
     snap.forEach(doc=>results.set(doc.id,doc.data()));
   }
