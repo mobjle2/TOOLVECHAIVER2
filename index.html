@@ -38,7 +38,7 @@ button{
   cursor:pointer;
 }
 
-.item{background:#1a1a1a;padding:15px;border-radius:12px;}
+.item{background:#1a1a1a;padding:15px;border-radius:12px;margin-bottom:10px;}
 .badge{
   display:inline-block;
   padding:4px 10px;
@@ -58,15 +58,7 @@ button{
 }
 
 .mmc-badge{background:#0ea5e9;color:white;}
-.vip-8{background:#7c3aed;color:white;}
-.vip-9{background:#06b6d4;color:white;}
-.vip-10{background:#FFD700;color:black;}
-.vip-5{background:#facc15;color:black;}
-.vip-6{background:#fb923c;color:black;}
 .vip-7{background:#ef4444;color:white;}
-.vip-11{background:#ff0000;color:white;}
-.vip-12{background:#990000;color:white;}
-.vip-13{background:#5b0000;color:white;}
 </style>
 </head>
 
@@ -84,29 +76,26 @@ button{
 
 <div class="container">
 
-  <h2>🛠 Tool Ve Chai Check VIP V2</h2>
+<h2>🛠 Tool Ve Chai Check VIP V2</h2>
 
-  <input id="q" placeholder="Nhập 4 ký tự hoặc full mã">
-  <button onclick="check()">CHECK</button>
+<input id="q" placeholder="Nhập 4 ký tự hoặc full mã">
+<button onclick="check()">CHECK</button>
 
-  <div id="out" style="margin-top:20px;display:grid;grid-template-columns:repeat(2,1fr);gap:15px;"></div>
+<div id="out" style="margin-top:20px;display:grid;grid-template-columns:repeat(2,1fr);gap:15px;"></div>
 
-  <hr style="margin:40px 0;border:1px solid #333;">
+<hr style="margin:40px 0;border:1px solid #333;">
 
-  <h3>🔗 Quản lý Share Link V2</h3>
-  <button id="createLinkBtn" class="share-btn">+ Tạo link mới</button>
-  <div id="shareLinksBox" style="margin-top:20px;display:grid;gap:15px;"></div>
+<h3>🔗 Quản lý Share Link V2</h3>
+<button id="createLinkBtn" class="share-btn">+ Tạo link mới</button>
+<div id="shareLinksBox" style="margin-top:20px;"></div>
 
-  <hr style="margin:40px 0;border:1px solid #333;">
+<hr style="margin:40px 0;border:1px solid #333;">
 
-  <!-- DI CHUYỂN XUỐNG CUỐI -->
-  <div style="margin-top:20px;padding:15px;border-radius:12px;background:#1a1a1a;text-align:center;">
-    ⚠ Tool chỉ mang tính tham khảo.
-    <br>
-    💳 Vietcombank | Nguyen Minh Trung
-    <br>
-    STK: 9907373199
-  </div>
+<div style="margin-top:20px;padding:15px;border-radius:12px;background:#1a1a1a;text-align:center;">
+⚠ Tool chỉ mang tính tham khảo.<br>
+💳 Vietcombank | Nguyen Minh Trung<br>
+STK: 9907373199
+</div>
 
 </div>
 
@@ -124,83 +113,121 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-/* LOGIN ỔN ĐỊNH */
 function secureLogin(){
   const email = loginEmail.value.trim();
   const pass = loginPass.value.trim();
 
   auth.signInWithEmailAndPassword(email, pass)
-    .then(async (cred)=>{
-      const doc = await db.collection("users").doc(cred.user.email).get();
-      if(!doc.exists || doc.data().role !== "admin_v2"){
-        await auth.signOut();
-        loginError.innerText="Không có quyền!";
-        return;
-      }
-      loginScreen.remove();
-    })
-    .catch(()=>loginError.innerText="Sai Gmail hoặc Password!");
-}
-
-/* CHECK VIP */
-const mmcMap={
- MMC1:"16G",MMC2:"32G",MMC3:"64G",
- MMC4:"128G",MMC5:"256G",MMC6:"512G"
-};
-
-function detectChip(code){
-  code=code.toUpperCase();
-  if(code.startsWith("KM")) return "SAMSUNG";
-  if(code.startsWith("H")) return "SK hynix";
-  if(code.startsWith("JZ")) return "MICRON";
-  if(code.startsWith("THG")) return "KIOXIA";
-  if(code.startsWith("SD")) return "SANDISK";
-  return "UNKNOWN";
-}
-
-async function check(){
-  const key=document.getElementById("q").value
-    .toUpperCase().replace(/[^A-Z0-9]/g,"");
-
-  const out=document.getElementById("out");
-  out.innerHTML="";
-  if(!key) return;
-
-  let results=new Map();
-
-  if(key.length===4){
-    const p=await db.collection("codes_v2").where("prefix4","==",key).get();
-    const s=await db.collection("codes_v2").where("suffix4","==",key).get();
-    p.forEach(d=>results.set(d.id,d.data()));
-    s.forEach(d=>results.set(d.id,d.data()));
-  }else{
-    const snap=await db.collection("codes_v2").where("search","==",key).get();
-    snap.forEach(d=>results.set(d.id,d.data()));
-  }
-
-  if(results.size===0){
-    out.innerHTML="❌ Không xác định mã";
-    return;
-  }
-
-  results.forEach(x=>{
-    let vipClass="";
-    if(x.vip){
-      const num=x.vip.replace(/[^0-9]/g,"");
-      vipClass="vip-"+num;
+  .then(async (cred)=>{
+    const doc = await db.collection("users").doc(email).get();
+    if(!doc.exists || doc.data().role !== "admin_v2"){
+      await auth.signOut();
+      loginError.innerText="Không có quyền!";
+      return;
     }
+    loginScreen.remove();
+  })
+  .catch(()=>loginError.innerText="Sai Gmail hoặc Password!");
+}
 
-    out.innerHTML+=`
-      <div class="item">
-        <div style="font-weight:700;">⚡ ${x.code}</div>
-        <div class="badge">${detectChip(x.code)}</div>
-        ${x.mmc?`<div class="badge mmc-badge">💾 ${x.mmc} (${mmcMap[x.mmc]||""})</div>`:""}
-        ${x.vip?`<div class="badge ${vipClass}">👑 ${x.vip}</div>`:""}
-      </div>
-    `;
+/* ===== SHARE LINK SYSTEM ===== */
+
+const linksRef = db.collection("ToolVeChaiV2_links");
+const sessionsRef = db.collection("ToolVeChaiV2_sessions");
+
+function generateLinkId(length = 8){
+  const chars="abcdefghijklmnopqrstuvwxyz0123456789";
+  let r="";
+  for(let i=0;i<length;i++){
+    r+=chars[Math.floor(Math.random()*chars.length)];
+  }
+  return r;
+}
+
+document.getElementById("createLinkBtn").addEventListener("click", async ()=>{
+  const id=generateLinkId();
+  const expire=new Date(Date.now()+60*60*1000);
+  await linksRef.doc(id).set({
+    createdAt:firebase.firestore.FieldValue.serverTimestamp(),
+    createdBy:auth.currentUser.email,
+    expireAt:expire,
+    isActive:true
+  });
+});
+
+linksRef.orderBy("createdAt","desc").onSnapshot(snapshot=>{
+  const box=document.getElementById("shareLinksBox");
+  box.innerHTML="";
+  snapshot.forEach(doc=>{
+    const data=doc.data();
+    const id=doc.id;
+    sessionsRef.where("linkId","==",id)
+    .onSnapshot(snap=>{
+      const online=snap.size;
+      const expired=data.expireAt && data.expireAt.toDate()<new Date();
+      const active=data.isActive && !expired;
+
+      box.innerHTML+=`
+        <div class="item">
+          <div><b>ID:</b> ${id}</div>
+          <div class="badge ${active?"mmc-badge":"vip-7"}">
+            ${active?"🟢 ĐANG MỞ":"🔴 ĐÃ KHÓA"}
+          </div>
+          <div>👥 Online: ${online}</div>
+          <button class="share-btn" onclick="copyLink('${id}')">Copy</button>
+          <button class="share-btn" onclick="resetLink('${id}')">Reset</button>
+          <button class="share-btn" style="background:red" onclick="deleteLink('${id}')">Xóa</button>
+        </div>
+      `;
+    });
+  });
+});
+
+function copyLink(id){
+  const url=window.location.origin+window.location.pathname+"?link="+id;
+  navigator.clipboard.writeText(url);
+  alert("Đã copy link!");
+}
+
+async function resetLink(oldId){
+  const oldDoc=await linksRef.doc(oldId).get();
+  const data=oldDoc.data();
+  const newId=generateLinkId();
+
+  await linksRef.doc(newId).set({
+    ...data,
+    createdAt:firebase.firestore.FieldValue.serverTimestamp(),
+    isActive:true
+  });
+
+  await linksRef.doc(oldId).update({isActive:false});
+
+  const sessions=await sessionsRef.where("linkId","==",oldId).get();
+  sessions.forEach(d=>d.ref.delete());
+}
+
+async function deleteLink(id){
+  await linksRef.doc(id).update({isActive:false});
+  const sessions=await sessionsRef.where("linkId","==",id).get();
+  sessions.forEach(d=>d.ref.delete());
+}
+
+const params=new URLSearchParams(window.location.search);
+const linkId=params.get("link");
+
+if(linkId){
+  linksRef.doc(linkId).onSnapshot(doc=>{
+    if(!doc.exists){
+      document.body.innerHTML="<h2 style='color:red;text-align:center;margin-top:100px'>🚫 Link này không còn sử dụng được</h2>";
+      return;
+    }
+    const data=doc.data();
+    const expired=data.expireAt && data.expireAt.toDate()<new Date();
+    if(!data.isActive || expired){
+      document.body.innerHTML="<h2 style='color:red;text-align:center;margin-top:100px'>🚫 Link này không còn sử dụng được</h2>";
+    }
   });
 }
 </script>
-
 </body>
 </html>
