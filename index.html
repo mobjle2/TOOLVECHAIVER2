@@ -68,19 +68,21 @@ button{
 .vip-11{background:#ff0000;color:white;}
 .vip-12{background:#990000;color:white;}
 .vip-13{background:#5b0000;color:white;}
-  .share-btn{
+
+.share-btn{
   width:auto;
-  padding:10px 18px;
+  padding:8px 16px;
   font-size:14px;
   background:#16a34a;
   border-radius:8px;
+  margin-top:10px;
 }
-
 </style>
 </head>
 
 <body>
 
+<!-- LOGIN SCREEN -->
 <div id="loginScreen" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000;display:flex;justify-content:center;align-items:center;z-index:9999;">
   <div style="width:360px;background:#111;padding:30px;border-radius:20px;border:1px solid gold;">
     <h2 style="text-align:center;color:gold;">🔐 Tool Ve Chai Admin V2</h2>
@@ -106,15 +108,17 @@ button{
   </div>
 
   <div id="out" style="margin-top:20px;display:grid;grid-template-columns:repeat(2,1fr);gap:15px;"></div>
+
+  <!-- SHARE LINK UI ONLY -->
   <hr style="margin:40px 0;border:1px solid #333;">
 
-<h3>🔗 Quản lý Share Link V2</h3>
+  <h3 style="margin-bottom:15px;">🔗 Quản lý Share Link V2</h3>
 
-<button class="share-btn" onclick="createShareLink()">
-  + Tạo link mới
-</button>
+  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+    <button class="share-btn">+ Tạo link mới</button>
+  </div>
 
-<div id="shareLinksBox" style="margin-top:20px;display:grid;gap:15px;"></div>
+  <div id="shareLinksBox" style="margin-top:20px;display:grid;gap:15px;"></div>
 
 </div>
 
@@ -128,40 +132,26 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
-let currentAdmin = null;
 
-
-
-
+/* LOGIN GIỮ NGUYÊN – KHÔNG ĐỘNG */
 function secureLogin(){
   const email = loginEmail.value.trim();
   const pass = loginPass.value.trim();
 
   auth.signInWithEmailAndPassword(email, pass)
     .then(async (cred)=>{
-
-      const snap = await db.collection("users")
-        .doc(email)
-        .get();
-
-      if(!snap.exists || snap.data().role !== "admin_v2"){
-        auth.signOut();
+      const doc = await db.collection("users").doc(cred.user.email).get();
+      if(!doc.exists || doc.data().role !== "admin_v2"){
+        await auth.signOut();
         loginError.innerText="Không có quyền!";
         return;
       }
-
-      currentAdmin = cred.user;
       loginScreen.remove();
-
     })
-    .catch(()=>{
-      loginError.innerText="Sai Gmail hoặc Password!";
-    });
+    .catch(()=>loginError.innerText="Sai Gmail hoặc Password!");
 }
 
-
-
-
+/* CHECK VIP */
 const mmcMap={
  MMC1:"16G",MMC2:"32G",MMC3:"64G",
  MMC4:"128G",MMC5:"256G",MMC6:"512G"
@@ -219,96 +209,6 @@ async function check(){
     `;
   });
 }
-  // ==========================
-// SHARE LINK V2
-// ==========================
-
-function generateLinkId(length = 10) {
-  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-  let result = "";
-  for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return result;
-}
-
-async function createShareLink(hours = 1) {
-
-  if (!currentAdmin) {
-    alert("Chưa đăng nhập admin");
-    return;
-  }
-
-  const id = generateLinkId();
-
-  const now = new Date();
-  const expire = new Date(now.getTime() + hours * 60 * 60 * 1000);
-
-  await db.collection("ToolVeChaiV2_links").doc(id).set({
-    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    expireAt: expire,
-    createdBy: currentAdmin.email
-  });
-
-  alert("Tạo link thành công!");
-}
-
-// realtime load link list
-db.collection("ToolVeChaiV2_links")
-  .orderBy("createdAt", "desc")
-  .onSnapshot(snapshot => {
-    const box = document.getElementById("shareLinksBox");
-    box.innerHTML = "";
-
-    snapshot.forEach(doc => {
-      const data = doc.data();
-      const id = doc.id;
-
-      box.innerHTML += `
-        <div class="item">
-          <div style="font-weight:700;">ID: ${id}</div>
-          <div>⏳ Hết hạn: ${data.expireAt?.toDate().toLocaleString()}</div>
-          <div id="online-${id}">👥 Online: ...</div>
-          <button onclick="copyLink('${id}')">Copy</button>
-          <button onclick="resetLink('${id}')">🔄 Reset link</button>
-        </div>
-      `;
-
-      // load online count
-      db.collection("ToolVeChaiV2_sessions")
-        .where("linkId", "==", id)
-        .onSnapshot(snap => {
-          document.getElementById(`online-${id}`).innerText =
-            "👥 Online: " + snap.size;
-        });
-    });
-  });
-
-function copyLink(id) {
-  const link = window.location.origin +
-    "/TOOLVECHAIVER2/?share=" + id;
-
-  navigator.clipboard.writeText(link);
-  alert("Đã copy link!");
-}
-
-async function resetLink(id) {
-  // xóa sessions
-  const sessions = await db.collection("ToolVeChaiV2_sessions")
-    .where("linkId", "==", id)
-    .get();
-
-  const batch = db.batch();
-  sessions.forEach(doc => batch.delete(doc.ref));
-  await batch.commit();
-
-  // xóa link
-  await db.collection("ToolVeChaiV2_links").doc(id).delete();
-
-  // tạo link mới
-  createShareLink(1);
-}
-
 </script>
 
 </body>
