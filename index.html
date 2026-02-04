@@ -396,28 +396,6 @@ function showVIP13(){
 
 
 <script>
-(function(){
-const p1 = "Tr11";
-const p2 = "2233";
-const p3 = "44@";
-function secureLogin(){
-  const email = document.getElementById("loginEmail").value.trim();
-  const pass = document.getElementById("loginPass").value.trim();
-
-  auth.signInWithEmailAndPassword(email, pass)
-    .then(() => {
-      document.getElementById("loginScreen").remove();
-    })
-    .catch(() => {
-      document.getElementById("loginError").innerText = "Sai tài khoản hoặc mật khẩu!";
-    });
-}
-
-auth.onAuthStateChanged(user=>{
-  if(user){
-    document.getElementById("loginScreen")?.remove();
-  }
-});
 
 <!-- ====== HỆ THỐNG LINK THỢ ====== -->
 <script>
