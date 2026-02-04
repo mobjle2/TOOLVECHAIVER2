@@ -3,24 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CHECK VIP V2</title>
+<title>Tool Ve Chai Check VIP V2</title>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <style>
-body{
-  font-family:Arial;
-  background:#111;
-  color:white;
-  margin:0;
-}
-.container{
-  max-width:900px;
-  margin:auto;
-  padding:20px;
-}
+*{box-sizing:border-box;}
+body{font-family:Arial;background:#111;color:white;margin:0;}
+
+.container{max-width:900px;margin:auto;padding:20px;}
+
 input{
   width:100%;
   padding:16px;
@@ -31,6 +25,7 @@ input{
   font-size:16px;
   margin-top:15px;
 }
+
 button{
   width:100%;
   padding:16px;
@@ -43,38 +38,44 @@ button{
   margin-top:15px;
   cursor:pointer;
 }
+
 .item{
   background:#1a1a1a;
   padding:15px;
-  margin-bottom:10px;
-  border-radius:10px;
+  border-radius:12px;
 }
+
 .badge{
   display:inline-block;
   padding:4px 10px;
   border-radius:20px;
   font-size:12px;
-  margin-top:5px;
+  margin-top:6px;
+  margin-right:6px;
 }
+
+@media(min-width:900px){
+  #out{grid-template-columns:repeat(3,1fr)!important;}
+}
+
+.mmc-badge{background:#0ea5e9;color:white;}
+.vip-8{background:#7c3aed;color:white;}
+.vip-9{background:#06b6d4;color:white;}
+.vip-10{background:#FFD700;color:black;}
+.vip-5{background:#facc15;color:black;}
+.vip-6{background:#fb923c;color:black;}
+.vip-7{background:#ef4444;color:white;}
+.vip-11{background:#ff0000;color:white;}
+.vip-12{background:#990000;color:white;}
+.vip-13{background:#5b0000;color:white;}
 </style>
 </head>
 
 <body>
 
-<div id="loginScreen" style="
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:#000;
-display:flex;
-justify-content:center;
-align-items:center;
-z-index:9999;
-">
+<div id="loginScreen" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000;display:flex;justify-content:center;align-items:center;z-index:9999;">
   <div style="width:360px;background:#111;padding:30px;border-radius:20px;border:1px solid gold;">
-    <h2 style="text-align:center;color:gold;">🔐 Tool Ve Chai Admin</h2>
+    <h2 style="text-align:center;color:gold;">🔐 Tool Ve Chai Admin V2</h2>
     <input id="loginEmail" type="email" placeholder="Nhập Gmail">
     <input id="loginPass" type="password" placeholder="Nhập Password">
     <button onclick="secureLogin()">LOGIN</button>
@@ -84,21 +85,26 @@ z-index:9999;
 
 <div class="container">
   <h2>🛠 Tool Ve Chai Check VIP V2</h2>
+
   <input id="q" placeholder="Nhập 4 ký tự hoặc full mã">
   <button onclick="check()">CHECK</button>
-  <div id="out" style="margin-top:20px;"></div>
+
+  <div style="margin-top:20px;padding:15px;border-radius:12px;background:#1a1a1a;text-align:center;">
+    ⚠ Tool chỉ mang tính tham khảo.
+    <br>
+    💳 Vietcombank | Nguyen Minh Trung
+    <br>
+    STK: 9907373199
+  </div>
+
+  <div id="out" style="margin-top:20px;display:grid;grid-template-columns:repeat(2,1fr);gap:15px;"></div>
 </div>
 
 <script>
-
 const firebaseConfig = {
   apiKey: "AIzaSyCEL7BDXvmNi2dp1VNpua7b2plpTiTOK3U",
   authDomain: "toolvechai.firebaseapp.com",
-  projectId: "toolvechai",
-  storageBucket: "toolvechai.firebasestorage.app",
-  messagingSenderId: "947125032083",
-  appId: "1:947125032083:web:a7335aa5fd446a44446966",
-  measurementId: "G-N4W751H36H"
+  projectId: "toolvechai"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -107,94 +113,85 @@ const db = firebase.firestore();
 
 auth.setPersistence(firebase.auth.Auth.Persistence.NONE);
 
-// LOGIN
 function secureLogin(){
   const email = loginEmail.value.trim();
   const pass = loginPass.value.trim();
 
   auth.signInWithEmailAndPassword(email, pass)
-    .then(async (userCredential) => {
-
-      const user = userCredential.user;
-
-      const doc = await db.collection("users")
-        .doc(user.email)
-        .get();
-
+    .then(async (cred)=>{
+      const doc = await db.collection("users").doc(cred.user.email).get();
       if(!doc.exists || doc.data().role !== "admin_v2"){
         await auth.signOut();
-        loginError.innerText = "Không có quyền vào TOOL V2";
+        loginError.innerText="Không có quyền!";
         return;
       }
-
       loginScreen.remove();
     })
-    .catch(()=>{
-      loginError.innerText = "Sai Gmail hoặc Password!";
-    });
+    .catch(()=>loginError.innerText="Sai Gmail hoặc Password!");
 }
 
-
-auth.onAuthStateChanged(function(user){
-  if(user){
-    document.getElementById("loginScreen").remove();
-  }
+auth.onAuthStateChanged(user=>{
+  if(user) loginScreen.remove();
 });
 
-// CHECK
+const mmcMap={
+ MMC1:"16G",MMC2:"32G",MMC3:"64G",
+ MMC4:"128G",MMC5:"256G",MMC6:"512G"
+};
+
+function detectChip(code){
+  code=code.toUpperCase();
+  if(code.startsWith("KM")) return "SAMSUNG";
+  if(code.startsWith("H")) return "SK hynix";
+  if(code.startsWith("JZ")) return "MICRON";
+  if(code.startsWith("THG")) return "KIOXIA";
+  if(code.startsWith("SD")) return "SANDISK";
+  return "UNKNOWN";
+}
+
 async function check(){
+  const key=document.getElementById("q").value
+    .toUpperCase().replace(/[^A-Z0-9]/g,"");
 
-  const key = document.getElementById("q").value
-    .toUpperCase()
-    .replace(/[^A-Z0-9]/g,"");
-
-  const out = document.getElementById("out");
-  out.innerHTML = "";
-
+  const out=document.getElementById("out");
+  out.innerHTML="";
   if(!key) return;
 
-  let results = new Map();
+  let results=new Map();
 
- if(key.length === 4){
-
-  const prefixSnap = await db.collection("codes_v2")
-    .where("prefix4","==",key)
-    .get();
-
-  const suffixSnap = await db.collection("codes_v2")
-    .where("suffix4","==",key)
-    .get();
-
-    prefixSnap.forEach(doc=>results.set(doc.id,doc.data()));
-    suffixSnap.forEach(doc=>results.set(doc.id,doc.data()));
-
-  } else {
-
-    const snap = await db.collection("codes_v2")
-  .where("search","==",key)
-  .get();
-
-
-    snap.forEach(doc=>results.set(doc.id,doc.data()));
+  if(key.length===4){
+    const p=await db.collection("codes_v2").where("prefix4","==",key).get();
+    const s=await db.collection("codes_v2").where("suffix4","==",key).get();
+    p.forEach(d=>results.set(d.id,d.data()));
+    s.forEach(d=>results.set(d.id,d.data()));
+  }else{
+    const snap=await db.collection("codes_v2").where("search","==",key).get();
+    snap.forEach(d=>results.set(d.id,d.data()));
   }
 
-  if(results.size === 0){
-    out.innerHTML = "❌ Không xác định mã";
+  if(results.size===0){
+    out.innerHTML="❌ Không xác định mã";
     return;
   }
 
   results.forEach(x=>{
-    out.innerHTML += `
+    let vipClass="";
+    if(x.vip){
+      const num=x.vip.replace(/[^0-9]/g,"");
+      vipClass="vip-"+num;
+    }
+
+    out.innerHTML+=`
       <div class="item">
         <div style="font-weight:700;">⚡ ${x.code}</div>
-        ${x.mmc ? `<div class="badge">💾 ${x.mmc}</div>` : ""}
-        ${x.vip ? `<div class="badge">👑 ${x.vip}</div>` : ""}
+        <div class="badge">${detectChip(x.code)}</div>
+        ${x.mmc?`<div class="badge mmc-badge">💾 ${x.mmc} (${mmcMap[x.mmc]||""})</div>`:""}
+        ${x.vip?`<div class="badge ${vipClass}">👑 ${x.vip}</div>`:""}
       </div>
     `;
   });
 }
 </script>
-
 
 </body>
 </html>
