@@ -104,17 +104,31 @@ auth.setPersistence(firebase.auth.Auth.Persistence.NONE);
 
 // LOGIN
 function secureLogin(){
-  const email = document.getElementById("loginEmail").value;
-  const pass = document.getElementById("loginPass").value;
+  const email = loginEmail.value.trim();
+  const pass = loginPass.value.trim();
 
   auth.signInWithEmailAndPassword(email, pass)
-    .then(() => {
-      document.getElementById("loginScreen").remove();
+    .then(async (userCredential) => {
+
+      const user = userCredential.user;
+
+      const doc = await db.collection("users")
+        .doc(user.email)
+        .get();
+
+      if(!doc.exists || doc.data().role !== "admin_v2"){
+        await auth.signOut();
+        loginError.innerText = "Không có quyền vào TOOL V2";
+        return;
+      }
+
+      loginScreen.remove();
     })
-    .catch(() => {
-      document.getElementById("loginError").innerText = "Sai Gmail hoặc Password!";
+    .catch(()=>{
+      loginError.innerText = "Sai Gmail hoặc Password!";
     });
 }
+
 
 auth.onAuthStateChanged(function(user){
   if(user){
