@@ -173,13 +173,20 @@ document.getElementById("loginError").innerText="Sai tài khoản!";
 
 }
 
-auth.onAuthStateChanged(u=>{
-if(u&&!userParam){
-loginScreen.remove();
-document.getElementById("adminPanel").style.display="block";
-loadLinks();
-}
+auth.onAuthStateChanged(async (u)=>{
+  if(!u) return;
+
+  const doc = await db.collection("users").doc(u.email).get();
+
+  if(doc.exists && doc.data().role === "admin_v2"){
+      loginScreen.remove();
+      document.getElementById("adminPanel").style.display="block";
+      loadLinks();
+  }else{
+      await auth.signOut();
+  }
 });
+
 
 const mmcMap={MMC1:"16G",MMC2:"32G",MMC3:"64G",MMC4:"128G",MMC5:"256G",MMC6:"512G"};
 
