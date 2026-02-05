@@ -3,121 +3,70 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Tool Ve Chai Check VIP V2</title>
+<title>Tool Ve Chai V2</title>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <style>
-*{box-sizing:border-box}
 body{margin:0;background:#0f0f0f;color:white;font-family:Arial}
-.container{max-width:900px;margin:auto;padding:20px}
-
-input{
-width:100%;
-padding:14px;
-border-radius:12px;
-border:1px solid #333;
-background:#111;
-color:white;
-margin-top:12px;
+.container{max-width:700px;margin:auto;padding:20px}
+.card{
+background:#1a1a1a;
+padding:16px;
+border-radius:14px;
+margin-top:15px;
+border:1px solid #2a2a2a;
 }
-
+.row{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
 button{
-padding:10px 14px;
+padding:8px 14px;
 border-radius:10px;
 border:none;
 cursor:pointer;
 font-weight:bold;
 }
-
-.primary{background:#2563eb;color:white;width:100%;margin-top:12px}
 .green{background:#16a34a;color:white}
 .orange{background:#f59e0b;color:white}
 .red{background:#ef4444;color:white}
-
-.card{
-background:#1a1a1a;
-padding:15px;
-border-radius:14px;
-margin-bottom:15px;
-border:1px solid #2a2a2a;
-}
-
-.row{
-display:flex;
-gap:10px;
-flex-wrap:wrap;
-margin-top:10px;
-}
-
-.badge{
-padding:4px 10px;
-border-radius:20px;
-font-size:12px;
-font-weight:bold;
-}
-
+.primary{background:#2563eb;color:white;width:100%;margin-top:10px}
+.badge{padding:4px 10px;border-radius:20px;font-size:12px;font-weight:bold}
 .open{background:#059669}
 .lock{background:#dc2626}
-
 #loginScreen{
-position:fixed;
-top:0;left:0;
-width:100%;height:100%;
-background:#000;
-display:flex;
-justify-content:center;
-align-items:center;
+position:fixed;top:0;left:0;width:100%;height:100%;
+background:black;display:flex;justify-content:center;align-items:center;
 z-index:9999;
 }
-
 .login-box{
-width:360px;
-background:#111;
-padding:30px;
-border-radius:20px;
-border:1px solid gold;
+width:320px;background:#111;padding:30px;
+border-radius:18px;border:1px solid gold;
 }
-
-hr{border:1px solid #333;margin:35px 0}
+input{
+width:100%;padding:12px;margin-top:10px;
+border-radius:10px;border:1px solid #333;background:#111;color:white;
+}
+hr{border:1px solid #333;margin:30px 0}
 </style>
 </head>
 
 <body>
 
 <div id="loginScreen">
-  <div class="login-box">
-    <h2 style="text-align:center;color:gold">🔐 Tool Ve Chai Admin V2</h2>
-    <input id="loginEmail" placeholder="Nhập Gmail">
-    <input id="loginPass" type="password" placeholder="Nhập Password">
-    <button class="primary" onclick="secureLogin()">LOGIN</button>
-    <div id="loginError" style="color:red;text-align:center;margin-top:10px"></div>
-  </div>
+<div class="login-box">
+<h3 style="text-align:center;color:gold">Admin V2</h3>
+<input id="loginEmail" placeholder="Gmail">
+<input id="loginPass" type="password" placeholder="Password">
+<button class="primary" onclick="login()">LOGIN</button>
+<div id="loginError" style="color:red;text-align:center;margin-top:8px"></div>
+</div>
 </div>
 
 <div class="container">
-
-<h2>🛠 Tool Ve Chai Check VIP V2</h2>
-
-<input id="q" placeholder="Nhập 4 ký tự hoặc full mã">
-<button class="primary">CHECK</button>
-
-<hr>
-
-<h3>🔗 Quản lý Share Link V2</h3>
+<h2>🔗 Quản lý Share Link V2</h2>
 <button class="green" onclick="createLink()">+ Tạo link mới</button>
-<div id="linksBox" style="margin-top:20px"></div>
-
-<hr>
-
-<div class="card" style="text-align:center">
-⚠ Tool chỉ mang tính tham khảo.<br>
-💳 Vietcombank | Nguyen Minh Trung<br>
-STK: 9907373199
-</div>
-
+<div id="linksBox"></div>
 </div>
 
 <script>
@@ -129,13 +78,14 @@ storageBucket:"toolvechai.firebasestorage.app",
 messagingSenderId:"947125032083",
 appId:"1:947125032083:web:a7335aa5fd446a44446966"
 }
-
 firebase.initializeApp(firebaseConfig)
 const auth=firebase.auth()
 const db=firebase.firestore()
 
-/* LOGIN */
-function secureLogin(){
+const linksRef=db.collection("ToolVeChaiV2_links")
+
+/* ===== LOGIN ===== */
+function login(){
 const email=loginEmail.value.trim()
 const pass=loginPass.value.trim()
 
@@ -147,48 +97,48 @@ await auth.signOut()
 loginError.innerText="Không có quyền!"
 return
 }
-loginScreen.remove()
+loginScreen.style.display="none"
 })
 .catch(()=>loginError.innerText="Sai Gmail hoặc Password!")
 }
 
-/* LINK SYSTEM */
-const linksRef=db.collection("ToolVeChaiV2_links")
-const sessionsRef=db.collection("ToolVeChaiV2_sessions")
+/* ===== LINK VIEW MODE (KHÔNG ADMIN) ===== */
+const params=new URLSearchParams(location.search)
+const linkParam=params.get("link")
 
-function generateId(len=8){
-const c="abcdefghijklmnopqrstuvwxyz0123456789"
-let r=""
-for(let i=0;i<len;i++) r+=c[Math.floor(Math.random()*c.length)]
-return r
+if(linkParam){
+loginScreen.remove()
+linksRef.doc(linkParam).get().then(doc=>{
+if(!doc.exists){
+document.body.innerHTML="<h2 style='color:red;text-align:center;margin-top:100px'>🚫 Link không tồn tại</h2>"
+return
 }
-
-async function createLink(){
-const id=generateId()
-const expire=new Date(Date.now()+60*60*1000)
-
-await linksRef.doc(id).set({
-createdAt:firebase.firestore.FieldValue.serverTimestamp(),
-createdBy:auth.currentUser.email,
-expireAt:expire,
-isActive:true
+const data=doc.data()
+const expired=data.expireAt&&data.expireAt.toDate()<new Date()
+if(!data.isActive||expired){
+document.body.innerHTML="<h2 style='color:red;text-align:center;margin-top:100px'>🚫 Link đã khóa</h2>"
+}else{
+document.body.innerHTML="<h2 style='color:lime;text-align:center;margin-top:100px'>✅ Link hợp lệ</h2>"
+}
 })
 }
+
+/* ===== ADMIN RENDER ===== */
+auth.onAuthStateChanged(user=>{
+if(!user) return
 
 linksRef.orderBy("createdAt","desc").onSnapshot(snapshot=>{
-renderLinks(snapshot.docs)
+render(snapshot.docs)
+})
 })
 
-async function renderLinks(docs){
+function render(docs){
 const box=document.getElementById("linksBox")
 box.innerHTML=""
 
-for(const d of docs){
+docs.forEach(d=>{
 const data=d.data()
 const id=d.id
-
-const sessionSnap=await sessionsRef.where("linkId","==",id).get()
-const online=sessionSnap.size
 const expired=data.expireAt&&data.expireAt.toDate()<new Date()
 const active=data.isActive&&!expired
 
@@ -198,8 +148,6 @@ box.innerHTML+=`
 <span class="badge ${active?"open":"lock"}">
 ${active?"🟢 ĐANG MỞ":"🔴 ĐÃ KHÓA"}
 </span>
-<div>👥 Online: ${online}</div>
-
 <div class="row">
 <button class="green" onclick="copyLink('${id}')">Copy</button>
 <button class="orange" onclick="resetLink('${id}')">Reset</button>
@@ -207,50 +155,41 @@ ${active?"🟢 ĐANG MỞ":"🔴 ĐÃ KHÓA"}
 </div>
 </div>
 `
-}
-}
-
-function copyLink(id){
-const url=window.location.origin+window.location.pathname+"?link="+id
-navigator.clipboard.writeText(url)
-alert("Đã copy link")
+})
 }
 
-async function resetLink(oldId){
-const oldDoc=await linksRef.doc(oldId).get()
-const data=oldDoc.data()
-const newId=generateId()
+/* ===== ACTIONS ===== */
+function generateId(){
+return Math.random().toString(36).substring(2,8)
+}
 
-await linksRef.doc(newId).set({
-...data,
+async function createLink(){
+const id=generateId()
+const expire=new Date(Date.now()+3600000)
+
+await linksRef.doc(id).set({
 createdAt:firebase.firestore.FieldValue.serverTimestamp(),
+expireAt:expire,
 isActive:true
 })
-
-await linksRef.doc(oldId).delete()
-renderLinks((await linksRef.orderBy("createdAt","desc").get()).docs)
 }
 
 async function deleteLink(id){
 await linksRef.doc(id).delete()
-renderLinks((await linksRef.orderBy("createdAt","desc").get()).docs)
 }
 
-/* LINK ACCESS CHECK */
-const params=new URLSearchParams(window.location.search)
-const linkId=params.get("link")
+async function resetLink(id){
+const expire=new Date(Date.now()+3600000)
+await linksRef.doc(id).update({
+expireAt:expire,
+isActive:true
+})
+}
 
-if(linkId){
-linksRef.doc(linkId).get().then(doc=>{
-if(!doc.exists){
-document.body.innerHTML="<h2 style='color:red;text-align:center;margin-top:100px'>🚫 Link không tồn tại</h2>"
-return
-}
-const data=doc.data()
-const expired=data.expireAt&&data.expireAt.toDate()<new Date()
-if(!data.isActive||expired){
-document.body.innerHTML="<h2 style='color:red;text-align:center;margin-top:100px'>🚫 Link đã hết hạn hoặc bị khóa</h2>"
-}
+function copyLink(id){
+const url=location.origin+location.pathname+"?link="+id
+navigator.clipboard.writeText(url).then(()=>{
+alert("Đã copy link")
 })
 }
 </script>
