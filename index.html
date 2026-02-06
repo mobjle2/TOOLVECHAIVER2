@@ -252,7 +252,13 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+const loginBox = document.getElementById("loginBox");
+const mainApp = document.getElementById("mainApp");
+const adminSection = document.getElementById("adminSection");
 
+/* AUTH */
+
+auth.onAuthStateChanged(async(user)=>{
 
 /* AUTH */
 
