@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tool Ve Chai Premium</title>
+<title>Tool Ve Chai Dashboard</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
@@ -12,93 +12,124 @@
 body{
   margin:0;
   font-family:Inter,sans-serif;
-  background:linear-gradient(135deg,#0f172a,#1e293b);
+  background:#0b0f1a;
   color:white;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  min-height:100vh;
 }
 
-.container{
-  width:100%;
-  max-width:480px;
-  padding:30px;
-  background:rgba(255,255,255,0.05);
-  backdrop-filter:blur(20px);
-  border-radius:20px;
-  box-shadow:0 15px 40px rgba(0,0,0,0.5);
+.wrapper{
+  max-width:1200px;
+  margin:auto;
+  padding:40px 20px;
 }
 
 h1{
-  text-align:center;
+  margin-bottom:25px;
+  color:#facc15;
+}
+
+.tabs{
+  display:flex;
+  gap:10px;
   margin-bottom:30px;
-  background:linear-gradient(90deg,#facc15,#f97316);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  font-weight:700;
+}
+
+.tab-btn{
+  flex:1;
+  padding:12px;
+  border:none;
+  border-radius:8px;
+  background:#1f2937;
+  color:white;
+  cursor:pointer;
+  font-weight:600;
+}
+
+.tab-btn.active{
+  background:#2563eb;
 }
 
 input{
   width:100%;
   padding:14px;
-  border-radius:12px;
-  border:1px solid rgba(255,255,255,0.1);
-  background:rgba(255,255,255,0.05);
+  border-radius:10px;
+  border:1px solid #1f2937;
+  background:#111827;
   color:white;
-  margin-bottom:12px;
-  outline:none;
-  transition:0.3s;
-}
-
-input:focus{
-  border-color:#facc15;
+  margin-bottom:10px;
 }
 
 button{
-  width:100%;
-  padding:14px;
-  border:none;
-  border-radius:12px;
-  font-weight:600;
   cursor:pointer;
-  transition:0.3s;
-  margin-top:8px;
-}
-
-.btn-primary{
-  background:linear-gradient(90deg,#2563eb,#3b82f6);
-}
-.btn-primary:hover{
-  transform:translateY(-2px);
-  box-shadow:0 8px 20px rgba(59,130,246,0.4);
-}
-
-.btn-success{
-  background:linear-gradient(90deg,#16a34a,#22c55e);
-}
-.btn-danger{
-  background:linear-gradient(90deg,#dc2626,#ef4444);
-}
-.btn-warning{
-  background:linear-gradient(90deg,#f59e0b,#f97316);
-}
-
-.status{
-  margin-top:10px;
   font-weight:600;
-  text-align:center;
 }
 
-.admin-box{
-  margin-top:25px;
+.btn-blue{background:#2563eb;color:white;padding:12px 18px;border:none;border-radius:8px;}
+.btn-green{background:#16a34a;color:white;padding:12px 18px;border:none;border-radius:8px;}
+.btn-red{background:#dc2626;color:white;padding:12px 18px;border:none;border-radius:8px;}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
 }
 
-.link-card{
-  background:rgba(255,255,255,0.05);
-  padding:15px;
+@media(max-width:1024px){
+  .grid{grid-template-columns:repeat(2,1fr);}
+}
+
+.card{
+  background:#111827;
+  padding:16px;
   border-radius:12px;
-  margin-bottom:10px;
+  border:1px solid #1f2937;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.card-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.actions{
+  display:flex;
+  gap:8px;
+}
+
+.icon-btn{
+  width:38px;
+  height:38px;
+  border-radius:10px;
+  border:1px solid #1f2937;
+  background:#0f172a;
+  color:#94a3b8;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:0.2s ease;
+}
+
+.icon-btn:hover{
+  background:#1e293b;
+  color:white;
+}
+
+.icon-btn.delete:hover{
+  background:#dc2626;
+  border-color:#dc2626;
+}
+
+.icon-btn.lock:hover{
+  background:#f59e0b;
+  border-color:#f59e0b;
+  color:black;
+}
+
+.icon-btn.copy:hover{
+  background:#2563eb;
+  border-color:#2563eb;
 }
 
 .badge{
@@ -108,134 +139,117 @@ button{
 }
 
 .open{background:#16a34a;}
-.closed{background:#dc2626;}
+.closed{background:#f59e0b;}
 
 .hidden{display:none;}
-hr{
-  border:1px solid rgba(255,255,255,0.1);
-  margin:20px 0;
+.login-box{
+  max-width:400px;
+  margin:100px auto;
 }
 </style>
 </head>
 <body>
 
-<div class="container">
-
-<h1>Tool Ve Chai</h1>
-
-<!-- LOGIN -->
-<div id="loginBox">
+<div id="loginBox" class="login-box">
+  <h1>Đăng nhập</h1>
   <input id="email" placeholder="Email">
   <input id="password" type="password" placeholder="Password">
-  <button class="btn-primary" onclick="login()">ĐĂNG NHẬP</button>
-  <div id="loginError" class="status"></div>
+  <button class="btn-blue" onclick="login()">ĐĂNG NHẬP</button>
+  <div id="loginError" style="margin-top:10px;color:#ef4444"></div>
 </div>
 
-<!-- CHECK -->
-<div id="checkBox" class="hidden">
-  <input id="codeInput" placeholder="Nhập mã...">
-  <button class="btn-success" onclick="checkCode()">CHECK</button>
-  <div id="checkResult" class="status"></div>
+<div id="mainApp" class="wrapper hidden">
+
+  <h1>Tool Ve Chai Check VIP</h1>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('check')">CHECK</button>
+    <button class="tab-btn" id="adminTabBtn" onclick="switchTab('admin')">ADMIN</button>
+    <button class="btn-red" style="margin-left:auto" onclick="logout()">Đăng xuất</button>
+  </div>
+
+  <div id="checkTab">
+    <input id="codeInput" placeholder="Nhập mã...">
+    <button class="btn-blue" onclick="checkCode()">CHECK</button>
+    <div id="checkResult" style="margin-top:10px"></div>
+  </div>
+
+  <div id="adminTab" class="hidden">
+    <br>
+    <button class="btn-green" onclick="createLink()">+ Tạo Link</button>
+    <br><br>
+    <div class="grid" id="linkGrid"></div>
+  </div>
+
 </div>
 
-<!-- ADMIN -->
-<div id="adminBox" class="admin-box hidden">
-  <hr>
-  <button class="btn-success" onclick="createLink()">+ Tạo Link</button>
-  <div id="linkGrid"></div>
-</div>
-
-</div>
-
-<!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
 
 <script>
+
 const firebaseConfig = {
   apiKey: "AIzaSyCEL7BDXvmNi2dp1VNpua7b2plpTiTOK3U",
   authDomain: "toolvechai.firebaseapp.com",
-  projectId: "toolvechai",
-  storageBucket: "toolvechai.firebasestorage.app",
-  messagingSenderId: "947125032083",
-  appId: "1:947125032083:web:a7335aa5fd446a44446966",
-  measurementId: "G-N4W751H36H"
+  projectId: "toolvechai"
 };
-
 
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
-auth.setPersistence(firebase.auth.Auth.Persistence.NONE);
 
-/* ===== AUTH STATE ===== */
+/* AUTH */
 
 auth.onAuthStateChanged(async(user)=>{
-
-  const loginBox = document.getElementById("loginBox");
-  const checkBox = document.getElementById("checkBox");
-  const adminBox = document.getElementById("adminBox");
-
   if(user){
-
-    loginBox.classList.add("hidden");
-    checkBox.classList.remove("hidden");
+    document.getElementById("loginBox").classList.add("hidden");
+    document.getElementById("mainApp").classList.remove("hidden");
 
     const doc = await db.collection("users").doc(user.email).get();
-
-    if(doc.exists && doc.data().role === "admin_v2"){
-      adminBox.classList.remove("hidden");
-      loadLinks();
+    if(!doc.exists || doc.data().role !== "admin_v2"){
+      document.getElementById("adminTabBtn").style.display="none";
     }else{
-      adminBox.classList.add("hidden");
+      document.getElementById("adminTabBtn").style.display="block";
+      loadLinks();
     }
 
   }else{
-    // Khi chưa login
-    loginBox.classList.remove("hidden");
-    checkBox.classList.add("hidden");
-    adminBox.classList.add("hidden");
+    document.getElementById("loginBox").classList.remove("hidden");
+    document.getElementById("mainApp").classList.add("hidden");
   }
-
 });
-
-
-/* ===== LOGIN ===== */
 
 function login(){
   const email = document.getElementById("email").value.trim();
   const pass = document.getElementById("password").value.trim();
-  const errorBox = document.getElementById("loginError");
-
-  errorBox.innerText = "";
 
   auth.signInWithEmailAndPassword(email,pass)
-  .catch((error)=>{
-    if(
-      error.code === "auth/wrong-password" ||
-      error.code === "auth/user-not-found" ||
-      error.code === "auth/invalid-login-credentials"
-    ){
-      errorBox.innerText = "Sai Gmail hoặc Password!";
-    }else{
-      errorBox.innerText = "Lỗi hệ thống!";
-      console.log(error);
-    }
+  .catch(()=>{
+    document.getElementById("loginError").innerText="Sai Gmail hoặc Password!";
   });
 }
 
+function logout(){
+  auth.signOut();
+}
 
+function switchTab(tab){
+  document.getElementById("checkTab").classList.toggle("hidden",tab!=="check");
+  document.getElementById("adminTab").classList.toggle("hidden",tab!=="admin");
 
+  document.querySelectorAll(".tab-btn").forEach(btn=>btn.classList.remove("active"));
+  if(tab==="check") document.querySelectorAll(".tab-btn")[0].classList.add("active");
+  else document.querySelectorAll(".tab-btn")[1].classList.add("active");
+}
 
-
-/* ===== CHECK ===== */
+/* CHECK */
 
 function checkCode(){
-  const code = document.getElementById("codeInput").value.trim();
-  const result = document.getElementById("checkResult");
-
-  if(code.length < 4){
+  const code=document.getElementById("codeInput").value.trim();
+  const result=document.getElementById("checkResult");
+  if(code.length<4){
     result.innerHTML="❌ Mã không hợp lệ";
     result.style.color="#ef4444";
   }else{
@@ -244,14 +258,14 @@ function checkCode(){
   }
 }
 
-/* ===== ADMIN ===== */
+/* ADMIN */
 
 function randomId(){
   return Math.random().toString(36).substring(2,9);
 }
 
 async function createLink(){
-  const id = randomId();
+  const id=randomId();
   await db.collection("ToolVeChaiV2_links").doc(id).set({
     isActive:true,
     createdAt:firebase.firestore.FieldValue.serverTimestamp()
@@ -260,24 +274,41 @@ async function createLink(){
 }
 
 async function loadLinks(){
-  const snap = await db.collection("ToolVeChaiV2_links").get();
-  const grid = document.getElementById("linkGrid");
+  const snap=await db.collection("ToolVeChaiV2_links").get();
+  const grid=document.getElementById("linkGrid");
   grid.innerHTML="";
 
   snap.forEach(doc=>{
-    const data = doc.data();
+    const data=doc.data();
     grid.innerHTML+=`
-      <div class="link-card">
-        <b>${doc.id}</b><br><br>
+      <div class="card">
+        <div class="card-header">
+          <b>${doc.id}</b>
+          <div class="actions">
+            <button class="icon-btn copy" onclick="copyLink('${doc.id}')">
+              <i data-lucide="copy"></i>
+            </button>
+            <button class="icon-btn lock" onclick="resetLink('${doc.id}')">
+              <i data-lucide="lock"></i>
+            </button>
+            <button class="icon-btn delete" onclick="deleteLink('${doc.id}')">
+              <i data-lucide="trash-2"></i>
+            </button>
+          </div>
+        </div>
         <span class="badge ${data.isActive?'open':'closed'}">
-          ${data.isActive?'ĐANG MỞ':'ĐÃ KHÓA'}
+          ${data.isActive?'Đang mở':'Đang khóa'}
         </span>
-        <br><br>
-        <button class="btn-warning" onclick="resetLink('${doc.id}')">Reset</button>
-        <button class="btn-danger" onclick="deleteLink('${doc.id}')">Xóa</button>
       </div>
     `;
   });
+
+  lucide.createIcons();
+}
+
+function copyLink(id){
+  const url=location.origin+location.pathname+"?link="+id;
+  navigator.clipboard.writeText(url);
 }
 
 async function resetLink(id){
@@ -289,6 +320,7 @@ async function deleteLink(id){
   await db.collection("ToolVeChaiV2_links").doc(id).delete();
   loadLinks();
 }
+
 </script>
 
 </body>
