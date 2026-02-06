@@ -1,123 +1,121 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Tool Ve Chai V2</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tool Ve Chai V3</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
 body{
   margin:0;
-  font-family:Arial;
-  background:#0f1115;
+  font-family:Poppins,sans-serif;
+  background:linear-gradient(135deg,#0f172a,#111827);
   color:white;
-  text-align:center;
-}
-
-h1{color:#ffd600}
-
-.container{
-  max-width:1000px;
-  margin:auto;
-  padding:20px;
-}
-
-input{
-  padding:12px;
-  width:250px;
-  border-radius:8px;
-  border:none;
-  margin:5px;
-}
-
-button{
-  padding:10px 16px;
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
-  font-weight:bold;
-}
-
-.btn-green{background:#16a34a;color:white;}
-.btn-red{background:#ef4444;color:white;}
-.btn-yellow{background:#f59e0b;color:white;}
-.btn-blue{background:#2563eb;color:white;}
-
-.status-valid{color:#00ff88;font-size:22px;margin-top:20px;}
-.status-invalid{color:#ff4444;font-size:22px;margin-top:20px;}
-
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-  gap:16px;
-  margin-top:20px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
 }
 
 .card{
-  background:#1a1d24;
-  padding:20px;
-  border-radius:14px;
-  text-align:left;
+  background:#1f2937;
+  padding:30px;
+  border-radius:20px;
+  width:100%;
+  max-width:420px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.4);
 }
 
-.badge-open{
-  background:#16a34a;
+h1{
+  text-align:center;
+  color:#facc15;
+  margin-bottom:25px;
+}
+
+input{
+  width:100%;
+  padding:12px;
+  margin:8px 0;
+  border-radius:10px;
+  border:none;
+  outline:none;
+}
+
+button{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border:none;
+  border-radius:10px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.btn-primary{background:#2563eb;color:white;}
+.btn-success{background:#16a34a;color:white;}
+.btn-danger{background:#ef4444;color:white;}
+.btn-warning{background:#f59e0b;color:white;}
+
+.status{
+  margin-top:15px;
+  font-weight:600;
+  text-align:center;
+}
+
+.grid{
+  margin-top:20px;
+}
+
+.link-box{
+  background:#111827;
+  padding:15px;
+  border-radius:12px;
+  margin-bottom:10px;
+}
+
+.badge{
   padding:4px 10px;
   border-radius:20px;
   font-size:12px;
 }
 
-.badge-closed{
-  background:#ef4444;
-  padding:4px 10px;
-  border-radius:20px;
-  font-size:12px;
-}
+.open{background:#16a34a;}
+.closed{background:#ef4444;}
 
-.toast{
-  position:fixed;
-  bottom:20px;
-  right:20px;
-  background:#16a34a;
-  padding:12px 20px;
-  border-radius:8px;
-  display:none;
-}
+.hidden{display:none;}
 </style>
 </head>
-
 <body>
-<div class="container">
 
-<h1>Tool Ve Chai V2</h1>
+<div class="card">
 
-<!-- CHECK SECTION -->
-<div id="checkSection" style="display:none">
-  <input id="codeInput" placeholder="Nhập 4 ký tự hoặc full mã">
-  <button class="btn-blue" onclick="checkCode()">CHECK</button>
-  <div id="checkResult"></div>
-</div>
+<h1>Tool Ve Chai V3</h1>
 
-<hr style="margin:40px 0;border:1px solid #222">
-
-<!-- ADMIN LOGIN -->
-<div id="loginSection">
+<!-- LOGIN -->
+<div id="loginBox">
   <input id="email" placeholder="Email">
   <input id="password" type="password" placeholder="Password">
-  <button class="btn-blue" onclick="login()">LOGIN</button>
-  <div id="loginError" style="color:red;margin-top:10px"></div>
+  <button class="btn-primary" onclick="login()">ĐĂNG NHẬP</button>
+  <div id="loginError" class="status"></div>
 </div>
 
-<!-- ADMIN PANEL -->
-<div id="adminSection" style="display:none">
-  <h2>Quản lý Share Link V2</h2>
-  <button class="btn-green" onclick="createLink()">+ Tạo link mới</button>
+<!-- CHECK -->
+<div id="checkBox" class="hidden">
+  <input id="codeInput" placeholder="Nhập mã...">
+  <button class="btn-success" onclick="checkCode()">CHECK</button>
+  <div id="checkResult" class="status"></div>
+</div>
+
+<!-- ADMIN -->
+<div id="adminBox" class="hidden">
+  <hr style="margin:20px 0;border:1px solid #333">
+  <button class="btn-success" onclick="createLink()">+ Tạo Link</button>
   <div class="grid" id="linkGrid"></div>
 </div>
 
 </div>
-
-<div class="toast" id="toast"></div>
 
 <!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -126,7 +124,7 @@ button{
 
 <script>
 const firebaseConfig = {
-  apiKey: "AIzaSyCEL7BDXvmNi2dp1VNpua7b2plpTiTOK3U",
+  apiKey: "YOUR_API_KEY",
   authDomain: "toolvechai.firebaseapp.com",
   projectId: "toolvechai"
 };
@@ -135,71 +133,45 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-/* =========================
-   LINK MODE
-========================= */
+/* ================= AUTH ================= */
 
-const params = new URLSearchParams(window.location.search);
-const linkId = params.get("link");
+auth.onAuthStateChanged(async(user)=>{
+  if(user){
+    document.getElementById("loginBox").classList.add("hidden");
+    document.getElementById("checkBox").classList.remove("hidden");
 
-if(linkId){
-  validateLink(linkId);
-}
-
-async function validateLink(id){
-  const doc = await db.collection("ToolVeChaiV2_links").doc(id).get();
-  const result = document.getElementById("checkResult");
-
-  if(doc.exists && doc.data().isActive){
-    result.innerHTML = `<div class="status-valid">✔ Link hợp lệ</div>`;
-  }else{
-    result.innerHTML = `<div class="status-invalid">✖ Link không hợp lệ</div>`;
+    const doc = await db.collection("users").doc(user.email).get();
+    if(doc.exists && doc.data().role === "admin_v2"){
+      document.getElementById("adminBox").classList.remove("hidden");
+      loadLinks();
+    }
   }
+});
+
+function login(){
+  const email = email.value.trim();
+  const pass = password.value.trim();
+
+  auth.signInWithEmailAndPassword(email,pass)
+  .catch(()=>{
+    document.getElementById("loginError").innerText="Sai tài khoản!";
+  });
 }
 
-/* =========================
-   CHECK
-========================= */
+/* ================= CHECK ================= */
 
 function checkCode(){
   const code = document.getElementById("codeInput").value.trim();
   const result = document.getElementById("checkResult");
 
   if(code.length < 4){
-    result.innerHTML = `<div class="status-invalid">Mã không hợp lệ</div>`;
+    result.innerHTML="❌ Mã không hợp lệ";
   }else{
-    result.innerHTML = `<div class="status-valid">✔ Hợp lệ</div>`;
+    result.innerHTML="✅ Hợp lệ";
   }
 }
 
-/* =========================
-   AUTH
-========================= */
-
-function login(){
-  const email = document.getElementById("email").value.trim();
-  const pass = document.getElementById("password").value.trim();
-
-  auth.signInWithEmailAndPassword(email,pass)
-  .then(async cred=>{
-    const doc = await db.collection("users").doc(email).get();
-    if(!doc.exists || doc.data().role !== "admin_v2"){
-      auth.signOut();
-      document.getElementById("loginError").innerText="Không có quyền!";
-      return;
-    }
-    document.getElementById("loginSection").style.display="none";
-    document.getElementById("adminSection").style.display="block";
-    loadLinks();
-  })
-  .catch(()=>{
-    document.getElementById("loginError").innerText="Sai Gmail hoặc Password!";
-  });
-}
-
-/* =========================
-   ADMIN
-========================= */
+/* ================= ADMIN ================= */
 
 function randomId(){
   return Math.random().toString(36).substring(2,9);
@@ -222,51 +194,29 @@ async function loadLinks(){
   snap.forEach(doc=>{
     const data = doc.data();
     grid.innerHTML+=`
-      <div class="card">
-        <b>ID:</b> ${doc.id}<br><br>
-        <span class="${data.isActive?'badge-open':'badge-closed'}">
+      <div class="link-box">
+        <b>${doc.id}</b><br>
+        <span class="badge ${data.isActive?'open':'closed'}">
           ${data.isActive?'ĐANG MỞ':'ĐÃ KHÓA'}
         </span>
         <br><br>
-        <button class="btn-green" onclick="copyLink('${doc.id}')">Copy</button>
-        <button class="btn-yellow" onclick="resetLink('${doc.id}')">Reset</button>
-        <button class="btn-red" onclick="deleteLink('${doc.id}')">Xóa</button>
+        <button class="btn-warning" onclick="resetLink('${doc.id}')">Reset</button>
+        <button class="btn-danger" onclick="deleteLink('${doc.id}')">Xóa</button>
       </div>
     `;
   });
 }
 
-function copyLink(id){
-  const url = window.location.origin + window.location.pathname + "?link="+id;
-  navigator.clipboard.writeText(url);
-  showToast("Đã copy link");
-}
-
 async function resetLink(id){
-  await db.collection("ToolVeChaiV2_links").doc(id).update({
-    isActive:true
-  });
-  showToast("Đã reset");
+  await db.collection("ToolVeChaiV2_links").doc(id).update({isActive:true});
   loadLinks();
 }
 
 async function deleteLink(id){
   await db.collection("ToolVeChaiV2_links").doc(id).delete();
-  showToast("Đã xóa");
   loadLinks();
 }
-
-/* =========================
-   TOAST
-========================= */
-
-function showToast(msg){
-  const t = document.getElementById("toast");
-  t.innerText = msg;
-  t.style.display="block";
-  setTimeout(()=>t.style.display="none",2000);
-}
-
 </script>
+
 </body>
 </html>
