@@ -277,15 +277,18 @@ auth.onAuthStateChanged(async(user)=>{
 });
 
 function login(){
-  const email=email.value.trim();
-  const pass=password.value.trim();
-  auth.signInWithEmailAndPassword(email,pass)
-  .catch(()=>loginError.innerText="Sai Gmail hoặc Password!");
+  const emailVal = document.getElementById("email").value.trim();
+  const passVal = document.getElementById("password").value.trim();
+
+  document.getElementById("loginError").innerText = "";
+
+  auth.signInWithEmailAndPassword(emailVal, passVal)
+  .catch((error)=>{
+    document.getElementById("loginError").innerText = "Sai tài khoản hoặc mật khẩu!";
+    console.log(error);
+  });
 }
 
-function logout(){
-  auth.signOut();
-}
 
 /* CHECK */
 
