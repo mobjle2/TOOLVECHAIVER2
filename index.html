@@ -185,10 +185,16 @@ function login(){
   const pass = document.getElementById("password").value.trim();
 
   auth.signInWithEmailAndPassword(email,pass)
-  .catch(()=>{
-    document.getElementById("loginError").innerText="Sai tài khoản!";
+  .then(()=>{
+    console.log("Login thành công");
+  })
+  .catch((error)=>{
+    console.log("Lỗi thật:", error.code);
+    console.log("Chi tiết:", error.message);
+    document.getElementById("loginError").innerText = error.message;
   });
 }
+
 
 /* ===== CHECK ===== */
 
