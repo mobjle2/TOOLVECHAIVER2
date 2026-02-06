@@ -43,14 +43,49 @@ button{padding:10px 14px;border:none;border-radius:8px;cursor:pointer;font-weigh
 <hr>
 <h2>Quản lý Link</h2>
 <button onclick="createLink()">+ Tạo Link</button>
+<button onclick="importCodes()" style="background:#f59e0b;margin-left:10px;">
+  IMPORT ALL CODES
+</button>
+
 <div class="grid" id="linkGrid"></div>
 </div>
 
 </div>
+<script src="data.js"></script>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+async function importCodes(){
+  const user = auth.currentUser;
+
+  if(!user){
+    alert("Bạn chưa đăng nhập");
+    return;
+  }
+
+  const userDoc = await db.collection("users").doc(user.email).get();
+
+  if(!userDoc.exists || userDoc.data().role !== "admin"){
+    alert("Bạn không có quyền import");
+    return;
+  }
+
+  if(!confirm("Import toàn bộ codes lên Firestore?")) return;
+
+  for(const item of data){
+    await db.collection("codes").doc(item.code).set({
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      used: false,
+      usedBy: null,
+      usedAt: null,
+      mmc: item.mmc || null,
+      vip: item.vip || null
+    });
+  }
+
+  alert("Import hoàn tất!");
+}
 
 <script>
 const firebaseConfig = {
