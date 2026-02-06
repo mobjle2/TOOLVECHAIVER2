@@ -134,14 +134,19 @@ button{
 <body>
 
 <!-- LOGIN -->
-<div id="loginBox" class="login-box">
-  <h1>Đăng nhập</h1>
-  <input id="email" placeholder="Email">
-  <br><br>
-  <input id="password" type="password" placeholder="Password">
-  <br><br>
-  <button class="btn-blue" onclick="login()">ĐĂNG NHẬP</button>
-  <div id="loginError" style="margin-top:10px;color:#ef4444"></div>
+<div id="loginBox" class="login-wrapper">
+
+  <div class="login-card">
+    <h2>Tool Ve Chai</h2>
+
+    <input id="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
+
+    <button class="btn-blue" onclick="login()">ĐĂNG NHẬP</button>
+
+    <div id="loginError"></div>
+  </div>
+
 </div>
 
 <!-- MAIN -->
