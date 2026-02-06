@@ -185,13 +185,19 @@ function login(){
   const pass = document.getElementById("password").value.trim();
 
   auth.signInWithEmailAndPassword(email,pass)
-  .then(()=>{
-    console.log("Login thành công");
+  .then(async cred=>{
+    const doc = await db.collection("users").doc(email).get();
+    if(!doc.exists || doc.data().role !== "admin_v2"){
+      auth.signOut();
+      document.getElementById("loginError").innerText="Không có quyền!";
+      return;
+    }
+    document.getElementById("loginSection").style.display="none";
+    document.getElementById("adminSection").style.display="block";
+    loadLinks();
   })
-  .catch((error)=>{
-    console.log("Lỗi thật:", error.code);
-    console.log("Chi tiết:", error.message);
-    document.getElementById("loginError").innerText = error.message;
+  .catch(()=>{
+    document.getElementById("loginError").innerText="Sai Gmail hoặc Password!";
   });
 }
 
