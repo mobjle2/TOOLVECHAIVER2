@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tool Ve Chai Dashboard</title>
+<title>Tool Ve Chai</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
@@ -23,29 +23,8 @@ body{
 }
 
 h1{
-  margin-bottom:25px;
   color:#facc15;
-}
-
-.tabs{
-  display:flex;
-  gap:10px;
-  margin-bottom:30px;
-}
-
-.tab-btn{
-  flex:1;
-  padding:12px;
-  border:none;
-  border-radius:8px;
-  background:#1f2937;
-  color:white;
-  cursor:pointer;
-  font-weight:600;
-}
-
-.tab-btn.active{
-  background:#2563eb;
+  margin-bottom:25px;
 }
 
 input{
@@ -55,17 +34,22 @@ input{
   border:1px solid #1f2937;
   background:#111827;
   color:white;
-  margin-bottom:10px;
 }
 
 button{
   cursor:pointer;
   font-weight:600;
+  border:none;
+  border-radius:8px;
 }
 
-.btn-blue{background:#2563eb;color:white;padding:12px 18px;border:none;border-radius:8px;}
-.btn-green{background:#16a34a;color:white;padding:12px 18px;border:none;border-radius:8px;}
-.btn-red{background:#dc2626;color:white;padding:12px 18px;border:none;border-radius:8px;}
+.btn-blue{background:#2563eb;color:white;padding:12px 18px;}
+.btn-green{background:#16a34a;color:white;padding:12px 18px;}
+.btn-red{background:#dc2626;color:white;padding:12px 18px;}
+
+.section{
+  margin-bottom:40px;
+}
 
 .grid{
   display:grid;
@@ -82,15 +66,13 @@ button{
   padding:16px;
   border-radius:12px;
   border:1px solid #1f2937;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
 }
 
 .card-header{
   display:flex;
   justify-content:space-between;
   align-items:center;
+  margin-bottom:10px;
 }
 
 .actions{
@@ -99,16 +81,16 @@ button{
 }
 
 .icon-btn{
-  width:38px;
-  height:38px;
-  border-radius:10px;
-  border:1px solid #1f2937;
+  width:36px;
+  height:36px;
+  border-radius:8px;
   background:#0f172a;
-  color:#94a3b8;
+  border:1px solid #1f2937;
   display:flex;
   align-items:center;
   justify-content:center;
-  transition:0.2s ease;
+  color:#94a3b8;
+  transition:0.2s;
 }
 
 .icon-btn:hover{
@@ -142,40 +124,46 @@ button{
 .closed{background:#f59e0b;}
 
 .hidden{display:none;}
+
 .login-box{
   max-width:400px;
-  margin:100px auto;
+  margin:120px auto;
 }
 </style>
 </head>
 <body>
 
+<!-- LOGIN -->
 <div id="loginBox" class="login-box">
   <h1>Đăng nhập</h1>
   <input id="email" placeholder="Email">
+  <br><br>
   <input id="password" type="password" placeholder="Password">
+  <br><br>
   <button class="btn-blue" onclick="login()">ĐĂNG NHẬP</button>
   <div id="loginError" style="margin-top:10px;color:#ef4444"></div>
 </div>
 
+<!-- MAIN -->
 <div id="mainApp" class="wrapper hidden">
 
   <h1>Tool Ve Chai Check VIP</h1>
 
-  <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('check')">CHECK</button>
-    <button class="tab-btn" id="adminTabBtn" onclick="switchTab('admin')">ADMIN</button>
-    <button class="btn-red" style="margin-left:auto" onclick="logout()">Đăng xuất</button>
+  <!-- CHECK -->
+  <div class="section">
+    <div style="display:flex;gap:10px;">
+      <input id="codeInput" placeholder="Nhập mã..." style="flex:1;">
+      <button class="btn-blue" onclick="checkCode()">CHECK</button>
+      <button class="btn-red" onclick="logout()">Đăng xuất</button>
+    </div>
+
+    <div id="checkResult" style="margin-top:15px;"></div>
   </div>
 
-  <div id="checkTab">
-    <input id="codeInput" placeholder="Nhập mã...">
-    <button class="btn-blue" onclick="checkCode()">CHECK</button>
-    <div id="checkResult" style="margin-top:10px"></div>
-  </div>
-
-  <div id="adminTab" class="hidden">
-    <br>
+  <!-- ADMIN -->
+  <div id="adminSection" class="section hidden">
+    <hr style="border:1px solid #1f2937;margin:30px 0">
+    <h2>Quản lý Link</h2>
     <button class="btn-green" onclick="createLink()">+ Tạo Link</button>
     <br><br>
     <div class="grid" id="linkGrid"></div>
@@ -204,57 +192,43 @@ const db = firebase.firestore();
 
 auth.onAuthStateChanged(async(user)=>{
   if(user){
-    document.getElementById("loginBox").classList.add("hidden");
-    document.getElementById("mainApp").classList.remove("hidden");
+    loginBox.classList.add("hidden");
+    mainApp.classList.remove("hidden");
 
     const doc = await db.collection("users").doc(user.email).get();
-    if(!doc.exists || doc.data().role !== "admin_v2"){
-      document.getElementById("adminTabBtn").style.display="none";
-    }else{
-      document.getElementById("adminTabBtn").style.display="block";
+
+    if(doc.exists && doc.data().role === "admin_v2"){
+      adminSection.classList.remove("hidden");
       loadLinks();
+    }else{
+      adminSection.classList.add("hidden");
     }
 
   }else{
-    document.getElementById("loginBox").classList.remove("hidden");
-    document.getElementById("mainApp").classList.add("hidden");
+    loginBox.classList.remove("hidden");
+    mainApp.classList.add("hidden");
   }
 });
 
 function login(){
-  const email = document.getElementById("email").value.trim();
-  const pass = document.getElementById("password").value.trim();
-
+  const email=email.value.trim();
+  const pass=password.value.trim();
   auth.signInWithEmailAndPassword(email,pass)
-  .catch(()=>{
-    document.getElementById("loginError").innerText="Sai Gmail hoặc Password!";
-  });
+  .catch(()=>loginError.innerText="Sai Gmail hoặc Password!");
 }
 
 function logout(){
   auth.signOut();
 }
 
-function switchTab(tab){
-  document.getElementById("checkTab").classList.toggle("hidden",tab!=="check");
-  document.getElementById("adminTab").classList.toggle("hidden",tab!=="admin");
-
-  document.querySelectorAll(".tab-btn").forEach(btn=>btn.classList.remove("active"));
-  if(tab==="check") document.querySelectorAll(".tab-btn")[0].classList.add("active");
-  else document.querySelectorAll(".tab-btn")[1].classList.add("active");
-}
-
 /* CHECK */
 
 function checkCode(){
-  const code=document.getElementById("codeInput").value.trim();
-  const result=document.getElementById("checkResult");
+  const code=codeInput.value.trim();
   if(code.length<4){
-    result.innerHTML="❌ Mã không hợp lệ";
-    result.style.color="#ef4444";
+    checkResult.innerHTML='<span class="badge closed">Mã không hợp lệ</span>';
   }else{
-    result.innerHTML="✅ Hợp lệ";
-    result.style.color="#22c55e";
+    checkResult.innerHTML='<span class="badge open">Hợp lệ</span>';
   }
 }
 
@@ -275,12 +249,11 @@ async function createLink(){
 
 async function loadLinks(){
   const snap=await db.collection("ToolVeChaiV2_links").get();
-  const grid=document.getElementById("linkGrid");
-  grid.innerHTML="";
+  linkGrid.innerHTML="";
 
   snap.forEach(doc=>{
     const data=doc.data();
-    grid.innerHTML+=`
+    linkGrid.innerHTML+=`
       <div class="card">
         <div class="card-header">
           <b>${doc.id}</b>
@@ -307,8 +280,7 @@ async function loadLinks(){
 }
 
 function copyLink(id){
-  const url=location.origin+location.pathname+"?link="+id;
-  navigator.clipboard.writeText(url);
+  navigator.clipboard.writeText(location.origin+location.pathname+"?link="+id);
 }
 
 async function resetLink(id){
