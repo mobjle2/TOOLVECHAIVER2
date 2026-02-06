@@ -3,15 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tool Ve Chai V3</title>
+<title>Tool Ve Chai Premium</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
+*{box-sizing:border-box}
 body{
   margin:0;
-  font-family:Poppins,sans-serif;
-  background:linear-gradient(135deg,#0f172a,#111827);
+  font-family:Inter,sans-serif;
+  background:linear-gradient(135deg,#0f172a,#1e293b);
   color:white;
   display:flex;
   justify-content:center;
@@ -19,57 +20,82 @@ body{
   min-height:100vh;
 }
 
-.card{
-  background:#1f2937;
-  padding:30px;
-  border-radius:20px;
+.container{
   width:100%;
-  max-width:420px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.4);
+  max-width:480px;
+  padding:30px;
+  background:rgba(255,255,255,0.05);
+  backdrop-filter:blur(20px);
+  border-radius:20px;
+  box-shadow:0 15px 40px rgba(0,0,0,0.5);
 }
 
 h1{
   text-align:center;
-  color:#facc15;
-  margin-bottom:25px;
+  margin-bottom:30px;
+  background:linear-gradient(90deg,#facc15,#f97316);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  font-weight:700;
 }
 
 input{
   width:100%;
-  padding:12px;
-  margin:8px 0;
-  border-radius:10px;
-  border:none;
+  padding:14px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,0.1);
+  background:rgba(255,255,255,0.05);
+  color:white;
+  margin-bottom:12px;
   outline:none;
+  transition:0.3s;
+}
+
+input:focus{
+  border-color:#facc15;
 }
 
 button{
   width:100%;
-  padding:12px;
-  margin-top:10px;
+  padding:14px;
   border:none;
-  border-radius:10px;
+  border-radius:12px;
   font-weight:600;
   cursor:pointer;
+  transition:0.3s;
+  margin-top:8px;
 }
 
-.btn-primary{background:#2563eb;color:white;}
-.btn-success{background:#16a34a;color:white;}
-.btn-danger{background:#ef4444;color:white;}
-.btn-warning{background:#f59e0b;color:white;}
+.btn-primary{
+  background:linear-gradient(90deg,#2563eb,#3b82f6);
+}
+.btn-primary:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 20px rgba(59,130,246,0.4);
+}
+
+.btn-success{
+  background:linear-gradient(90deg,#16a34a,#22c55e);
+}
+.btn-danger{
+  background:linear-gradient(90deg,#dc2626,#ef4444);
+}
+.btn-warning{
+  background:linear-gradient(90deg,#f59e0b,#f97316);
+}
 
 .status{
-  margin-top:15px;
+  margin-top:10px;
   font-weight:600;
   text-align:center;
 }
 
-.grid{
-  margin-top:20px;
+.admin-box{
+  margin-top:25px;
 }
 
-.link-box{
-  background:#111827;
+.link-card{
+  background:rgba(255,255,255,0.05);
   padding:15px;
   border-radius:12px;
   margin-bottom:10px;
@@ -82,16 +108,20 @@ button{
 }
 
 .open{background:#16a34a;}
-.closed{background:#ef4444;}
+.closed{background:#dc2626;}
 
 .hidden{display:none;}
+hr{
+  border:1px solid rgba(255,255,255,0.1);
+  margin:20px 0;
+}
 </style>
 </head>
 <body>
 
-<div class="card">
+<div class="container">
 
-<h1>Tool Ve Chai V3</h1>
+<h1>Tool Ve Chai</h1>
 
 <!-- LOGIN -->
 <div id="loginBox">
@@ -109,10 +139,10 @@ button{
 </div>
 
 <!-- ADMIN -->
-<div id="adminBox" class="hidden">
-  <hr style="margin:20px 0;border:1px solid #333">
+<div id="adminBox" class="admin-box hidden">
+  <hr>
   <button class="btn-success" onclick="createLink()">+ Tạo Link</button>
-  <div class="grid" id="linkGrid"></div>
+  <div id="linkGrid"></div>
 </div>
 
 </div>
@@ -133,7 +163,7 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-/* ================= AUTH ================= */
+/* ===== AUTH STATE ===== */
 
 auth.onAuthStateChanged(async(user)=>{
   if(user){
@@ -148,9 +178,11 @@ auth.onAuthStateChanged(async(user)=>{
   }
 });
 
+/* ===== LOGIN ===== */
+
 function login(){
-  const email = email.value.trim();
-  const pass = password.value.trim();
+  const email = document.getElementById("email").value.trim();
+  const pass = document.getElementById("password").value.trim();
 
   auth.signInWithEmailAndPassword(email,pass)
   .catch(()=>{
@@ -158,7 +190,7 @@ function login(){
   });
 }
 
-/* ================= CHECK ================= */
+/* ===== CHECK ===== */
 
 function checkCode(){
   const code = document.getElementById("codeInput").value.trim();
@@ -166,12 +198,14 @@ function checkCode(){
 
   if(code.length < 4){
     result.innerHTML="❌ Mã không hợp lệ";
+    result.style.color="#ef4444";
   }else{
     result.innerHTML="✅ Hợp lệ";
+    result.style.color="#22c55e";
   }
 }
 
-/* ================= ADMIN ================= */
+/* ===== ADMIN ===== */
 
 function randomId(){
   return Math.random().toString(36).substring(2,9);
@@ -194,8 +228,8 @@ async function loadLinks(){
   snap.forEach(doc=>{
     const data = doc.data();
     grid.innerHTML+=`
-      <div class="link-box">
-        <b>${doc.id}</b><br>
+      <div class="link-card">
+        <b>${doc.id}</b><br><br>
         <span class="badge ${data.isActive?'open':'closed'}">
           ${data.isActive?'ĐANG MỞ':'ĐÃ KHÓA'}
         </span>
