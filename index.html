@@ -154,10 +154,15 @@ hr{
 
 <script>
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
+  apiKey: "AIzaSyCEL7BDXvmNi2dp1VNpua7b2plpTiTOK3U",
   authDomain: "toolvechai.firebaseapp.com",
-  projectId: "toolvechai"
+  projectId: "toolvechai",
+  storageBucket: "toolvechai.firebasestorage.app",
+  messagingSenderId: "947125032083",
+  appId: "1:947125032083:web:a7335aa5fd446a44446966",
+  measurementId: "G-N4W751H36H"
 };
+
 
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
@@ -187,19 +192,24 @@ function login(){
   auth.signInWithEmailAndPassword(email,pass)
   .then(async cred=>{
     const doc = await db.collection("users").doc(email).get();
+
     if(!doc.exists || doc.data().role !== "admin_v2"){
       auth.signOut();
       document.getElementById("loginError").innerText="Không có quyền!";
       return;
     }
-    document.getElementById("loginSection").style.display="none";
-    document.getElementById("adminSection").style.display="block";
+
+    document.getElementById("loginBox").classList.add("hidden");
+    document.getElementById("checkBox").classList.remove("hidden");
+    document.getElementById("adminBox").classList.remove("hidden");
+
     loadLinks();
   })
-  .catch(()=>{
-    document.getElementById("loginError").innerText="Sai Gmail hoặc Password!";
+  .catch((error)=>{
+    document.getElementById("loginError").innerText=error.message;
   });
 }
+
 
 
 /* ===== CHECK ===== */
