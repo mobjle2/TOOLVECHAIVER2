@@ -2,105 +2,246 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Tool Ve Chai Check VIP V2</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tool Ve Chai V2</title>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
-*{box-sizing:border-box;}
-body{font-family:Arial;background:#111;color:white;margin:0;}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Inter,sans-serif;
+  background:#0b0f1a;
+  color:white;
+}
 
-.container{max-width:900px;margin:auto;padding:20px;}
+.wrapper{
+  max-width:1200px;
+  margin:auto;
+  padding:40px 20px;
+}
+
+h1{
+  color:#facc15;
+  margin-bottom:25px;
+}
 
 input{
   width:100%;
-  padding:16px;
-  border-radius:12px;
-  border:1px solid #333;
-  background:#111;
+  padding:14px;
+  border-radius:10px;
+  border:1px solid #1f2937;
+  background:#111827;
   color:white;
-  font-size:16px;
-  margin-top:15px;
 }
 
 button{
-  width:100%;
-  padding:16px;
-  border-radius:12px;
-  border:none;
-  background:#2563eb;
-  color:white;
-  font-weight:bold;
-  font-size:16px;
-  margin-top:15px;
   cursor:pointer;
+  font-weight:600;
+  border:none;
+  border-radius:8px;
 }
 
-.item{
-  background:#1a1a1a;
-  padding:15px;
+.btn-blue{background:#2563eb;color:white;padding:12px 18px;}
+.btn-green{background:#16a34a;color:white;padding:12px 18px;}
+.btn-red{background:#dc2626;color:white;padding:12px 18px;}
+
+.section{
+  margin-bottom:40px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+}
+
+@media(max-width:1024px){
+  .grid{grid-template-columns:repeat(2,1fr);}
+}
+
+.card{
+  background:#111827;
+  padding:16px;
   border-radius:12px;
+  border:1px solid #1f2937;
+}
+
+.card-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:10px;
+}
+
+.actions{
+  display:flex;
+  gap:8px;
+}
+
+.icon-btn{
+  width:36px;
+  height:36px;
+  border-radius:8px;
+  background:#0f172a;
+  border:1px solid #1f2937;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#94a3b8;
+  transition:0.2s;
+}
+
+.icon-btn:hover{
+  background:#1e293b;
+  color:white;
+}
+
+.icon-btn.delete:hover{
+  background:#dc2626;
+  border-color:#dc2626;
+}
+
+.icon-btn.lock:hover{
+  background:#f59e0b;
+  border-color:#f59e0b;
+  color:black;
+}
+
+.icon-btn.copy:hover{
+  background:#2563eb;
+  border-color:#2563eb;
 }
 
 .badge{
-  display:inline-block;
   padding:4px 10px;
   border-radius:20px;
   font-size:12px;
-  margin-top:6px;
-  margin-right:6px;
 }
 
-@media(min-width:900px){
-  #out{grid-template-columns:repeat(3,1fr)!important;}
+.open{background:#16a34a;}
+.closed{background:#f59e0b;}
+
+.hidden{display:none;}
+
+.login-box{
+  max-width:400px;
+  margin:120px auto;
+}
+.login-container{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(135deg,#0b1220,#1e293b);
 }
 
-.mmc-badge{background:#0ea5e9;color:white;}
-.vip-8{background:#7c3aed;color:white;}
-.vip-9{background:#06b6d4;color:white;}
-.vip-10{background:#FFD700;color:black;}
-.vip-5{background:#facc15;color:black;}
-.vip-6{background:#fb923c;color:black;}
-.vip-7{background:#ef4444;color:white;}
-.vip-11{background:#ff0000;color:white;}
-.vip-12{background:#990000;color:white;}
-.vip-13{background:#5b0000;color:white;}
+.login-card{
+  width:420px;
+  padding:45px;
+  border-radius:20px;
+  background:#1f2937;
+  border:1px solid #2d3748;
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+  box-shadow:0 25px 60px rgba(0,0,0,0.6);
+}
+
+.login-card h2{
+  text-align:center;
+  font-size:26px;
+  color:#facc15;
+  margin-bottom:10px;
+}
+
+.login-card input{
+  padding:14px;
+  border-radius:12px;
+  border:1px solid #374151;
+  background:#111827;
+  color:white;
+  font-size:14px;
+}
+
+.login-btn{
+  padding:14px;
+  border-radius:12px;
+  border:none;
+  font-weight:700;
+  background:linear-gradient(135deg,#2563eb,#3b82f6);
+  color:white;
+  transition:0.2s;
+}
+
+.login-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 25px rgba(59,130,246,0.4);
+}
+
+#loginError{
+  color:#ef4444;
+  text-align:center;
+  font-size:14px;
+}
+
 </style>
 </head>
-
 <body>
 
-<div id="loginScreen" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000;display:flex;justify-content:center;align-items:center;z-index:9999;">
-  <div style="width:360px;background:#111;padding:30px;border-radius:20px;border:1px solid gold;">
-    <h2 style="text-align:center;color:gold;">🔐 Tool Ve Chai Admin V2</h2>
-    <input id="loginEmail" type="email" placeholder="Nhập Gmail">
-    <input id="loginPass" type="password" placeholder="Nhập Password">
-    <button onclick="secureLogin()">LOGIN</button>
-    <div id="loginError" style="color:red;text-align:center;margin-top:10px;"></div>
-  </div>
-</div>
+<!-- LOGIN -->
+<div id="loginBox" class="login-container">
 
-<div class="container">
-  <h2>🛠 Tool Ve Chai Check VIP V2</h2>
+  <div class="login-card">
+    <h2>Tool Ve Chai V2</h2>
 
-  <input id="q" placeholder="Nhập 4 ký tự hoặc full mã">
-  <button onclick="check()">CHECK</button>
+    <input id="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
 
-  <div style="margin-top:20px;padding:15px;border-radius:12px;background:#1a1a1a;text-align:center;">
-    ⚠ Tool chỉ mang tính tham khảo.
-    <br>
-    💳 Vietcombank | Nguyen Minh Trung
-    <br>
-    STK: 9907373199
+    <button class="login-btn" onclick="login()">ĐĂNG NHẬP</button>
+
+    <div id="loginError"></div>
   </div>
 
-  <div id="out" style="margin-top:20px;display:grid;grid-template-columns:repeat(2,1fr);gap:15px;"></div>
 </div>
+
+
+<!-- MAIN -->
+<div id="mainApp" class="wrapper hidden">
+
+  <h1>Tool Ve Chai V2 Check VIP</h1>
+
+  <!-- CHECK -->
+  <div class="section">
+    <div style="display:flex;gap:10px;">
+      <input id="codeInput" placeholder="Nhập mã..." style="flex:1;">
+      <button class="btn-blue" onclick="checkCode()">CHECK</button>
+      <button class="btn-red" onclick="logout()">Đăng xuất</button>
+    </div>
+
+    <div id="checkResult" style="margin-top:15px;"></div>
+  </div>
+
+  <!-- ADMIN -->
+  <div id="adminSection" class="section hidden">
+    <hr style="border:1px solid #1f2937;margin:30px 0">
+    <h2>Quản lý Link</h2>
+    <button class="btn-green" onclick="createLink()">+ Tạo Link</button>
+    <br><br>
+    <div class="grid" id="linkGrid"></div>
+  </div>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
 
 <script>
+
 const firebaseConfig = {
   apiKey: "AIzaSyCEL7BDXvmNi2dp1VNpua7b2plpTiTOK3U",
   authDomain: "toolvechai.firebaseapp.com",
@@ -110,87 +251,117 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
+  const auth = firebase.auth();
 
-auth.setPersistence(firebase.auth.Auth.Persistence.NONE);
 
-function secureLogin(){
-  const email = loginEmail.value.trim();
-  const pass = loginPass.value.trim();
+/* AUTH */
 
-  auth.signInWithEmailAndPassword(email, pass)
-    .then(async (cred)=>{
-      const doc = await db.collection("users").doc(cred.user.email).get();
-      if(!doc.exists || doc.data().role !== "admin_v2"){
-        await auth.signOut();
-        loginError.innerText="Không có quyền!";
-        return;
-      }
-      loginScreen.remove();
-    })
-    .catch(()=>loginError.innerText="Sai Gmail hoặc Password!");
-}
+auth.onAuthStateChanged(async(user)=>{
+  if(user){
+    loginBox.classList.add("hidden");
+    mainApp.classList.remove("hidden");
 
-auth.onAuthStateChanged(user=>{
-  if(user) loginScreen.remove();
-});
+    const doc = await db.collection("users").doc(user.email).get();
 
-const mmcMap={
- MMC1:"16G",MMC2:"32G",MMC3:"64G",
- MMC4:"128G",MMC5:"256G",MMC6:"512G"
-};
-
-function detectChip(code){
-  code=code.toUpperCase();
-  if(code.startsWith("KM")) return "SAMSUNG";
-  if(code.startsWith("H")) return "SK hynix";
-  if(code.startsWith("JZ")) return "MICRON";
-  if(code.startsWith("THG")) return "KIOXIA";
-  if(code.startsWith("SD")) return "SANDISK";
-  return "UNKNOWN";
-}
-
-async function check(){
-  const key=document.getElementById("q").value
-    .toUpperCase().replace(/[^A-Z0-9]/g,"");
-
-  const out=document.getElementById("out");
-  out.innerHTML="";
-  if(!key) return;
-
-  let results=new Map();
-
-  if(key.length===4){
-    const p=await db.collection("codes_v2").where("prefix4","==",key).get();
-    const s=await db.collection("codes_v2").where("suffix4","==",key).get();
-    p.forEach(d=>results.set(d.id,d.data()));
-    s.forEach(d=>results.set(d.id,d.data()));
-  }else{
-    const snap=await db.collection("codes_v2").where("search","==",key).get();
-    snap.forEach(d=>results.set(d.id,d.data()));
-  }
-
-  if(results.size===0){
-    out.innerHTML="❌ Không xác định mã";
-    return;
-  }
-
-  results.forEach(x=>{
-    let vipClass="";
-    if(x.vip){
-      const num=x.vip.replace(/[^0-9]/g,"");
-      vipClass="vip-"+num;
+    if(doc.exists && doc.data().role === "admin_v2"){
+      adminSection.classList.remove("hidden");
+      loadLinks();
+    }else{
+      adminSection.classList.add("hidden");
     }
 
-    out.innerHTML+=`
-      <div class="item">
-        <div style="font-weight:700;">⚡ ${x.code}</div>
-        <div class="badge">${detectChip(x.code)}</div>
-        ${x.mmc?`<div class="badge mmc-badge">💾 ${x.mmc} (${mmcMap[x.mmc]||""})</div>`:""}
-        ${x.vip?`<div class="badge ${vipClass}">👑 ${x.vip}</div>`:""}
+  }else{
+    loginBox.classList.remove("hidden");
+    mainApp.classList.add("hidden");
+  }
+});
+
+function login(){
+  const emailVal = document.getElementById("email").value.trim();
+  const passVal = document.getElementById("password").value.trim();
+
+  document.getElementById("loginError").innerText = "";
+
+  auth.signInWithEmailAndPassword(emailVal, passVal)
+  .catch((error)=>{
+    document.getElementById("loginError").innerText = "Sai tài khoản hoặc mật khẩu!";
+    console.log(error);
+  });
+}
+
+
+/* CHECK */
+
+function checkCode(){
+  const code=codeInput.value.trim();
+  if(code.length<4){
+    checkResult.innerHTML='<span class="badge closed">Mã không hợp lệ</span>';
+  }else{
+    checkResult.innerHTML='<span class="badge open">Hợp lệ</span>';
+  }
+}
+
+/* ADMIN */
+
+function randomId(){
+  return Math.random().toString(36).substring(2,9);
+}
+
+async function createLink(){
+  const id=randomId();
+  await db.collection("ToolVeChaiV2_links").doc(id).set({
+    isActive:true,
+    createdAt:firebase.firestore.FieldValue.serverTimestamp()
+  });
+  loadLinks();
+}
+
+async function loadLinks(){
+  const snap=await db.collection("ToolVeChaiV2_links").get();
+  linkGrid.innerHTML="";
+
+  snap.forEach(doc=>{
+    const data=doc.data();
+    linkGrid.innerHTML+=`
+      <div class="card">
+        <div class="card-header">
+          <b>${doc.id}</b>
+          <div class="actions">
+            <button class="icon-btn copy" onclick="copyLink('${doc.id}')">
+              <i data-lucide="copy"></i>
+            </button>
+            <button class="icon-btn lock" onclick="resetLink('${doc.id}')">
+              <i data-lucide="lock"></i>
+            </button>
+            <button class="icon-btn delete" onclick="deleteLink('${doc.id}')">
+              <i data-lucide="trash-2"></i>
+            </button>
+          </div>
+        </div>
+        <span class="badge ${data.isActive?'open':'closed'}">
+          ${data.isActive?'Đang mở':'Đang khóa'}
+        </span>
       </div>
     `;
   });
+
+  lucide.createIcons();
 }
+
+function copyLink(id){
+  navigator.clipboard.writeText(location.origin+location.pathname+"?link="+id);
+}
+
+async function resetLink(id){
+  await db.collection("ToolVeChaiV2_links").doc(id).update({isActive:true});
+  loadLinks();
+}
+
+async function deleteLink(id){
+  await db.collection("ToolVeChaiV2_links").doc(id).delete();
+  loadLinks();
+}
+
 </script>
 
 </body>
