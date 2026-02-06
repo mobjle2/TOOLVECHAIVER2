@@ -205,10 +205,16 @@ function login(){
 
     loadLinks();
   })
-  .catch((error)=>{
-    document.getElementById("loginError").innerText=error.message;
-  });
-}
+ .catch((error)=>{
+  if(error.code === "auth/wrong-password" || 
+     error.code === "auth/user-not-found" ||
+     error.code === "auth/invalid-login-credentials"){
+        document.getElementById("loginError").innerText="Sai Gmail hoặc Password!";
+  }else{
+        document.getElementById("loginError").innerText="Lỗi hệ thống, thử lại!";
+  }
+});
+
 
 
 
