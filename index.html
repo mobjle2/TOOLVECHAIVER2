@@ -205,32 +205,25 @@ auth.onAuthStateChanged(async(user)=>{
 function login(){
   const email = document.getElementById("email").value.trim();
   const pass = document.getElementById("password").value.trim();
+  const errorBox = document.getElementById("loginError");
+
+  errorBox.innerText = "";
 
   auth.signInWithEmailAndPassword(email,pass)
-  .then(async cred=>{
-    const doc = await db.collection("users").doc(email).get();
-
-    if(!doc.exists || doc.data().role !== "admin_v2"){
-      auth.signOut();
-      document.getElementById("loginError").innerText="Không có quyền!";
-      return;
+  .catch((error)=>{
+    if(
+      error.code === "auth/wrong-password" ||
+      error.code === "auth/user-not-found" ||
+      error.code === "auth/invalid-login-credentials"
+    ){
+      errorBox.innerText = "Sai Gmail hoặc Password!";
+    }else{
+      errorBox.innerText = "Lỗi hệ thống!";
+      console.log(error);
     }
+  });
+}
 
-    document.getElementById("loginBox").classList.add("hidden");
-    document.getElementById("checkBox").classList.remove("hidden");
-    document.getElementById("adminBox").classList.remove("hidden");
-
-    loadLinks();
-  })
- .catch((error)=>{
-  if(error.code === "auth/wrong-password" || 
-     error.code === "auth/user-not-found" ||
-     error.code === "auth/invalid-login-credentials"){
-        document.getElementById("loginError").innerText="Sai Gmail hoặc Password!";
-  }else{
-        document.getElementById("loginError").innerText="Lỗi hệ thống, thử lại!";
-  }
-});
 
 
 
