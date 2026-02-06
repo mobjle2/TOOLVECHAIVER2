@@ -171,17 +171,34 @@ const db = firebase.firestore();
 /* ===== AUTH STATE ===== */
 
 auth.onAuthStateChanged(async(user)=>{
+
+  const loginBox = document.getElementById("loginBox");
+  const checkBox = document.getElementById("checkBox");
+  const adminBox = document.getElementById("adminBox");
+
   if(user){
-    document.getElementById("loginBox").classList.add("hidden");
-    document.getElementById("checkBox").classList.remove("hidden");
+
+    loginBox.classList.add("hidden");
+    checkBox.classList.remove("hidden");
 
     const doc = await db.collection("users").doc(user.email).get();
+
     if(doc.exists && doc.data().role === "admin_v2"){
-      document.getElementById("adminBox").classList.remove("hidden");
+      adminBox.classList.remove("hidden");
       loadLinks();
+    }else{
+      adminBox.classList.add("hidden");
     }
+
+  }else{
+    // Khi chưa login
+    loginBox.classList.remove("hidden");
+    checkBox.classList.add("hidden");
+    adminBox.classList.add("hidden");
   }
+
 });
+
 
 /* ===== LOGIN ===== */
 
