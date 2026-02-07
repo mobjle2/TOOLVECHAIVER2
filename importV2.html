@@ -1,68 +1,130 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Import Codes V2</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    body{
+      font-family:Arial;
+      background:#0b0b0b;
+      color:#f1f5f9;
+      padding:40px;
+    }
+    button{
+      padding:12px 22px;
+      font-size:16px;
+      font-weight:700;
+      border:none;
+      border-radius:10px;
+      cursor:pointer;
+      background:#22c55e;
+      color:black;
+    }
+    #log{
+      margin-top:20px;
+      font-size:14px;
+      line-height:1.6;
+      white-space:pre-wrap;
+    }
+  </style>
 </head>
 <body>
-  <h2>Import Codes V2</h2>
-  <button onclick="importCodes()">🚀 Import Codes</button>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<h2>🚀 Import Codes V2</h2>
+<p>Data đã nhúng sẵn từ <b>data.js</b>. Chỉ cần bấm chạy.</p>
 
-  <script>
-    // 🔥 Firebase config (đúng project của bạn)
-    const firebaseConfig = {
-      apiKey: "AIzaSyClXx0V66GQHKGO0EwQc0nYNguFLc705A0",
-      authDomain: "toolvechaiver2.firebaseapp.com",
-      projectId: "toolvechaiver2",
-      storageBucket: "toolvechaiver2.appspot.com",
-      messagingSenderId: "855001765940",
-      appId: "1:855001765940:web:0a562c54618377aaae5261"
-    };
+<button onclick="startImport()">IMPORT NGAY</button>
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+<div id="log"></div>
 
-    // 🔽 DATA IMPORT (SỬA CHỖ NÀY)
-    const DATA = [
-      { code: "08-08-3CV100", type: "VIP", value: "VIP 1" },
-      { code: "H26M52103FMR", type: "MMC", value: "MMC1" }
-      // thêm code ở đây
-    ];
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
-    // 🧠 Chuẩn hóa mã
-    function normalize(code) {
-      return code.toUpperCase().replace(/[^A-Z0-9]/g, "");
+<!-- DATA -->
+<script src="./data.js"></script>
+
+<script>
+/* ================= FIREBASE CONFIG ================= */
+const firebaseConfig = {
+  apiKey: "AIzaSyClXx0V66GQHKGO0EwQc0nYNguFLc705A0",
+  authDomain: "toolvechaiver2.firebaseapp.com",
+  projectId: "toolvechaiver2",
+  storageBucket: "toolvechaiver2.firebasestorage.app",
+  messagingSenderId: "855001765940",
+  appId: "1:855001765940:web:0a562c54618377aaae5261"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+/* ================= UTIL ================= */
+function log(msg){
+  document.getElementById("log").innerText += msg + "\n";
+}
+
+function normalize(code){
+  return code.toUpperCase().replace(/[^A-Z0-9]/g,"");
+}
+
+/* ================= IMPORT ================= */
+async function startImport(){
+  if(!Array.isArray(data)){
+    alert("❌ Không tìm thấy data.js");
+    return;
+  }
+
+  log("🔄 Bắt đầu import...");
+  let count = 0;
+
+  for(const item of data){
+    if(!item.code) continue;
+
+    const full = normalize(item.code);
+    const head4 = full.slice(0,4);
+    const tail4 = full.slice(-4);
+
+    let type = "";
+    let value = "";
+
+    if(item.vip){
+      type = "VIP";
+      value = item.vip;
+    }else if(item.mmc){
+      type = "MMC";
+      value = item.mmc;
+    }else{
+      continue;
     }
 
-    async function importCodes() {
-      for (const item of DATA) {
-        const full = normalize(item.code);
-        const head4 = full.slice(0, 4);
-        const tail4 = full.slice(-4);
+    const docId = item.code; // doc.id = mã gốc
 
-        const docId = item.code; // doc.id = mã gốc
+    try{
+      await db.collection("codes").doc(docId).set({
+        code: item.code,
+        full: full,
+        head4: head4,
+        tail4: tail4,
+        type: type,
+        value: value,
+        used: "no",
+        usedAt: "",
+        usedBy: ""
+      });
 
-        await db.collection("codes").doc(docId).set({
-          code: item.code,
-          full: full,
-          head4: head4,
-          tail4: tail4,
-          type: item.type,
-          value: item.value,
-          used: "no",
-          usedAt: "",
-          usedBy: ""
-        });
-
-        console.log("Imported:", docId);
-      }
-
-      alert("✅ Import xong codes V2");
+      count++;
+      log("✅ Imported: " + docId);
+    }catch(e){
+      log("❌ Lỗi: " + docId);
+      console.error(e);
     }
-  </script>
+  }
+
+  log("🎉 HOÀN TẤT: " + count + " codes");
+  alert("✅ Import xong " + count + " codes");
+}
+</script>
+
 </body>
 </html>
