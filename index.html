@@ -659,8 +659,8 @@ async function runUserMode(id){
     const ref = db.collection("shareLinks").doc(id);
     const doc = await ref.get();
 
-    // delay ngụy trang ~1.8s
-    await new Promise(r => setTimeout(r, 600));
+    // delay ngụy trang ~0.6s
+    await new Promise(r => setTimeout(r, 30));
 
     // link không tồn tại
     if(!doc.exists){
