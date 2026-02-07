@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tool Ve Chai V1</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<style>
+body{
+  font-family:Arial;
+  background:#0b0b0b;
+  color:white;
+}
+
+/* ===== GRID ===== */
+/* ===== DASHBOARD GRID ===== */
+
+.result-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;               /* sát vừa đẹp */
+  margin-top:30px;
+}
+
+
+
+/* Laptop */
+@media(max-width:1280px){
+  .result-grid{
+    grid-template-columns:repeat(3,1fr);
+  }
+}
+
+/* Tablet */
+@media(max-width:1024px){
+  .result-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
+/* Mobile */
+@media(max-width:640px){
+  .result-grid{
+    grid-template-columns:repeat(2,1fr);
+    gap:16px;
+  }
+}
+
+
+
+
+
+
+.result-card:hover{
+  border-color:#facc15;
+  transform:translateY(-4px);
+}
+
+/* ===== BRAND ===== */
+.brand{
+  color:#22c55e;
+  font-size:13px;
+  margin-top:8px;
+}
+
+/* ===== VIP BADGE ===== */
+.vip-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:6px 14px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:700;
+  background:#1e293b;
+}
+
+
+
+.link-card{
+  background:#141414;
+  border:1px solid #222;
+  border-radius:14px;
+  padding:14px 18px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+  transition:0.2s;
+}
+
+.link-card:hover{
+  border-color:#2563eb;
+  transform:translateY(-2px);
+}
+
+.link-id{
+  font-weight:600;
+  font-size:14px;
+}
+
+.link-status{
+  margin-top:6px;
+  font-size:12px;
+  padding:4px 10px;
+  border-radius:999px;
+  display:inline-block;
+}
+
+.link-status.open{
+  background:#16a34a22;
+  color:#22c55e;
+}
+
+.link-status.lock{
+  background:#facc1522;
+  color:#facc15;
+}
+
+.link-actions{
+  display:flex;
+  gap:8px;
+}
+
+.icon-btn{
+  border:none;
+  background:#1f1f1f;
+  padding:8px 10px;
+  border-radius:10px;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.icon-btn:hover{
+  background:#2563eb;
+  color:white;
+}
+
+.icon-btn.delete:hover{
+  background:#dc2626;
+}
+#linkList{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:14px;
+}
+
+@media(max-width:768px){
+  #linkList{
+    grid-template-columns:1fr;
+  }
+}
+.loading{
+  text-align:center;
+  margin-top:20px;
+  font-size:14px;
+  color:#facc15;
+  letter-spacing:1px;
+}
+
+.dots::after{
+  content:'';
+  animation:dots 1.2s infinite;
+}
+
+@keyframes dots{
+  0%{content:'';}
+  33%{content:'.';}
+  66%{content:'..';}
+  100%{content:'...';}
+}
+/* ===== STYLE GIỐNG ẢNH ĐẸP ===== */
+.result-card{
+  background:linear-gradient(145deg,#0f172a,#111827);
+  border-radius:22px;
+  padding:20px;
+  border:1px solid rgba(255,255,255,0.06);
+  transition:all 0.25s ease;
+  box-shadow:
+    0 8px 25px rgba(0,0,0,0.5),
+    inset 0 0 0 1px rgba(255,255,255,0.03);
+}
+
+.result-card:hover{
+  transform:translateY(-5px);
+  border-color:#2563eb;
+  box-shadow:
+    0 20px 45px rgba(37,99,235,0.25),
+    0 0 0 1px rgba(37,99,235,0.3);
+}
+
+
+}
+
+
+
+
+.vip-8{
+  background:linear-gradient(90deg,#6d28d9,#a855f7);
+  color:white;
+}
+
+.vip-9{
+  background:linear-gradient(90deg,#06b6d4,#0ea5e9);
+  color:white;
+}
+
+.vip-10{
+  background:linear-gradient(90deg,#FFD700,#ffcc00,#FFD700);
+  color:black;
+}
+
+.vip-5{ background:#facc15; color:black; }
+.vip-6{ background:linear-gradient(90deg,#facc15,#fb923c); color:black; }
+.vip-7{ background:linear-gradient(90deg,#fb923c,#ef4444); color:white; }
+.vip-11{ background:linear-gradient(90deg,#ff4d00,#ff0000); color:white; }
+.vip-13{ background:linear-gradient(90deg,#5b0000,#ff0000,#5b0000); color:white; }
+
+@media(max-width:768px){
+  .result-card{
+    padding:16px;
+  }
+  .badge{
+    font-size:11px;
+    padding:5px 14px;
+  }
+}
+/* ================= CLEAN LOGIN FINAL ================= */
+
+.login-wrapper{
+  position:fixed;
+  inset:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(59,130,246,0.25), transparent 40%),
+    linear-gradient(160deg,#020617,#0f172a);
+  z-index:9999;
+}
+
+.login-box{
+  width:420px;
+  padding:60px 45px;
+  border-radius:24px;
+  background:rgba(15,23,42,0.9);
+  backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,0.05);
+  box-shadow:0 50px 120px rgba(0,0,0,0.8);
+  text-align:center;
+}
+
+.login-title{
+  font-family:'Poppins',sans-serif;
+  font-size:42px;
+  font-weight:800;
+  margin-bottom:50px;
+  letter-spacing:2px;
+  background:linear-gradient(90deg,#f59e0b,#fbbf24);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+/* INPUT */
+.input-group{
+  position:relative;
+  margin-bottom:25px;
+}
+
+.input-group input{
+  width:100%;
+  height:56px;
+  padding:0 55px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,0.08);
+  background:#0b1220;
+  color:white;
+  font-size:15px;
+  box-sizing:border-box;
+  transition:0.3s ease;
+}
+
+.input-group input::placeholder{
+  color:#64748b;
+}
+
+.input-group input:focus{
+  border-color:#2563eb;
+  box-shadow:0 0 0 3px rgba(37,99,235,0.25);
+  outline:none;
+}
+
+/* ICON LEFT */
+.input-icon{
+  position:absolute;
+  left:18px;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:18px;
+  color:#facc15;
+}
+
+/* ICON RIGHT */
+.toggle-pass{
+  position:absolute;
+  right:18px;
+  top:50%;
+  transform:translateY(-50%);
+  cursor:pointer;
+  font-size:18px;
+  color:#cbd5e1;
+  transition:0.2s ease;
+}
+
+.toggle-pass:hover{
+  color:#facc15;
+  transform:translateY(-50%) scale(1.1);
+}
+
+/* BUTTON */
+.login-box button{
+  width:100%;
+  height:56px;
+  border:none;
+  border-radius:16px;
+  background:linear-gradient(90deg,#2563eb,#3b82f6);
+  font-weight:700;
+  font-size:16px;
+  cursor:pointer;
+  transition:0.3s ease;
+  box-shadow:0 15px 35px rgba(37,99,235,0.4);
+}
+
+.login-box button:hover{
+  transform:translateY(-3px);
+  box-shadow:0 20px 45px rgba(37,99,235,0.6);
+}
+
+/* ERROR */
+.login-error{
+  margin-top:15px;
+  color:#f87171;
+  font-weight:600;
+  display:none;
+}
+
+
+
+
+/* ===== CARD FOOTER GỌN ĐẸP ===== */
+
+.card-footer{
+  margin-top:14px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.chip-info{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:14px;
+  font-weight:500;
+  color:#22c55e;
+}
+
+.chip-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+}
+
+.vip-badge{
+  padding:6px 14px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:600;
+}
+.code-title{
+  font-size:17px;
+  font-weight:700;
+  margin-bottom:8px;
+}
+
+.chip-vip-line{
+  display:flex;
+  align-items:center;
+  gap:18px;   /* khoảng cách giữa chip và vip */
+}
+
+.result-card{
+  width:fit-content;   /* card co theo nội dung */
+}
+/* ================= MOBILE OPTIMIZE ================= */
+@media(max-width:640px){
+
+  /* Main container */
+  .main-container{
+    padding:20px 15px !important;
+  }
+
+  /* Login box */
+  .login-box{
+    width:90%;
+    padding:30px 20px;
+    border-radius:18px;
+  }
+
+  .login-title{
+    font-size:26px;
+    margin-bottom:20px;
+  }
+
+  .login-box input{
+    height:46px;
+    font-size:14px;
+  }
+
+  .login-box button{
+    height:46px;
+    font-size:14px;
+  }
+
+  /* Dashboard cards */
+  .result-grid{
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+  }
+
+  .result-card{
+    padding:14px;
+    border-radius:16px;
+  }
+
+  .code-title{
+    font-size:14px;
+  }
+
+  .chip-vip-line{
+    font-size:13px;
+    gap:10px;
+  }
+
+  .vip-badge{
+    font-size:12px;
+    padding:3px 8px;
+  }
+
+}
+/* Desktop container */
+.main-container{
+  padding:40px 60px;
+  max-width:1400px;
+  margin:auto;
+}
+ /* ===== CREATE LINK BUTTON PRO ===== */
+
+.create-link-btn{
+  padding:8px 18px;
+  border-radius:999px;
+  border:1px solid rgba(34,197,94,0.4);
+  background:rgba(34,197,94,0.15);
+  color:#22c55e;
+  font-size:14px;
+  font-weight:600;
+  cursor:pointer;
+  transition:0.3s ease;
+}
+
+.create-link-btn:hover{
+  background:#22c55e;
+  color:black;
+  box-shadow:0 8px 20px rgba(34,197,94,0.4);
+}
+ 
+/* ===== CHECK INPUT INLINE BUTTON ===== */
+
+.check-group{
+  position:relative;
+  margin-top:15px;
+}
+
+.check-group input{
+  width:100%;
+  height:56px;
+  padding:0 120px 0 20px;
+  border-radius:14px;
+  border:1px solid #222;
+  background:#0f0f0f;
+  color:white;
+  font-size:15px;
+  box-sizing:border-box;
+  transition:0.3s;
+}
+
+.check-group input:focus{
+  border-color:#2563eb;
+  box-shadow:0 0 0 3px rgba(37,99,235,0.25);
+  outline:none;
+}
+
+.check-group button{
+  position:absolute;
+  right:6px;
+  top:50%;
+  transform:translateY(-50%);
+  height:44px;
+  padding:0 25px;
+  border:none;
+  border-radius:10px;
+  background:linear-gradient(90deg,#2563eb,#3b82f6);
+  color:white;
+  font-weight:700;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.check-group button:hover{
+  transform:translateY(-50%) scale(1.05);
+  box-shadow:0 8px 20px rgba(37,99,235,0.4);
+}
+
+
+</style>
+
+</head>
+
+<body>
+
+<!-- LOGIN SCREEN -->
+<!-- LOGIN SCREEN -->
+<div id="loginScreen" class="login-wrapper">
+  <div class="login-box">
+    <h1 class="login-title">Tool Ve Chai</h1>
+
+    <!-- USER -->
+    <div class="input-group">
+      <span class="input-icon">👤</span>
+      <input id="loginEmail" type="email" placeholder="USER">
+    </div>
+
+    <!-- PASS -->
+    <div class="input-group">
+      <span class="input-icon">🔒</span>
+      <input id="loginPass" type="password" placeholder="PASS">
+      <span class="toggle-pass" onclick="togglePassword()">👁</span>
+    </div>
+
+    <button onclick="secureLogin()">ĐĂNG NHẬP</button>
+
+    <div id="loginError" class="login-error">Sai tài khoản!</div>
+  </div>
+</div>
+
+
+
+<div class="main-container">
+  <h2>🛠 Tool Ve Chai Check VIP</h2>
+
+ <div class="check-group">
+
+  <input id="q"
+         placeholder="Nhập mã cần kiểm tra"
+         autocomplete="off">
+
+  <button onclick="check()">CHECK</button>
+
+</div>
+
+
+
+
+  <!-- ADMIN PANEL -->
+  <div id="adminPanel" style="display:none;margin-top:30px;">
+    <hr style="margin:20px 0;">
+    <h3>🔗 Quản lý Link</h3>
+
+    <button class="create-link-btn" onclick="createLink()">
+  ➕ Tạo link mới
+   </button>
+
+
+    <div id="linkList" style="margin-top:15px;"></div>
+  </div>
+
+  <div id="out" style="margin-top:20px;"></div>
+</div>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCEL7BDXvmNi2dp1VNpua7b2plpTiTOK3U",
+  authDomain: "toolvechai.firebaseapp.com",
+  projectId: "toolvechai"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+auth.setPersistence(firebase.auth.Auth.Persistence.NONE);
+
+// ===== USER MODE (?u=) =====
+const params = new URLSearchParams(window.location.search);
+const userParam = params.get("u");
+
+if(userParam){
+  runUserMode(userParam);
+}
+async function runUserMode(id){
+  try{
+    const doc = await db.collection("shareLinks").doc(id).get();
+
+    if(!doc.exists){
+      document.body.innerHTML = "❌ Link không tồn tại!";
+      return;
+    }
+
+    if(!doc.data().active){
+      document.body.innerHTML = "🔒 Link đã bị khóa!";
+      return;
+    }
+
+    // Ẩn login nếu có
+    const login = document.getElementById("loginScreen");
+    if(login) login.style.display = "none";
+
+    // Ẩn admin panel nếu có
+    const admin = document.getElementById("adminPanel");
+    if(admin) admin.style.display = "none";
+
+    // Không cần auth ở user mode
+    auth.signOut();
+
+  }catch(e){
+    console.error(e);
+    document.body.innerHTML = "❌ Lỗi quyền truy cập!";
+  }
+}
+function detectChip(code){
+  code = code.toUpperCase();
+
+  if(code.startsWith("KM")||code.startsWith("KLM")||code.startsWith("KLU"))
+    return {name:"SAMSUNG",color:"#22c55e"};
+
+  if(code.startsWith("H9")||code.startsWith("H26")||code.startsWith("H5"))
+    return {name:"SK hynix",color:"#a855f7"};
+
+  if(code.startsWith("MT")||code.startsWith("JZ"))
+    return {name:"MICRON",color:"#0ea5e9"};
+
+  if(code.startsWith("THG"))
+    return {name:"KIOXIA",color:"#f97316"};
+
+  if(code.startsWith("SD")||code.startsWith("WDC"))
+    return {name:"SANDISK / WD",color:"#ef4444"};
+
+  return {name:"UNKNOWN",color:"#6b7280"};
+}
+
+async function check(){
+  try{
+    const key = document.getElementById("q").value.trim().toUpperCase();
+    const out = document.getElementById("out");
+
+    if(!key) return;
+
+    // HIỆN LOADING TRƯỚC
+    out.innerHTML = `
+      <div class="loading">
+        🔎 Đang quét dữ liệu<span class="dots"></span>
+      </div>
+    `;
+
+    // Delay 800ms cho nhìn pro
+    await new Promise(resolve => setTimeout(resolve, 800));
+
+
+    const snap = await db.collection("codes").get();
+    let found = false;
+
+    let html = '<div class="result-grid">';
+
+    snap.forEach(doc=>{
+      const x = doc.data();
+      const codeValue = (x.code || "").toUpperCase();
+
+      if(codeValue.includes(key)){
+        found = true;
+
+     const chip = detectChip(x.code);
+const vipNumber = x.vip.replace("VIP ","");
+
+html+=`
+<div class="result-card">
+
+  <div class="code-title">
+    ⚡ ${x.code}
+  </div>
+
+  <div class="chip-vip-line">
+    <div class="chip-info" style="color:${chip.color}">
+      <span class="chip-dot" style="background:${chip.color};"></span>
+      ${chip.name}
+    </div>
+
+    <div class="vip-badge vip-${vipNumber}">
+      👑 VIP ${vipNumber}
+    </div>
+  </div>
+
+</div>
+`;
+
+
+      }
+    });
+
+    html += "</div>";
+
+    if(!found){
+      out.innerHTML = `
+        <div style="color:#ef4444;margin-top:15px;">
+          ❌ Không tìm thấy mã
+        </div>
+      `;
+    }else{
+      out.innerHTML = html;
+    }
+
+  }catch(e){
+    console.error(e);
+    alert("Lỗi đọc dữ liệu");
+  }
+}
+
+
+
+// ===== LOGIN =====
+function secureLogin(){
+  const email = document.getElementById("loginEmail").value.trim();
+  const pass = document.getElementById("loginPass").value.trim();
+
+  const err = document.getElementById("loginError");
+  err.style.display = "none";
+
+  auth.signInWithEmailAndPassword(email, pass)
+    .catch(()=>{
+      err.style.display = "block";
+      err.innerText = "Sai tài khoản!";
+    });
+}
+
+// ===== TOGGLE PASSWORD =====
+function togglePassword(){
+  const passInput = document.getElementById("loginPass");
+
+  if(passInput.type === "password"){
+    passInput.type = "text";
+  }else{
+    passInput.type = "password";
+  }
+}
+
+
+// ===== CHECK ROLE =====
+auth.onAuthStateChanged(async user=>{
+
+  if(userParam) return; // Nếu đang mở link user thì bỏ qua login
+
+  if(!user) return;
+
+
+  try{
+    const doc = await db.collection("users").doc(user.email).get();
+
+    if(!doc.exists || doc.data().role !== "admin"){
+      alert("Bạn không có quyền admin!");
+      auth.signOut();
+      return;
+    }
+
+    document.getElementById("loginScreen").remove();
+    document.getElementById("adminPanel").style.display="block";
+    loadLinks();
+
+  }catch(e){
+    console.error(e);
+    alert("Lỗi phân quyền");
+  }
+});
+
+
+async function createLink(){
+  const id = Date.now().toString(36)+Math.random().toString(36).substring(2,6);
+
+  await db.collection("shareLinks").doc(id).set({
+    active:true,
+    createdAt:firebase.firestore.FieldValue.serverTimestamp()
+  });
+
+  loadLinks(); // vẫn hiện link mới
+}
+
+
+
+async function loadLinks(){
+  const snap = await db.collection("shareLinks").get();
+  let html="";
+
+  snap.forEach(doc=>{
+    const d=doc.data();
+
+    html+=`
+  <div class="link-card">
+    
+    <div class="link-left">
+      <div class="link-id">${doc.id}</div>
+      <div class="link-status ${d.active?'open':'lock'}">
+        ${d.active?'🟢 Đang mở':'🟡 Đang khóa'}
+      </div>
+    </div>
+
+    <div class="link-actions">
+      <button class="icon-btn" onclick="copyLink('${doc.id}',this)">📋</button>
+      <button class="icon-btn" onclick="toggleLink('${doc.id}',${d.active})">
+        ${d.active?'🔒':'🔓'}
+      </button>
+      <button class="icon-btn delete" onclick="deleteLink('${doc.id}')">🗑</button>
+    </div>
+
+  </div>
+`;
+
+  });
+
+  document.getElementById("linkList").innerHTML=html;
+}
+
+function copyLink(id,btn){
+  const link = window.location.origin+window.location.pathname+"?u="+id;
+  navigator.clipboard.writeText(link);
+
+  const old=btn.innerText;
+  btn.innerText="Đã copy ✓";
+  btn.style.background="#16a34a";
+  btn.style.color="white";
+
+  setTimeout(()=>{
+    btn.innerText=old;
+    btn.style.background="";
+    btn.style.color="";
+  },2000);
+}
+
+async function toggleLink(id,current){
+  await db.collection("shareLinks").doc(id).update({active:!current});
+  loadLinks();
+}
+
+async function deleteLink(id){
+  await db.collection("shareLinks").doc(id).delete();
+  loadLinks();
+}
+</script>
+
+
+</body>
+</html>
