@@ -594,16 +594,23 @@ body{
 
 <script>
 const firebaseConfig = {
-  apiKey: "AIzaSyCEL7BDXvmNi2dp1VNpua7b2plpTiTOK3U",
-  authDomain: "toolvechai.firebaseapp.com",
-  projectId: "toolvechai"
+  apiKey: "AIzaSyClXx0V66GQHKGO0EwQc0nYNguFLc705A0",
+  authDomain: "toolvechaiver2.firebaseapp.com",
+  projectId: "toolvechaiver2",
+  storageBucket: "toolvechaiver2.firebasestorage.app",
+  messagingSenderId: "855001765940",
+  appId: "1:855001765940:web:0a562c54618377aaae5261"
 };
 
+
 firebase.initializeApp(firebaseConfig);
+
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-auth.setPersistence(firebase.auth.Auth.Persistence.NONE);
+// GIỮ ĐĂNG NHẬP KHI REFRESH
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
 
 // ===== USER MODE (?u=) =====
 const params = new URLSearchParams(window.location.search);
@@ -742,19 +749,21 @@ html+=`
 
 
 // ===== LOGIN =====
-function secureLogin(){
+async function secureLogin(){
   const email = document.getElementById("loginEmail").value.trim();
   const pass = document.getElementById("loginPass").value.trim();
-
   const err = document.getElementById("loginError");
+
   err.style.display = "none";
 
-  auth.signInWithEmailAndPassword(email, pass)
-    .catch(()=>{
-      err.style.display = "block";
-      err.innerText = "Sai tài khoản!";
-    });
+  try{
+    await auth.signInWithEmailAndPassword(email, pass);
+  }catch(e){
+    err.style.display = "block";
+    err.innerText = "Sai tài khoản hoặc mật khẩu!";
+  }
 }
+
 
 // ===== TOGGLE PASSWORD =====
 function togglePassword(){
@@ -769,31 +778,35 @@ function togglePassword(){
 
 
 // ===== CHECK ROLE =====
-auth.onAuthStateChanged(async user=>{
+auth.onAuthStateChanged(async (user) => {
 
-  if(userParam) return; // Nếu đang mở link user thì bỏ qua login
+  if(userParam) return;
 
-  if(!user) return;
-
+  if(!user){
+    document.getElementById("loginScreen").style.display = "flex";
+    return;
+  }
 
   try{
-    const doc = await db.collection("users").doc(user.email).get();
+    const snap = await db.collection("users").doc(user.email).get();
 
-    if(!doc.exists || doc.data().role !== "admin"){
-      alert("Bạn không có quyền admin!");
-      auth.signOut();
+    if(!snap.exists || snap.data().role !== "admin"){
+      alert("❌ Không có quyền admin");
+      await auth.signOut();
       return;
     }
 
-    document.getElementById("loginScreen").remove();
-    document.getElementById("adminPanel").style.display="block";
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("adminPanel").style.display = "block";
+
     loadLinks();
 
-  }catch(e){
-    console.error(e);
-    alert("Lỗi phân quyền");
+  }catch(err){
+    console.error(err);
+    alert("❌ Lỗi kiểm tra quyền");
   }
 });
+
 
 
 async function createLink(){
