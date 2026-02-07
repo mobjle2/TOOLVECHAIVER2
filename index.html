@@ -650,36 +650,58 @@ const userParam = params.get("u");
 if(userParam){
   runUserMode(userParam);
 }
+
 async function runUserMode(id){
+  // fake loading ngụy trang
+  showChecking();
+
   try{
-    const doc = await db.collection("shareLinks").doc(id).get();
+    const ref = db.collection("shareLinks").doc(id);
+    const doc = await ref.get();
 
+    // delay ngụy trang ~1.8s
+    await new Promise(r => setTimeout(r, 1800));
+
+    // link không tồn tại
     if(!doc.exists){
-      document.body.innerHTML = "❌ Link không tồn tại!";
+      showInactive();
       return;
     }
 
-    if(!doc.data().active){
-      document.body.innerHTML = "🔒 Link đã bị khóa!";
+    const data = doc.data();
+    const now = new Date();
+
+    // tất cả trường hợp KHÔNG hợp lệ → 1 message
+    if(
+      data.active !== true ||
+      (data.startAt && now < data.startAt.toDate()) ||
+      (data.endAt && now > data.endAt.toDate())
+    ){
+      showInactive();
       return;
     }
 
-    // Ẩn login nếu có
+    // hợp lệ → tăng view
+    await ref.update({
+      totalViews: firebase.firestore.FieldValue.increment(1)
+    });
+
+    // ẩn login + admin panel
     const login = document.getElementById("loginScreen");
     if(login) login.style.display = "none";
 
-    // Ẩn admin panel nếu có
     const admin = document.getElementById("adminPanel");
     if(admin) admin.style.display = "none";
 
-    // Không cần auth ở user mode
+    // user mode không cần auth
     auth.signOut();
 
-  }catch(e){
-    console.error(e);
-    document.body.innerHTML = "❌ Lỗi quyền truy cập!";
+  }catch(err){
+    console.error(err);
+    showInactive();
   }
 }
+
 function detectChip(code){
   code = code.toUpperCase();
 
