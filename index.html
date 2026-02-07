@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tool Ve Chai V2</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#0f1115;
+  color:white;
+  text-align:center;
+}
+
+h1{color:#ffd600}
+
+.container{
+  max-width:1000px;
+  margin:auto;
+  padding:20px;
+}
+
+input{
+  padding:12px;
+  width:250px;
+  border-radius:8px;
+  border:none;
+  margin:5px;
+}
+
+button{
+  padding:10px 16px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.btn-green{background:#16a34a;color:white;}
+.btn-red{background:#ef4444;color:white;}
+.btn-yellow{background:#f59e0b;color:white;}
+.btn-blue{background:#2563eb;color:white;}
+
+.status-valid{color:#00ff88;font-size:22px;margin-top:20px;}
+.status-invalid{color:#ff4444;font-size:22px;margin-top:20px;}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:16px;
+  margin-top:20px;
+}
+
+.card{
+  background:#1a1d24;
+  padding:20px;
+  border-radius:14px;
+  text-align:left;
+}
+
+.badge-open{
+  background:#16a34a;
+  padding:4px 10px;
+  border-radius:20px;
+  font-size:12px;
+}
+
+.badge-closed{
+  background:#ef4444;
+  padding:4px 10px;
+  border-radius:20px;
+  font-size:12px;
+}
+
+.toast{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#16a34a;
+  padding:12px 20px;
+  border-radius:8px;
+  display:none;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>Tool Ve Chai V2</h1>
+
+<!-- CHECK SECTION -->
+<div id="checkSection">
+  <input id="codeInput" placeholder="Nhập 4 ký tự hoặc full mã">
+  <button class="btn-blue" onclick="checkCode()">CHECK</button>
+  <div id="checkResult"></div>
+</div>
+
+<hr style="margin:40px 0;border:1px solid #222">
+
+<!-- ADMIN LOGIN -->
+<div id="loginSection">
+  <input id="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+  <button class="btn-blue" onclick="login()">LOGIN</button>
+  <div id="loginError" style="color:red;margin-top:10px"></div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="adminSection" style="display:none">
+  <h2>Quản lý Share Link V2</h2>
+  <button class="btn-green" onclick="createLink()">+ Tạo link mới</button>
+  <div class="grid" id="linkGrid"></div>
+</div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCEL7BDXvmNi2dp1VNpua7b2plpTiTOK3U",
+  authDomain: "toolvechai.firebaseapp.com",
+  projectId: "toolvechai"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+/* =========================
+   LINK MODE
+========================= */
+
+const params = new URLSearchParams(window.location.search);
+const linkId = params.get("link");
+
+if(linkId){
+  validateLink(linkId);
+}
+
+async function validateLink(id){
+  const doc = await db.collection("ToolVeChaiV2_links").doc(id).get();
+  const result = document.getElementById("checkResult");
+
+  if(doc.exists && doc.data().isActive){
+    result.innerHTML = `<div class="status-valid">✔ Link hợp lệ</div>`;
+  }else{
+    result.innerHTML = `<div class="status-invalid">✖ Link không hợp lệ</div>`;
+  }
+}
+
+/* =========================
+   CHECK
+========================= */
+
+function checkCode(){
+  const code = document.getElementById("codeInput").value.trim();
+  const result = document.getElementById("checkResult");
+
+  if(code.length < 4){
+    result.innerHTML = `<div class="status-invalid">Mã không hợp lệ</div>`;
+  }else{
+    result.innerHTML = `<div class="status-valid">✔ Hợp lệ</div>`;
+  }
+}
+
+/* =========================
+   AUTH
+========================= */
+
+function login(){
+  const email = document.getElementById("email").value.trim();
+  const pass = document.getElementById("password").value.trim();
+
+  auth.signInWithEmailAndPassword(email,pass)
+  .then(async cred=>{
+    const doc = await db.collection("users").doc(email).get();
+    if(!doc.exists || doc.data().role !== "admin_v2"){
+      auth.signOut();
+      document.getElementById("loginError").innerText="Không có quyền!";
+      return;
+    }
+    document.getElementById("loginSection").style.display="none";
+    document.getElementById("adminSection").style.display="block";
+    loadLinks();
+  })
+  .catch(()=>{
+    document.getElementById("loginError").innerText="Sai Gmail hoặc Password!";
+  });
+}
+
+/* =========================
+   ADMIN
+========================= */
+
+function randomId(){
+  return Math.random().toString(36).substring(2,9);
+}
+
+async function createLink(){
+  const id = randomId();
+  await db.collection("ToolVeChaiV2_links").doc(id).set({
+    isActive:true,
+    createdAt:firebase.firestore.FieldValue.serverTimestamp()
+  });
+  loadLinks();
+}
+
+async function loadLinks(){
+  const snap = await db.collection("ToolVeChaiV2_links").get();
+  const grid = document.getElementById("linkGrid");
+  grid.innerHTML="";
+
+  snap.forEach(doc=>{
+    const data = doc.data();
+    grid.innerHTML+=`
+      <div class="card">
+        <b>ID:</b> ${doc.id}<br><br>
+        <span class="${data.isActive?'badge-open':'badge-closed'}">
+          ${data.isActive?'ĐANG MỞ':'ĐÃ KHÓA'}
+        </span>
+        <br><br>
+        <button class="btn-green" onclick="copyLink('${doc.id}')">Copy</button>
+        <button class="btn-yellow" onclick="resetLink('${doc.id}')">Reset</button>
+        <button class="btn-red" onclick="deleteLink('${doc.id}')">Xóa</button>
+      </div>
+    `;
+  });
+}
+
+function copyLink(id){
+  const url = window.location.origin + window.location.pathname + "?link="+id;
+  navigator.clipboard.writeText(url);
+  showToast("Đã copy link");
+}
+
+async function resetLink(id){
+  await db.collection("ToolVeChaiV2_links").doc(id).update({
+    isActive:true
+  });
+  showToast("Đã reset");
+  loadLinks();
+}
+
+async function deleteLink(id){
+  await db.collection("ToolVeChaiV2_links").doc(id).delete();
+  showToast("Đã xóa");
+  loadLinks();
+}
+
+/* =========================
+   TOAST
+========================= */
+
+function showToast(msg){
+  const t = document.getElementById("toast");
+  t.innerText = msg;
+  t.style.display="block";
+  setTimeout(()=>t.style.display="none",2000);
+}
+
+</script>
+</body>
+</html>
