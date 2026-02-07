@@ -610,6 +610,37 @@ const db = firebase.firestore();
 
 // GIỮ ĐĂNG NHẬP KHI REFRESH
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+function showChecking(){
+  document.body.innerHTML = `
+    <div style="
+      height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:18px;
+      color:#facc15;
+      font-family:Arial;
+    ">
+      ⏳ Đang kiểm tra trạng thái link...
+    </div>
+  `;
+}
+
+function showInactive(){
+  document.body.innerHTML = `
+    <div style="
+      height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:18px;
+      color:#f87171;
+      font-family:Arial;
+    ">
+      🔒 Link này hiện không còn hoạt động
+    </div>
+  `;
+}
 
 
 // ===== USER MODE (?u=) =====
