@@ -660,7 +660,7 @@ async function runUserMode(id){
     const doc = await ref.get();
 
     // delay ngụy trang ~1.8s
-    await new Promise(r => setTimeout(r, 1800));
+    await new Promise(r => setTimeout(r, 600));
 
     // link không tồn tại
     if(!doc.exists){
