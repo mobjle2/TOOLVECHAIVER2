@@ -671,13 +671,16 @@ function detectChip(code){
 }
 
 async function check(){
-  const input = document.getElementById("q");
+  const inputEl = document.getElementById("q");
   const out = document.getElementById("out");
-  const key = input.value.trim().toUpperCase();
+
+  let key = inputEl.value
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, "");
 
   if(!key) return;
 
-  // UI loading
   out.innerHTML = `
     <div class="loading">
       🔎 Đang quét dữ liệu<span class="dots"></span>
@@ -685,13 +688,34 @@ async function check(){
   `;
 
   try{
-    // 🔥 QUERY CHUẨN – 1 READ
-    const snap = await db.collection("codes")
-      .where("codeUpper", "==", key)
-      .limit(1)
-      .get();
+    let snap = null;
 
-    if(snap.empty){
+    // ===== FULL CODE =====
+    if(key.length > 4){
+      snap = await db.collection("codes")
+        .where("full", "==", key)
+        .limit(1)
+        .get();
+    }
+
+    // ===== 4 KÝ TỰ =====
+    if(key.length === 4){
+      // 1️⃣ thử head4
+      snap = await db.collection("codes")
+        .where("head4", "==", key)
+        .limit(20)
+        .get();
+
+      // 2️⃣ nếu không có → thử tail4
+      if(snap.empty){
+        snap = await db.collection("codes")
+          .where("tail4", "==", key)
+          .limit(20)
+          .get();
+      }
+    }
+
+    if(!snap || snap.empty){
       out.innerHTML = `
         <div style="color:#ef4444;margin-top:15px;">
           ❌ Không tìm thấy mã
@@ -700,20 +724,17 @@ async function check(){
       return;
     }
 
-    // LẤY DUY NHẤT 1 DOC
-    const doc = snap.docs[0];
-    const x = doc.data();
+    // ===== RENDER KẾT QUẢ =====
+    let html = `<div class="result-grid">`;
 
-    const chip = detectChip(x.code);
-    const vipNumber = x.vip.replace("VIP ","");
+    snap.forEach(doc=>{
+      const x = doc.data();
+      const chip = detectChip(x.code);
+      const vipNumber = x.value.replace("VIP ","");
 
-    out.innerHTML = `
-      <div class="result-grid">
+      html += `
         <div class="result-card">
-
-          <div class="code-title">
-            ⚡ ${x.code}
-          </div>
+          <div class="code-title">⚡ ${x.code}</div>
 
           <div class="chip-vip-line">
             <div class="chip-info" style="color:${chip.color}">
@@ -725,13 +746,15 @@ async function check(){
               👑 VIP ${vipNumber}
             </div>
           </div>
-
         </div>
-      </div>
-    `;
+      `;
+    });
+
+    html += `</div>`;
+    out.innerHTML = html;
 
   }catch(err){
-    console.error("Check error:", err);
+    console.error(err);
     out.innerHTML = `
       <div style="color:#ef4444;margin-top:15px;">
         ⚠️ Lỗi hệ thống, thử lại sau
@@ -739,6 +762,7 @@ async function check(){
     `;
   }
 }
+
 
 
 
