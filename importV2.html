@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Import Codes V2</title>
+</head>
+<body>
+  <h2>Import Codes V2</h2>
+  <button onclick="importCodes()">🚀 Import Codes</button>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    // 🔥 Firebase config (đúng project của bạn)
+    const firebaseConfig = {
+      apiKey: "AIzaSyClXx0V66GQHKGO0EwQc0nYNguFLc705A0",
+      authDomain: "toolvechaiver2.firebaseapp.com",
+      projectId: "toolvechaiver2",
+      storageBucket: "toolvechaiver2.appspot.com",
+      messagingSenderId: "855001765940",
+      appId: "1:855001765940:web:0a562c54618377aaae5261"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // 🔽 DATA IMPORT (SỬA CHỖ NÀY)
+    const DATA = [
+      { code: "08-08-3CV100", type: "VIP", value: "VIP 1" },
+      { code: "H26M52103FMR", type: "MMC", value: "MMC1" }
+      // thêm code ở đây
+    ];
+
+    // 🧠 Chuẩn hóa mã
+    function normalize(code) {
+      return code.toUpperCase().replace(/[^A-Z0-9]/g, "");
+    }
+
+    async function importCodes() {
+      for (const item of DATA) {
+        const full = normalize(item.code);
+        const head4 = full.slice(0, 4);
+        const tail4 = full.slice(-4);
+
+        const docId = item.code; // doc.id = mã gốc
+
+        await db.collection("codes").doc(docId).set({
+          code: item.code,
+          full: full,
+          head4: head4,
+          tail4: tail4,
+          type: item.type,
+          value: item.value,
+          used: "no",
+          usedAt: "",
+          usedBy: ""
+        });
+
+        console.log("Imported:", docId);
+      }
+
+      alert("✅ Import xong codes V2");
+    }
+  </script>
+</body>
+</html>
