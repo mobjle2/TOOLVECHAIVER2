@@ -671,80 +671,75 @@ function detectChip(code){
 }
 
 async function check(){
+  const input = document.getElementById("q");
+  const out = document.getElementById("out");
+  const key = input.value.trim().toUpperCase();
+
+  if(!key) return;
+
+  // UI loading
+  out.innerHTML = `
+    <div class="loading">
+      🔎 Đang quét dữ liệu<span class="dots"></span>
+    </div>
+  `;
+
   try{
-    const key = document.getElementById("q").value.trim().toUpperCase();
-    const out = document.getElementById("out");
+    // 🔥 QUERY CHUẨN – 1 READ
+    const snap = await db.collection("codes")
+      .where("codeUpper", "==", key)
+      .limit(1)
+      .get();
 
-    if(!key) return;
-
-    // HIỆN LOADING TRƯỚC
-    out.innerHTML = `
-      <div class="loading">
-        🔎 Đang quét dữ liệu<span class="dots"></span>
-      </div>
-    `;
-
-    // Delay 800ms cho nhìn pro
-    await new Promise(resolve => setTimeout(resolve, 800));
-
-
-    const snap = await db.collection("codes").get();
-    let found = false;
-
-    let html = '<div class="result-grid">';
-
-    snap.forEach(doc=>{
-      const x = doc.data();
-      const codeValue = (x.code || "").toUpperCase();
-
-      if(codeValue.includes(key)){
-        found = true;
-
-     const chip = detectChip(x.code);
-const vipNumber = x.vip.replace("VIP ","");
-
-html+=`
-<div class="result-card">
-
-  <div class="code-title">
-    ⚡ ${x.code}
-  </div>
-
-  <div class="chip-vip-line">
-    <div class="chip-info" style="color:${chip.color}">
-      <span class="chip-dot" style="background:${chip.color};"></span>
-      ${chip.name}
-    </div>
-
-    <div class="vip-badge vip-${vipNumber}">
-      👑 VIP ${vipNumber}
-    </div>
-  </div>
-
-</div>
-`;
-
-
-      }
-    });
-
-    html += "</div>";
-
-    if(!found){
+    if(snap.empty){
       out.innerHTML = `
         <div style="color:#ef4444;margin-top:15px;">
           ❌ Không tìm thấy mã
         </div>
       `;
-    }else{
-      out.innerHTML = html;
+      return;
     }
 
-  }catch(e){
-    console.error(e);
-    alert("Lỗi đọc dữ liệu");
+    // LẤY DUY NHẤT 1 DOC
+    const doc = snap.docs[0];
+    const x = doc.data();
+
+    const chip = detectChip(x.code);
+    const vipNumber = x.vip.replace("VIP ","");
+
+    out.innerHTML = `
+      <div class="result-grid">
+        <div class="result-card">
+
+          <div class="code-title">
+            ⚡ ${x.code}
+          </div>
+
+          <div class="chip-vip-line">
+            <div class="chip-info" style="color:${chip.color}">
+              <span class="chip-dot" style="background:${chip.color};"></span>
+              ${chip.name}
+            </div>
+
+            <div class="vip-badge vip-${vipNumber}">
+              👑 VIP ${vipNumber}
+            </div>
+          </div>
+
+        </div>
+      </div>
+    `;
+
+  }catch(err){
+    console.error("Check error:", err);
+    out.innerHTML = `
+      <div style="color:#ef4444;margin-top:15px;">
+        ⚠️ Lỗi hệ thống, thử lại sau
+      </div>
+    `;
   }
 }
+
 
 
 
