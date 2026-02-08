@@ -383,20 +383,28 @@ gap:14px;
   font-weight:600;
 }
 .code-title{
-  font-size:17px;
-  font-weight:700;
-  margin-bottom:8px;
-  display:flex;
-  align-items:center;
+  margin-bottom:10px;
 }
+
+.code-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 16px;
+  border-radius:14px;
+  background:linear-gradient(145deg,#1e293b,#111827);
+  border:1px solid rgba(255,255,255,0.08);
+  font-size:15px;
+  font-weight:700;
+  letter-spacing:0.5px;
+}
+
 .vip-badge{
   padding:6px 14px;
   border-radius:999px;
   font-size:13px;
   font-weight:600;
 }
-
-
 
 .chip-vip-line{
   display:flex;
@@ -805,7 +813,10 @@ async function check(){
 
       html += `
         <div class="result-card">
-          <div class="code-title">💾 ${x.code}</div>
+          <div class="code-title">
+         <span class="code-badge">💾 ${x.code}</span>
+          </div>
+
 
 
           <div class="chip-vip-line">
