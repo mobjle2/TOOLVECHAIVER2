@@ -138,9 +138,24 @@ body{
 }
 #linkList{
   display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:14px;
+  grid-template-columns:repeat(3,1fr);
+  gap:20px;
 }
+
+/* THÊM ĐOẠN NÀY NGAY BÊN DƯỚI */
+@media(max-width:1200px){
+  #linkList{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
+@media(max-width:768px){
+  #linkList{
+    grid-template-columns:1fr;
+  }
+}
+
+
 
 @media(max-width:768px){
   #linkList{
