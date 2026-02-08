@@ -609,7 +609,14 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 
 // GIỮ ĐĂNG NHẬP KHI REFRESH
-auth.setPersistence(auth.setPersistence(firebase.auth.Auth.Persistence.SESSION)
+auth.setPersistence(firebase.auth.Auth.Persistence.SESSION)
+  .then(() => {
+    console.log("Auth persistence set to SESSION");
+  })
+  .catch((error) => {
+    console.error("Persistence error:", error);
+  });
+
   .then(() => {
     console.log("Auth persistence set to SESSION");
   })
@@ -1001,11 +1008,6 @@ async function handleVisit(linkId){
   return true;
 }
 
-
-
-
-  return true;
-}
 
 </script>
 
