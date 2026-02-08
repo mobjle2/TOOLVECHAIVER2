@@ -1097,6 +1097,40 @@ async function saveExpire(id){
   closeExpireBox();
   loadLinks();
 }
+// ===== COPY LINK =====
+function copyLink(id, btn){
+  const link = window.location.origin + window.location.pathname + "?u=" + id;
+  navigator.clipboard.writeText(link);
+
+  const old = btn.innerText;
+  btn.innerText = "✓";
+  btn.style.background = "#16a34a";
+  btn.style.color = "white";
+
+  setTimeout(()=>{
+    btn.innerText = old;
+    btn.style.background = "";
+    btn.style.color = "";
+  },1500);
+}
+
+
+// ===== TOGGLE LINK (MỞ / KHÓA) =====
+async function toggleLink(id, current){
+  await db.collection("shareLinks").doc(id).update({
+    active: !current
+  });
+  loadLinks();
+}
+
+
+// ===== DELETE LINK =====
+async function deleteLink(id){
+  if(!confirm("Xóa link này?")) return;
+
+  await db.collection("shareLinks").doc(id).delete();
+  loadLinks();
+}
 
 
 </script>
