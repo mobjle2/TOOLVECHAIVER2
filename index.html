@@ -639,28 +639,66 @@ async function runUserMode(id){
       document.body.innerHTML = "🔒 Link đã bị khóa!";
       return;
     }
-const data = doc.data();
 
-if(data.expiresAt && data.expiresAt.toDate() < new Date()){
-  document.body.innerHTML = "⛔ Link đã hết hạn!";
-  return;
-}
+    const data = doc.data();
 
-    // Ẩn login nếu có
+    if(data.expiresAt && data.expiresAt.toDate() < new Date()){
+      await db.collection("shareLinks").doc(id).update({
+        active:false
+      });
+
+      document.body.innerHTML = "⛔ Link đã hết hạn!";
+      return;
+    }
+
+    await db.collection("shareLinks").doc(id).update({
+      views: firebase.firestore.FieldValue.increment(1)
+    });
+
     const login = document.getElementById("loginScreen");
     if(login) login.style.display = "none";
 
-    // Ẩn admin panel nếu có
     const admin = document.getElementById("adminPanel");
     if(admin) admin.style.display = "none";
 
-    // Không cần auth ở user mode
+    if(data.expiresAt){
+      const box = document.createElement("div");
+      box.id = "countdownBox";
+      box.style.marginTop = "20px";
+      box.style.fontSize = "18px";
+      box.style.fontWeight = "600";
+      box.style.color = "#facc15";
+      document.body.appendChild(box);
+
+      const end = data.expiresAt.toDate();
+
+      setInterval(async ()=>{
+        const now = new Date();
+        const diff = end - now;
+
+        if(diff <= 0){
+          await db.collection("shareLinks").doc(id).update({
+            active:false
+          });
+
+          box.innerText = "⛔ Link đã hết hạn!";
+          return;
+        }
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((diff / (1000 * 60)) % 60);
+
+        box.innerText = `⏳ Còn ${days} ngày ${hours} giờ ${minutes} phút`;
+      }, 1000);
+    }
 
   }catch(e){
     console.error(e);
     document.body.innerHTML = "❌ Lỗi quyền truy cập!";
   }
 }
+
 function detectChip(code){
   code = code.toUpperCase();
 
@@ -845,7 +883,13 @@ auth.onAuthStateChanged(async (user) => {
 async function createLink(){
   const id = Date.now().toString(36)+Math.random().toString(36).substring(2,6);
 
-  await db.collection("shareLinks").doc(id).set({
+  await db.collection("shareLinks").doc(id) await db.collection("shareLinks").doc(id).set({
+  active:true,
+  createdAt:firebase.firestore.FieldValue.serverTimestamp(),
+  expiresAt: null,
+  views: 0 // THÊM DÒNG NÀY
+});
+
     active:true,
     createdAt:firebase.firestore.FieldValue.serverTimestamp(),
     expiresAt: null
