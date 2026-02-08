@@ -617,8 +617,10 @@ const params = new URLSearchParams(window.location.search);
 const userParam = params.get("u");
 
 if(userParam){
+  document.getElementById("loginScreen").style.display = "none";
   runUserMode(userParam);
 }
+
 async function runUserMode(id){
   try{
     const doc = await db.collection("shareLinks").doc(id).get();
@@ -650,7 +652,7 @@ if(!allowed){
     if(admin) admin.style.display = "none";
 
     // Không cần auth ở user mode
-    auth.signOut();
+  
 
   }catch(e){
     console.error(e);
@@ -807,7 +809,10 @@ function togglePassword(){
 // ===== CHECK ROLE =====
 auth.onAuthStateChanged(async (user) => {
 
-  if(userParam) return;
+  // Nếu đang ở user mode thì bỏ qua hoàn toàn auth
+  if(userParam){
+    return;
+  }
 
   if(!user){
     document.getElementById("loginScreen").style.display = "flex";
@@ -833,6 +838,7 @@ auth.onAuthStateChanged(async (user) => {
     alert("❌ Lỗi kiểm tra quyền");
   }
 });
+
 
 
 // ===== CREATE LINK =====
