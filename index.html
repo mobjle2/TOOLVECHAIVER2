@@ -641,7 +641,8 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 
 // GIỮ ĐĂNG NHẬP KHI REFRESH
-auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
 
 
 
