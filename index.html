@@ -617,8 +617,15 @@ const params = new URLSearchParams(window.location.search);
 const userParam = params.get("u");
 
 if(userParam){
-  runUserMode(userParam);
+  document.getElementById("loginScreen").style.display = "none";
+  document.getElementById("adminPanel").style.display = "none";
+
+  // QUAN TRỌNG: không cho auth listener chạy
+  setTimeout(() => {
+    runUserMode(userParam);
+  }, 0);
 }
+
 async function runUserMode(id){
   try{
     const doc = await db.collection("shareLinks").doc(id).get();
@@ -799,7 +806,10 @@ function togglePassword(){
 // ===== CHECK ROLE =====
 auth.onAuthStateChanged(async (user) => {
 
-  if(userParam) return;
+  // Nếu có ?u= thì bỏ qua hoàn toàn auth
+  if(window.location.search.includes("u=")){
+    return;
+  }
 
   if(!user){
     document.getElementById("loginScreen").style.display = "flex";
@@ -810,7 +820,6 @@ auth.onAuthStateChanged(async (user) => {
     const snap = await db.collection("users").doc(user.email).get();
 
     if(!snap.exists || snap.data().role !== "admin"){
-      alert("❌ Không có quyền admin");
       await auth.signOut();
       return;
     }
@@ -822,9 +831,9 @@ auth.onAuthStateChanged(async (user) => {
 
   }catch(err){
     console.error(err);
-    alert("❌ Lỗi kiểm tra quyền");
   }
 });
+
 
 
 
