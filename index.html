@@ -881,22 +881,18 @@ auth.onAuthStateChanged(async (user) => {
 
 
 async function createLink(){
-  const id = Date.now().toString(36)+Math.random().toString(36).substring(2,6);
+  const id = Date.now().toString(36) + Math.random().toString(36).substring(2,6);
 
-  await db.collection("shareLinks").doc(id) await db.collection("shareLinks").doc(id).set({
-  active:true,
-  createdAt:firebase.firestore.FieldValue.serverTimestamp(),
-  expiresAt: null,
-  views: 0 // THÊM DÒNG NÀY
-});
-
-    active:true,
-    createdAt:firebase.firestore.FieldValue.serverTimestamp(),
-    expiresAt: null
+  await db.collection("shareLinks").doc(id).set({
+    active: true,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    expiresAt: null,
+    views: 0
   });
 
   loadLinks();
 }
+
 
 
 
