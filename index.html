@@ -944,9 +944,12 @@ async function loadLinks(){
 
 <div class="link-actions">
   <button class="icon-btn" onclick="copyLink('${id}',this)">📋</button>
-  <button class="icon-btn" onclick="toggleLink('${id}',${d.active})">
-    ${d.active?'🔒':'🔓'}
-  </button>
+<button class="icon-btn"
+  style="background:${d.active?'#16a34a':'#f59e0b'};color:white"
+  onclick="toggleLink('${id}',${d.active})">
+  ${d.active?'🔓':'🔒'}
+</button>
+
   <button class="icon-btn" onclick="configExpire('${id}')">⏰</button>
   <button class="icon-btn delete" onclick="deleteLink('${id}')">🗑</button>
 </div>
