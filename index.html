@@ -639,6 +639,12 @@ async function runUserMode(id){
       document.body.innerHTML = "🔒 Link đã bị khóa!";
       return;
     }
+const data = doc.data();
+
+if(data.expiresAt && data.expiresAt.toDate() < new Date()){
+  document.body.innerHTML = "⛔ Link đã hết hạn!";
+  return;
+}
 
     // Ẩn login nếu có
     const login = document.getElementById("loginScreen");
@@ -841,11 +847,13 @@ async function createLink(){
 
   await db.collection("shareLinks").doc(id).set({
     active:true,
-    createdAt:firebase.firestore.FieldValue.serverTimestamp()
+    createdAt:firebase.firestore.FieldValue.serverTimestamp(),
+    expiresAt: null
   });
 
-  loadLinks(); // vẫn hiện link mới
+  loadLinks();
 }
+
 
 
 
@@ -866,13 +874,15 @@ async function loadLinks(){
       </div>
     </div>
 
-    <div class="link-actions">
-      <button class="icon-btn" onclick="copyLink('${doc.id}',this)">📋</button>
-      <button class="icon-btn" onclick="toggleLink('${doc.id}',${d.active})">
-        ${d.active?'🔒':'🔓'}
-      </button>
-      <button class="icon-btn delete" onclick="deleteLink('${doc.id}')">🗑</button>
-    </div>
+<div class="link-actions">
+  <button class="icon-btn" onclick="copyLink('${doc.id}',this)">📋</button>
+  <button class="icon-btn" onclick="toggleLink('${doc.id}',${d.active})">
+    ${d.active?'🔒':'🔓'}
+  </button>
+  <button class="icon-btn" onclick="configExpire('${doc.id}')">⏰</button>
+  <button class="icon-btn delete" onclick="deleteLink('${doc.id}')">🗑</button>
+</div>
+
 
   </div>
 `;
@@ -900,6 +910,24 @@ function copyLink(id,btn){
 
 async function toggleLink(id,current){
   await db.collection("shareLinks").doc(id).update({active:!current});
+  loadLinks();
+}
+async function configExpire(id){
+  const days = prompt("Nhập số ngày hiệu lực (để trống = không giới hạn):");
+
+  let updateData = {};
+
+  if(days && !isNaN(days)){
+    const future = new Date();
+    future.setDate(future.getDate() + parseInt(days));
+
+    updateData.expiresAt = firebase.firestore.Timestamp.fromDate(future);
+  }else{
+    updateData.expiresAt = null;
+  }
+
+  await db.collection("shareLinks").doc(id).update(updateData);
+
   loadLinks();
 }
 
