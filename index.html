@@ -906,9 +906,24 @@ async function loadLinks(){
   let html="";
 
   snap.forEach(doc=>{
-    const d=doc.data();
+    const d = doc.data();
 
-    html+=`
+    let remainText = "♾ Không giới hạn";
+
+    if(d.expiresAt){
+      const now = new Date();
+      const end = new Date(d.expiresAt.seconds * 1000);
+      const diff = end - now;
+
+      if(diff <= 0){
+        remainText = "⛔ Đã hết hạn";
+      }else{
+        const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+        remainText = "⏳ Còn " + days + " ngày";
+      }
+    }
+
+    html += `
   <div class="link-card">
     
 <div class="link-left">
@@ -919,14 +934,13 @@ async function loadLinks(){
   </div>
 
   <div style="margin-top:6px;font-size:12px;color:#94a3b8;">
-    ${
-      d.expiresAt 
-      ? "⏳ Hết hạn: " + new Date(d.expiresAt.seconds * 1000).toLocaleDateString()
-      : "♾ Không giới hạn"
-    }
+    ${remainText}
+  </div>
+
+  <div style="margin-top:4px;font-size:12px;color:#22c55e;">
+    👁 Lượt truy cập: ${d.views || 0}
   </div>
 </div>
-
 
 <div class="link-actions">
   <button class="icon-btn" onclick="copyLink('${doc.id}',this)">📋</button>
@@ -937,28 +951,26 @@ async function loadLinks(){
   <button class="icon-btn delete" onclick="deleteLink('${doc.id}')">🗑</button>
 </div>
 
-
   </div>
 `;
-
   });
 
-  document.getElementById("linkList").innerHTML=html;
+  document.getElementById("linkList").innerHTML = html;
 }
 
 function copyLink(id,btn){
-  const link = window.location.origin+window.location.pathname+"?u="+id;
+  const link = window.location.origin + window.location.pathname + "?u=" + id;
   navigator.clipboard.writeText(link);
 
-  const old=btn.innerText;
-  btn.innerText="Đã copy ✓";
-  btn.style.background="#16a34a";
-  btn.style.color="white";
+  const old = btn.innerText;
+  btn.innerText = "Đã copy ✓";
+  btn.style.background = "#16a34a";
+  btn.style.color = "white";
 
   setTimeout(()=>{
-    btn.innerText=old;
-    btn.style.background="";
-    btn.style.color="";
+    btn.innerText = old;
+    btn.style.background = "";
+    btn.style.color = "";
   },2000);
 }
 
@@ -969,106 +981,6 @@ async function toggleLink(id,current){
   loadLinks();
 }
 
-
-// ===== POPUP CÀI THỜI GIAN =====
-async function configExpire(id){
-
-  // nếu đã có popup thì xóa trước
-  closeExpireBox();
-
-  const html = `
-    <div id="expireBox" style="
-      position:fixed;
-      inset:0;
-      background:rgba(0,0,0,0.6);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      z-index:9999;
-    ">
-      <div style="
-        background:#111827;
-        padding:25px;
-        border-radius:18px;
-        width:320px;
-        box-shadow:0 20px 50px rgba(0,0,0,0.6);
-      ">
-        <h3 style="margin-bottom:15px;">⏰ Cài thời gian</h3>
-
-        <input id="expireInput"
-          type="number"
-          placeholder="Nhập số ngày (để trống = không giới hạn)"
-          style="
-            width:100%;
-            height:42px;
-            border-radius:10px;
-            border:1px solid #333;
-            background:#0f172a;
-            color:white;
-            padding:0 12px;
-            margin-bottom:15px;
-            box-sizing:border-box;
-          "
-        >
-
-        <div style="display:flex;justify-content:flex-end;gap:10px;">
-          <button onclick="closeExpireBox()" style="
-            padding:6px 12px;
-            border-radius:8px;
-            border:1px solid #444;
-            background:#1f2937;
-            color:white;
-            cursor:pointer;
-          ">Hủy</button>
-
-          <button onclick="saveExpire('${id}')" style="
-            padding:6px 12px;
-            background:#2563eb;
-            border:none;
-            color:white;
-            border-radius:8px;
-            cursor:pointer;
-          ">Lưu</button>
-        </div>
-      </div>
-    </div>
-  `;
-
-  document.body.insertAdjacentHTML("beforeend", html);
-}
-
-
-function closeExpireBox(){
-  const box = document.getElementById("expireBox");
-  if(box){
-    box.remove();
-  }
-}
-
-
-async function saveExpire(id){
-  const input = document.getElementById("expireInput");
-  const days = input ? input.value.trim() : "";
-
-  let updateData = {};
-
-  if(days && !isNaN(days)){
-    const future = new Date();
-    future.setDate(future.getDate() + parseInt(days));
-
-    updateData.expiresAt =
-      firebase.firestore.Timestamp.fromDate(future);
-  }else{
-    updateData.expiresAt = null;
-  }
-
-  await db.collection("shareLinks")
-    .doc(id)
-    .update(updateData);
-
-  closeExpireBox();
-  loadLinks();
-}
 </script>
 </body>
 </html>
