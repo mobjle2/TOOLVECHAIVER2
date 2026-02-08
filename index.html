@@ -982,6 +982,117 @@ async function loadLinks(){
     }, 1000);
   });
 }
+// ===== POPUP CÀI THỜI GIAN (ADMIN) =====
+async function configExpire(id){
+
+  closeExpireBox();
+
+  let days = "";
+  let hours = "";
+  let minutes = "";
+
+  try{
+    const doc = await db.collection("shareLinks").doc(id).get();
+    if(doc.exists && doc.data().expiresAt){
+      const now = new Date();
+      const end = doc.data().expiresAt.toDate();
+      let diff = Math.max(0, end - now);
+
+      days = Math.floor(diff / (1000*60*60*24));
+      diff %= (1000*60*60*24);
+      hours = Math.floor(diff / (1000*60*60));
+      diff %= (1000*60*60);
+      minutes = Math.floor(diff / (1000*60));
+    }
+  }catch(e){
+    console.warn("Không đọc được expiresAt", e);
+  }
+
+  const html = `
+  <div id="expireBox" style="
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.6);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:9999;
+  ">
+    <div style="
+      background:#0f172a;
+      padding:25px;
+      border-radius:18px;
+      width:340px;
+      box-shadow:0 20px 50px rgba(0,0,0,0.6);
+    ">
+      <h3 style="margin-bottom:15px;">⏰ Cài thời gian hết hạn</h3>
+
+      <input id="expireDays" type="number" placeholder="Số ngày"
+        value="${days}"
+        style="width:100%;height:42px;margin-bottom:8px;
+        border-radius:10px;border:1px solid #333;
+        background:#020617;color:white;padding:0 12px">
+
+      <input id="expireHours" type="number" placeholder="Giờ"
+        value="${hours}"
+        style="width:100%;height:42px;margin-bottom:8px;
+        border-radius:10px;border:1px solid #333;
+        background:#020617;color:white;padding:0 12px">
+
+      <input id="expireMinutes" type="number" placeholder="Phút"
+        value="${minutes}"
+        style="width:100%;height:42px;margin-bottom:15px;
+        border-radius:10px;border:1px solid #333;
+        background:#020617;color:white;padding:0 12px">
+
+      <div style="display:flex;justify-content:flex-end;gap:10px;">
+        <button onclick="closeExpireBox()"
+          style="padding:6px 12px;border-radius:8px;
+          border:1px solid #444;background:#1f2937;color:white">
+          Hủy
+        </button>
+
+        <button onclick="saveExpire('${id}')"
+          style="padding:6px 12px;border-radius:8px;
+          background:#2563eb;color:white;border:none">
+          Lưu
+        </button>
+      </div>
+    </div>
+  </div>
+  `;
+
+  document.body.insertAdjacentHTML("beforeend", html);
+}
+
+function closeExpireBox(){
+  const box = document.getElementById("expireBox");
+  if(box) box.remove();
+}
+
+async function saveExpire(id){
+  const d = parseInt(document.getElementById("expireDays").value || 0);
+  const h = parseInt(document.getElementById("expireHours").value || 0);
+  const m = parseInt(document.getElementById("expireMinutes").value || 0);
+
+  if(d === 0 && h === 0 && m === 0){
+    await db.collection("shareLinks").doc(id).update({
+      expiresAt: null
+    });
+  }else{
+    const future = new Date();
+    future.setDate(future.getDate() + d);
+    future.setHours(future.getHours() + h);
+    future.setMinutes(future.getMinutes() + m);
+
+    await db.collection("shareLinks").doc(id).update({
+      expiresAt: firebase.firestore.Timestamp.fromDate(future)
+    });
+  }
+
+  closeExpireBox();
+  loadLinks();
+}
 
 
 </script>
