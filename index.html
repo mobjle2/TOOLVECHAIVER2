@@ -1288,8 +1288,9 @@ async function confirmDelete(id){
   closeDeleteBox();
   loadLinks();
 }
-function startRename(el, id){
-  if(el.querySelector("input")) return;
+function startRename(id){
+  const el = document.getElementById("name-" + id);
+  if(!el || el.querySelector("input")) return;
 
   const oldText = el.innerText;
   const input = document.createElement("input");
@@ -1313,9 +1314,9 @@ function startRename(el, id){
     const val = input.value.trim();
     el.innerText = val || oldText;
 
-    // ✅ GIỮ TÊN KHI F5
     if(val){
-      sessionStorage.setItem("alias_" + id, val);
+      // ✅ GIỮ TÊN KỂ CẢ ĐÓNG TAB
+      localStorage.setItem("alias_" + id, val);
     }
   }
 
@@ -1325,6 +1326,7 @@ function startRename(el, id){
     if(e.key === "Escape") el.innerText = oldText;
   });
 }
+
 
 
 
