@@ -632,6 +632,19 @@ async function runUserMode(id){
       document.body.innerHTML = "🔒 Link đã bị khóa!";
       return;
     }
+    const allowed = await handleVisit(id);
+
+if(!allowed){
+  document.body.innerHTML = "⛔ Link đã hết lượt hoặc hết hạn!";
+  return;
+}
+
+    const allowed = await handleVisit(id);
+
+if(!allowed){
+  document.body.innerHTML = "⛔ Link đã hết lượt hoặc hết hạn!";
+  return;
+}
 
     // Ẩn login nếu có
     const login = document.getElementById("loginScreen");
@@ -828,13 +841,20 @@ auth.onAuthStateChanged(async (user) => {
 
 
 
-async function createLink(){
-  const id = Date.now().toString(36)+Math.random().toString(36).substring(2,6);
+await db.collection("shareLinks").doc(id).set({
+  active: true,
+  createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+  createdBy: auth.currentUser.email,
 
-  await db.collection("shareLinks").doc(id).set({
-    active:true,
-    createdAt:firebase.firestore.FieldValue.serverTimestamp()
-  });
+  // CONTROL
+  expiresAt: null,
+  maxVisits: null,
+
+  // STATS
+  totalVisits: 0,
+  lastVisitAt: null
+});
+
 
   loadLinks(); // vẫn hiện link mới
 }
@@ -899,6 +919,56 @@ async function deleteLink(id){
   await db.collection("shareLinks").doc(id).delete();
   loadLinks();
 }
+async function deleteLink(id){
+  await db.collection("shareLinks").doc(id).delete();
+  loadLinks();
+}
+
+
+// 👇 DÁN NGAY DƯỚI ĐÂY
+async function handleVisit(linkId){
+  const linkRef = db.collection("shareLinks").doc(linkId);
+  const linkSnap = await linkRef.get();
+
+  if(!linkSnap.exists) return false;
+
+  const data = linkSnap.data();
+
+  if(!data.active) return false;
+
+  if(data.expiresAt && data.expiresAt.toDate() < new Date())
+    return false;
+
+  if(data.maxVisits && data.totalVisits >= data.maxVisits)
+    return false;
+
+  const today = new Date().toISOString().split("T")[0];
+
+  await db.runTransaction(async (transaction) => {
+
+    const dailyRef = linkRef.collection("visits").doc(today);
+    const dailySnap = await transaction.get(dailyRef);
+
+    transaction.update(linkRef,{
+      totalVisits: firebase.firestore.FieldValue.increment(1),
+      lastVisitAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    if(dailySnap.exists){
+      transaction.update(dailyRef,{
+        count: firebase.firestore.FieldValue.increment(1)
+      });
+    }else{
+      transaction.set(dailyRef,{
+        count: 1
+      });
+    }
+
+  });
+
+  return true;
+}
+
 </script>
 
 
