@@ -609,22 +609,7 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 
 // GIỮ ĐĂNG NHẬP KHI REFRESH
-auth.setPersistence(firebase.auth.Auth.Persistence.SESSION)
-  .then(() => {
-    console.log("Auth persistence set to SESSION");
-  })
-  .catch((error) => {
-    console.error("Persistence error:", error);
-  });
-
-  .then(() => {
-    console.log("Auth persistence set to SESSION");
-  })
-  .catch((error) => {
-    console.error("Persistence error:", error);
-  });
-firebase.auth.Auth.Persistence.SESSION);
-
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
 
 // ===== USER MODE (?u=) =====
@@ -632,10 +617,8 @@ const params = new URLSearchParams(window.location.search);
 const userParam = params.get("u");
 
 if(userParam){
-  document.getElementById("loginScreen").style.display = "none";
   runUserMode(userParam);
 }
-
 async function runUserMode(id){
   try{
     const doc = await db.collection("shareLinks").doc(id).get();
@@ -649,14 +632,6 @@ async function runUserMode(id){
       document.body.innerHTML = "🔒 Link đã bị khóa!";
       return;
     }
-    
-
-    const allowed = await handleVisit(id);
-
-if(!allowed){
-  document.body.innerHTML = "⛔ Link đã hết lượt hoặc hết hạn!";
-  return;
-}
 
     // Ẩn login nếu có
     const login = document.getElementById("loginScreen");
@@ -667,7 +642,7 @@ if(!allowed){
     if(admin) admin.style.display = "none";
 
     // Không cần auth ở user mode
-  
+    auth.signOut();
 
   }catch(e){
     console.error(e);
@@ -824,10 +799,7 @@ function togglePassword(){
 // ===== CHECK ROLE =====
 auth.onAuthStateChanged(async (user) => {
 
-  // Nếu đang ở user mode thì bỏ qua hoàn toàn auth
-  if(userParam){
-    return;
-  }
+  if(userParam) return;
 
   if(!user){
     document.getElementById("loginScreen").style.display = "flex";
@@ -856,159 +828,77 @@ auth.onAuthStateChanged(async (user) => {
 
 
 
-// ===== CREATE LINK =====
 async function createLink(){
-  const id = Date.now().toString(36) + Math.random().toString(36).substring(2,6);
+  const id = Date.now().toString(36)+Math.random().toString(36).substring(2,6);
 
   await db.collection("shareLinks").doc(id).set({
-    active: true,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    createdBy: auth.currentUser.email,
-
-    // CONTROL
-    expiresAt: null,
-    maxVisits: null,
-
-    // STATS
-    totalVisits: 0,
-    lastVisitAt: null
+    active:true,
+    createdAt:firebase.firestore.FieldValue.serverTimestamp()
   });
 
-  loadLinks();
+  loadLinks(); // vẫn hiện link mới
 }
+
+
 
 async function loadLinks(){
   const snap = await db.collection("shareLinks").get();
   let html="";
 
   snap.forEach(doc=>{
-    const d = doc.data();
+    const d=doc.data();
 
-    let expireText = "∞";
-    if(d.expiresAt){
-      expireText = new Date(d.expiresAt.seconds * 1000).toLocaleDateString();
-    }
-
-    let maxText = d.maxVisits ? d.maxVisits : "∞";
-
-    html += `
-    <div class="link-card">
-      <div class="link-left">
-        <div class="link-id">${doc.id}</div>
-        <div class="link-status ${d.active ? 'open' : 'lock'}">
-          ${d.active ? '🟢 Đang mở' : '🟡 Đang khóa'}
-        </div>
-
-        <div style="font-size:12px;margin-top:6px;color:#94a3b8;">
-          Visits: ${d.totalVisits || 0} / ${maxText}
-          <br>
-          Expire: ${expireText}
-        </div>
-      </div>
-
-      <div class="link-actions">
-        <button class="icon-btn" onclick="configLink('${doc.id}')">⚙</button>
-        <button class="icon-btn" onclick="copyLink('${doc.id}',this)">📋</button>
-        <button class="icon-btn" onclick="toggleLink('${doc.id}',${d.active})">
-          ${d.active ? '🔒' : '🔓'}
-        </button>
-        <button class="icon-btn delete" onclick="deleteLink('${doc.id}')">🗑</button>
+    html+=`
+  <div class="link-card">
+    
+    <div class="link-left">
+      <div class="link-id">${doc.id}</div>
+      <div class="link-status ${d.active?'open':'lock'}">
+        ${d.active?'🟢 Đang mở':'🟡 Đang khóa'}
       </div>
     </div>
-    `;
+
+    <div class="link-actions">
+      <button class="icon-btn" onclick="copyLink('${doc.id}',this)">📋</button>
+      <button class="icon-btn" onclick="toggleLink('${doc.id}',${d.active})">
+        ${d.active?'🔒':'🔓'}
+      </button>
+      <button class="icon-btn delete" onclick="deleteLink('${doc.id}')">🗑</button>
+    </div>
+
+  </div>
+`;
+
   });
 
-  document.getElementById("linkList").innerHTML = html;
+  document.getElementById("linkList").innerHTML=html;
 }
 
-
-
-// ===== COPY LINK =====
 function copyLink(id,btn){
-  const link = window.location.origin + window.location.pathname + "?u=" + id;
+  const link = window.location.origin+window.location.pathname+"?u="+id;
   navigator.clipboard.writeText(link);
 
-  const old = btn.innerText;
-  btn.innerText = "Đã copy ✓";
-  btn.style.background = "#16a34a";
-  btn.style.color = "white";
+  const old=btn.innerText;
+  btn.innerText="Đã copy ✓";
+  btn.style.background="#16a34a";
+  btn.style.color="white";
 
   setTimeout(()=>{
-    btn.innerText = old;
-    btn.style.background = "";
-    btn.style.color = "";
+    btn.innerText=old;
+    btn.style.background="";
+    btn.style.color="";
   },2000);
 }
 
-
-// ===== TOGGLE LINK =====
 async function toggleLink(id,current){
   await db.collection("shareLinks").doc(id).update({active:!current});
   loadLinks();
 }
 
-
-// ===== DELETE LINK =====
 async function deleteLink(id){
   await db.collection("shareLinks").doc(id).delete();
   loadLinks();
 }
-
-
-// ===== HANDLE VISIT (ADMIN KHÔNG TÍNH LƯỢT) =====
-async function handleVisit(linkId){
-
-  // Nếu là admin → không tính lượt
-  if(auth.currentUser){
-    const snap = await db.collection("users").doc(auth.currentUser.email).get();
-    if(snap.exists && snap.data().role === "admin"){
-      return true;
-    }
-  }
-
-  const linkRef = db.collection("shareLinks").doc(linkId);
-  const linkSnap = await linkRef.get();
-
-  if(!linkSnap.exists) return false;
-
-  const data = linkSnap.data();
-
-  if(!data.active) return false;
-
-  if(data.expiresAt && data.expiresAt.toDate() < new Date())
-    return false;
-
-  if(data.maxVisits && data.totalVisits >= data.maxVisits)
-    return false;
-
-  const today = new Date().toISOString().split("T")[0];
-
-  await db.runTransaction(async (transaction) => {
-
-    const dailyRef = linkRef.collection("visits").doc(today);
-    const dailySnap = await transaction.get(dailyRef);
-
-    transaction.update(linkRef,{
-      totalVisits: firebase.firestore.FieldValue.increment(1),
-      lastVisitAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-
-    if(dailySnap.exists){
-      transaction.update(dailyRef,{
-        count: firebase.firestore.FieldValue.increment(1)
-      });
-    }else{
-      transaction.set(dailyRef,{
-        count: 1
-      });
-    }
-
-  });
-
-  return true;
-}
-
-
 </script>
 
 
