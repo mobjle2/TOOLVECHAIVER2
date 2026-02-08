@@ -932,7 +932,13 @@ if(!user){
 async function createLink(){
   const id = Date.now().toString(36) + Math.random().toString(36).substring(2,6);
 
+  let name = prompt("Nhập tên link (để trống sẽ tự đặt):");
+  if(!name){
+    name = "Link " + new Date().toLocaleString();
+  }
+
   await db.collection("shareLinks").doc(id).set({
+    name: name,
     active: true,
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     expiresAt: null,
@@ -941,6 +947,7 @@ async function createLink(){
 
   loadLinks();
 }
+
 
 
 
