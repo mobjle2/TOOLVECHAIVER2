@@ -872,11 +872,14 @@ async function secureLogin(){
 
   try{
     await auth.signInWithEmailAndPassword(email, pass);
+    // KHÔNG làm gì thêm
   }catch(e){
     err.style.display = "block";
     err.innerText = "Sai tài khoản hoặc mật khẩu!";
+    return; // QUAN TRỌNG
   }
 }
+
 
 
 // ===== TOGGLE PASSWORD =====
@@ -899,10 +902,10 @@ auth.onAuthStateChanged(async (user) => {
     return;
   }
 
-  if(!user){
-    document.getElementById("loginScreen").style.display = "flex";
-    return;
-  }
+if(!user){
+  return; // không ép show login nữa
+}
+
 
   try{
     const snap = await db.collection("users").doc(user.email).get();
