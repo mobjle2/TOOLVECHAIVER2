@@ -867,12 +867,22 @@ async function loadLinks(){
     html+=`
   <div class="link-card">
     
-    <div class="link-left">
-      <div class="link-id">${doc.id}</div>
-      <div class="link-status ${d.active?'open':'lock'}">
-        ${d.active?'🟢 Đang mở':'🟡 Đang khóa'}
-      </div>
-    </div>
+<div class="link-left">
+  <div class="link-id">${doc.id}</div>
+
+  <div class="link-status ${d.active?'open':'lock'}">
+    ${d.active?'🟢 Đang mở':'🟡 Đang khóa'}
+  </div>
+
+  <div style="margin-top:6px;font-size:12px;color:#94a3b8;">
+    ${
+      d.expiresAt 
+      ? "⏳ Hết hạn: " + new Date(d.expiresAt.seconds * 1000).toLocaleDateString()
+      : "♾ Không giới hạn"
+    }
+  </div>
+</div>
+
 
 <div class="link-actions">
   <button class="icon-btn" onclick="copyLink('${doc.id}',this)">📋</button>
@@ -913,28 +923,58 @@ async function toggleLink(id,current){
   loadLinks();
 }
 async function configExpire(id){
-  const days = prompt("Nhập số ngày hiệu lực (để trống = không giới hạn):");
 
-  let updateData = {};
+  const html = `
+    <div id="expireBox" style="
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.6);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index:9999;
+    ">
+      <div style="
+        background:#111827;
+        padding:25px;
+        border-radius:18px;
+        width:320px;
+        box-shadow:0 20px 50px rgba(0,0,0,0.6);
+      ">
+        <h3 style="margin-bottom:15px;">⏰ Cài thời gian</h3>
 
-  if(days && !isNaN(days)){
-    const future = new Date();
-    future.setDate(future.getDate() + parseInt(days));
+        <input id="expireInput"
+          type="number"
+          placeholder="Nhập số ngày..."
+          style="
+            width:100%;
+            height:42px;
+            border-radius:10px;
+            border:1px solid #333;
+            background:#0f172a;
+            color:white;
+            padding:0 12px;
+            margin-bottom:15px;
+          "
+        >
 
-    updateData.expiresAt = firebase.firestore.Timestamp.fromDate(future);
-  }else{
-    updateData.expiresAt = null;
-  }
+        <div style="display:flex;justify-content:flex-end;gap:10px;">
+          <button onclick="closeExpireBox()" style="padding:6px 12px;">Hủy</button>
+          <button onclick="saveExpire('${id}')" style="
+            padding:6px 12px;
+            background:#2563eb;
+            border:none;
+            color:white;
+            border-radius:8px;
+          ">Lưu</button>
+        </div>
+      </div>
+    </div>
+  `;
 
-  await db.collection("shareLinks").doc(id).update(updateData);
-
-  loadLinks();
+  document.body.insertAdjacentHTML("beforeend", html);
 }
 
-async function deleteLink(id){
-  await db.collection("shareLinks").doc(id).delete();
-  loadLinks();
-}
 </script>
 
 
