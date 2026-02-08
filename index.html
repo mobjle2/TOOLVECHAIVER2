@@ -658,8 +658,16 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// GIỮ ĐĂNG NHẬP KHI REFRESH
+// ===== AUTH PERSISTENCE (PHẢI ĐẶT TRƯỚC) =====
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
+// ===== FORCE LOGOUT ADMIN ON REFRESH =====
+const urlParams = new URLSearchParams(window.location.search);
+const isUserMode = urlParams.has("u");
+
+if(!isUserMode){
+  auth.signOut();
+}
 
 
 
