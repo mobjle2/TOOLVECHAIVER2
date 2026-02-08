@@ -967,7 +967,11 @@ async function loadLinks(){
   <div class="link-card">
     
 <div class="link-left">
-  <div class="link-id">${id}</div>
+ <div class="link-id" onclick="editAlias('${id}', '${d.alias || ''}')"
+     style="cursor:pointer">
+  ${d.alias || id}
+</div>
+
 
   <div class="link-status ${d.active?'open':'lock'}">
     ${d.active?'🟢 Đang mở':'🟡 Đang khóa'}
@@ -1042,7 +1046,29 @@ async function loadLinks(){
     }, 1000);
   });
 }
+
+/* ===== EDIT LINK ALIAS (ADMIN ONLY) ===== */
+async function editAlias(id, current){
+  const name = prompt("Nhập tên để nhớ cho link:", current);
+  if(name === null) return;
+
+  const ref = db.collection("shareLinks").doc(id);
+
+  if(name.trim() === ""){
+    await ref.update({
+      alias: firebase.firestore.FieldValue.delete()
+    });
+  }else{
+    await ref.update({
+      alias: name.trim()
+    });
+  }
+
+  loadLinks();
+}
+
 // ===== POPUP CÀI THỜI GIAN (ADMIN) =====
+
 async function configExpire(id){
 
   closeExpireBox();
