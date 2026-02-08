@@ -1027,23 +1027,27 @@ async function configExpire(id){
     ">
       <h3 style="margin-bottom:15px;">⏰ Cài thời gian hết hạn</h3>
 
-      <input id="expireDays" type="number" placeholder="Số ngày"
-        value="${days}"
-        style="width:100%;height:42px;margin-bottom:8px;
-        border-radius:10px;border:1px solid #333;
-        background:#020617;color:white;padding:0 12px">
+<div style="margin-bottom:4px;font-size:13px;color:#cbd5e1;">📅 Số ngày</div>
+<input id="expireDays" type="number"
+  value="${days}"
+  style="width:100%;height:42px;margin-bottom:10px;
+  border-radius:10px;border:1px solid #333;
+  background:#020617;color:white;padding:0 12px">
 
-      <input id="expireHours" type="number" placeholder="Giờ"
-        value="${hours}"
-        style="width:100%;height:42px;margin-bottom:8px;
-        border-radius:10px;border:1px solid #333;
-        background:#020617;color:white;padding:0 12px">
+<div style="margin-bottom:4px;font-size:13px;color:#cbd5e1;">⏰ Giờ</div>
+<input id="expireHours" type="number"
+  value="${hours}"
+  style="width:100%;height:42px;margin-bottom:10px;
+  border-radius:10px;border:1px solid #333;
+  background:#020617;color:white;padding:0 12px">
 
-      <input id="expireMinutes" type="number" placeholder="Phút"
-        value="${minutes}"
-        style="width:100%;height:42px;margin-bottom:15px;
-        border-radius:10px;border:1px solid #333;
-        background:#020617;color:white;padding:0 12px">
+<div style="margin-bottom:4px;font-size:13px;color:#cbd5e1;">⏱ Phút</div>
+<input id="expireMinutes" type="number"
+  value="${minutes}"
+  style="width:100%;height:42px;margin-bottom:15px;
+  border-radius:10px;border:1px solid #333;
+  background:#020617;color:white;padding:0 12px">
+
 
       <div style="display:flex;justify-content:flex-end;gap:10px;">
         <button onclick="closeExpireBox()"
