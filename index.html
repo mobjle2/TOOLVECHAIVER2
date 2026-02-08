@@ -968,10 +968,13 @@ async function loadLinks(){
     
     <div class="link-left">
 
-<div class="link-id editable-name"
-     ondblclick="startRename(this, '${id}')">
-  ${sessionStorage.getItem("alias_" + id) || (d.alias || id)}
+<div class="link-id-row">
+  <div class="link-id editable-name" id="name-${id}">
+    ${localStorage.getItem("alias_" + id) || id}
+  </div>
+  <span class="edit-icon" onclick="startRename('${id}')">✏️</span>
 </div>
+
 
 
       <div class="link-status ${d.active?'open':'lock'}">
