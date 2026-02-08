@@ -1136,11 +1136,60 @@ async function toggleLink(id, current){
 }
 
 
-// ===== DELETE LINK =====
-async function deleteLink(id){
-  if(!confirm("Xóa link này?")) return;
+// ===== DELETE LINK (POPUP ĐẸP) =====
+function deleteLink(id){
 
+  const html = `
+  <div id="deleteBox" style="
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.6);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:9999;
+  ">
+    <div style="
+      background:#0f172a;
+      padding:24px;
+      border-radius:18px;
+      width:320px;
+      box-shadow:0 20px 50px rgba(0,0,0,0.6);
+      text-align:center;
+    ">
+      <div style="font-size:18px;margin-bottom:10px;">🗑 Xóa link</div>
+      <div style="font-size:14px;color:#94a3b8;margin-bottom:20px;">
+        Bạn có chắc muốn xóa link này?
+      </div>
+
+      <div style="display:flex;justify-content:center;gap:12px;">
+        <button onclick="closeDeleteBox()"
+          style="padding:8px 16px;border-radius:10px;
+          border:1px solid #334155;background:#1f2937;color:white">
+          Hủy
+        </button>
+
+        <button onclick="confirmDelete('${id}')"
+          style="padding:8px 16px;border-radius:10px;
+          background:#dc2626;color:white;border:none">
+          Xóa
+        </button>
+      </div>
+    </div>
+  </div>
+  `;
+
+  document.body.insertAdjacentHTML("beforeend", html);
+}
+
+function closeDeleteBox(){
+  const box = document.getElementById("deleteBox");
+  if(box) box.remove();
+}
+
+async function confirmDelete(id){
   await db.collection("shareLinks").doc(id).delete();
+  closeDeleteBox();
   loadLinks();
 }
 
