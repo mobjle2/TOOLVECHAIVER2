@@ -963,23 +963,24 @@ async function loadLinks(){
     const d = doc.data();
     const id = doc.id;
 
-    html += `
+   html += `
   <div class="link-card">
     
-<div class="link-left">
- <div class="link-id" onclick="editAlias('${id}', '${d.alias || ''}')"
-     style="cursor:pointer">
-  ${d.alias || id}
-</div>
+    <div class="link-left">
 
+      <div class="link-id editable-name"
+           ondblclick="startRename(this)"
+           data-original="${d.alias || id}">
+        ${d.alias || id}
+      </div>
 
-  <div class="link-status ${d.active?'open':'lock'}">
-    ${d.active?'🟢 Đang mở':'🟡 Đang khóa'}
-  </div>
+      <div class="link-status ${d.active?'open':'lock'}">
+        ${d.active?'🟢 Đang mở':'🟡 Đang khóa'}
+      </div>
 
-  <div id="remain-${id}" style="margin-top:6px;font-size:12px;color:#facc15;">
-    ${d.expiresAt ? '⏳ Đang tính...' : '♾ Không giới hạn'}
-  </div>
+      <div id="remain-${id}" style="margin-top:6px;font-size:12px;color:#facc15;">
+        ${d.expiresAt ? '⏳ Đang tính...' : '♾ Không giới hạn'}
+      </div>
 
   <div style="margin-top:4px;font-size:12px;color:#22c55e;">
     👁 Lượt truy cập: ${d.views || 0}
@@ -1265,6 +1266,38 @@ async function confirmDelete(id){
   await db.collection("shareLinks").doc(id).delete();
   closeDeleteBox();
   loadLinks();
+}
+function startRename(el){
+  if(el.querySelector("input")) return;
+
+  const oldText = el.innerText;
+  const input = document.createElement("input");
+
+  input.type = "text";
+  input.value = oldText;
+  input.style.width = "100%";
+  input.style.background = "transparent";
+  input.style.color = "inherit";
+  input.style.border = "1px solid rgba(255,255,255,0.3)";
+  input.style.borderRadius = "6px";
+  input.style.padding = "4px 6px";
+  input.style.fontSize = "14px";
+
+  el.innerHTML = "";
+  el.appendChild(input);
+  input.focus();
+  input.select();
+
+  function finish(){
+    const val = input.value.trim();
+    el.innerText = val || oldText;
+  }
+
+  input.addEventListener("blur", finish);
+  input.addEventListener("keydown", e=>{
+    if(e.key === "Enter") input.blur();
+    if(e.key === "Escape") el.innerText = oldText;
+  });
 }
 
 
