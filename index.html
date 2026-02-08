@@ -862,14 +862,12 @@ async function createLink(){
   loadLinks();
 }
 
-
-
 async function loadLinks(){
   const snap = await db.collection("shareLinks").get();
   let html="";
 
   snap.forEach(doc=>{
-    const d=doc.data();
+    const d = doc.data();
 
     html+=`
   <div class="link-card">
@@ -879,9 +877,21 @@ async function loadLinks(){
       <div class="link-status ${d.active?'open':'lock'}">
         ${d.active?'🟢 Đang mở':'🟡 Đang khóa'}
       </div>
+
+      <div style="font-size:12px;margin-top:6px;color:#94a3b8;">
+        Visits: ${d.totalVisits || 0} 
+        ${d.maxVisits ? `/ ${d.maxVisits}` : '/ ∞'}
+        <br>
+        Expire: ${
+          d.expiresAt 
+          ? new Date(d.expiresAt.seconds*1000).toLocaleDateString() 
+          : '∞'
+        }
+      </div>
     </div>
 
     <div class="link-actions">
+      <button class="icon-btn" onclick="configLink('${doc.id}')">⚙</button>
       <button class="icon-btn" onclick="copyLink('${doc.id}',this)">📋</button>
       <button class="icon-btn" onclick="toggleLink('${doc.id}',${d.active})">
         ${d.active?'🔒':'🔓'}
@@ -891,45 +901,55 @@ async function loadLinks(){
 
   </div>
 `;
-
   });
 
-  document.getElementById("linkList").innerHTML=html;
+  document.getElementById("linkList").innerHTML = html;
 }
 
+
+// ===== COPY LINK =====
 function copyLink(id,btn){
-  const link = window.location.origin+window.location.pathname+"?u="+id;
+  const link = window.location.origin + window.location.pathname + "?u=" + id;
   navigator.clipboard.writeText(link);
 
-  const old=btn.innerText;
-  btn.innerText="Đã copy ✓";
-  btn.style.background="#16a34a";
-  btn.style.color="white";
+  const old = btn.innerText;
+  btn.innerText = "Đã copy ✓";
+  btn.style.background = "#16a34a";
+  btn.style.color = "white";
 
   setTimeout(()=>{
-    btn.innerText=old;
-    btn.style.background="";
-    btn.style.color="";
+    btn.innerText = old;
+    btn.style.background = "";
+    btn.style.color = "";
   },2000);
 }
 
+
+// ===== TOGGLE LINK =====
 async function toggleLink(id,current){
   await db.collection("shareLinks").doc(id).update({active:!current});
   loadLinks();
 }
 
-async function deleteLink(id){
-  await db.collection("shareLinks").doc(id).delete();
-  loadLinks();
-}
+
+// ===== DELETE LINK =====
 async function deleteLink(id){
   await db.collection("shareLinks").doc(id).delete();
   loadLinks();
 }
 
 
-// 👇 DÁN NGAY DƯỚI ĐÂY
+// ===== HANDLE VISIT (ADMIN KHÔNG TÍNH LƯỢT) =====
 async function handleVisit(linkId){
+
+  // Nếu là admin → không tính lượt
+  if(auth.currentUser){
+    const snap = await db.collection("users").doc(auth.currentUser.email).get();
+    if(snap.exists && snap.data().role === "admin"){
+      return true;
+    }
+  }
+
   const linkRef = db.collection("shareLinks").doc(linkId);
   const linkSnap = await linkRef.get();
 
@@ -968,6 +988,11 @@ async function handleVisit(linkId){
     }
 
   });
+
+  return true;
+}
+
+
 
   return true;
 }
