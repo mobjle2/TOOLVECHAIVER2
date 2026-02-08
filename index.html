@@ -968,11 +968,11 @@ async function loadLinks(){
     
     <div class="link-left">
 
-      <div class="link-id editable-name"
-           ondblclick="startRename(this)"
-           data-original="${d.alias || id}">
-        ${d.alias || id}
-      </div>
+<div class="link-id editable-name"
+     ondblclick="startRename(this, '${id}')">
+  ${sessionStorage.getItem("alias_" + id) || (d.alias || id)}
+</div>
+
 
       <div class="link-status ${d.active?'open':'lock'}">
         ${d.active?'🟢 Đang mở':'🟡 Đang khóa'}
@@ -1267,7 +1267,7 @@ async function confirmDelete(id){
   closeDeleteBox();
   loadLinks();
 }
-function startRename(el){
+function startRename(el, id){
   if(el.querySelector("input")) return;
 
   const oldText = el.innerText;
@@ -1291,6 +1291,11 @@ function startRename(el){
   function finish(){
     const val = input.value.trim();
     el.innerText = val || oldText;
+
+    // ✅ GIỮ TÊN KHI F5
+    if(val){
+      sessionStorage.setItem("alias_" + id, val);
+    }
   }
 
   input.addEventListener("blur", finish);
@@ -1299,6 +1304,7 @@ function startRename(el){
     if(e.key === "Escape") el.innerText = oldText;
   });
 }
+
 
 
 </script>
