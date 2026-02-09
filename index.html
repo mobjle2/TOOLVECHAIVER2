@@ -620,6 +620,7 @@ gap:14px;
          autocomplete="off">
 
   <button onclick="check()">CHECK</button>
+<button onclick="startScan()">📷 QUÉT</button>
 
 </div>
 
@@ -1334,10 +1335,18 @@ function startRename(id){
     if(e.key === "Escape") el.innerText = oldText;
   });
 }
+  input.addEventListener("keydown", e=>{
+    if(e.key === "Enter") input.blur();
+    if(e.key === "Escape") el.innerText = oldText;
+  });
+}
 
-
-
+// ===== QR / BARCODE SCAN (INPUT PHỤ – AN TOÀN) =====
+function startScan(){
+  alert("Demo nút quét – chưa gắn thư viện");
+}
 
 </script>
 </body>
 </html>
+
