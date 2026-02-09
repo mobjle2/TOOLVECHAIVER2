@@ -458,7 +458,7 @@ gap:14px;
 
   /* Dashboard cards */
   .result-grid{
-    grid-template-columns:repeat(2,1fr);
+    grid-template-columns:1fr;
     gap:10px;
   }
 
@@ -471,25 +471,17 @@ gap:14px;
     font-size:14px;
   }
 
+  /* ===== CHIP + VIP: CÙNG KHỐI, KHÔNG DÍNH MÉP ===== */
   .chip-vip-line{
-    font-size:13px;
-    gap:10px;
-  }
-
-  .vip-badge{
-    font-size:12px;
-    padding:3px 8px;
-  }
-  /* Fix lệch chip + VIP trên mobile */
-  .chip-vip-line{
+    display:flex;
+    align-items:center;
     justify-content:flex-start;
     gap:12px;
+    padding-left:14px;   /* canh với code badge */
+    font-size:13px;
   }
 
-  .vip-badge{
-    margin-left:auto;
-  }
-  /* ===== MOBILE: VIP TEXT – BỎ MÀU, BỎ ICON ===== */
+  /* ===== VIP DẠNG TEXT, BỎ BADGE / BỎ MÀU ===== */
   .vip-badge{
     background:none !important;
     border:none !important;
@@ -499,21 +491,28 @@ gap:14px;
 
     font-size:14px;
     font-weight:700;
-    color:#93c5fd;
+    color:#e5e7eb !important;
     line-height:1.2;
 
     display:flex;
     align-items:center;
   }
 
-  /* ===== MOBILE: SAMSUNG + VIP THÀNH 1 KHỐI ===== */
-  .chip-vip-line{
-    justify-content:flex-start;
-    align-items:center;
-    gap:12px;
+  /* ÉP BỎ MÀU CÁC CLASS VIP-x */
+  .vip-5,
+  .vip-6,
+  .vip-7,
+  .vip-8,
+  .vip-9,
+  .vip-10,
+  .vip-11,
+  .vip-13{
+    background:none !important;
+    color:#e5e7eb !important;
   }
 
 }
+
 /* Desktop container */
 .main-container{
   padding:40px 60px;
