@@ -684,9 +684,10 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 const urlParams = new URLSearchParams(window.location.search);
 const isUserMode = urlParams.has("u");
 
-if(!isUserMode){
+if(!isUserMode && window.location.search === ""){
   auth.signOut();
 }
+
 
 
 
