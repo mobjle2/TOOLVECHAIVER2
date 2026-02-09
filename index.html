@@ -638,9 +638,9 @@ gap:14px;
 
 <input type="file" id="ocrInput"
   accept="image/*"
-  capture="environment"
   style="display:none"
   onchange="handleOCR(event)">
+
 
 
 
@@ -1362,6 +1362,8 @@ function triggerOCR(){
 
 async function handleOCR(event){
   const file = event.target.files[0];
+  event.target.value = "";
+
   if(!file) return;
 
   const out = document.getElementById("out");
@@ -1376,44 +1378,74 @@ async function handleOCR(event){
       file,
       'eng',
       {
+        tessedit_pageseg_mode: 6,
+        tessedit_char_whitelist: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
         logger: m => console.log(m)
       }
     );
 
-let raw = text.toUpperCase();
+    let raw = text.toUpperCase();
 
-// Tách từng dòng
-let lines = raw.split("\n").map(l => 
-  l.replace(/[^A-Z0-9]/g,"").trim()
-);
+    let lines = raw.split("\n").map(l => 
+      l.replace(/[^A-Z0-9]/g,"").trim()
+    ).filter(l => l.length >= 6);
 
-// Chỉ giữ dòng hợp lệ (bắt đầu bằng chip prefix)
-// tìm chuỗi có độ dài >= 8 và chứa cả chữ + số
-let cleaned = lines.find(l => 
-  l.length >= 8 &&
-  /[A-Z]/.test(l) &&
-  /[0-9]/.test(l)
-);
+    let cleaned = lines.find(l => 
+      l.length >= 8 &&
+      /[A-Z]/.test(l) &&
+      /[0-9]/.test(l)
+    );
 
-// nếu chưa ra, thử sửa lỗi OCR phổ biến
-if(!cleaned){
-  for(let l of lines){
-    let fix = l
-      .replace(/O/g,"0")
-      .replace(/I/g,"1")
-      .replace(/S/g,"5");
+    if(!cleaned){
+      for(let l of lines){
+        let fix = l
+          .replace(/O/g,"0")
+          .replace(/I/g,"1")
+          .replace(/S/g,"5")
+          .replace(/B/g,"8")
+          .replace(/Z/g,"2");
 
-    if(
-      fix.length >= 8 &&
-      /[A-Z]/.test(fix) &&
-      /[0-9]/.test(fix)
-    ){
-      cleaned = fix;
-      break;
+        if(
+          fix.length >= 8 &&
+          /[A-Z]/.test(fix) &&
+          /[0-9]/.test(fix)
+        ){
+          cleaned = fix;
+          break;
+        }
+      }
     }
+
+    if(!cleaned){
+      out.innerHTML = `
+        <div style="color:#facc15;margin-top:15px;">
+          ⚠️ Không nhận diện được mã.
+        </div>
+      `;
+      return;
+    }
+
+    document.getElementById("q").value = cleaned;
+    cleaned = cleaned.substring(0,16);
+
+
+    out.innerHTML = `
+      <div style="color:#22c55e;margin-top:15px;">
+        ✅ Nhận diện: ${cleaned}
+      </div>
+    `;
+
+    check();
+
+  }catch(err){
+    console.error(err);
+    out.innerHTML = `
+      <div style="color:#ef4444;margin-top:15px;">
+        ❌ OCR lỗi
+      </div>
+    `;
   }
 }
-
 
     if(!cleaned){
       out.innerHTML = `
