@@ -1343,7 +1343,6 @@ window.addEventListener("load", () => {
   const checkGroup = document.querySelector(".check-group");
   if(!checkGroup) return;
 
-  // tạo nút OCR riêng
   const btn = document.createElement("button");
   btn.innerText = "📷 Quét mã";
 
@@ -1357,7 +1356,6 @@ window.addEventListener("load", () => {
   btn.style.cursor = "pointer";
   btn.style.display = "inline-block";
 
-  // CHÈN SAU check-group
   checkGroup.parentNode.insertBefore(btn, checkGroup.nextSibling);
 
   const fileInput = document.createElement("input");
@@ -1391,37 +1389,37 @@ window.addEventListener("load", () => {
       const result = await response.json();
       console.log(result);
 
-
       if(result.ParsedResults && result.ParsedResults.length > 0){
 
-let rawText = result.ParsedResults[0].ParsedText.toUpperCase();
+        let rawText = result.ParsedResults[0].ParsedText.toUpperCase();
 
-let lines = rawText
-  .split("\n")
-  .map(l => l.replace(/[^A-Z0-9]/g,"").trim())
-  .filter(l => l.length >= 8);
+        let lines = rawText
+          .split("\n")
+          .map(l => l.replace(/[^A-Z0-9]/g,"").trim())
+          .filter(l => l.length >= 8);
 
-// Ưu tiên dòng bắt đầu bằng H9
-let cleaned = lines.find(l => l.startsWith("H9"));
+        let cleaned = lines.find(l => l.startsWith("H9"));
 
-// Nếu không có H9, lấy dòng dài nhất
-if(!cleaned && lines.length > 0){
-  cleaned = lines.sort((a,b) => b.length - a.length)[0];
-}
+        if(!cleaned && lines.length > 0){
+          cleaned = lines.sort((a,b) => b.length - a.length)[0];
+        }
 
-if(cleaned){
-  cleaned = cleaned
-    .replace(/O/g,"0")
-    .replace(/I/g,"1")
-    .replace(/S/g,"5")
-    .substring(0,16);
+        if(cleaned){
+          cleaned = cleaned
+            .replace(/O/g,"0")
+            .replace(/I/g,"1")
+            .replace(/S/g,"5")
+            .substring(0,16);
 
-  document.getElementById("q").value = cleaned;
-  check();
-} else {
-  out.innerHTML = "❌ Không nhận diện được mã";
-}
+          document.getElementById("q").value = cleaned;
+          check();
+        } else {
+          out.innerHTML = "❌ Không nhận diện được mã";
+        }
 
+      } else {
+        out.innerHTML = "❌ Không nhận diện được mã";
+      }
 
     } catch(err){
       console.error(err);
