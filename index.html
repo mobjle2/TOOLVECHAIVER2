@@ -1374,10 +1374,24 @@ async function handleOCR(event){
       }
     );
 
-    let cleaned = text
-      .toUpperCase()
-      .replace(/[^A-Z0-9]/g,"")
-      .trim();
+let raw = text.toUpperCase();
+
+// Tách từng dòng
+let lines = raw.split("\n").map(l => 
+  l.replace(/[^A-Z0-9]/g,"").trim()
+);
+
+// Chỉ giữ dòng hợp lệ (bắt đầu bằng chip prefix)
+let cleaned = lines.find(l =>
+  l.startsWith("H9") ||
+  l.startsWith("KM") ||
+  l.startsWith("KLM") ||
+  l.startsWith("KLU") ||
+  l.startsWith("MT") ||
+  l.startsWith("THG") ||
+  l.startsWith("SD") ||
+  l.startsWith("WDC")
+);
 
     if(!cleaned){
       out.innerHTML = `
