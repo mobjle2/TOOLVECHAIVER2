@@ -9,6 +9,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
 
 <style>
 body{
@@ -620,6 +622,17 @@ gap:14px;
          autocomplete="off">
 
   <button onclick="check()">CHECK</button>
+  <button onclick="triggerOCR()" 
+  style="margin-left:8px;background:#16a34a;">
+  📷 OCR
+</button>
+
+<input type="file" id="ocrInput" 
+  accept="image/*" 
+  capture="environment"
+  style="display:none"
+  onchange="handleOCR(event)">
+
 
 </div>
 
@@ -1335,6 +1348,70 @@ function startRename(id){
   });
 }
 
+// ===== OCR =====
+
+function triggerOCR(){
+  document.getElementById("ocrInput").click();
+}
+
+async function handleOCR(event){
+  const file = event.target.files[0];
+  if(!file) return;
+
+  const out = document.getElementById("out");
+  out.innerHTML = `
+    <div class="loading">
+      📷 Đang nhận diện mã chip<span class="dots"></span>
+    </div>
+  `;
+
+  try{
+    const { data: { text } } = await Tesseract.recognize(
+      file,
+      'eng',
+      {
+        logger: m => console.log(m)
+      }
+    );
+
+    let cleaned = text
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g,"")
+      .trim();
+
+    if(!cleaned){
+      out.innerHTML = `
+        <div style="color:#facc15;margin-top:15px;">
+          ⚠️ Không nhận diện được mã.<br>
+          👉 Hướng dẫn:
+          <br>• Chụp rõ nét
+          <br>• Nền tối
+          <br>• Không rung tay
+        </div>
+      `;
+      return;
+    }
+
+    document.getElementById("q").value = cleaned;
+
+    out.innerHTML = `
+      <div style="color:#22c55e;margin-top:15px;">
+        ✅ Nhận diện: ${cleaned}
+      </div>
+    `;
+
+    // DÙNG LẠI LOGIC CŨ
+    check();
+
+  }catch(err){
+    console.error(err);
+    out.innerHTML = `
+      <div style="color:#ef4444;margin-top:15px;">
+        ❌ OCR lỗi, thử lại
+      </div>
+    `;
+  }
+}
 
 
 
