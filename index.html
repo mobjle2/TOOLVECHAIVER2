@@ -1391,34 +1391,39 @@ window.addEventListener("load", () => {
 
       if(result.ParsedResults && result.ParsedResults.length > 0){
 
-   let lines = rawText
-  .split("\n")
-  .map(l => l.replace(/[^A-Z0-9]/g,"").trim())
-  .filter(l => l.length >= 8);
+        let rawText = result.ParsedResults[0].ParsedText.toUpperCase();
 
-const prefixes = ["H9","KM","KLM","THG","MT","SD","TC","WD"];
+        let lines = rawText
+          .split("\n")
+          .map(l => l.replace(/[^A-Z0-9]/g,"").trim())
+          .filter(l => l.length >= 8);
 
-let cleaned = lines.find(l =>
-  prefixes.some(p => l.startsWith(p))
-);
+        const prefixes = ["H9","KM","KLM","THG","MT","SD","TC","WD"];
 
-if(!cleaned && lines.length > 0){
-  cleaned = lines.sort((a,b)=>b.length-a.length)[0];
-}
+        let cleaned = lines.find(l =>
+          prefixes.some(p => l.startsWith(p))
+        );
 
-if(cleaned){
-  cleaned = cleaned
-    .replace(/O/g,"0")
-    .replace(/I/g,"1")
-    .replace(/S/g,"5")
-    .substring(0,16);
+        if(!cleaned && lines.length > 0){
+          cleaned = lines.sort((a,b)=>b.length-a.length)[0];
+        }
 
-  document.getElementById("q").value = cleaned;
-  check();
-} else {
-  out.innerHTML = "❌ Không nhận diện được mã chip";
-}
+        if(cleaned){
+          cleaned = cleaned
+            .replace(/O/g,"0")
+            .replace(/I/g,"1")
+            .replace(/S/g,"5")
+            .substring(0,16);
 
+          document.getElementById("q").value = cleaned;
+          check();
+        } else {
+          out.innerHTML = "❌ Không nhận diện được mã chip";
+        }
+
+      } else {
+        out.innerHTML = "❌ Không nhận diện được mã chip";
+      }
 
     } catch(err){
       console.error(err);
@@ -1430,6 +1435,7 @@ if(cleaned){
 
   document.body.appendChild(fileInput);
 });
+
 
 </script>
 </body>
