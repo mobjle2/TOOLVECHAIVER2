@@ -1336,34 +1336,33 @@ function startRename(id){
     if(e.key === "Escape") el.innerText = oldText;
   });
 }
-// ===== OCR PLUGIN (KHÔNG ĐỤNG CORE) =====
+// ===== OCR PLUGIN (TÁCH RIÊNG HOÀN TOÀN) =====
 
 const ocrScript = document.createElement("script");
 ocrScript.src = "https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js";
 document.head.appendChild(ocrScript);
 
 window.addEventListener("load", () => {
+
   const checkGroup = document.querySelector(".check-group");
   if(!checkGroup) return;
 
+  // tạo nút OCR riêng
   const btn = document.createElement("button");
-  btn.innerText = "📷";
+  btn.innerText = "📷 Quét mã";
 
-  btn.style.marginLeft = "10px";
+  btn.style.marginTop = "10px";
   btn.style.background = "#16a34a";
   btn.style.color = "white";
   btn.style.border = "none";
   btn.style.borderRadius = "12px";
   btn.style.height = "44px";
-  btn.style.minWidth = "50px";
-  btn.style.padding = "0 14px";
+  btn.style.padding = "0 18px";
   btn.style.cursor = "pointer";
-  btn.style.display = "flex";
-  btn.style.alignItems = "center";
-  btn.style.justifyContent = "center";
-  btn.style.flexShrink = "0";
+  btn.style.display = "inline-block";
 
-  checkGroup.appendChild(btn);
+  // CHÈN SAU check-group, KHÔNG CHÈN VÀO TRONG
+  checkGroup.parentNode.insertBefore(btn, checkGroup.nextSibling);
 
   const fileInput = document.createElement("input");
   fileInput.type = "file";
@@ -1379,10 +1378,34 @@ window.addEventListener("load", () => {
     const out = document.getElementById("out");
     out.innerHTML = "📷 Đang xử lý ảnh...";
 
-    try {
+    try{
+
+      const img = new Image();
+      img.src = URL.createObjectURL(file);
+      await new Promise(r => img.onload = r);
+
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+
+      canvas.width = img.width;
+      canvas.height = img.height;
+
+      ctx.drawImage(img,0,0);
+
+      const imageData = ctx.getImageData(0,0,canvas.width,canvas.height);
+      const data = imageData.data;
+
+      // grayscale + tăng contrast
+      for(let i=0;i<data.length;i+=4){
+        let avg = (data[i]+data[i+1]+data[i+2])/3;
+        avg = avg > 140 ? 255 : 0;
+        data[i]=data[i+1]=data[i+2]=avg;
+      }
+
+      ctx.putImageData(imageData,0,0);
 
       const { data: { text } } = await Tesseract.recognize(
-        file,
+        canvas,
         "eng",
         {
           tessedit_pageseg_mode: 6,
@@ -1400,9 +1423,7 @@ window.addEventListener("load", () => {
         lines.find(l => l.startsWith("H9")) ||
         lines.find(l => l.startsWith("KM")) ||
         lines.find(l => l.startsWith("MT")) ||
-        lines.find(l =>
-          /[A-Z]/.test(l) && /[0-9]/.test(l)
-        );
+        lines.find(l => /[A-Z]/.test(l) && /[0-9]/.test(l));
 
       if(cleaned){
         cleaned = cleaned
@@ -1415,11 +1436,11 @@ window.addEventListener("load", () => {
       if(cleaned){
         document.getElementById("q").value = cleaned;
         check();
-      }else{
+      } else {
         out.innerHTML = "❌ Không nhận diện được mã";
       }
 
-    } catch(err){
+    }catch(err){
       console.error(err);
       out.innerHTML = "❌ OCR lỗi";
     }
