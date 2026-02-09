@@ -1348,14 +1348,20 @@ window.addEventListener("load", () => {
 
   const btn = document.createElement("button");
   btn.innerText = "📷";
-  btn.style.marginLeft = "8px";
+
+  btn.style.marginLeft = "10px";
   btn.style.background = "#16a34a";
   btn.style.color = "white";
   btn.style.border = "none";
-  btn.style.borderRadius = "10px";
+  btn.style.borderRadius = "12px";
   btn.style.height = "44px";
-  btn.style.padding = "0 16px";
+  btn.style.minWidth = "50px";
+  btn.style.padding = "0 14px";
   btn.style.cursor = "pointer";
+  btn.style.display = "flex";
+  btn.style.alignItems = "center";
+  btn.style.justifyContent = "center";
+  btn.style.flexShrink = "0";
 
   checkGroup.appendChild(btn);
 
@@ -1371,26 +1377,51 @@ window.addEventListener("load", () => {
     if(!file) return;
 
     const out = document.getElementById("out");
-    out.innerHTML = "📷 Đang nhận diện...";
+    out.innerHTML = "📷 Đang xử lý ảnh...";
 
-    const { data: { text } } = await Tesseract.recognize(
-      file,
-      "eng",
-      {
-        tessedit_char_whitelist: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    try {
+
+      const { data: { text } } = await Tesseract.recognize(
+        file,
+        "eng",
+        {
+          tessedit_pageseg_mode: 6,
+          tessedit_char_whitelist: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        }
+      );
+
+      let lines = text
+        .toUpperCase()
+        .split("\n")
+        .map(l => l.replace(/[^A-Z0-9]/g,"").trim())
+        .filter(l => l.length >= 8);
+
+      let cleaned =
+        lines.find(l => l.startsWith("H9")) ||
+        lines.find(l => l.startsWith("KM")) ||
+        lines.find(l => l.startsWith("MT")) ||
+        lines.find(l =>
+          /[A-Z]/.test(l) && /[0-9]/.test(l)
+        );
+
+      if(cleaned){
+        cleaned = cleaned
+          .replace(/O/g,"0")
+          .replace(/I/g,"1")
+          .replace(/S/g,"5")
+          .substring(0,16);
       }
-    );
 
-    let cleaned = text
-      .toUpperCase()
-      .replace(/[^A-Z0-9]/g,"")
-      .substring(0,16);
+      if(cleaned){
+        document.getElementById("q").value = cleaned;
+        check();
+      }else{
+        out.innerHTML = "❌ Không nhận diện được mã";
+      }
 
-    if(cleaned){
-      document.getElementById("q").value = cleaned;
-      check();
-    }else{
-      out.innerHTML = "❌ Không nhận diện được mã";
+    } catch(err){
+      console.error(err);
+      out.innerHTML = "❌ OCR lỗi";
     }
 
     fileInput.value = "";
@@ -1398,7 +1429,6 @@ window.addEventListener("load", () => {
 
   document.body.appendChild(fileInput);
 });
-
 
 
 
