@@ -192,6 +192,19 @@ body{
   flex-direction:column;
   gap:14px;
 }
+/* ===== CHUNG CONTAINER LOGIC CHO 2 DÒNG ===== */
+.code-title,
+.chip-vip-line{
+  display:inline-flex;
+  align-items:center;
+  min-width:260px;      /* 2 dòng = nhau */
+  padding:6px 14px;     /* giống nhau */
+}
+
+/* DÒNG DƯỚI BÊN TRONG */
+.chip-vip-line{
+  gap:12px;
+}
 
 .result-card:hover{
   transform:translateY(-5px);
@@ -1042,27 +1055,26 @@ async function check(){
       const chip = detectChip(x.code);
       const vipNumber = x.value.replace("VIP ","");
 
-      html += `
-        <div class="result-card">
-          <div class="code-title">
-         <span class="code-badge">💾 ${x.code}</span>
-          </div>
+html += `
+  <div class="result-card">
+    <div class="code-title">
+      <span class="code-badge">💾 ${x.code}</span>
+    </div>
 
+    <div class="chip-vip-line">
+      <div class="chip-info" style="color:${chip.color}">
+        <span class="chip-dot" style="background:${chip.color};"></span>
+        ${chip.name}
+      </div>
 
+      <div class="vip-badge vip-${vipNumber}">
+        VIP ${vipNumber}
+      </div>
+    </div>
+  </div>
+`;
+});
 
-          <div class="chip-vip-line">
-            <div class="chip-info" style="color:${chip.color}">
-              <span class="chip-dot" style="background:${chip.color};"></span>
-              ${chip.name}
-            </div>
-
-            <div class="vip-badge vip-${vipNumber}">
-            VIP ${vipNumber}
-            </div>
-          </div>
-        </div>
-      `;
-    });
 
     html += `</div>`;
     out.innerHTML = html;
