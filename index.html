@@ -201,45 +201,22 @@ body{
     0 0 0 1px rgba(37,99,235,0.3);
 }
 
-/* ================= VIP STYLE (BACKGROUND + TEXT COLOR) ================= */
-.vip-5{
-  background:#facc15;
-  color:#facc15;
-}
+/* ================= VIP STYLE (TEXT ONLY – NO BACKGROUND) ================= */
+.vip-5{  color:#facc15; }   /* vàng */
+.vip-6{  color:#fb923c; }   /* cam */
+.vip-7{  color:#ef4444; }   /* đỏ */
+.vip-8{  color:#a855f7; }   /* tím */
+.vip-9{  color:#0ea5e9; }   /* xanh dương */
+.vip-10{ color:#fbbf24; }   /* vàng đậm */
+.vip-11{ color:#ff4d00; }
+.vip-13{ color:#ff0000; }
 
-.vip-6{
-  background:linear-gradient(90deg,#facc15,#fb923c);
-  color:#fb923c;
-}
-
-.vip-7{
-  background:linear-gradient(90deg,#fb923c,#ef4444);
-  color:#ef4444;
-}
-
-.vip-8{
-  background:linear-gradient(90deg,#6d28d9,#a855f7);
-  color:#a855f7;
-}
-
-.vip-9{
-  background:linear-gradient(90deg,#06b6d4,#0ea5e9);
-  color:#0ea5e9;
-}
-
-.vip-10{
-  background:linear-gradient(90deg,#FFD700,#ffcc00,#FFD700);
-  color:#fbbf24;
-}
-
-.vip-11{
-  background:linear-gradient(90deg,#ff4d00,#ff0000);
-  color:#ff4d00;
-}
-
-.vip-13{
-  background:linear-gradient(90deg,#5b0000,#ff0000,#5b0000);
-  color:#ff0000;
+/* ÉP BỎ MỌI BACKGROUND / BADGE VIP CŨ */
+.vip-5,.vip-6,.vip-7,.vip-8,
+.vip-9,.vip-10,.vip-11,.vip-13{
+  background:none !important;
+  box-shadow:none !important;
+  border:none !important;
 }
 
 @media(max-width:768px){
@@ -251,6 +228,7 @@ body{
     padding:5px 14px;
   }
 }
+
 
 /* ================= CLEAN LOGIN FINAL ================= */
 
