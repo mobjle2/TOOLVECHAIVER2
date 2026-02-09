@@ -201,13 +201,21 @@ body{
     0 0 0 1px rgba(37,99,235,0.3);
 }
 
-/* ================= VIP STYLE (TEXT ONLY – NO BACKGROUND) ================= */
-.vip-5{  color:#facc15; }   /* vàng */
-.vip-6{  color:#fb923c; }   /* cam */
-.vip-7{  color:#ef4444; }   /* đỏ */
-.vip-8{  color:#a855f7; }   /* tím */
-.vip-9{  color:#0ea5e9; }   /* xanh dương */
-.vip-10{ color:#fbbf24; }   /* vàng đậm */
+/* ===== CHIP + VIP: CÙNG HÀNG, KHÔNG ĐẨY SANG PHẢI ===== */
+.chip-vip-line{
+  display:flex;
+  align-items:center;
+  justify-content:flex-start; /* ❗ KHÔNG space-between */
+  gap:14px;
+}
+
+/* ================= VIP TEXT ONLY + DOT ================= */
+.vip-5{  color:#facc15; }
+.vip-6{  color:#fb923c; }
+.vip-7{  color:#ef4444; }
+.vip-8{  color:#a855f7; }
+.vip-9{  color:#0ea5e9; }
+.vip-10{ color:#fbbf24; }
 .vip-11{ color:#ff4d00; }
 .vip-13{ color:#ff0000; }
 
@@ -217,6 +225,24 @@ body{
   background:none !important;
   box-shadow:none !important;
   border:none !important;
+}
+
+/* VIP = chữ + chấm (chấm ăn theo màu chữ) */
+.vip-badge{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-weight:700;
+}
+
+/* CHẤM TRƯỚC VIP – CÙNG SIZE CHẤM SAMSUNG */
+.vip-badge::before{
+  content:"";
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:currentColor;
+  flex-shrink:0;
 }
 
 @media(max-width:768px){
