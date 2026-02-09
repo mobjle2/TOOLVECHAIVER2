@@ -1336,6 +1336,68 @@ function startRename(id){
     if(e.key === "Escape") el.innerText = oldText;
   });
 }
+// ===== OCR PLUGIN (KHÔNG ĐỤNG CORE) =====
+
+const ocrScript = document.createElement("script");
+ocrScript.src = "https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js";
+document.head.appendChild(ocrScript);
+
+window.addEventListener("load", () => {
+  const checkGroup = document.querySelector(".check-group");
+  if(!checkGroup) return;
+
+  const btn = document.createElement("button");
+  btn.innerText = "📷";
+  btn.style.marginLeft = "8px";
+  btn.style.background = "#16a34a";
+  btn.style.color = "white";
+  btn.style.border = "none";
+  btn.style.borderRadius = "10px";
+  btn.style.height = "44px";
+  btn.style.padding = "0 16px";
+  btn.style.cursor = "pointer";
+
+  checkGroup.appendChild(btn);
+
+  const fileInput = document.createElement("input");
+  fileInput.type = "file";
+  fileInput.accept = "image/*";
+  fileInput.style.display = "none";
+
+  btn.onclick = () => fileInput.click();
+
+  fileInput.onchange = async (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+
+    const out = document.getElementById("out");
+    out.innerHTML = "📷 Đang nhận diện...";
+
+    const { data: { text } } = await Tesseract.recognize(
+      file,
+      "eng",
+      {
+        tessedit_char_whitelist: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+      }
+    );
+
+    let cleaned = text
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g,"")
+      .substring(0,16);
+
+    if(cleaned){
+      document.getElementById("q").value = cleaned;
+      check();
+    }else{
+      out.innerHTML = "❌ Không nhận diện được mã";
+    }
+
+    fileInput.value = "";
+  };
+
+  document.body.appendChild(fileInput);
+});
 
 
 
