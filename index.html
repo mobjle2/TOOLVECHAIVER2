@@ -1398,22 +1398,18 @@ window.addEventListener("load", () => {
           .map(l => l.replace(/[^A-Z0-9]/g,"").trim())
           .filter(l => l.length >= 8);
 
-        const prefixes = ["H9","KM","KLM","THG","MT","SD","TC","WD"];
+        const prefixes = ["H9","KM","MT","THG","SD","WDC"];
 
         let cleaned = lines.find(l =>
           prefixes.some(p => l.startsWith(p))
         );
-
-        if(!cleaned && lines.length > 0){
-          cleaned = lines.sort((a,b)=>b.length-a.length)[0];
-        }
 
         if(cleaned){
           cleaned = cleaned
             .replace(/O/g,"0")
             .replace(/I/g,"1")
             .replace(/S/g,"5")
-            .substring(0,16);
+            .substring(0,20);
 
           document.getElementById("q").value = cleaned;
           check();
@@ -1429,6 +1425,7 @@ window.addEventListener("load", () => {
       console.error(err);
       out.innerHTML = "❌ OCR lỗi server";
     }
+
 
     fileInput.value = "";
   };
