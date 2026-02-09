@@ -9,8 +9,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="https://unpkg.com/html5-qrcode"></script>
-
 
 <style>
 body{
@@ -520,7 +518,7 @@ gap:14px;
 .check-group input{
   width:100%;
   height:56px;
-  padding:0 240px 0 20px; /* chừa chỗ cho CHECK + QUÉT */
+  padding:0 120px 0 20px;
   border-radius:14px;
   border:1px solid #222;
   background:#0f0f0f;
@@ -538,36 +536,24 @@ gap:14px;
 
 .check-group button{
   position:absolute;
+  right:6px;
   top:50%;
   transform:translateY(-50%);
   height:44px;
-  padding:0 22px;
+  padding:0 25px;
   border:none;
   border-radius:10px;
+  background:linear-gradient(90deg,#2563eb,#3b82f6);
+  color:white;
   font-weight:700;
   cursor:pointer;
   transition:0.3s;
-}
-
-/* CHECK */
-.check-group button:nth-of-type(1){
-  right:120px;
-  background:linear-gradient(90deg,#2563eb,#3b82f6);
-  color:white;
-}
-
-/* QUÉT */
-.check-group button:nth-of-type(2){
-  right:6px;
-  background:#2563eb;
-  color:white;
 }
 
 .check-group button:hover{
   transform:translateY(-50%) scale(1.05);
   box-shadow:0 8px 20px rgba(37,99,235,0.4);
 }
-
 
 /* ===== THÊM NGAY DƯỚI ĐÂY (ICON ✏️) ===== */
 
@@ -627,18 +613,15 @@ gap:14px;
 </h2>
 
 
-<div class="check-group">
+ <div class="check-group">
 
   <input id="q"
          placeholder="Nhập mã cần kiểm tra"
          autocomplete="off">
 
   <button onclick="check()">CHECK</button>
-  <button onclick="startScan()">📷 QUÉT</button>
 
 </div>
-<div id="scanBox" style="display:none;margin-top:15px;"></div>
-
 
 
 
@@ -902,10 +885,6 @@ async function check(){
     `;
   }
 }
-// ENTER = CHECK
-document.getElementById("q").addEventListener("keydown", e=>{
-  if(e.key === "Enter") check();
-});
 
 
 
@@ -1304,7 +1283,7 @@ function deleteLink(id){
   </div>
   `;
 
-document.body.insertAdjacentHTML("beforeend", html);
+  document.body.insertAdjacentHTML("beforeend", html);
 }
 
 function closeDeleteBox(){
@@ -1317,7 +1296,6 @@ async function confirmDelete(id){
   closeDeleteBox();
   loadLinks();
 }
-
 function startRename(id){
   const el = document.getElementById("name-" + id);
   if(!el || el.querySelector("input")) return;
@@ -1358,49 +1336,8 @@ function startRename(id){
 }
 
 
-// ===== QR / BARCODE SCAN (INPUT PHỤ – AN TOÀN) =====
-let qrScanner = null;
-
-function startScan(){
-  const box = document.getElementById("scanBox");
-
-  // hiện khung camera
-  box.style.display = "block";
-  box.innerHTML = "";
-
-  // nếu đã có scanner cũ thì tắt
-  if(qrScanner){
-    qrScanner.stop().catch(()=>{});
-  }
-
-  qrScanner = new Html5Qrcode("scanBox");
-
-  qrScanner.start(
-    { facingMode: "environment" }, // 👈 CAMERA SAU
-    {
-      fps: 10,
-      qrbox: { width: 280, height: 180 }
-    },
-    (decodedText) => {
-      // ✅ quét được mã
-      document.getElementById("q").value = decodedText;
-
-      qrScanner.stop().catch(()=>{});
-      box.style.display = "none";
-
-      check(); // 👈 tự CHECK
-    },
-    () => {
-      // bỏ qua lỗi quét liên tục
-    }
-  ).catch(err=>{
-    alert("Không mở được camera");
-    console.error(err);
-  });
-}
 
 
 </script>
 </body>
 </html>
-
