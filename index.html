@@ -9,6 +9,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://unpkg.com/html5-qrcode"></script>
+
 
 <style>
 body{
@@ -635,6 +637,7 @@ gap:14px;
   <button onclick="startScan()">📷 QUÉT</button>
 
 </div>
+<div id="scanBox" style="display:none;margin-top:15px;"></div>
 
 
 
@@ -1356,9 +1359,46 @@ function startRename(id){
 
 
 // ===== QR / BARCODE SCAN (INPUT PHỤ – AN TOÀN) =====
+let qrScanner = null;
+
 function startScan(){
-  alert("Demo nút quét – chưa gắn thư viện");
+  const box = document.getElementById("scanBox");
+
+  // hiện khung camera
+  box.style.display = "block";
+  box.innerHTML = "";
+
+  // nếu đã có scanner cũ thì tắt
+  if(qrScanner){
+    qrScanner.stop().catch(()=>{});
+  }
+
+  qrScanner = new Html5Qrcode("scanBox");
+
+  qrScanner.start(
+    { facingMode: "environment" }, // 👈 CAMERA SAU
+    {
+      fps: 10,
+      qrbox: { width: 280, height: 180 }
+    },
+    (decodedText) => {
+      // ✅ quét được mã
+      document.getElementById("q").value = decodedText;
+
+      qrScanner.stop().catch(()=>{});
+      box.style.display = "none";
+
+      check(); // 👈 tự CHECK
+    },
+    () => {
+      // bỏ qua lỗi quét liên tục
+    }
+  ).catch(err=>{
+    alert("Không mở được camera");
+    console.error(err);
+  });
 }
+
 
 </script>
 </body>
