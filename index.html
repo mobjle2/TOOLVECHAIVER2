@@ -185,7 +185,8 @@ async function check(){
     html += `
       <div class="result-card">
         <span class="code-badge">💾 ${x.code}</span>
-        <div class="chip-vip-line">
+        <<div class="chip-vip-line code-badge">
+
           <div class="chip-info" style="color:${chip.color}">
             <span class="chip-dot"></span>${chip.name}
           </div>
@@ -201,7 +202,7 @@ async function check(){
   requestAnimationFrame(()=>{
     document.querySelectorAll('.result-card').forEach(card=>{
       const code = card.querySelector('.code-badge');
-      const line = card.querySelector('.chip-vip-line');
+      const line = card.querySelector('.chip-vip-line.code-badge');
       if(code && line){
         line.style.width = code.getBoundingClientRect().width + 'px';
       }
