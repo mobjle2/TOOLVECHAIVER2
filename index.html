@@ -201,12 +201,12 @@ body{
     0 0 0 1px rgba(37,99,235,0.3);
 }
 
-/* ===== CHIP + VIP: CÙNG HÀNG, KHÔNG ĐẨY SANG PHẢI ===== */
+/* ===== CHIP + VIP: GỌN – KHÔNG DÀI HÀNG ===== */
 .chip-vip-line{
   display:flex;
   align-items:center;
-  justify-content:flex-start; /* ❗ KHÔNG space-between */
-  gap:14px;
+  justify-content:flex-start;
+  gap:10px;            /* 👈 GIẢM GAP */
 }
 
 /* ================= VIP TEXT ONLY + DOT ================= */
@@ -227,15 +227,16 @@ body{
   border:none !important;
 }
 
-/* VIP = chữ + chấm (chấm ăn theo màu chữ) */
+/* VIP = chữ gọn + chấm */
 .vip-badge{
-  display:flex;
+  display:inline-flex;        /* 👈 KHÔNG CHIẾM THỪA */
   align-items:center;
   gap:6px;
   font-weight:700;
+  white-space:nowrap;        /* 👈 KHÓA ĐỘ DÀI */
 }
 
-/* CHẤM TRƯỚC VIP – CÙNG SIZE CHẤM SAMSUNG */
+/* CHẤM TRƯỚC VIP */
 .vip-badge::before{
   content:"";
   width:8px;
@@ -254,7 +255,6 @@ body{
     padding:5px 14px;
   }
 }
-
 
 /* ================= CLEAN LOGIN FINAL ================= */
 
