@@ -951,9 +951,9 @@ if(!user){
     const snap = await db.collection("users").doc(user.email).get();
 
     if(!snap.exists || snap.data().role !== "admin"){
-      await auth.signOut();
-      return;
-    }
+if(!isUserMode && window.location.search === ""){
+  auth.signOut();
+}
 
     document.getElementById("loginScreen").style.display = "none";
     document.getElementById("adminPanel").style.display = "block";
