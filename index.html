@@ -1241,6 +1241,20 @@ async function loadLinks(){
   });
 
   document.getElementById("linkList").innerHTML = html;
+  requestAnimationFrame(() => {
+  document.querySelectorAll('.result-card').forEach(card => {
+    const code = card.querySelector('.code-badge');
+    const line = card.querySelector('.chip-vip-line');
+    if (!code || !line) return;
+
+    // đo width thật của dòng code
+    const w = code.getBoundingClientRect().width;
+
+    // ép dòng dưới = y chang
+    line.style.width = w + 'px';
+  });
+});
+
 
   // ===== COUNTDOWN REALTIME CHO ADMIN =====
   snap.forEach(doc=>{
