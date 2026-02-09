@@ -899,6 +899,10 @@ async function check(){
     `;
   }
 }
+// ENTER = CHECK
+document.getElementById("q").addEventListener("keydown", e=>{
+  if(e.key === "Enter") check();
+});
 
 
 
