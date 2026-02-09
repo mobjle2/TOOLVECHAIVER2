@@ -555,8 +555,26 @@ gap:14px;
   box-shadow:0 8px 20px rgba(37,99,235,0.4);
 }
 
+/* ===== THÊM NGAY DƯỚI ĐÂY (ICON ✏️) ===== */
+
+.link-id-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.edit-icon{
+  cursor:pointer;
+  opacity:0.7;
+  font-size:14px;
+}
+
+.edit-icon:hover{
+  opacity:1;
+}
 
 </style>
+
 
 </head>
 
@@ -640,8 +658,18 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// GIỮ ĐĂNG NHẬP KHI REFRESH
+// ===== AUTH PERSISTENCE (PHẢI ĐẶT TRƯỚC) =====
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
+// ===== FORCE LOGOUT ADMIN ON REFRESH =====
+const urlParams = new URLSearchParams(window.location.search);
+const isUserMode = urlParams.has("u");
+
+if(!isUserMode){
+  auth.signOut();
+}
+
+
 
 
 // ===== USER MODE (?u=) =====
@@ -872,11 +900,14 @@ async function secureLogin(){
 
   try{
     await auth.signInWithEmailAndPassword(email, pass);
+    // KHÔNG làm gì thêm
   }catch(e){
     err.style.display = "block";
     err.innerText = "Sai tài khoản hoặc mật khẩu!";
+    return; // QUAN TRỌNG
   }
 }
+
 
 
 // ===== TOGGLE PASSWORD =====
@@ -899,10 +930,10 @@ auth.onAuthStateChanged(async (user) => {
     return;
   }
 
-  if(!user){
-    document.getElementById("loginScreen").style.display = "flex";
-    return;
-  }
+if(!user){
+  return; // không ép show login nữa
+}
+
 
   try{
     const snap = await db.collection("users").doc(user.email).get();
@@ -942,6 +973,8 @@ async function createLink(){
 
 
 
+
+
 async function loadLinks(){
   const snap = await db.collection("shareLinks").get();
   let html = "";
@@ -956,19 +989,27 @@ async function loadLinks(){
     const d = doc.data();
     const id = doc.id;
 
-    html += `
+   html += `
   <div class="link-card">
     
-<div class="link-left">
-  <div class="link-id">${id}</div>
+    <div class="link-left">
 
-  <div class="link-status ${d.active?'open':'lock'}">
-    ${d.active?'🟢 Đang mở':'🟡 Đang khóa'}
+<div class="link-id-row">
+  <div class="link-id editable-name" id="name-${id}">
+    ${localStorage.getItem("alias_" + id) || id}
   </div>
+  <span class="edit-icon" onclick="startRename('${id}')">✏️</span>
+</div>
 
-  <div id="remain-${id}" style="margin-top:6px;font-size:12px;color:#facc15;">
-    ${d.expiresAt ? '⏳ Đang tính...' : '♾ Không giới hạn'}
-  </div>
+
+
+      <div class="link-status ${d.active?'open':'lock'}">
+        ${d.active?'🟢 Đang mở':'🟡 Đang khóa'}
+      </div>
+
+      <div id="remain-${id}" style="margin-top:6px;font-size:12px;color:#facc15;">
+        ${d.expiresAt ? '⏳ Đang tính...' : '♾ Không giới hạn'}
+      </div>
 
   <div style="margin-top:4px;font-size:12px;color:#22c55e;">
     👁 Lượt truy cập: ${d.views || 0}
@@ -1035,7 +1076,29 @@ async function loadLinks(){
     }, 1000);
   });
 }
+
+/* ===== EDIT LINK ALIAS (ADMIN ONLY) ===== */
+async function editAlias(id, current){
+  const name = prompt("Nhập tên để nhớ cho link:", current);
+  if(name === null) return;
+
+  const ref = db.collection("shareLinks").doc(id);
+
+  if(name.trim() === ""){
+    await ref.update({
+      alias: firebase.firestore.FieldValue.delete()
+    });
+  }else{
+    await ref.update({
+      alias: name.trim()
+    });
+  }
+
+  loadLinks();
+}
+
 // ===== POPUP CÀI THỜI GIAN (ADMIN) =====
+
 async function configExpire(id){
 
   closeExpireBox();
@@ -1233,6 +1296,46 @@ async function confirmDelete(id){
   closeDeleteBox();
   loadLinks();
 }
+function startRename(id){
+  const el = document.getElementById("name-" + id);
+  if(!el || el.querySelector("input")) return;
+
+  const oldText = el.innerText;
+  const input = document.createElement("input");
+
+  input.type = "text";
+  input.value = oldText;
+  input.style.width = "100%";
+  input.style.background = "transparent";
+  input.style.color = "inherit";
+  input.style.border = "1px solid rgba(255,255,255,0.3)";
+  input.style.borderRadius = "6px";
+  input.style.padding = "4px 6px";
+  input.style.fontSize = "14px";
+
+  el.innerHTML = "";
+  el.appendChild(input);
+  input.focus();
+  input.select();
+
+  function finish(){
+    const val = input.value.trim();
+    el.innerText = val || oldText;
+
+    if(val){
+      // ✅ GIỮ TÊN KỂ CẢ ĐÓNG TAB
+      localStorage.setItem("alias_" + id, val);
+    }
+  }
+
+  input.addEventListener("blur", finish);
+  input.addEventListener("keydown", e=>{
+    if(e.key === "Enter") input.blur();
+    if(e.key === "Escape") el.innerText = oldText;
+  });
+}
+
+
 
 
 </script>
