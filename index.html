@@ -615,9 +615,11 @@ gap:14px;
 
  <div class="check-group">
 
-  <input id="q"
-         placeholder="Nhập mã cần kiểm tra"
-         autocomplete="off">
+<input id="q"
+       placeholder="Nhập mã cần kiểm tra"
+       autocomplete="off"
+       onkeydown="if(event.key==='Enter'){check();}">
+
 
   <button onclick="check()">CHECK</button>
 
