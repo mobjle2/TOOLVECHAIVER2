@@ -9,8 +9,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-
 
 <style>
 body{
@@ -615,32 +613,15 @@ gap:14px;
 </h2>
 
 
-<div style="display:flex;gap:8px;align-items:center;">
+ <div class="check-group">
 
   <input id="q"
-    placeholder="Nhập mã cần kiểm tra"
-    autocomplete="off"
-    style="flex:1"
-    onkeydown="if(event.key==='Enter'){ check(); }">
+         placeholder="Nhập mã cần kiểm tra"
+         autocomplete="off">
 
-  <button onclick="check()"
-    style="background:#2563eb;color:white;padding:0 18px;border:none;border-radius:10px;height:48px;">
-    CHECK
-  </button>
-
-  <button onclick="triggerOCR()"
-    style="background:#16a34a;color:white;padding:0 16px;border:none;border-radius:10px;height:48px;">
-    📷
-  </button>
+  <button onclick="check()">CHECK</button>
 
 </div>
-
-
-<input type="file" id="ocrInput"
-  accept="image/*"
-  style="display:none"
-  onchange="handleOCR(event)">
-
 
 
 
@@ -677,9 +658,16 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+// ===== AUTH PERSISTENCE (PHẢI ĐẶT TRƯỚC) =====
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
+// ===== FORCE LOGOUT ADMIN ON REFRESH =====
+const urlParams = new URLSearchParams(window.location.search);
+const isUserMode = urlParams.has("u");
 
-
+if(!isUserMode){
+  auth.signOut();
+}
 
 
 
@@ -951,9 +939,9 @@ if(!user){
     const snap = await db.collection("users").doc(user.email).get();
 
     if(!snap.exists || snap.data().role !== "admin"){
-if(!isUserMode && window.location.search === ""){
-  auth.signOut();
-}
+      await auth.signOut();
+      return;
+    }
 
     document.getElementById("loginScreen").style.display = "none";
     document.getElementById("adminPanel").style.display = "block";
@@ -1227,8 +1215,7 @@ async function saveExpire(id){
 }
 // ===== COPY LINK =====
 function copyLink(id, btn){
- const link = window.location.origin + window.location.pathname.replace("index.html","") + "?u=" + id;
-
+  const link = window.location.origin + window.location.pathname + "?u=" + id;
   navigator.clipboard.writeText(link);
 
   const old = btn.innerText;
@@ -1348,132 +1335,6 @@ function startRename(id){
   });
 }
 
-// ===== OCR =====
-
-function triggerOCR(){
-  document.getElementById("ocrInput").click();
-}
-
-async function handleOCR(event){
-  const file = event.target.files[0];
-  event.target.value = "";
-
-  if(!file) return;
-
-  const out = document.getElementById("out");
-  out.innerHTML = `
-    <div class="loading">
-      📷 Đang nhận diện mã chip<span class="dots"></span>
-    </div>
-  `;
-
-  try{
-    const { data: { text } } = await Tesseract.recognize(
-      file,
-      'eng',
-      {
-        tessedit_pageseg_mode: 6,
-        tessedit_char_whitelist: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
-        logger: m => console.log(m)
-      }
-    );
-
-    let raw = text.toUpperCase();
-
-    let lines = raw.split("\n").map(l => 
-      l.replace(/[^A-Z0-9]/g,"").trim()
-    ).filter(l => l.length >= 6);
-
-    let cleaned = lines.find(l => 
-      l.length >= 8 &&
-      /[A-Z]/.test(l) &&
-      /[0-9]/.test(l)
-    );
-
-    if(!cleaned){
-      for(let l of lines){
-        let fix = l
-          .replace(/O/g,"0")
-          .replace(/I/g,"1")
-          .replace(/S/g,"5")
-          .replace(/B/g,"8")
-          .replace(/Z/g,"2");
-
-        if(
-          fix.length >= 8 &&
-          /[A-Z]/.test(fix) &&
-          /[0-9]/.test(fix)
-        ){
-          cleaned = fix;
-          break;
-        }
-      }
-    }
-
-    if(!cleaned){
-      out.innerHTML = `
-        <div style="color:#facc15;margin-top:15px;">
-          ⚠️ Không nhận diện được mã.
-        </div>
-      `;
-      return;
-    }
-
-    document.getElementById("q").value = cleaned;
-    cleaned = cleaned.substring(0,16);
-
-
-    out.innerHTML = `
-      <div style="color:#22c55e;margin-top:15px;">
-        ✅ Nhận diện: ${cleaned}
-      </div>
-    `;
-
-    check();
-
-  }catch(err){
-    console.error(err);
-    out.innerHTML = `
-      <div style="color:#ef4444;margin-top:15px;">
-        ❌ OCR lỗi
-      </div>
-    `;
-  }
-}
-
-    if(!cleaned){
-      out.innerHTML = `
-        <div style="color:#facc15;margin-top:15px;">
-          ⚠️ Không nhận diện được mã.<br>
-          👉 Hướng dẫn:
-          <br>• Chụp rõ nét
-          <br>• Nền tối
-          <br>• Không rung tay
-        </div>
-      `;
-      return;
-    }
-
-    document.getElementById("q").value = cleaned;
-
-    out.innerHTML = `
-      <div style="color:#22c55e;margin-top:15px;">
-        ✅ Nhận diện: ${cleaned}
-      </div>
-    `;
-
-    // DÙNG LẠI LOGIC CŨ
-    check();
-
-  }catch(err){
-    console.error(err);
-    out.innerHTML = `
-      <div style="color:#ef4444;margin-top:15px;">
-        ❌ OCR lỗi, thử lại
-      </div>
-    `;
-  }
-}
 
 
 
