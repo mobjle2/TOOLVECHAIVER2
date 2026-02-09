@@ -1284,7 +1284,7 @@ function deleteLink(id){
   </div>
   `;
 
-  document.body.insertAdjacentHTML("beforeend", html);
+document.body.insertAdjacentHTML("beforeend", html);
 }
 
 function closeDeleteBox(){
@@ -1297,6 +1297,7 @@ async function confirmDelete(id){
   closeDeleteBox();
   loadLinks();
 }
+
 function startRename(id){
   const el = document.getElementById("name-" + id);
   if(!el || el.querySelector("input")) return;
@@ -1335,11 +1336,7 @@ function startRename(id){
     if(e.key === "Escape") el.innerText = oldText;
   });
 }
-  input.addEventListener("keydown", e=>{
-    if(e.key === "Enter") input.blur();
-    if(e.key === "Escape") el.innerText = oldText;
-  });
-}
+
 
 // ===== QR / BARCODE SCAN (INPUT PHỤ – AN TOÀN) =====
 function startScan(){
