@@ -1394,37 +1394,34 @@ window.addEventListener("load", () => {
 
       if(result.ParsedResults && result.ParsedResults.length > 0){
 
-        let text = result.ParsedResults[0].ParsedText;
+let rawText = result.ParsedResults[0].ParsedText.toUpperCase();
 
-        let lines = text
-          .toUpperCase()
-          .split("\n")
-          .map(l => l.replace(/[^A-Z0-9]/g,"").trim())
-          .filter(l => l.length >= 8);
+let lines = rawText
+  .split("\n")
+  .map(l => l.replace(/[^A-Z0-9]/g,"").trim())
+  .filter(l => l.length >= 8);
 
-        let cleaned =
-          lines.find(l => l.startsWith("H9")) ||
-          lines.find(l => l.startsWith("KM")) ||
-          lines.find(l => l.startsWith("MT")) ||
-          lines.find(l => l.startsWith("THG")) ||
-          lines.find(l => /[A-Z]/.test(l) && /[0-9]/.test(l));
+// Ưu tiên dòng bắt đầu bằng H9
+let cleaned = lines.find(l => l.startsWith("H9"));
 
-        if(cleaned){
-          cleaned = cleaned
-            .replace(/O/g,"0")
-            .replace(/I/g,"1")
-            .replace(/S/g,"5")
-            .substring(0,16);
+// Nếu không có H9, lấy dòng dài nhất
+if(!cleaned && lines.length > 0){
+  cleaned = lines.sort((a,b) => b.length - a.length)[0];
+}
 
-          document.getElementById("q").value = cleaned;
-          check();
-        } else {
-          out.innerHTML = "❌ Không nhận diện được mã";
-        }
+if(cleaned){
+  cleaned = cleaned
+    .replace(/O/g,"0")
+    .replace(/I/g,"1")
+    .replace(/S/g,"5")
+    .substring(0,16);
 
-      } else {
-        out.innerHTML = "❌ Không nhận diện được mã";
-      }
+  document.getElementById("q").value = cleaned;
+  check();
+} else {
+  out.innerHTML = "❌ Không nhận diện được mã";
+}
+
 
     } catch(err){
       console.error(err);
