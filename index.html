@@ -1391,22 +1391,21 @@ window.addEventListener("load", () => {
 
       if(result.ParsedResults && result.ParsedResults.length > 0){
 
-let rawText = result.ParsedResults[0].ParsedText.toUpperCase();
-
-let lines = rawText
+   let lines = rawText
   .split("\n")
   .map(l => l.replace(/[^A-Z0-9]/g,"").trim())
   .filter(l => l.length >= 8);
 
-// Pattern eMMC phổ biến: bắt đầu H + số
-let cleaned = lines.find(l => /^H[0-9A-Z]{7,15}$/.test(l));
+const prefixes = ["H9","KM","KLM","THG","MT","SD","TC","WD"];
 
-// Nếu không có, thử tìm chuỗi chứa H9
-if(!cleaned){
-  cleaned = lines.find(l => l.includes("H9"));
+let cleaned = lines.find(l =>
+  prefixes.some(p => l.startsWith(p))
+);
+
+if(!cleaned && lines.length > 0){
+  cleaned = lines.sort((a,b)=>b.length-a.length)[0];
 }
 
-// Nếu vẫn không có, báo lỗi
 if(cleaned){
   cleaned = cleaned
     .replace(/O/g,"0")
@@ -1420,10 +1419,6 @@ if(cleaned){
   out.innerHTML = "❌ Không nhận diện được mã chip";
 }
 
-
-      } else {
-        out.innerHTML = "❌ Không nhận diện được mã";
-      }
 
     } catch(err){
       console.error(err);
