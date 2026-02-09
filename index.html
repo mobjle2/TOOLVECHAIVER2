@@ -615,26 +615,32 @@ gap:14px;
 </h2>
 
 
- <div class="check-group">
+<div style="display:flex;gap:8px;align-items:center;">
 
   <input id="q"
-         placeholder="Nhập mã cần kiểm tra"
-         autocomplete="off">
+    placeholder="Nhập mã cần kiểm tra"
+    autocomplete="off"
+    style="flex:1"
+    onkeydown="if(event.key==='Enter'){ check(); }">
 
-  <button onclick="check()">CHECK</button>
-  <button onclick="triggerOCR()" 
-  style="margin-left:8px;background:#16a34a;">
-  📷 OCR
-</button>
+  <button onclick="check()"
+    style="background:#2563eb;color:white;padding:0 18px;border:none;border-radius:10px;height:48px;">
+    CHECK
+  </button>
 
-<input type="file" id="ocrInput" 
-  accept="image/*" 
+  <button onclick="triggerOCR()"
+    style="background:#16a34a;color:white;padding:0 16px;border:none;border-radius:10px;height:48px;">
+    📷
+  </button>
+
+</div>
+
+
+<input type="file" id="ocrInput"
+  accept="image/*"
   capture="environment"
   style="display:none"
   onchange="handleOCR(event)">
-
-
-</div>
 
 
 
@@ -1382,16 +1388,32 @@ let lines = raw.split("\n").map(l =>
 );
 
 // Chỉ giữ dòng hợp lệ (bắt đầu bằng chip prefix)
-let cleaned = lines.find(l =>
-  l.startsWith("H9") ||
-  l.startsWith("KM") ||
-  l.startsWith("KLM") ||
-  l.startsWith("KLU") ||
-  l.startsWith("MT") ||
-  l.startsWith("THG") ||
-  l.startsWith("SD") ||
-  l.startsWith("WDC")
+// tìm chuỗi có độ dài >= 8 và chứa cả chữ + số
+let cleaned = lines.find(l => 
+  l.length >= 8 &&
+  /[A-Z]/.test(l) &&
+  /[0-9]/.test(l)
 );
+
+// nếu chưa ra, thử sửa lỗi OCR phổ biến
+if(!cleaned){
+  for(let l of lines){
+    let fix = l
+      .replace(/O/g,"0")
+      .replace(/I/g,"1")
+      .replace(/S/g,"5");
+
+    if(
+      fix.length >= 8 &&
+      /[A-Z]/.test(fix) &&
+      /[0-9]/.test(fix)
+    ){
+      cleaned = fix;
+      break;
+    }
+  }
+}
+
 
     if(!cleaned){
       out.innerHTML = `
