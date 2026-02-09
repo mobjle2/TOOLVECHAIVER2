@@ -471,18 +471,17 @@ gap:14px;
     font-size:14px;
   }
 
-  /* ===== CHIP + VIP: CÙNG KHỐI, KHÔNG DÍNH MÉP ===== */
-.chip-vip-line{
-  display:flex;
-  align-items:center;
-  justify-content:flex-start;
-  gap:8px;
-  margin-left:22px;   /* CANH TRỤC VỚI CODE */
-  font-size:13px;
-}
+  /* ===== CHIP + VIP: CÙNG KHỐI, CANH TRỤC VỚI CODE ===== */
+  .chip-vip-line{
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    gap:8px;
+    margin-left:22px;   /* canh với chữ trong code badge */
+    font-size:13px;
+  }
 
-
-  /* ===== VIP DẠNG TEXT, BỎ BADGE / BỎ MÀU ===== */
+  /* ===== VIP TEXT + DOT (DOT GIỐNG SAMSUNG, MÀU THEO VIP) ===== */
   .vip-badge{
     background:none !important;
     border:none !important;
@@ -490,38 +489,36 @@ gap:14px;
     padding:0 !important;
     margin:0 !important;
 
-    font-size:14px;
-    font-weight:700;
-    color:#e5e7eb !important;
-    line-height:1.2;
-
     display:flex;
     align-items:center;
+    gap:8px;
+
+    font-size:14px;
+    font-weight:700;
+    line-height:1.2;
+    color:inherit;   /* GIỮ MÀU VIP 5–13 */
   }
 
-  /* ÉP BỎ MÀU CÁC CLASS VIP-x */
-  .vip-5,
-  .vip-6,
-  .vip-7,
-  .vip-8,
-  .vip-9,
-  .vip-10,
-  .vip-11,
-  .vip-13{
-    background:none !important;
-    color:#e5e7eb !important;
+  /* DOT trước VIP – cùng size chip-dot, ăn theo màu VIP */
+  .vip-badge::before{
+    content:"";
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:currentColor;
+    flex-shrink:0;
   }
 
 }
 
-/* Desktop container */
+/* ================= DESKTOP CONTAINER ================= */
 .main-container{
   padding:40px 60px;
   max-width:1400px;
   margin:auto;
 }
- /* ===== CREATE LINK BUTTON PRO ===== */
 
+/* ================= CREATE LINK BUTTON PRO ================= */
 .create-link-btn{
   padding:8px 18px;
   border-radius:999px;
@@ -539,6 +536,7 @@ gap:14px;
   color:black;
   box-shadow:0 8px 20px rgba(34,197,94,0.4);
 }
+
  
 /* ===== CHECK INPUT INLINE BUTTON ===== */
 
