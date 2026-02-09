@@ -682,11 +682,12 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
 // ===== FORCE LOGOUT ADMIN ON REFRESH =====
 const urlParams = new URLSearchParams(window.location.search);
-const isUserMode = urlParams.has("u");
+const isUserMode = urlParams.get("u");
 
-if(!isUserMode && window.location.search === ""){
+if(!isUserMode){
   auth.signOut();
 }
+
 
 
 
@@ -1235,7 +1236,8 @@ async function saveExpire(id){
 }
 // ===== COPY LINK =====
 function copyLink(id, btn){
-  const link = window.location.origin + window.location.pathname + "?u=" + id;
+ const link = window.location.origin + window.location.pathname.replace("index.html","") + "?u=" + id;
+
   navigator.clipboard.writeText(link);
 
   const old = btn.innerText;
