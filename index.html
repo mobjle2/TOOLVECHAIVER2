@@ -969,18 +969,8 @@ async function check(){
       `;
       return;
     }
-
-    // ===== RENDER KẾT QUẢ =====
-    let html = `<div class="result-grid">`;
-
-snap.forEach(doc=>{
-  const x = doc.data();
-  const chip = detectChip(x.code);
-  const vipNumber = x.value.startsWith("VIP ")
-  ? x.value.replace("VIP ","")
-  : "";
-
-  const mmc = detectMMC(x.code);
+// ===== RENDER KẾT QUẢ =====
+let html = `<div class="result-grid">`;
 
 snap.forEach(doc=>{
   const x = doc.data();
@@ -1026,10 +1016,10 @@ snap.forEach(doc=>{
   `;
 });
 
+html += `</div>`;
+out.innerHTML = html;
 
 
-    html += `</div>`;
-    out.innerHTML = html;
 
   }catch(err){
     console.error(err);
