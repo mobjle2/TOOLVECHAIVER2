@@ -899,15 +899,16 @@ function detectChip(code){
 function detectMMC(code){
   code = code.toUpperCase();
 
-  if(code.includes("MMC1")) return "1";
-  if(code.includes("MMC2")) return "2";
-  if(code.includes("MMC3")) return "3";
-  if(code.includes("MMC4")) return "4";
-  if(code.includes("MMC5")) return "5";
-  if(code.includes("MMC6")) return "6";
+  if(code.includes("MMC1")) return 1;
+  if(code.includes("MMC2")) return 2;
+  if(code.includes("MMC3")) return 3;
+  if(code.includes("MMC4")) return 4;
+  if(code.includes("MMC5")) return 5;
+  if(code.includes("MMC6")) return 6;
 
-  return "";
+  return 0;
 }
+
 
 
 async function check(){
@@ -968,14 +969,15 @@ async function check(){
     let html = `<div class="result-grid">`;
 
     snap.forEach(doc=>{
-      const x = doc.data();
-      const chip = detectChip(x.code);
-      const vipNumber = x.value.replace("VIP ","");
-      const mmc = detectMMC(x.code);
-      const mmcNumber = mmc.replace("MMC ","");
+  const x = doc.data();
+  const chip = detectChip(x.code);
+  const vipNumber = x.value.replace("VIP ","");
+  const mmc = detectMMC(x.code);
+
 
       html += `
-        <div class="result-card vip-${vipNumber} mmc-${mmcNumber}">
+        <div class="result-card vip-${vipNumber} ${mmc ? `mmc-${mmc}` : ""}">
+
           <div class="code-title">
             <span class="code-badge">💾 ${x.code}</span>
           </div>
@@ -998,6 +1000,7 @@ ${mmc ? `
   MMC ${mmc}
 </div>
 ` : ""}
+
 
 
             </div>
@@ -1119,9 +1122,12 @@ async function loadLinks(){
   }
   window.adminTimers = {};
 
-  snap.forEach(doc=>{
-    const d = doc.data();
-    const id = doc.id;
+snap.forEach(doc=>{
+  const x = doc.data();
+  const chip = detectChip(x.code);
+  const vipNumber = x.value.replace("VIP ","");
+  const mmc = detectMMC(x.code);
+
 
    html += `
   <div class="link-card">
