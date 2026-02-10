@@ -849,7 +849,7 @@ async function check(){
     snap.forEach(doc=>{
       const x = doc.data();
       const chip = detectChip(x.code);
-      const vipNumber = x.value.replace("VIP ","");
+      const vipNumber = x.value.replace(/[^0-9]/g, "");
 
       html += `
         <div class="result-card">
@@ -868,6 +868,7 @@ async function check(){
 <div class="vip-badge vip-${vipNumber}">
   MMC${vipNumber}
 </div>
+
 
           </div>
         </div>
