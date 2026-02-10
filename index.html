@@ -284,7 +284,7 @@ body{
   border-color:currentColor;
 }
 
-/* ===== MMC STYLE ===== */
+/* ===== MMC STYLE – 6 MÀU ĐẸP & PHÂN CẤP ===== */
 .mmc-text{
   display:flex;
   align-items:center;
@@ -301,21 +301,25 @@ body{
   display:inline-block;
 }
 
-/* MMC COLOR SCALE */
-.mmc-1{ color:#94a3b8; }
-.mmc-2{ color:#64748b; }
-.mmc-3{ color:#0ea5e9; }
-.mmc-4{ color:#22c55e; }
-.mmc-5{ color:#f97316; }
-.mmc-6{ color:#8b5cf6; }
+/* MMC 1–6 */
+.mmc-1{ color:#94a3b8; }      /* xám tech */
+.mmc-2{ color:#22c55e; }      /* xanh lá */
+.mmc-3{ color:#0ea5e9; }      /* xanh dương */
+.mmc-4{ color:#a855f7; }      /* tím */
+.mmc-5{ color:#f97316; }      /* cam */
+.mmc-6{ 
+  color:#facc15;              /* vàng cao cấp */
+  text-shadow:0 0 6px rgba(250,204,21,0.35);
+}
 
-/* DOT THEO MMC */
+/* Dot theo màu */
 .mmc-1 .mmc-dot{ background:#94a3b8; }
-.mmc-2 .mmc-dot{ background:#64748b; }
+.mmc-2 .mmc-dot{ background:#22c55e; }
 .mmc-3 .mmc-dot{ background:#0ea5e9; }
-.mmc-4 .mmc-dot{ background:#22c55e; }
+.mmc-4 .mmc-dot{ background:#a855f7; }
 .mmc-5 .mmc-dot{ background:#f97316; }
-.mmc-6 .mmc-dot{ background:#8b5cf6; }
+.mmc-6 .mmc-dot{ background:#facc15; }
+
 
 
 
@@ -972,11 +976,24 @@ async function check(){
 snap.forEach(doc=>{
   const x = doc.data();
   const chip = detectChip(x.code);
-  const vipNumber = x.value.replace("VIP ","");
+  const vipNumber = x.value.startsWith("VIP ")
+  ? x.value.replace("VIP ","")
+  : "";
+
+  const mmc = detectMMC(x.code);
+
+snap.forEach(doc=>{
+  const x = doc.data();
+  const chip = detectChip(x.code);
+
+  const vipNumber = (x.value && x.value.startsWith("VIP "))
+    ? x.value.replace("VIP ","")
+    : "";
+
   const mmc = detectMMC(x.code);
 
   html += `
-    <div class="result-card vip-${vipNumber} ${mmc ? `mmc-${mmc}` : ""}">
+    <div class="result-card ${vipNumber ? `vip-${vipNumber}` : ""} ${mmc ? `mmc-${mmc}` : ""}">
       <div class="code-title">
         <span class="code-badge">💾 ${x.code}</span>
       </div>
@@ -989,10 +1006,12 @@ snap.forEach(doc=>{
 
         <div style="display:flex; gap:14px; align-items:center;">
 
+          ${vipNumber ? `
           <div class="vip-text vip-${vipNumber}">
             <span class="vip-dot"></span>
             VIP ${vipNumber}
           </div>
+          ` : ""}
 
           ${mmc ? `
           <div class="mmc-text mmc-${mmc}">
@@ -1006,6 +1025,7 @@ snap.forEach(doc=>{
     </div>
   `;
 });
+
 
 
     html += `</div>`;
