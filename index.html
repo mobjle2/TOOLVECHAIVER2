@@ -856,36 +856,35 @@ async function check(){
     }
 
     // ===== RENDER KẾT QUẢ =====
-    let html = `<div class="result-grid">`;
+let html = `<div class="result-grid">`;
 
-    snap.forEach(doc=>{
-      const x = doc.data();
-      const chip = detectChip(x.code);
-      const vipNumber = x.value.replace(/[^0-9]/g, "");
+snap.forEach(doc=>{
+  const x = doc.data();
+  const chip = detectChip(x.code);
 
-      html += `
-        <div class="result-card">
-          <div class="code-title">
-         <span class="code-badge">💾 ${x.code}</span>
-          </div>
+  // Giữ nguyên giá trị trong DB, chỉ bỏ khoảng trắng
+  const label = x.value.replace(/\s+/g, "");
 
+  html += `
+    <div class="result-card">
+      <div class="code-title">
+        <span class="code-badge">💾 ${x.code}</span>
+      </div>
 
-
-          <div class="chip-vip-line">
-            <div class="chip-info" style="color:${chip.color}">
-              <span class="chip-dot" style="background:${chip.color};"></span>
-              ${chip.name}
-            </div>
-
-<div class="vip-badge vip-${vipNumber}">
-  MMC${vipNumber}
-</div>
-
-
-          </div>
+      <div class="chip-vip-line">
+        <div class="chip-info" style="color:${chip.color}">
+          <span class="chip-dot" style="background:${chip.color};"></span>
+          ${chip.name}
         </div>
-      `;
-    });
+
+        <div class="vip-badge">
+          ${label}
+        </div>
+
+      </div>
+    </div>
+  `;
+});
 
     html += `</div>`;
     out.innerHTML = html;
