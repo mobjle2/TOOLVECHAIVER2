@@ -567,12 +567,28 @@ gap:14px;
   opacity:1;
 }
 
+
+/* ===== TOP HEADER ALIGN GRID ===== */
+
+.top-wrap{
+  width: calc(360px * 3 + 28px * 2);
+  margin: 40px auto 40px auto;
+}
+
+.title{
+  font-size:28px;
+  font-weight:800;
+  margin:0;
+}
+
+.subtitle{
+  font-size:14px;
+  color:#94a3b8;
+  margin:6px 0 20px 0;
+}
+
 </style>
 
-
-</head>
-
-<body>
 
 <!-- LOGIN SCREEN -->
 <!-- LOGIN SCREEN -->
@@ -602,12 +618,13 @@ gap:14px;
 
 
 <div class="main-container">
- <h2 class="title" style="margin-top:40px;">
+<div class="top-wrap">
+
+<h2 class="title" style="margin-top:40px;">
   🛠 TOOLVECHAIVER2 Check VIP
 </h2>
 
-
- <div class="check-group">
+<div class="check-group">
 
   <input id="q"
          placeholder="Nhập mã cần kiểm tra"
@@ -616,6 +633,7 @@ gap:14px;
   <button onclick="check()">CHECK</button>
 
 </div>
+
 
 
 
