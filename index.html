@@ -880,6 +880,8 @@ document.body.appendChild(box);
 }
 
 function detectChip(code){
+  if(!code) return {name:"UNKNOWN",color:"#6b7280"};
+
   code = code.toUpperCase();
 
   if(code.startsWith("KM")||code.startsWith("KLM")||code.startsWith("KLU"))
@@ -899,6 +901,7 @@ function detectChip(code){
 
   return {name:"UNKNOWN",color:"#6b7280"};
 }
+
 
 function detectMMC(code){
   code = code.toUpperCase();
@@ -974,7 +977,7 @@ let html = `<div class="result-grid">`;
 
 snap.forEach(doc=>{
   const x = doc.data();
-  const chip = detectChip(x.code);
+  const chip = detectChip(x.code || x.full || "");
 
   const vipNumber = (x.value && x.value.startsWith("VIP "))
     ? x.value.replace("VIP ","")
@@ -1132,8 +1135,8 @@ async function loadLinks(){
 
 snap.forEach(doc=>{
   const x = doc.data();
-  const chip = detectChip(x.code);
-  const vipNumber = x.value.replace("VIP ","");
+ const chip = detectChip(x.code || x.full || "");
+ const vipNumber = x.value.replace("VIP ","");
   const mmc = detectMMC(x.code);
 
 
