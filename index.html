@@ -895,15 +895,16 @@ function detectChip(code){
 function detectMMC(code){
   code = code.toUpperCase();
 
-  if(code.includes("MMC1")) return "MMC 1";
-  if(code.includes("MMC2")) return "MMC 2";
-  if(code.includes("MMC3")) return "MMC 3";
-  if(code.includes("MMC4")) return "MMC 4";
-  if(code.includes("MMC5")) return "MMC 5";
-  if(code.includes("MMC6")) return "MMC 6";
+  if(code.includes("MMC1")) return "1";
+  if(code.includes("MMC2")) return "2";
+  if(code.includes("MMC3")) return "3";
+  if(code.includes("MMC4")) return "4";
+  if(code.includes("MMC5")) return "5";
+  if(code.includes("MMC6")) return "6";
 
   return "";
 }
+
 
 async function check(){
   const inputEl = document.getElementById("q");
@@ -987,12 +988,13 @@ async function check(){
                 VIP ${vipNumber}
               </div>
 
-              ${mmc ? `
-              <div class="mmc-text mmc-${mmcNumber}">
-                <span class="mmc-dot"></span>
-                MMC ${mmcNumber}
-              </div>
-              ` : ""}
+${mmc ? `
+<div class="mmc-text mmc-${mmc}">
+  <span class="mmc-dot"></span>
+  MMC ${mmc}
+</div>
+` : ""}
+
             </div>
 
           </div>
