@@ -82,8 +82,8 @@ body{
 .vip-badge{
   display:flex;
   align-items:center;
-  gap:8px;
-  font-size:16px;
+  gap:6px;
+  font-size:15px;
   font-weight:600;
   white-space:nowrap;
 }
@@ -96,6 +96,7 @@ body{
   background:currentColor;
   display:inline-block;
 }
+
 
 
 .link-card{
@@ -390,10 +391,11 @@ body{
 .chip-info{
   display:flex;
   align-items:center;
-  gap:8px;
-  font-size:16px;
+  gap:6px;
+  font-size:15px;
   font-weight:600;
   white-space:nowrap;
+  flex:1;
 }
 
 
@@ -427,19 +429,18 @@ body{
 
 
 
+
 /* ===== VIP TEXT (THAY BADGE TRÒN) ===== */
 .vip-badge{
   display:flex;
   align-items:center;
+  justify-content:flex-end;
   gap:6px;
-  font-size:14px;
+  font-size:15px;
   font-weight:600;
-  padding:0;
-  border-radius:0;
-  background:none;
   white-space:nowrap;
+  flex:1;
 }
-
 
 .vip-badge::before{
   content:"";
@@ -451,12 +452,14 @@ body{
 }
 
 
+
 .chip-vip-line{
   display:flex;
   align-items:center;
   justify-content:space-between;
   width:100%;
 }
+
 
 
 
