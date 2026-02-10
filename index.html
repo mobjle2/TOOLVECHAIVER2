@@ -968,47 +968,44 @@ async function check(){
     // ===== RENDER KẾT QUẢ =====
     let html = `<div class="result-grid">`;
 
-    snap.forEach(doc=>{
+snap.forEach(doc=>{
   const x = doc.data();
   const chip = detectChip(x.code);
   const vipNumber = x.value.replace("VIP ","");
   const mmc = detectMMC(x.code);
 
+  html += `
+    <div class="result-card vip-${vipNumber} ${mmc ? `mmc-${mmc}` : ""}">
+      <div class="code-title">
+        <span class="code-badge">💾 ${x.code}</span>
+      </div>
 
-      html += `
-        <div class="result-card vip-${vipNumber} ${mmc ? `mmc-${mmc}` : ""}">
-
-          <div class="code-title">
-            <span class="code-badge">💾 ${x.code}</span>
-          </div>
-
-          <div class="chip-vip-line">
-            <div class="chip-info" style="color:${chip.color}">
-              <span class="chip-dot" style="background:${chip.color};"></span>
-              ${chip.name}
-            </div>
-
-            <div style="display:flex; gap:14px; align-items:center;">
-              <div class="vip-text vip-${vipNumber}">
-                <span class="vip-dot"></span>
-                VIP ${vipNumber}
-              </div>
-
-${mmc ? `
-<div class="mmc-text mmc-${mmc}">
-  <span class="mmc-dot"></span>
-  MMC ${mmc}
-</div>
-` : ""}
-
-
-
-            </div>
-
-          </div>
+      <div class="chip-vip-line">
+        <div class="chip-info" style="color:${chip.color}">
+          <span class="chip-dot" style="background:${chip.color};"></span>
+          ${chip.name}
         </div>
-      `;
-    });
+
+        <div style="display:flex; gap:14px; align-items:center;">
+
+          <div class="vip-text vip-${vipNumber}">
+            <span class="vip-dot"></span>
+            VIP ${vipNumber}
+          </div>
+
+          ${mmc ? `
+          <div class="mmc-text mmc-${mmc}">
+            <span class="mmc-dot"></span>
+            MMC ${mmc}
+          </div>
+          ` : ""}
+
+        </div>
+      </div>
+    </div>
+  `;
+});
+
 
     html += `</div>`;
     out.innerHTML = html;
