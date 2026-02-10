@@ -242,7 +242,7 @@ body{
     0 0 0 1px rgba(37,99,235,0.3);
 }
 
-/* ===== VIP COLOR SCALE (TỐI ƯU 5–9) ===== */
+/* ===== VIP COLOR SCALE – LONG LANH NHẸ ===== */
 
 /* 1–4: XÁM NHẸ */
 .vip-1{ color:#6b7280; }
@@ -250,24 +250,40 @@ body{
 .vip-3{ color:#cbd5e1; }
 .vip-4{ color:#e5e7eb; }
 
-/* 5–7: NHÓM PHỔ BIẾN – RÕ RÀNG, SẠCH */
-.vip-5{ color:#facc15; }   /* vàng */
-.vip-6{ color:#fb923c; }   /* cam */
-.vip-7{ color:#ef4444; }   /* đỏ */
+/* 5–7: PHỔ BIẾN – ẤM & RÕ */
+.vip-5{ color:#eab308; }
+.vip-6{ color:#f97316; }
+.vip-7{ color:#ef4444; }
 
-/* 8–9: CAO HƠN – MÁT & KHÁC BIỆT */
-.vip-8{ color:#a855f7; }   /* tím */
-.vip-9{ color:#06b6d4; }   /* cyan */
+/* 8–10: TRUNG CAO – LONG LANH NHẸ */
+.vip-8{ 
+  color:#9333ea;
+  text-shadow:0 0 6px rgba(147,51,234,0.25);
+}
 
-/* 10+: HIẾM – SANG HƠN NHẸ */
-.vip-10{ color:#FFD700; }
-.vip-11{ color:#ff4d00; }
-.vip-12{ color:#dc2626; }
-.vip-13{ color:#8b0000; }
+.vip-9{ 
+  color:#0891b2;
+  text-shadow:0 0 6px rgba(8,145,178,0.25);
+}
 
-/* ĐỔI MÀU CODE THEO VIP */
+.vip-10{ 
+  color:#d4af37;
+  text-shadow:0 0 6px rgba(212,175,55,0.35);
+}
+
+/* 11–13: HIẾM – TRẦM & SANG */
+.vip-11{ color:#dc2626; }
+.vip-12{ color:#b91c1c; }
+.vip-13{ color:#7f1d1d; }
+
+/* CODE đổi màu theo VIP */
 .result-card[class*="vip-"] .code-badge{
   color:currentColor;
+}
+
+/* Hover card đổi viền theo VIP */
+.result-card[class*="vip-"]:hover{
+  border-color:currentColor;
 }
 
 @media(max-width:768px){
