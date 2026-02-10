@@ -899,15 +899,16 @@ function detectChip(code){
 function detectMMC(code){
   code = code.toUpperCase();
 
-  if(code.includes("MMC1")) return 1;
-  if(code.includes("MMC2")) return 2;
-  if(code.includes("MMC3")) return 3;
-  if(code.includes("MMC4")) return 4;
-  if(code.includes("MMC5")) return 5;
-  if(code.includes("MMC6")) return 6;
+  if(code.includes("MMC1") || code.includes("1")) return 1;
+  if(code.includes("MMC2") || code.includes("2")) return 2;
+  if(code.includes("MMC3") || code.includes("3")) return 3;
+  if(code.includes("MMC4") || code.includes("4")) return 4;
+  if(code.includes("MMC5") || code.includes("5")) return 5;
+  if(code.includes("MMC6") || code.includes("6")) return 6;
 
   return 0;
 }
+
 
 
 
