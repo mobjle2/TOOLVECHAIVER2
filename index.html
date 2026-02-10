@@ -22,35 +22,17 @@ body{
 
 .result-grid{
   display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:24px;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:18px;
   margin-top:30px;
 }
 
-@media(max-width:1400px){
+/* ÉP 1 CỘT CHẮC CHẮN TRÊN MOBILE */
+@media (max-width:768px){
   .result-grid{
-    grid-template-columns:repeat(3,1fr);
+    grid-template-columns:1fr !important;
   }
 }
-
-@media(max-width:1024px){
-  .result-grid{
-    grid-template-columns:repeat(2,1fr);
-  }
-}
-
-@media(max-width:768px){
-  .result-grid{
-    grid-template-columns:1fr;
-    gap:16px;
-  }
-
-  .result-card{
-    padding:18px;
-  }
-}
-
-
 
 
 
@@ -77,51 +59,37 @@ body{
   font-size:13px;
   margin-top:8px;
 }
+
 /* ===== VIP BADGE ===== */
-.vip-text{
-  display:flex;
+.vip-badge{
+  display:inline-flex;
   align-items:center;
-  justify-content:flex-end;
   gap:6px;
-  font-size:15px;
-  font-weight:600;
-  white-space:nowrap;
-  flex:1;
-  padding-right:8px;
+  padding:6px 14px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:700;
+  background:#1e293b;
 }
-
-.vip-dot{
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  background:currentColor;
-  display:inline-block;
-}
-
 
 
 
 .link-card{
-  background:linear-gradient(145deg,#0f172a,#111827);
-  border:1px solid rgba(255,255,255,0.06);
-  border-radius:20px;
-  padding:18px;
+  background:#141414;
+  border:1px solid #222;
+  border-radius:14px;
+  padding:14px 18px;
   display:flex;
-  flex-direction:column;
-  gap:14px;
-  transition:all 0.25s ease;
-  box-shadow:
-    0 10px 30px rgba(0,0,0,0.5),
-    inset 0 0 0 1px rgba(255,255,255,0.03);
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+  transition:0.2s;
 }
 
 .link-card:hover{
-  transform:translateY(-4px);
   border-color:#2563eb;
-  box-shadow:
-    0 18px 40px rgba(37,99,235,0.25);
+  transform:translateY(-2px);
 }
-
 
 .link-id{
   font-weight:600;
@@ -148,43 +116,34 @@ body{
 
 .link-actions{
   display:flex;
-  flex-wrap:wrap;
-  gap:10px;
+  gap:8px;
 }
-
 
 .icon-btn{
   border:none;
-  background:#1f2937;
-  padding:8px 12px;
-  border-radius:12px;
+  background:#1f1f1f;
+  padding:8px 10px;
+  border-radius:10px;
   cursor:pointer;
-  font-size:14px;
-  transition:all 0.2s ease;
+  transition:0.2s;
 }
 
 .icon-btn:hover{
-  transform:translateY(-2px);
+  background:#2563eb;
+  color:white;
 }
 
 .icon-btn.delete:hover{
   background:#dc2626;
 }
-
 #linkList{
   display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:24px;
-  margin-top:30px;
+  grid-template-columns:repeat(3,1fr);
+  gap:20px;
 }
 
-@media(max-width:1400px){
-  #linkList{
-    grid-template-columns:repeat(3,1fr);
-  }
-}
-
-@media(max-width:1024px){
+/* THÊM ĐOẠN NÀY NGAY BÊN DƯỚI */
+@media(max-width:1200px){
   #linkList{
     grid-template-columns:repeat(2,1fr);
   }
@@ -196,6 +155,13 @@ body{
   }
 }
 
+
+
+@media(max-width:768px){
+  #linkList{
+    grid-template-columns:1fr;
+  }
+}
 .loading{
   text-align:center;
   margin-top:20px;
@@ -215,7 +181,6 @@ body{
   66%{content:'..';}
   100%{content:'...';}
 }
-
 /* ===== STYLE GIỐNG ẢNH ĐẸP ===== */
 .result-card{
   background:linear-gradient(145deg,#0f172a,#111827);
@@ -230,9 +195,11 @@ body{
   width:100%;
   box-sizing:border-box;
   display:flex;
-  flex-direction:column;
-  gap:14px;
+flex-direction:column;
+gap:14px;
+
 }
+
 
 .result-card:hover{
   transform:translateY(-5px);
@@ -242,87 +209,42 @@ body{
     0 0 0 1px rgba(37,99,235,0.3);
 }
 
-/* ===== VIP COLOR SCALE – LONG LANH NHẸ ===== */
 
-/* 1–4 */
-.vip-1{ color:#6b7280; }
-.vip-2{ color:#9ca3af; }
-.vip-3{ color:#cbd5e1; }
-.vip-4{ color:#e5e7eb; }
-
-/* 5–7 */
-.vip-5{ color:#eab308; }
-.vip-6{ color:#f97316; }
-.vip-7{ color:#ef4444; }
-
-/* 8–10 */
-.vip-8{ 
-  color:#9333ea;
-  text-shadow:0 0 6px rgba(147,51,234,0.25);
-}
-.vip-9{ 
-  color:#0891b2;
-  text-shadow:0 0 6px rgba(8,145,178,0.25);
-}
-.vip-10{ 
-  color:#d4af37;
-  text-shadow:0 0 6px rgba(212,175,55,0.35);
 }
 
-/* 11–13 */
-.vip-11{ color:#dc2626; }
-.vip-12{ color:#b91c1c; }
-.vip-13{ color:#7f1d1d; }
 
-/* Code theo VIP */
-.result-card[class*="vip-"] .code-badge{
-  color:currentColor;
+
+
+.vip-8{
+  background:linear-gradient(90deg,#6d28d9,#a855f7);
+  color:white;
 }
 
-/* Hover theo VIP */
-.result-card[class*="vip-"]:hover{
-  border-color:currentColor;
+.vip-9{
+  background:linear-gradient(90deg,#06b6d4,#0ea5e9);
+  color:white;
 }
 
-/* ===== MMC STYLE – 6 MÀU ĐẸP & PHÂN CẤP ===== */
-.mmc-text{
-  display:flex;
-  align-items:center;
-  gap:6px;
-  font-size:15px;
-  font-weight:600;
-  white-space:nowrap;
+.vip-10{
+  background:linear-gradient(90deg,#FFD700,#ffcc00,#FFD700);
+  color:black;
 }
 
-.mmc-dot{
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  display:inline-block;
+.vip-5{ background:#facc15; color:black; }
+.vip-6{ background:linear-gradient(90deg,#facc15,#fb923c); color:black; }
+.vip-7{ background:linear-gradient(90deg,#fb923c,#ef4444); color:white; }
+.vip-11{ background:linear-gradient(90deg,#ff4d00,#ff0000); color:white; }
+.vip-13{ background:linear-gradient(90deg,#5b0000,#ff0000,#5b0000); color:white; }
+
+@media(max-width:768px){
+  .result-card{
+    padding:16px;
+  }
+  .badge{
+    font-size:11px;
+    padding:5px 14px;
+  }
 }
-
-/* MMC 1–6 */
-.mmc-1{ color:#94a3b8; }      /* xám tech */
-.mmc-2{ color:#22c55e; }      /* xanh lá */
-.mmc-3{ color:#0ea5e9; }      /* xanh dương */
-.mmc-4{ color:#a855f7; }      /* tím */
-.mmc-5{ color:#f97316; }      /* cam */
-.mmc-6{ 
-  color:#facc15;              /* vàng cao cấp */
-  text-shadow:0 0 6px rgba(250,204,21,0.35);
-}
-
-/* Dot theo màu */
-.mmc-1 .mmc-dot{ background:#94a3b8; }
-.mmc-2 .mmc-dot{ background:#22c55e; }
-.mmc-3 .mmc-dot{ background:#0ea5e9; }
-.mmc-4 .mmc-dot{ background:#a855f7; }
-.mmc-5 .mmc-dot{ background:#f97316; }
-.mmc-6 .mmc-dot{ background:#facc15; }
-
-
-
-
 /* ================= CLEAN LOGIN FINAL ================= */
 
 .login-wrapper{
@@ -457,14 +379,11 @@ body{
 .chip-info{
   display:flex;
   align-items:center;
-  gap:6px;
-  font-size:15px;
-  font-weight:600;
-  white-space:nowrap;
-  flex:1;
+  gap:8px;
+  font-size:14px;
+  font-weight:500;
+  color:#22c55e;
 }
-
-
 
 .chip-dot{
   width:8px;
@@ -474,76 +393,51 @@ body{
 
 /* ===== CODE BADGE (DÒNG TRÊN) ===== */
 .code-title{
-  margin-bottom:14px;
-  display:flex;
+  margin-bottom:12px;
 }
-
 
 .code-badge{
-  display:flex;
+  display:inline-flex;
   align-items:center;
-  justify-content:center;
-  width:100%;
-  padding:10px 14px;
-  border-radius:16px;
+  gap:8px;
+  padding:6px 14px;
+  border-radius:14px;
   background:rgba(255,255,255,0.05);
   border:1px solid rgba(255,255,255,0.08);
-  font-size:18px;
-  font-weight:700;
-  white-space:nowrap;
-  color:inherit;
-}
-
-
-
-
-
-/* ===== VIP TEXT (THAY BADGE TRÒN) ===== */
-.vip-badge{
-  display:flex;
-  align-items:center;
-  justify-content:flex-end;
-  gap:6px;
   font-size:15px;
   font-weight:600;
-  white-space:nowrap;
-  flex:1;
-  padding-right:8px;
-}
-
-.vip-badge::before{
-  content:"";
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  background:currentColor;
 }
 
 
+/* ===== VIP BADGE (DÒNG DƯỚI) ===== */
+.vip-badge{
+  padding:8px 18px;
+  border-radius:999px;
+  font-size:14px;
+  font-weight:600;
+}
 
 
 .chip-vip-line{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  width:100%;
 }
-
-
 
 
 
 /* ================= MOBILE OPTIMIZE ================= */
 @media(max-width:640px){
-  .main-container{
-    padding:25px 18px !important;
-  }
 
+  /* Main container */
+  .main-container{
+    padding:20px 15px !important;
+  }
 
   /* Login box */
   .login-box{
-    width:92%;
-    padding:35px 25px;
+    width:90%;
+    padding:30px 20px;
     border-radius:18px;
   }
 
@@ -551,7 +445,6 @@ body{
     font-size:26px;
     margin-bottom:20px;
   }
-
 
   .login-box input{
     height:46px;
@@ -569,11 +462,10 @@ body{
     gap:10px;
   }
 
-.result-card{
-  padding:18px;
-  border-radius:18px;
-}
-
+  .result-card{
+    padding:14px;
+    border-radius:16px;
+  }
 
   .code-title{
     font-size:14px;
@@ -620,8 +512,7 @@ body{
 
 .check-group{
   position:relative;
-  margin:20px auto 0;
-  max-width:700px;
+  margin-top:15px;
 }
 
 .check-group input{
@@ -724,11 +615,9 @@ body{
 
  <div class="check-group">
 
-<input id="q"
-       placeholder="Nhập mã cần kiểm tra"
-       autocomplete="off"
-       onkeydown="if(event.key==='Enter'){check();}">
-
+  <input id="q"
+         placeholder="Nhập mã cần kiểm tra"
+         autocomplete="off">
 
   <button onclick="check()">CHECK</button>
 
@@ -880,8 +769,6 @@ document.body.appendChild(box);
 }
 
 function detectChip(code){
-  if(!code) return {name:"UNKNOWN",color:"#6b7280"};
-
   code = code.toUpperCase();
 
   if(code.startsWith("KM")||code.startsWith("KLM")||code.startsWith("KLU"))
@@ -901,23 +788,6 @@ function detectChip(code){
 
   return {name:"UNKNOWN",color:"#6b7280"};
 }
-
-
-function detectMMC(code){
-  code = code.toUpperCase();
-
-  if(code.includes("MMC1") || code.includes("1")) return 1;
-  if(code.includes("MMC2") || code.includes("2")) return 2;
-  if(code.includes("MMC3") || code.includes("3")) return 3;
-  if(code.includes("MMC4") || code.includes("4")) return 4;
-  if(code.includes("MMC5") || code.includes("5")) return 5;
-  if(code.includes("MMC6") || code.includes("6")) return 6;
-
-  return 0;
-}
-
-
-
 
 async function check(){
   const inputEl = document.getElementById("q");
@@ -939,13 +809,13 @@ async function check(){
   try{
     let snap = null;
 
+    // ===== FULL CODE =====
     if(key.length > 4){
       snap = await db.collection("codes")
         .where("full", "==", key)
         .limit(1)
         .get();
     }
-
 
     // ===== 4 KÝ TỰ =====
     if(key.length === 4){
@@ -972,57 +842,39 @@ async function check(){
       `;
       return;
     }
-// ===== RENDER KẾT QUẢ =====
-let html = `<div class="result-grid">`;
 
-snap.forEach(doc=>{
-  const x = doc.data();
-  const chip = detectChip(x.code || x.full || "");
+    // ===== RENDER KẾT QUẢ =====
+    let html = `<div class="result-grid">`;
 
-  const vipNumber = (x.value && x.value.startsWith("VIP "))
-    ? x.value.replace("VIP ","")
-    : "";
+    snap.forEach(doc=>{
+      const x = doc.data();
+      const chip = detectChip(x.code);
+      const vipNumber = x.value.replace("VIP ","");
 
-  const mmc = detectMMC(x.code);
-
-  html += `
-    <div class="result-card ${vipNumber ? `vip-${vipNumber}` : ""} ${mmc ? `mmc-${mmc}` : ""}">
-      <div class="code-title">
-        <span class="code-badge">💾 ${x.code}</span>
-      </div>
-
-      <div class="chip-vip-line">
-        <div class="chip-info" style="color:${chip.color}">
-          <span class="chip-dot" style="background:${chip.color};"></span>
-          ${chip.name}
-        </div>
-
-        <div style="display:flex; gap:14px; align-items:center;">
-
-          ${vipNumber ? `
-          <div class="vip-text vip-${vipNumber}">
-            <span class="vip-dot"></span>
-            VIP ${vipNumber}
+      html += `
+        <div class="result-card">
+          <div class="code-title">
+         <span class="code-badge">💾 ${x.code}</span>
           </div>
-          ` : ""}
 
-          ${mmc ? `
-          <div class="mmc-text mmc-${mmc}">
-            <span class="mmc-dot"></span>
-            MMC ${mmc}
+
+
+          <div class="chip-vip-line">
+            <div class="chip-info" style="color:${chip.color}">
+              <span class="chip-dot" style="background:${chip.color};"></span>
+              ${chip.name}
+            </div>
+
+            <div class="vip-badge vip-${vipNumber}">
+              👑 VIP ${vipNumber}
+            </div>
           </div>
-          ` : ""}
-
         </div>
-      </div>
-    </div>
-  `;
-});
+      `;
+    });
 
-html += `</div>`;
-out.innerHTML = html;
-
-
+    html += `</div>`;
+    out.innerHTML = html;
 
   }catch(err){
     console.error(err);
@@ -1127,6 +979,7 @@ async function loadLinks(){
   const snap = await db.collection("shareLinks").get();
   let html = "";
 
+  // clear countdown cũ (tránh chạy chồng)
   if(window.adminTimers){
     Object.values(window.adminTimers).forEach(t => clearInterval(t));
   }
@@ -1136,57 +989,55 @@ async function loadLinks(){
     const d = doc.data();
     const id = doc.id;
 
-    html += `
-      <div class="link-card">
-        
-        <div class="link-left">
+   html += `
+  <div class="link-card">
+    
+    <div class="link-left">
 
-          <div class="link-id-row">
-            <div class="link-id editable-name" id="name-${id}">
-              ${localStorage.getItem("alias_" + id) || id}
-            </div>
-            <span class="edit-icon" onclick="startRename('${id}')">✏️</span>
-          </div>
+<div class="link-id-row">
+  <div class="link-id editable-name" id="name-${id}">
+    ${localStorage.getItem("alias_" + id) || id}
+  </div>
+  <span class="edit-icon" onclick="startRename('${id}')">✏️</span>
+</div>
 
-          <div class="link-status ${d.active?'open':'lock'}">
-            ${d.active?'🟢 Đang mở':'🟡 Đang khóa'}
-          </div>
 
-          <div id="remain-${id}" style="margin-top:6px;font-size:12px;color:#facc15;">
-            ${d.expiresAt ? '⏳ Đang tính...' : '♾ Không giới hạn'}
-          </div>
 
-          <div style="margin-top:4px;font-size:12px;color:#22c55e;">
-            👁 Lượt truy cập: ${d.views || 0}
-          </div>
-
-        </div>
-
-        <div class="link-actions">
-          <button class="icon-btn" onclick="copyLink('${id}',this)">📋</button>
-
-          <button class="icon-btn"
-            style="background:${d.active?'#16a34a':'#f59e0b'};color:white"
-            onclick="toggleLink('${id}',${d.active})">
-            ${d.active?'🔓':'🔒'}
-          </button>
-
-          <button class="icon-btn" onclick="configExpire('${id}')">⏰</button>
-
-          <button class="icon-btn delete"
-            style="background:#dc2626;color:white"
-            onclick="deleteLink('${id}')">
-            🗑
-          </button>
-        </div>
-
+      <div class="link-status ${d.active?'open':'lock'}">
+        ${d.active?'🟢 Đang mở':'🟡 Đang khóa'}
       </div>
-    `;
+
+      <div id="remain-${id}" style="margin-top:6px;font-size:12px;color:#facc15;">
+        ${d.expiresAt ? '⏳ Đang tính...' : '♾ Không giới hạn'}
+      </div>
+
+  <div style="margin-top:4px;font-size:12px;color:#22c55e;">
+    👁 Lượt truy cập: ${d.views || 0}
+  </div>
+</div>
+
+<div class="link-actions">
+  <button class="icon-btn" onclick="copyLink('${id}',this)">📋</button>
+<button class="icon-btn"
+  style="background:${d.active?'#16a34a':'#f59e0b'};color:white"
+  onclick="toggleLink('${id}',${d.active})">
+  ${d.active?'🔓':'🔒'}
+</button>
+
+  <button class="icon-btn" onclick="configExpire('${id}')">⏰</button>
+<button class="icon-btn delete"
+  style="background:#dc2626;color:white"
+  onclick="deleteLink('${id}')">
+  🗑
+</button>
+
+</div>
+
+  </div>
+`;
   });
 
   document.getElementById("linkList").innerHTML = html;
-
-
 
   // ===== COUNTDOWN REALTIME CHO ADMIN =====
   snap.forEach(doc=>{
