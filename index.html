@@ -244,55 +244,76 @@ body{
 
 /* ===== VIP COLOR SCALE – LONG LANH NHẸ ===== */
 
-/* 1–4: XÁM NHẸ */
+/* 1–4 */
 .vip-1{ color:#6b7280; }
 .vip-2{ color:#9ca3af; }
 .vip-3{ color:#cbd5e1; }
 .vip-4{ color:#e5e7eb; }
 
-/* 5–7: PHỔ BIẾN – ẤM & RÕ */
+/* 5–7 */
 .vip-5{ color:#eab308; }
 .vip-6{ color:#f97316; }
 .vip-7{ color:#ef4444; }
 
-/* 8–10: TRUNG CAO – LONG LANH NHẸ */
+/* 8–10 */
 .vip-8{ 
   color:#9333ea;
   text-shadow:0 0 6px rgba(147,51,234,0.25);
 }
-
 .vip-9{ 
   color:#0891b2;
   text-shadow:0 0 6px rgba(8,145,178,0.25);
 }
-
 .vip-10{ 
   color:#d4af37;
   text-shadow:0 0 6px rgba(212,175,55,0.35);
 }
 
-/* 11–13: HIẾM – TRẦM & SANG */
+/* 11–13 */
 .vip-11{ color:#dc2626; }
 .vip-12{ color:#b91c1c; }
 .vip-13{ color:#7f1d1d; }
 
-/* CODE đổi màu theo VIP */
+/* Code theo VIP */
 .result-card[class*="vip-"] .code-badge{
   color:currentColor;
 }
 
-/* Hover card đổi viền theo VIP */
+/* Hover theo VIP */
 .result-card[class*="vip-"]:hover{
   border-color:currentColor;
 }
 
-@media(max-width:768px){
-  .result-grid{
-    grid-template-columns:1fr;
-    gap:16px;
-  }
+/* ===== MMC STYLE ===== */
+.mmc-text{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:15px;
+  font-weight:600;
+  white-space:nowrap;
 }
 
+.mmc-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:currentColor;
+  display:inline-block;
+}
+
+/* MMC 1–6 */
+.mmc-1{ color:#94a3b8; }
+.mmc-2{ color:#64748b; }
+.mmc-3{ color:#0ea5e9; }
+.mmc-4{ color:#22c55e; }
+.mmc-5{ color:#f97316; }
+.mmc-6{ color:#8b5cf6; }
+
+/* Code theo MMC nếu không có VIP */
+.result-card[class*="mmc-"] .code-badge{
+  color:currentColor;
+}
 
 /* ================= CLEAN LOGIN FINAL ================= */
 
@@ -871,6 +892,19 @@ function detectChip(code){
   return {name:"UNKNOWN",color:"#6b7280"};
 }
 
+function detectMMC(code){
+  code = code.toUpperCase();
+
+  if(code.includes("MMC1")) return "MMC 1";
+  if(code.includes("MMC2")) return "MMC 2";
+  if(code.includes("MMC3")) return "MMC 3";
+  if(code.includes("MMC4")) return "MMC 4";
+  if(code.includes("MMC5")) return "MMC 5";
+  if(code.includes("MMC6")) return "MMC 6";
+
+  return "";
+}
+
 async function check(){
   const inputEl = document.getElementById("q");
   const out = document.getElementById("out");
@@ -891,13 +925,13 @@ async function check(){
   try{
     let snap = null;
 
-    // ===== FULL CODE =====
     if(key.length > 4){
       snap = await db.collection("codes")
         .where("full", "==", key)
         .limit(1)
         .get();
     }
+
 
     // ===== 4 KÝ TỰ =====
     if(key.length === 4){
@@ -932,14 +966,14 @@ async function check(){
       const x = doc.data();
       const chip = detectChip(x.code);
       const vipNumber = x.value.replace("VIP ","");
+      const mmc = detectMMC(x.code);
+      const mmcNumber = mmc.replace("MMC ","");
 
       html += `
-        <div class="result-card vip-${vipNumber}">
+        <div class="result-card vip-${vipNumber} mmc-${mmcNumber}">
           <div class="code-title">
-         <span class="code-badge">💾 ${x.code}</span>
+            <span class="code-badge">💾 ${x.code}</span>
           </div>
-
-
 
           <div class="chip-vip-line">
             <div class="chip-info" style="color:${chip.color}">
@@ -947,10 +981,19 @@ async function check(){
               ${chip.name}
             </div>
 
-         <div class="vip-text vip-${vipNumber}">
-          <span class="vip-dot"></span>
-           VIP ${vipNumber}
-          </div>
+            <div style="display:flex; gap:14px; align-items:center;">
+              <div class="vip-text vip-${vipNumber}">
+                <span class="vip-dot"></span>
+                VIP ${vipNumber}
+              </div>
+
+              ${mmc ? `
+              <div class="mmc-text mmc-${mmcNumber}">
+                <span class="mmc-dot"></span>
+                MMC ${mmcNumber}
+              </div>
+              ` : ""}
+            </div>
 
           </div>
         </div>
