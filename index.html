@@ -75,21 +75,26 @@ body{
 
 
 .link-card{
-  background:#141414;
-  border:1px solid #222;
-  border-radius:14px;
-  padding:14px 18px;
+  background:linear-gradient(145deg,#0f172a,#111827);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:20px;
+  padding:18px;
   display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:12px;
-  transition:0.2s;
+  flex-direction:column;
+  gap:14px;
+  transition:all 0.25s ease;
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.5),
+    inset 0 0 0 1px rgba(255,255,255,0.03);
 }
 
 .link-card:hover{
+  transform:translateY(-4px);
   border-color:#2563eb;
-  transform:translateY(-2px);
+  box-shadow:
+    0 18px 40px rgba(37,99,235,0.25);
 }
+
 
 .link-id{
   font-weight:600;
@@ -116,44 +121,49 @@ body{
 
 .link-actions{
   display:flex;
-  gap:8px;
+  flex-wrap:wrap;
+  gap:10px;
 }
+
 
 .icon-btn{
   border:none;
-  background:#1f1f1f;
-  padding:8px 10px;
-  border-radius:10px;
+  background:#1f2937;
+  padding:8px 12px;
+  border-radius:12px;
   cursor:pointer;
-  transition:0.2s;
+  font-size:14px;
+  transition:all 0.2s ease;
 }
 
 .icon-btn:hover{
-  background:#2563eb;
-  color:white;
+  transform:translateY(-2px);
 }
 
 .icon-btn.delete:hover{
   background:#dc2626;
 }
+
 #linkList{
   display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:20px;
+  grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+  gap:24px;
+  margin-top:20px;
 }
 
-/* THÊM ĐOẠN NÀY NGAY BÊN DƯỚI */
-@media(max-width:1200px){
+
+@media(max-width:1024px){
   #linkList{
     grid-template-columns:repeat(2,1fr);
   }
 }
 
-@media(max-width:768px){
+@media(max-width:640px){
   #linkList{
     grid-template-columns:1fr;
   }
 }
+
 
 
 
@@ -208,12 +218,6 @@ gap:14px;
     0 20px 45px rgba(37,99,235,0.25),
     0 0 0 1px rgba(37,99,235,0.3);
 }
-
-
-}
-
-
-
 
 .vip-8{
   background:linear-gradient(90deg,#6d28d9,#a855f7);
@@ -436,8 +440,8 @@ gap:14px;
 
   /* Login box */
   .login-box{
-    width:90%;
-    padding:30px 20px;
+    width:92%;
+    padding:35px 25px;
     border-radius:18px;
   }
 
@@ -445,6 +449,7 @@ gap:14px;
     font-size:26px;
     margin-bottom:20px;
   }
+
 
   .login-box input{
     height:46px;
@@ -512,8 +517,10 @@ gap:14px;
 
 .check-group{
   position:relative;
-  margin-top:15px;
+  margin-top:20px;
+  max-width:600px;
 }
+
 
 .check-group input{
   width:100%;
