@@ -80,16 +80,22 @@ body{
 
 /* ===== VIP BADGE ===== */
 .vip-badge{
-  display:inline-flex;
+  display:flex;
   align-items:center;
-  gap:6px;
-  padding:6px 14px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:700;
-  background:#1e293b;
+  gap:8px;
+  font-size:16px;
+  font-weight:600;
+  white-space:nowrap;
 }
 
+.vip-badge::before{
+  content:"";
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:currentColor;
+  display:inline-block;
+}
 
 
 .link-card{
@@ -385,11 +391,11 @@ body{
   display:flex;
   align-items:center;
   gap:8px;
-  font-size:14px;
-  font-weight:500;
-  color:#22c55e;
+  font-size:16px;
+  font-weight:600;
   white-space:nowrap;
 }
+
 
 
 .chip-dot{
@@ -406,19 +412,19 @@ body{
 
 
 .code-badge{
-  display:inline-flex;
+  display:flex;
   align-items:center;
-  gap:8px;
-  padding:6px 14px;
-  border-radius:14px;
+  justify-content:center;
+  width:100%;
+  padding:10px 14px;
+  border-radius:16px;
   background:rgba(255,255,255,0.05);
   border:1px solid rgba(255,255,255,0.08);
-  font-size:15px;
-  font-weight:600;
+  font-size:18px;
+  font-weight:700;
   white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
 }
+
 
 
 /* ===== VIP TEXT (THAY BADGE TRÒN) ===== */
@@ -448,10 +454,10 @@ body{
 .chip-vip-line{
   display:flex;
   align-items:center;
-  justify-content:flex-start;
-  gap:18px;
-  flex-wrap:wrap;
+  justify-content:space-between;
+  width:100%;
 }
+
 
 
 
