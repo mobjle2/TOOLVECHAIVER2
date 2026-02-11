@@ -658,18 +658,20 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// ===== AUTH PERSISTENCE (PHẢI ĐẶT TRƯỚC) =====
+// ===== AUTH PERSISTENCE =====
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
-// ===== FORCE LOGOUT ADMIN ON REFRESH =====
-const urlParams = new URLSearchParams(window.location.search);
-const isUserMode = urlParams.has("u");
+// ===== FORCE LOGOUT ADMIN ON REFRESH (SAFE) =====
+window.addEventListener("load", function(){
 
-if(!isUserMode){
-  auth.signOut();
-}
+  const urlParams = new URLSearchParams(window.location.search);
+  const isUserMode = urlParams.has("u");
 
+  if(!isUserMode){
+    auth.signOut();
+  }
 
+});
 
 
 // ===== USER MODE (?u=) =====
@@ -680,7 +682,6 @@ if(userParam){
   document.getElementById("loginScreen").style.display = "none";
   document.getElementById("adminPanel").style.display = "none";
 
-  // QUAN TRỌNG: không cho auth listener chạy
   setTimeout(() => {
     runUserMode(userParam);
   }, 0);
@@ -688,6 +689,7 @@ if(userParam){
 
 async function runUserMode(id){
   try{
+
     const doc = await db.collection("shareLinks").doc(id).get();
 
     if(!doc.exists){
@@ -714,6 +716,7 @@ async function runUserMode(id){
     await db.collection("shareLinks").doc(id).update({
       views: firebase.firestore.FieldValue.increment(1)
     });
+
 
     const login = document.getElementById("loginScreen");
     if(login) login.style.display = "none";
