@@ -689,14 +689,28 @@ const params = new URLSearchParams(window.location.search);
 const userParam = params.get("u");
 
 if(userParam){
-  document.getElementById("loginScreen").style.display = "none";
-  document.getElementById("adminPanel").style.display = "none";
 
-  // QUAN TRỌNG: không cho auth listener chạy
-  setTimeout(() => {
-    runUserMode(userParam);
-  }, 0);
+  // Ẩn toàn bộ login + admin
+  const login = document.getElementById("loginScreen");
+  if(login) login.style.display = "none";
+
+  const admin = document.getElementById("adminPanel");
+  if(admin) admin.style.display = "none";
+
+  // Ẩn header / top-wrap
+  const topWrap = document.querySelector(".top-wrap");
+  if(topWrap) topWrap.style.display = "none";
+
+  // Thu gọn container cho user mode
+  const container = document.querySelector(".main-container");
+  if(container){
+    container.style.maxWidth = "700px";
+    container.style.padding = "40px 20px";
+  }
+
+  runUserMode(userParam);
 }
+
 
 async function runUserMode(id){
   try{
