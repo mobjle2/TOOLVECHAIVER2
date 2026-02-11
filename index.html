@@ -661,30 +661,22 @@ const db = firebase.firestore();
 // ===== AUTH PERSISTENCE =====
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
-// ===== FORCE LOGOUT ADMIN ON REFRESH (SAFE) =====
-window.addEventListener("load", function(){
-
-  const urlParams = new URLSearchParams(window.location.search);
-  const isUserMode = urlParams.has("u");
-
-  if(!isUserMode){
-    auth.signOut();
-  }
-
-});
-
-
 // ===== USER MODE (?u=) =====
 const params = new URLSearchParams(window.location.search);
 const userParam = params.get("u");
 
 if(userParam){
+
   document.getElementById("loginScreen").style.display = "none";
   document.getElementById("adminPanel").style.display = "none";
 
-  setTimeout(() => {
-    runUserMode(userParam);
-  }, 0);
+  runUserMode(userParam);
+
+}else{
+
+  // CHỈ logout nếu là ADMIN mode
+  auth.signOut();
+
 }
 
 async function runUserMode(id){
@@ -717,59 +709,12 @@ async function runUserMode(id){
       views: firebase.firestore.FieldValue.increment(1)
     });
 
-
-    const login = document.getElementById("loginScreen");
-    if(login) login.style.display = "none";
-
-    const admin = document.getElementById("adminPanel");
-    if(admin) admin.style.display = "none";
-
-    if(data.expiresAt){
-const box = document.createElement("div");
-box.id = "countdownBox";
-box.style.position = "fixed";
-box.style.top = "12px";
-box.style.right = "16px";
-box.style.background = "rgba(15,23,42,0.9)";
-box.style.border = "1px solid #334155";
-box.style.borderRadius = "10px";
-box.style.padding = "8px 14px";
-box.style.fontSize = "14px";
-box.style.fontWeight = "600";
-box.style.color = "#facc15";
-box.style.zIndex = "9999";
-box.style.boxShadow = "0 8px 25px rgba(0,0,0,0.4)";
-document.body.appendChild(box);
-;
-
-      const end = data.expiresAt.toDate();
-
-      setInterval(async ()=>{
-        const now = new Date();
-        const diff = end - now;
-
-        if(diff <= 0){
-          await db.collection("shareLinks").doc(id).update({
-            active:false
-          });
-
-          box.innerText = "⛔ Link đã hết hạn!";
-          return;
-        }
-
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-        const minutes = Math.floor((diff / (1000 * 60)) % 60);
-
-        box.innerText = `⏳ Còn ${days} ngày ${hours} giờ ${minutes} phút`;
-      }, 1000);
-    }
-
   }catch(e){
     console.error(e);
     document.body.innerHTML = "❌ Lỗi quyền truy cập!";
   }
 }
+
 
 function detectChip(code){
   code = code.toUpperCase();
