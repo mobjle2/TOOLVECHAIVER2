@@ -714,18 +714,13 @@ async function runUserMode(id){
 
     const data = doc.data();
 
-    if(data.expiresAt && data.expiresAt.toDate() < new Date()){
-      await db.collection("shareLinks").doc(id).update({
-        active:false
-      });
+if(data.expiresAt && data.expiresAt.toDate() < new Date()){
+  document.body.innerHTML = "⛔ Link đã hết hạn!";
+  return;
+}
 
-      document.body.innerHTML = "⛔ Link đã hết hạn!";
-      return;
-    }
 
-    await db.collection("shareLinks").doc(id).update({
-      views: firebase.firestore.FieldValue.increment(1)
-    });
+
 
     const login = document.getElementById("loginScreen");
     if(login) login.style.display = "none";
