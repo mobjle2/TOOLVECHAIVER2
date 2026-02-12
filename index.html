@@ -652,38 +652,29 @@ const firebaseConfig = {
   appId: "1:855001765940:web:0a562c54618377aaae5261"
 };
 
-
 firebase.initializeApp(firebaseConfig);
 
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// ===== AUTH PERSISTENCE =====
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
-// ===== USER MODE (?u=) =====
 const params = new URLSearchParams(window.location.search);
 const userParam = params.get("u");
 
-if(userParam){
+/* ================= USER MODE ================= */
 
+if(userParam){
   document.getElementById("loginScreen").style.display = "none";
   document.getElementById("adminPanel").style.display = "none";
-
   runUserMode(userParam);
-
-}else{
-
-  // CHỈ logout nếu là ADMIN mode
-
-
 }
 
 async function runUserMode(id){
   try{
 
-    const docRef = db.collection("shareLinks").doc(id);
-    const doc = await docRef.get();
+    const ref = db.collection("shareLinks").doc(id);
+    const doc = await ref.get();
 
     if(!doc.exists){
       document.body.innerHTML = "❌ Link không tồn tại!";
@@ -698,256 +689,58 @@ async function runUserMode(id){
     }
 
     if(data.expiresAt && data.expiresAt.toDate() < new Date()){
-      try{
-        await docRef.update({ active:false });
-      }catch(e){}
+      try{ await ref.update({active:false}); }catch(e){}
       document.body.innerHTML = "⛔ Link đã hết hạn!";
       return;
     }
 
-    // ⚠️ BỌC TRY riêng cho views (tránh văng lỗi toàn trang)
+    // Không để crash nếu thiếu quyền
     try{
-      await docRef.update({
+      await ref.update({
         views: firebase.firestore.FieldValue.increment(1)
       });
     }catch(e){
-      console.warn("Không tăng được views (thiếu quyền)");
+      console.warn("Không tăng được views");
     }
 
   }catch(e){
     console.error(e);
-    document.body.innerHTML = "❌ Lỗi quyền truy cập!";
+    document.body.innerHTML = "❌ Lỗi truy cập!";
   }
 }
 
+/* ================= LOGIN ================= */
 
-
-function detectChip(code){
-  code = code.toUpperCase();
-
-  if(code.startsWith("KM")||code.startsWith("KLM")||code.startsWith("KLU"))
-    return {name:"SAMSUNG",color:"#22c55e"};
-
-  if(code.startsWith("H9")||code.startsWith("H26")||code.startsWith("H5"))
-    return {name:"SK hynix",color:"#a855f7"};
-
-  if(code.startsWith("MT")||code.startsWith("JZ"))
-    return {name:"MICRON",color:"#0ea5e9"};
-
-  if(code.startsWith("THG"))
-    return {name:"KIOXIA",color:"#f97316"};
-
-  if(code.startsWith("SD")||code.startsWith("WDC"))
-    return {name:"SANDISK / WD",color:"#ef4444"};
-
-  return {name:"UNKNOWN",color:"#6b7280"};
-}
-
-async function check(){
-
-  const inputEl = document.getElementById("q");
-  const out = document.getElementById("out");
-
-  let raw = inputEl.value.trim().toUpperCase();
-  let key = raw.replace(/[^A-Z0-9]/g,"");
-
-  if(!raw) return;
-
-  out.innerHTML = `
-    <div class="loading">
-      🔎 Đang quét dữ liệu<span class="dots"></span>
-    </div>
-  `;
-
-  try{
-    let snap = null;
-
-    // ===== FULL CODE =====
-    if(key.length > 4){
-      snap = await db.collection("codes")
-        .where("full", "==", key)
-        .limit(20)
-        .get();
-    }
-
-    // ===== 4 KÝ TỰ =====
-    if((!snap || snap.empty) && key.length === 4){
-      snap = await db.collection("codes")
-        .where("head4", "==", key)
-        .limit(20)
-        .get();
-
-      if(snap.empty){
-        snap = await db.collection("codes")
-          .where("tail4", "==", key)
-          .limit(20)
-          .get();
-      }
-    }
-
-    // ===== MODEL CHỨA (match 1 phần như A530) =====
-    if(!snap || snap.empty){
-
-      const all = await db.collection("codes").get();
-
-      const filtered = all.docs.filter(d => {
-        const x = d.data();
-        if(!x.models) return false;
-
-        return x.models.some(m =>
-          m.toUpperCase().includes(raw)
-        );
-      });
-
-      if(filtered.length === 0){
-        out.innerHTML = `
-          <div style="color:#ef4444;margin-top:15px;">
-            ❌ Không tìm thấy mã
-          </div>
-        `;
-        return;
-      }
-
-      let html = `<div class="result-grid">`;
-
-      filtered.forEach(d=>{
-        const x = d.data();
-        const chip = detectChip(x.code);
-        const vipNumber = x.value.replace("VIP ","");
-
-html += `
-  <div class="result-card">
-    <div class="code-title">
-      <span class="code-badge">💾 ${x.code}</span>
-    </div>
-
-    ${ (x.models && x.models.length)
-      ? `<div style="font-size:14px;color:#94a3b8;margin-bottom:10px;">
-           📱 ${x.models.join(" | ")}
-         </div>`
-      : ""
-    }
-
-    <div class="chip-vip-line">
-      <div class="chip-info" style="color:${chip.color}">
-        <span class="chip-dot" style="background:${chip.color};"></span>
-        ${chip.name}
-      </div>
-
-      <div class="vip-badge vip-${vipNumber}">
-        👑 VIP ${vipNumber}
-      </div>
-    </div>
-  </div>
-`;
-
-            </div>
-          </div>
-        `;
-      });
-
-      html += `</div>`;
-      out.innerHTML = html;
-      return;
-    }
-
-    if(!snap || snap.empty){
-      out.innerHTML = `
-        <div style="color:#ef4444;margin-top:15px;">
-          ❌ Không tìm thấy mã
-        </div>
-      `;
-      return;
-    }
-
-    let html = `<div class="result-grid">`;
-
-    snap.forEach(doc=>{
-      const x = doc.data();
-      const chip = detectChip(x.code);
-      const vipNumber = x.value.replace("VIP ","");
-
-      html += `
-        <div class="result-card">
-          <div class="code-title">
-            <span class="code-badge">💾 ${x.code}</span>
-          </div>
-
-          <div class="chip-vip-line">
-            <div class="chip-info" style="color:${chip.color}">
-              <span class="chip-dot" style="background:${chip.color};"></span>
-              ${chip.name}
-            </div>
-
-            <div class="vip-badge vip-${vipNumber}">
-              👑 VIP ${vipNumber}
-            </div>
-          </div>
-        </div>
-      `;
-    });
-
-    html += `</div>`;
-    out.innerHTML = html;
-
-  }catch(err){
-    console.error(err);
-    out.innerHTML = `
-      <div style="color:#ef4444;margin-top:15px;">
-        ⚠️ Lỗi hệ thống
-      </div>
-    `;
-  }
-}
-
-
-
-// ===== LOGIN =====
 async function secureLogin(){
-  const email = document.getElementById("loginEmail").value.trim();
-  const pass = document.getElementById("loginPass").value.trim();
-  const err = document.getElementById("loginError");
-
-  err.style.display = "none";
+  const email = loginEmail.value.trim();
+  const pass = loginPass.value.trim();
+  loginError.style.display = "none";
 
   try{
     await auth.signInWithEmailAndPassword(email, pass);
-    // KHÔNG làm gì thêm
   }catch(e){
-    err.style.display = "block";
-    err.innerText = "Sai tài khoản hoặc mật khẩu!";
-    return; // QUAN TRỌNG
+    loginError.innerText = "Sai tài khoản hoặc mật khẩu!";
+    loginError.style.display = "block";
   }
 }
 
-
-
-// ===== TOGGLE PASSWORD =====
 function togglePassword(){
-  const passInput = document.getElementById("loginPass");
-
-  if(passInput.type === "password"){
-    passInput.type = "text";
-  }else{
-    passInput.type = "password";
-  }
+  loginPass.type = loginPass.type === "password" ? "text" : "password";
 }
 
+/* ================= ADMIN CHECK ================= */
 
-// ===== CHECK ROLE =====
-auth.onAuthStateChanged(async (user) => {
+auth.onAuthStateChanged(async (user)=>{
 
-  if(window.location.search.includes("u=")){
-    return;
-  }
+  if(userParam) return;
 
   if(!user){
-    document.getElementById("loginScreen").style.display = "flex";
+    loginScreen.style.display = "flex";
+    adminPanel.style.display = "none";
     return;
   }
 
   try{
-
     const snap = await db.collection("users").doc(user.email).get();
 
     if(!snap.exists || snap.data().role !== "admin"){
@@ -955,399 +748,91 @@ auth.onAuthStateChanged(async (user) => {
       return;
     }
 
-    document.getElementById("loginScreen").style.display = "none";
-    document.getElementById("adminPanel").style.display = "block";
-
+    loginScreen.style.display = "none";
+    adminPanel.style.display = "block";
     loadLinks();
 
-  }catch(err){
-    console.error("Lỗi đọc users:", err);
+  }catch(e){
+    console.error("Lỗi đọc role:", e);
   }
 });
 
-
-
-
+/* ================= ADMIN FUNCTIONS ================= */
 
 async function createLink(){
   const id = Date.now().toString(36) + Math.random().toString(36).substring(2,6);
 
   await db.collection("shareLinks").doc(id).set({
-    active: true,
+    active:true,
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    expiresAt: null,
-    views: 0
+    expiresAt:null,
+    views:0
   });
 
   loadLinks();
 }
 
-
-
-
-
-
-
 async function loadLinks(){
+
   const snap = await db.collection("shareLinks").get();
   let html = "";
 
-  // clear countdown cũ (tránh chạy chồng)
-  if(window.adminTimers){
-    Object.values(window.adminTimers).forEach(t => clearInterval(t));
-  }
-  window.adminTimers = {};
-
   snap.forEach(doc=>{
     const d = doc.data();
     const id = doc.id;
 
-   html += `
-  <div class="link-card">
-    
-    <div class="link-left">
+    html += `
+    <div class="link-card">
+      <div>
+        <div class="link-id">${localStorage.getItem("alias_"+id) || id}</div>
 
-<div class="link-id-row">
-  <div class="link-id editable-name" id="name-${id}">
-    ${localStorage.getItem("alias_" + id) || id}
-  </div>
-  <span class="edit-icon" onclick="startRename('${id}')">✏️</span>
-</div>
+        <div class="link-status ${d.active?'open':'lock'}">
+          ${d.active?'🟢 Đang mở':'🟡 Đang khóa'}
+        </div>
 
-
-
-      <div class="link-status ${d.active?'open':'lock'}">
-        ${d.active?'🟢 Đang mở':'🟡 Đang khóa'}
+        <div style="margin-top:5px;font-size:12px;color:#22c55e">
+          👁 ${d.views || 0}
+        </div>
       </div>
 
-      <div id="remain-${id}" style="margin-top:6px;font-size:12px;color:#facc15;">
-        ${d.expiresAt ? '⏳ Đang tính...' : '♾ Không giới hạn'}
-      </div>
-
-  <div style="margin-top:4px;font-size:12px;color:#22c55e;">
-    👁 Lượt truy cập: ${d.views || 0}
-  </div>
-</div>
-
-<div class="link-actions">
-  <button class="icon-btn" onclick="copyLink('${id}',this)">📋</button>
-<button class="icon-btn"
-  style="background:${d.active?'#16a34a':'#f59e0b'};color:white"
-  onclick="toggleLink('${id}',${d.active})">
-  ${d.active?'🔓':'🔒'}
-</button>
-
-  <button class="icon-btn" onclick="configExpire('${id}')">⏰</button>
-<button class="icon-btn delete"
-  style="background:#dc2626;color:white"
-  onclick="deleteLink('${id}')">
-  🗑
-</button>
-
-</div>
-
-  </div>
-`;
-  });
-
-  document.getElementById("linkList").innerHTML = html;
-
-  // ===== COUNTDOWN REALTIME CHO ADMIN =====
-  snap.forEach(doc=>{
-    const d = doc.data();
-    const id = doc.id;
-
-    if(!d.expiresAt) return;
-
-    const end = d.expiresAt.toDate();
-    const el = document.getElementById(`remain-${id}`);
-    if(!el) return;
-
-    window.adminTimers[id] = setInterval(async ()=>{
-      const now = new Date();
-      const diff = end - now;
-
-      if(diff <= 0){
-        clearInterval(window.adminTimers[id]);
-        el.innerText = "⛔ Đã hết hạn";
-
-        if(d.active){
-          await db.collection("shareLinks").doc(id).update({
-            active:false
-          });
-          loadLinks();
-        }
-        return;
-      }
-
-      const days = Math.floor(diff / (1000*60*60*24));
-      const hours = Math.floor((diff / (1000*60*60)) % 24);
-      const minutes = Math.floor((diff / (1000*60)) % 60);
-      const seconds = Math.floor((diff / 1000) % 60);
-
-      el.innerText = `⏳ ${days}d ${hours}h ${minutes}m ${seconds}s`;
-    }, 1000);
-  });
-}
-
-/* ===== EDIT LINK ALIAS (ADMIN ONLY) ===== */
-async function editAlias(id, current){
-  const name = prompt("Nhập tên để nhớ cho link:", current);
-  if(name === null) return;
-
-  const ref = db.collection("shareLinks").doc(id);
-
-  if(name.trim() === ""){
-    await ref.update({
-      alias: firebase.firestore.FieldValue.delete()
-    });
-  }else{
-    await ref.update({
-      alias: name.trim()
-    });
-  }
-
-  loadLinks();
-}
-
-// ===== POPUP CÀI THỜI GIAN (ADMIN) =====
-
-async function configExpire(id){
-
-  closeExpireBox();
-
-  let days = "";
-  let hours = "";
-  let minutes = "";
-
-  try{
-    const doc = await db.collection("shareLinks").doc(id).get();
-    if(doc.exists && doc.data().expiresAt){
-      const now = new Date();
-      const end = doc.data().expiresAt.toDate();
-      let diff = Math.max(0, end - now);
-
-      days = Math.floor(diff / (1000*60*60*24));
-      diff %= (1000*60*60*24);
-      hours = Math.floor(diff / (1000*60*60));
-      diff %= (1000*60*60);
-      minutes = Math.floor(diff / (1000*60));
-    }
-  }catch(e){
-    console.warn("Không đọc được expiresAt", e);
-  }
-
-  const html = `
-  <div id="expireBox" style="
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,0.6);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    z-index:9999;
-  ">
-    <div style="
-      background:#0f172a;
-      padding:25px;
-      border-radius:18px;
-      width:340px;
-      box-shadow:0 20px 50px rgba(0,0,0,0.6);
-    ">
-      <h3 style="margin-bottom:15px;">⏰ Cài thời gian hết hạn</h3>
-
-<div style="margin-bottom:4px;font-size:13px;color:#cbd5e1;">📅 Số ngày</div>
-<input id="expireDays" type="number"
-  value="${days}"
-  style="width:100%;height:42px;margin-bottom:10px;
-  border-radius:10px;border:1px solid #333;
-  background:#020617;color:white;padding:0 12px">
-
-<div style="margin-bottom:4px;font-size:13px;color:#cbd5e1;">⏰ Giờ</div>
-<input id="expireHours" type="number"
-  value="${hours}"
-  style="width:100%;height:42px;margin-bottom:10px;
-  border-radius:10px;border:1px solid #333;
-  background:#020617;color:white;padding:0 12px">
-
-<div style="margin-bottom:4px;font-size:13px;color:#cbd5e1;">⏱ Phút</div>
-<input id="expireMinutes" type="number"
-  value="${minutes}"
-  style="width:100%;height:42px;margin-bottom:15px;
-  border-radius:10px;border:1px solid #333;
-  background:#020617;color:white;padding:0 12px">
-
-
-      <div style="display:flex;justify-content:flex-end;gap:10px;">
-        <button onclick="closeExpireBox()"
-          style="padding:6px 12px;border-radius:8px;
-          border:1px solid #444;background:#1f2937;color:white">
-          Hủy
+      <div class="link-actions">
+        <button class="icon-btn" onclick="copyLink('${id}',this)">📋</button>
+        <button class="icon-btn"
+          style="background:${d.active?'#16a34a':'#f59e0b'};color:white"
+          onclick="toggleLink('${id}',${d.active})">
+          ${d.active?'🔓':'🔒'}
         </button>
-
-        <button onclick="saveExpire('${id}')"
-          style="padding:6px 12px;border-radius:8px;
-          background:#2563eb;color:white;border:none">
-          Lưu
+        <button class="icon-btn delete"
+          style="background:#dc2626;color:white"
+          onclick="deleteLink('${id}')">
+          🗑
         </button>
       </div>
     </div>
-  </div>
-  `;
+    `;
+  });
 
-  document.body.insertAdjacentHTML("beforeend", html);
+  linkList.innerHTML = html;
 }
 
-function closeExpireBox(){
-  const box = document.getElementById("expireBox");
-  if(box) box.remove();
-}
-
-async function saveExpire(id){
-  const d = parseInt(document.getElementById("expireDays").value || 0);
-  const h = parseInt(document.getElementById("expireHours").value || 0);
-  const m = parseInt(document.getElementById("expireMinutes").value || 0);
-
-  if(d === 0 && h === 0 && m === 0){
-    await db.collection("shareLinks").doc(id).update({
-      expiresAt: null
-    });
-  }else{
-    const future = new Date();
-    future.setDate(future.getDate() + d);
-    future.setHours(future.getHours() + h);
-    future.setMinutes(future.getMinutes() + m);
-
-    await db.collection("shareLinks").doc(id).update({
-      expiresAt: firebase.firestore.Timestamp.fromDate(future)
-    });
-  }
-
-  closeExpireBox();
-  loadLinks();
-}
-// ===== COPY LINK =====
-function copyLink(id, btn){
-  const link = window.location.origin + window.location.pathname + "?u=" + id;
+function copyLink(id,btn){
+  const link = location.origin + location.pathname + "?u=" + id;
   navigator.clipboard.writeText(link);
-
-  const old = btn.innerText;
-  btn.innerText = "✓";
-  btn.style.background = "#16a34a";
-  btn.style.color = "white";
-
-  setTimeout(()=>{
-    btn.innerText = old;
-    btn.style.background = "";
-    btn.style.color = "";
-  },1500);
+  btn.innerText="✓";
+  setTimeout(()=>btn.innerText="📋",1000);
 }
 
-
-// ===== TOGGLE LINK (MỞ / KHÓA) =====
-async function toggleLink(id, current){
-  await db.collection("shareLinks").doc(id).update({
-    active: !current
-  });
+async function toggleLink(id,current){
+  await db.collection("shareLinks").doc(id).update({active:!current});
   loadLinks();
 }
 
-
-// ===== DELETE LINK (POPUP ĐẸP) =====
-function deleteLink(id){
-
-  const html = `
-  <div id="deleteBox" style="
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,0.6);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    z-index:9999;
-  ">
-    <div style="
-      background:#0f172a;
-      padding:24px;
-      border-radius:18px;
-      width:320px;
-      box-shadow:0 20px 50px rgba(0,0,0,0.6);
-      text-align:center;
-    ">
-      <div style="font-size:18px;margin-bottom:10px;">🗑 Xóa link</div>
-      <div style="font-size:14px;color:#94a3b8;margin-bottom:20px;">
-        Bạn có chắc muốn xóa link này?
-      </div>
-
-      <div style="display:flex;justify-content:center;gap:12px;">
-        <button onclick="closeDeleteBox()"
-          style="padding:8px 16px;border-radius:10px;
-          border:1px solid #334155;background:#1f2937;color:white">
-          Hủy
-        </button>
-
-        <button onclick="confirmDelete('${id}')"
-          style="padding:8px 16px;border-radius:10px;
-          background:#dc2626;color:white;border:none">
-          Xóa
-        </button>
-      </div>
-    </div>
-  </div>
-  `;
-
-  document.body.insertAdjacentHTML("beforeend", html);
-}
-
-function closeDeleteBox(){
-  const box = document.getElementById("deleteBox");
-  if(box) box.remove();
-}
-
-async function confirmDelete(id){
+async function deleteLink(id){
+  if(!confirm("Xóa link này?")) return;
   await db.collection("shareLinks").doc(id).delete();
-  closeDeleteBox();
   loadLinks();
 }
-function startRename(id){
-  const el = document.getElementById("name-" + id);
-  if(!el || el.querySelector("input")) return;
-
-  const oldText = el.innerText;
-  const input = document.createElement("input");
-
-  input.type = "text";
-  input.value = oldText;
-  input.style.width = "100%";
-  input.style.background = "transparent";
-  input.style.color = "inherit";
-  input.style.border = "1px solid rgba(255,255,255,0.3)";
-  input.style.borderRadius = "6px";
-  input.style.padding = "4px 6px";
-  input.style.fontSize = "14px";
-
-  el.innerHTML = "";
-  el.appendChild(input);
-  input.focus();
-  input.select();
-
-  function finish(){
-    const val = input.value.trim();
-    el.innerText = val || oldText;
-
-    if(val){
-      // ✅ GIỮ TÊN KỂ CẢ ĐÓNG TAB
-      localStorage.setItem("alias_" + id, val);
-    }
-  }
-
-  input.addEventListener("blur", finish);
-  input.addEventListener("keydown", e=>{
-    if(e.key === "Enter") input.blur();
-    if(e.key === "Escape") el.innerText = oldText;
-  });
-}
-
+</script>
 
 
 
