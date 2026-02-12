@@ -814,6 +814,13 @@ async function check(){
             <div class="code-title">
               <span class="code-badge">💾 ${x.code}</span>
             </div>
+            ${ (x.models && x.models.length)
+    ? `<div style="font-size:14px;color:#94a3b8;margin-bottom:10px;">
+         📱 ${x.models.join(" | ")}
+       </div>`
+    : ""
+}
+
 
             <div class="chip-vip-line">
               <div class="chip-info" style="color:${chip.color}">
