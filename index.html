@@ -851,6 +851,42 @@ async function check(){
       const chip = detectChip(item.id);
       const vipNumber = (x.value || "VIP 0").replace("VIP ","");
 
+      // ===== LẤY DUNG LƯỢNG =====
+      let capacity = "";
+      if(x.models && x.models.length){
+        let capMatch = x.models[0].match(/\d+GB/i);
+        if(capMatch) capacity = capMatch[0];
+      }
+
+      // ===== GOM MODEL THEO HÃNG =====
+      let modelHTML = "";
+
+      if(x.models && x.models.length){
+
+        let brands = {};
+
+        x.models.forEach(m => {
+
+          let capRemoved = m.replace(/\s\d+GB/i,"");
+          let parts = capRemoved.split(" ");
+          let brand = parts[0].toUpperCase();
+          let modelName = parts.slice(1).join(" ");
+
+          if(!brands[brand]) brands[brand] = [];
+          brands[brand].push(modelName.toUpperCase());
+
+        });
+
+        Object.keys(brands).forEach(b=>{
+          modelHTML += `
+            <div style="color:#22c55e;margin-bottom:6px;font-weight:600;">
+              📱 ${b}: ${brands[b].join(" / ")}
+            </div>
+          `;
+        });
+
+      }
+
       html += `
         <div class="result-card">
 
@@ -866,37 +902,10 @@ async function check(){
               ${chip.name}
             </span>
 
-            ${(() => {
-              let capMatch = x.models && x.models.length
-                ? x.models[0].match(/\d+GB/i)
-                : null;
-              return capMatch ? `<span>💾 ${capMatch[0]}</span>` : "";
-            })()}
+            ${capacity ? `<span>💾 ${capacity}</span>` : ""}
           </div>
 
-          ${x.models && x.models.length ? (() => {
-
-            let brands = {};
-
-            x.models.forEach(m => {
-
-              let capRemoved = m.replace(/\s\d+GB/i,"");
-              let parts = capRemoved.split(" ");
-              let brand = parts[0].toUpperCase();
-              let modelName = parts.slice(1).join(" ");
-
-              if(!brands[brand]) brands[brand] = [];
-              brands[brand].push(modelName.toUpperCase());
-
-            });
-
-            return Object.keys(brands).map(b => `
-              <div style="color:#22c55e;margin-bottom:6px;font-weight:600;">
-                📱 ${b}: ${brands[b].join(" / ")}
-              </div>
-            `).join("");
-
-          })() : ""}
+          ${modelHTML}
 
         </div>
       `;
@@ -915,6 +924,7 @@ async function check(){
     `;
   }
 }
+
 
 
 /* ===== CREATE LINK ===== */
