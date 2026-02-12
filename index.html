@@ -21,11 +21,13 @@ body{
 /* ===== DASHBOARD GRID ===== */
 
 .result-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:18px;
-  margin-top:30px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  max-width: 1100px;
+  margin: 20px auto;
 }
+
 
 /* ÉP 1 CỘT CHẮC CHẮN TRÊN MOBILE */
 @media (max-width:768px){
@@ -572,14 +574,29 @@ gap:14px;
 .edit-icon:hover{
   opacity:1;
 }
+
 .result-grid{
-  max-width: 850px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  max-width: 1100px;
   margin: 20px auto;
 }
 
 .result-card{
-  max-width: 850px;
-  margin: 20px auto;
+  width: 100%;
+}
+
+@media (max-width: 900px){
+  .result-grid{
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px){
+  .result-grid{
+    grid-template-columns: 1fr;
+  }
 }
 
 </style>
