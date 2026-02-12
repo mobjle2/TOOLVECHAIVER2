@@ -738,15 +738,14 @@ function detectChip(code){
 }
 
 async function check(){
+
   const inputEl = document.getElementById("q");
   const out = document.getElementById("out");
 
-  let key = inputEl.value
-    .trim()
-    .toUpperCase()
-    .replace(/[^A-Z0-9]/g, "");
+  let raw = inputEl.value.trim().toUpperCase();
+  let key = raw.replace(/[^A-Z0-9]/g,"");
 
-  if(!key) return;
+  if(!raw) return;
 
   out.innerHTML = `
     <div class="loading">
@@ -761,25 +760,78 @@ async function check(){
     if(key.length > 4){
       snap = await db.collection("codes")
         .where("full", "==", key)
-        .limit(1)
+        .limit(20)
         .get();
     }
 
     // ===== 4 KÝ TỰ =====
-    if(key.length === 4){
-      // 1️⃣ thử head4
+    if((!snap || snap.empty) && key.length === 4){
       snap = await db.collection("codes")
         .where("head4", "==", key)
         .limit(20)
         .get();
 
-      // 2️⃣ nếu không có → thử tail4
       if(snap.empty){
         snap = await db.collection("codes")
           .where("tail4", "==", key)
           .limit(20)
           .get();
       }
+    }
+
+    // ===== MODEL CHỨA (match 1 phần như A530) =====
+    if(!snap || snap.empty){
+
+      const all = await db.collection("codes").get();
+
+      const filtered = all.docs.filter(d => {
+        const x = d.data();
+        if(!x.models) return false;
+
+        return x.models.some(m =>
+          m.toUpperCase().includes(raw)
+        );
+      });
+
+      if(filtered.length === 0){
+        out.innerHTML = `
+          <div style="color:#ef4444;margin-top:15px;">
+            ❌ Không tìm thấy mã
+          </div>
+        `;
+        return;
+      }
+
+      let html = `<div class="result-grid">`;
+
+      filtered.forEach(d=>{
+        const x = d.data();
+        const chip = detectChip(x.code);
+        const vipNumber = x.value.replace("VIP ","");
+
+        html += `
+          <div class="result-card">
+            <div class="code-title">
+              <span class="code-badge">💾 ${x.code}</span>
+            </div>
+
+            <div class="chip-vip-line">
+              <div class="chip-info" style="color:${chip.color}">
+                <span class="chip-dot" style="background:${chip.color};"></span>
+                ${chip.name}
+              </div>
+
+              <div class="vip-badge vip-${vipNumber}">
+                👑 VIP ${vipNumber}
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      html += `</div>`;
+      out.innerHTML = html;
+      return;
     }
 
     if(!snap || snap.empty){
@@ -791,7 +843,6 @@ async function check(){
       return;
     }
 
-    // ===== RENDER KẾT QUẢ =====
     let html = `<div class="result-grid">`;
 
     snap.forEach(doc=>{
@@ -802,10 +853,8 @@ async function check(){
       html += `
         <div class="result-card">
           <div class="code-title">
-         <span class="code-badge">💾 ${x.code}</span>
+            <span class="code-badge">💾 ${x.code}</span>
           </div>
-
-
 
           <div class="chip-vip-line">
             <div class="chip-info" style="color:${chip.color}">
@@ -828,13 +877,11 @@ async function check(){
     console.error(err);
     out.innerHTML = `
       <div style="color:#ef4444;margin-top:15px;">
-        ⚠️ Lỗi hệ thống, thử lại sau
+        ⚠️ Lỗi hệ thống
       </div>
     `;
   }
 }
-
-
 
 
 
