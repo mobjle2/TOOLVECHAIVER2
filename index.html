@@ -836,28 +836,36 @@ async function check(){
 
     snap.forEach(doc=>{
       const x = doc.data();
-      const chip = detectChip(x.code);
+      const chip = detectChip(doc.id);
       const vipNumber = x.value.replace("VIP ","");
 
-      html += `
-        <div class="result-card">
-          <div class="code-title">
-            <span class="code-badge">💾 ${x.code}</span>
-          </div>
+     html += `
+  <div class="result-card">
+    <div class="code-title">
+      <span class="code-badge">💾 ${doc.id}</span>
+    </div>
 
-          <div class="chip-vip-line">
-            <div class="chip-info" style="color:${chip.color}">
-              <span class="chip-dot" style="background:${chip.color};"></span>
-              ${chip.name}
-            </div>
+    ${x.models && x.models.length ? `
+      <div style="color:#22c55e;font-size:14px;margin-bottom:10px;line-height:1.6;">
+        ${x.models
+          .map(m => "• " + m.replace(/\s\d+GB/i,""))
+          .join("<br>")}
+      </div>
+    ` : ""}
 
-            <div class="vip-badge vip-${vipNumber}">
-              👑 VIP ${vipNumber}
-            </div>
-          </div>
-        </div>
-      `;
-    });
+    <div class="chip-vip-line">
+      <div class="chip-info" style="color:${chip.color}">
+        <span class="chip-dot" style="background:${chip.color};"></span>
+        ${chip.name}
+      </div>
+
+      <div class="vip-badge vip-${vipNumber}">
+        👑 VIP ${vipNumber}
+      </div>
+    </div>
+  </div>
+`;
+
 
     html += `</div>`;
     out.innerHTML = html;
