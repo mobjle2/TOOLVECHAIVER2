@@ -856,14 +856,35 @@ async function check(){
           <div class="code-title">
             <span class="code-badge">💾 ${item.id}</span>
           </div>
+        ${x.models && x.models.length ? `
+  <div style="margin:12px 0 5px 0;display:flex;flex-wrap:wrap;gap:8px;">
+    ${
+      x.models.map(m => {
+        let cleaned = m
+          .replace(/\s\d+GB/i,"")
+          .replace("SAMSUNG ","")
+          .replace("OPPO ","")
+          .replace("VIVO ","")
+          .toUpperCase();
 
-          ${x.models && x.models.length ? `
-            <div style="color:#22c55e;font-size:14px;margin-bottom:10px;line-height:1.6;">
-              ${x.models
-                .map(m => "• " + m.replace(/\s\d+GB/i,""))
-                .join("<br>")}
-            </div>
-          ` : ""}
+        return `
+          <span style="
+            background:linear-gradient(135deg,#16a34a,#22c55e);
+            color:#001b08;
+            padding:6px 12px;
+            border-radius:20px;
+            font-size:13px;
+            font-weight:600;
+          ">
+            📱 ${cleaned}
+          </span>
+        `;
+      }).join("")
+    }
+  </div>
+` : ""}
+
+
 
           <div class="chip-vip-line">
             <div class="chip-info" style="color:${chip.color}">
