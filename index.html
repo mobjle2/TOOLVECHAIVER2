@@ -877,38 +877,53 @@ async function check(){
       const chip = detectChip(item.id);
       const vipNumber = (x.value || "VIP 0").replace("VIP ","");
 
-      html += `
-        <div class="result-card">
-          <div class="code-title">
-            <span class="code-badge">💾 ${item.id}</span>
-          </div>
-        ${x.models && x.models.length ? `
-  <div style="margin:12px 0 5px 0;display:flex;flex-wrap:wrap;gap:8px;">
-    ${
-      x.models.map(m => {
-let cleaned = m
-  .replace("SAMSUNG ","")
-  .replace("OPPO ","")
-  .replace("VIVO ","")
-  .toUpperCase();
+       html += `
+  <div class="result-card">
 
+    <div class="code-title">
+      <span class="code-badge">💾 ${item.id}</span>
+    </div>
 
-        return `
-          <span style="
-            background:linear-gradient(135deg,#16a34a,#22c55e);
-            color:#001b08;
-            padding:6px 12px;
-            border-radius:20px;
-            font-size:13px;
-            font-weight:600;
-          ">
-            📱 ${cleaned}
-          </span>
-        `;
-      }).join("")
-    }
+    <div style="margin:8px 0 12px 0; font-weight:600;">
+      <span style="margin-right:16px;">👑 VIP ${vipNumber}</span>
+      <span style="margin-right:16px; color:${chip.color};">
+        <span class="chip-dot" style="background:${chip.color};"></span>
+        ${chip.name}
+      </span>
+      ${(() => {
+        let capMatch = x.models && x.models.length
+          ? x.models[0].match(/\d+GB/i)
+          : null;
+        return capMatch ? `<span>💾 ${capMatch[0]}</span>` : "";
+      })()}
+    </div>
+
+    ${x.models && x.models.length ? (() => {
+
+      let brands = {};
+
+      x.models.forEach(m => {
+
+        let capRemoved = m.replace(/\s\d+GB/i,"");
+        let parts = capRemoved.split(" ");
+        let brand = parts[0].toUpperCase();
+        let modelName = parts.slice(1).join(" ");
+
+        if(!brands[brand]) brands[brand] = [];
+        brands[brand].push(modelName.toUpperCase());
+
+      });
+
+      return Object.keys(brands).map(b => `
+        <div style="color:#22c55e;margin-bottom:6px;font-weight:600;">
+          📱 ${b}: ${brands[b].join(" / ")}
+        </div>
+      `).join("");
+
+    })() : ""}
+
   </div>
-` : ""}
+`;
 
 
 
