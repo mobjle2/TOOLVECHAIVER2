@@ -791,7 +791,7 @@ async function check(){
   let raw = inputEl.value.trim().toUpperCase();
   let key = raw.replace(/[^A-Z0-9]/g,"");
 
-  if(!raw) return;
+  if(!key) return;
 
   out.innerHTML = `
     <div class="loading">
@@ -800,30 +800,41 @@ async function check(){
   `;
 
   try{
-    let snap = null;
 
-    if(key.length > 4){
-      snap = await db.collection("codes")
-        .where("full","==",key)
-        .limit(20)
-        .get();
-    }
+    const snap = await db.collection("codes").get();
+    let results = [];
 
-    if((!snap || snap.empty) && key.length === 4){
-      snap = await db.collection("codes")
-        .where("head4","==",key)
-        .limit(20)
-        .get();
+    snap.forEach(doc=>{
 
-      if(snap.empty){
-        snap = await db.collection("codes")
-          .where("tail4","==",key)
-          .limit(20)
-          .get();
+      const x = doc.data();
+
+      const idNormalized = doc.id
+        .toUpperCase()
+        .replace(/[^A-Z0-9]/g,"");
+
+      const full = (x.full || "").toUpperCase();
+      const head4 = (x.head4 || "").toUpperCase();
+      const tail4 = (x.tail4 || "").toUpperCase();
+
+      let match =
+        idNormalized.includes(key) ||
+        full.includes(key) ||
+        head4.includes(key) ||
+        tail4.includes(key);
+
+      if(!match && x.models && Array.isArray(x.models)){
+        match = x.models.some(m =>
+          m.toUpperCase().includes(key)
+        );
       }
-    }
 
-    if(!snap || snap.empty){
+      if(match){
+        results.push({id:doc.id, data:x});
+      }
+
+    });
+
+    if(results.length === 0){
       out.innerHTML = `
         <div style="color:#ef4444;margin-top:15px;">
           ❌ Không tìm thấy mã
@@ -834,38 +845,40 @@ async function check(){
 
     let html = `<div class="result-grid">`;
 
-    snap.forEach(doc=>{
-      const x = doc.data();
-      const chip = detectChip(doc.id);
-      const vipNumber = x.value.replace("VIP ","");
+    results.forEach(item=>{
 
-     html += `
-  <div class="result-card">
-    <div class="code-title">
-      <span class="code-badge">💾 ${doc.id}</span>
-    </div>
+      const x = item.data;
+      const chip = detectChip(item.id);
+      const vipNumber = (x.value || "VIP 0").replace("VIP ","");
 
-    ${x.models && x.models.length ? `
-      <div style="color:#22c55e;font-size:14px;margin-bottom:10px;line-height:1.6;">
-        ${x.models
-          .map(m => "• " + m.replace(/\s\d+GB/i,""))
-          .join("<br>")}
-      </div>
-    ` : ""}
+      html += `
+        <div class="result-card">
+          <div class="code-title">
+            <span class="code-badge">💾 ${item.id}</span>
+          </div>
 
-    <div class="chip-vip-line">
-      <div class="chip-info" style="color:${chip.color}">
-        <span class="chip-dot" style="background:${chip.color};"></span>
-        ${chip.name}
-      </div>
+          ${x.models && x.models.length ? `
+            <div style="color:#22c55e;font-size:14px;margin-bottom:10px;line-height:1.6;">
+              ${x.models
+                .map(m => "• " + m.replace(/\s\d+GB/i,""))
+                .join("<br>")}
+            </div>
+          ` : ""}
 
-      <div class="vip-badge vip-${vipNumber}">
-        👑 VIP ${vipNumber}
-      </div>
-    </div>
-  </div>
-`;
-});
+          <div class="chip-vip-line">
+            <div class="chip-info" style="color:${chip.color}">
+              <span class="chip-dot" style="background:${chip.color};"></span>
+              ${chip.name}
+            </div>
+
+            <div class="vip-badge vip-${vipNumber}">
+              👑 VIP ${vipNumber}
+            </div>
+          </div>
+        </div>
+      `;
+
+    });
 
     html += `</div>`;
     out.innerHTML = html;
@@ -879,6 +892,7 @@ async function check(){
     `;
   }
 }
+
 
 
 /* ===== CREATE LINK ===== */
