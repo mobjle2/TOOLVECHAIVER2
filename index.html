@@ -860,12 +860,12 @@ async function check(){
   <div style="margin:12px 0 5px 0;display:flex;flex-wrap:wrap;gap:8px;">
     ${
       x.models.map(m => {
-        let cleaned = m
-          .replace(/\s\d+GB/i,"")
-          .replace("SAMSUNG ","")
-          .replace("OPPO ","")
-          .replace("VIVO ","")
-          .toUpperCase();
+let cleaned = m
+  .replace("SAMSUNG ","")
+  .replace("OPPO ","")
+  .replace("VIVO ","")
+  .toUpperCase();
+
 
         return `
           <span style="
