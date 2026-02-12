@@ -675,45 +675,51 @@ if(userParam){
 }else{
 
   // CHỈ logout nếu là ADMIN mode
-  auth.signOut();
+
 
 }
 
 async function runUserMode(id){
   try{
 
-    const doc = await db.collection("shareLinks").doc(id).get();
+    const docRef = db.collection("shareLinks").doc(id);
+    const doc = await docRef.get();
 
     if(!doc.exists){
       document.body.innerHTML = "❌ Link không tồn tại!";
       return;
     }
 
-    if(!doc.data().active){
+    const data = doc.data();
+
+    if(!data.active){
       document.body.innerHTML = "🔒 Link đã bị khóa!";
       return;
     }
 
-    const data = doc.data();
-
     if(data.expiresAt && data.expiresAt.toDate() < new Date()){
-      await db.collection("shareLinks").doc(id).update({
-        active:false
-      });
-
+      try{
+        await docRef.update({ active:false });
+      }catch(e){}
       document.body.innerHTML = "⛔ Link đã hết hạn!";
       return;
     }
 
-    await db.collection("shareLinks").doc(id).update({
-      views: firebase.firestore.FieldValue.increment(1)
-    });
+    // ⚠️ BỌC TRY riêng cho views (tránh văng lỗi toàn trang)
+    try{
+      await docRef.update({
+        views: firebase.firestore.FieldValue.increment(1)
+      });
+    }catch(e){
+      console.warn("Không tăng được views (thiếu quyền)");
+    }
 
   }catch(e){
     console.error(e);
     document.body.innerHTML = "❌ Lỗi quyền truy cập!";
   }
 }
+
 
 
 function detectChip(code){
@@ -931,21 +937,21 @@ function togglePassword(){
 // ===== CHECK ROLE =====
 auth.onAuthStateChanged(async (user) => {
 
-  // Nếu có ?u= thì bỏ qua hoàn toàn auth
   if(window.location.search.includes("u=")){
     return;
   }
 
-if(!user){
-  return; // không ép show login nữa
-}
-
+  if(!user){
+    document.getElementById("loginScreen").style.display = "flex";
+    return;
+  }
 
   try{
+
     const snap = await db.collection("users").doc(user.email).get();
 
     if(!snap.exists || snap.data().role !== "admin"){
-      await auth.signOut();
+      console.warn("Không phải admin");
       return;
     }
 
@@ -955,9 +961,10 @@ if(!user){
     loadLinks();
 
   }catch(err){
-    console.error(err);
+    console.error("Lỗi đọc users:", err);
   }
 });
+
 
 
 
