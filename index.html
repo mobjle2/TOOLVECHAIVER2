@@ -809,28 +809,32 @@ async function check(){
         const chip = detectChip(x.code);
         const vipNumber = x.value.replace("VIP ","");
 
-        html += `
-          <div class="result-card">
-            <div class="code-title">
-              <span class="code-badge">💾 ${x.code}</span>
-            </div>
-            ${ (x.models && x.models.length)
-    ? `<div style="font-size:14px;color:#94a3b8;margin-bottom:10px;">
-         📱 ${x.models.join(" | ")}
-       </div>`
-    : ""
-}
+html += `
+  <div class="result-card">
+    <div class="code-title">
+      <span class="code-badge">💾 ${x.code}</span>
+    </div>
 
+    ${ (x.models && x.models.length)
+      ? `<div style="font-size:14px;color:#94a3b8;margin-bottom:10px;">
+           📱 ${x.models.join(" | ")}
+         </div>`
+      : ""
+    }
 
-            <div class="chip-vip-line">
-              <div class="chip-info" style="color:${chip.color}">
-                <span class="chip-dot" style="background:${chip.color};"></span>
-                ${chip.name}
-              </div>
+    <div class="chip-vip-line">
+      <div class="chip-info" style="color:${chip.color}">
+        <span class="chip-dot" style="background:${chip.color};"></span>
+        ${chip.name}
+      </div>
 
-              <div class="vip-badge vip-${vipNumber}">
-                👑 VIP ${vipNumber}
-              </div>
+      <div class="vip-badge vip-${vipNumber}">
+        👑 VIP ${vipNumber}
+      </div>
+    </div>
+  </div>
+`;
+
             </div>
           </div>
         `;
