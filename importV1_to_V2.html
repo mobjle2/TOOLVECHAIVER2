@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Import Codes V2 (search4)</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    body{
+      font-family:Arial,Helvetica,sans-serif;
+      background:#0b0b0b;
+      color:#f1f5f9;
+      padding:40px;
+    }
+    button{
+      padding:12px 22px;
+      font-size:16px;
+      font-weight:700;
+      border:none;
+      border-radius:10px;
+      cursor:pointer;
+      background:#22c55e;
+      color:#000;
+    }
+    #log{
+      margin-top:20px;
+      font-size:14px;
+      line-height:1.6;
+      white-space:pre-wrap;
+    }
+  </style>
+</head>
+<body>
+
+<h2>🚀 Import Codes V2 (search4)</h2>
+<p>Data load từ <b>data.js</b>. Bấm 1 lần là import toàn bộ.</p>
+
+<button onclick="startImport()">IMPORT NGAY</button>
+<div id="log"></div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<!-- DATA -->
+<script src="./data.js"></script>
+
+<script>
+/* ================= FIREBASE CONFIG ================= */
+const firebaseConfig = {
+  apiKey: "AIzaSyClXx0V66GQHKGO0EwQc0nYNguFLc705A0",
+  authDomain: "toolvechaiver2.firebaseapp.com",
+  projectId: "toolvechaiver2",
+  storageBucket: "toolvechaiver2.firebasestorage.app",
+  messagingSenderId: "855001765940",
+  appId: "1:855001765940:web:0a562c54618377aaae5261"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+/* ================= UTIL ================= */
+function log(msg){
+  document.getElementById("log").innerText += msg + "\n";
+}
+
+function normalize(code){
+  return code.toUpperCase().replace(/[^A-Z0-9]/g,"");
+}
+
+/* ================= IMPORT ================= */
+async function startImport(){
+  if(!Array.isArray(data)){
+    alert("❌ Không tìm thấy data.js");
+    return;
+  }
+
+  log("🔄 Bắt đầu import...");
+  let count = 0;
+
+  for(const item of data){
+    if(!item.code) continue;
+
+    const full = normalize(item.code);
+    if(full.length < 8) continue;
+
+    const head4 = full.slice(0,4);
+    const tail4 = full.slice(-4);
+
+    // 🔥 search4 = CHỈ 4 ĐẦU + 4 CUỐI
+    const search4 = [head4, tail4];
+
+    let type = "";
+    let value = "";
+
+    if(item.vip){
+      type = "VIP";
+      value = item.vip;
+    }else if(item.mmc){
+      type = "MMC";
+      value = item.mmc;
+    }else{
+      continue;
+    }
+
+    const docId = item.code; // giữ doc.id = mã gốc
+
+    try{
+      await db.collection("codes").doc(docId).set({
+        code: item.code,
+        full: full,
+        head4: head4,
+        tail4: tail4,
+        search4: search4,   // 👈 FIELD TỐI ƯU QUOTA
+        type: type,
+        value: value,
+        used: "no",
+        usedAt: "",
+        usedBy: ""
+      });
+
+      count++;
+      log("✅ Imported: " + docId);
+    }catch(e){
+      log("❌ Lỗi: " + docId);
+      console.error(e);
+    }
+  }
+
+  log("🎉 HOÀN TẤT: " + count + " codes");
+  alert("✅ Import xong " + count + " codes");
+}
+</script>
+
+</body>
+</html>
