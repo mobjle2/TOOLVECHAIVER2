@@ -642,6 +642,32 @@ body{
   border-color:#2563eb !important;
   box-shadow:0 10px 30px rgba(37,99,235,0.25);
 }
+/* ===== FORCE 3 CARD GRID ===== */
+#out{
+  display:grid !important;
+  grid-template-columns:repeat(3,1fr) !important;
+  gap:25px !important;
+  margin-top:30px;
+}
+
+/* Tablet */
+@media(max-width:1200px){
+  #out{
+    grid-template-columns:repeat(2,1fr) !important;
+  }
+}
+
+/* Mobile */
+@media(max-width:768px){
+  #out{
+    grid-template-columns:1fr !important;
+  }
+}
+
+/* Đảm bảo card không bị co */
+.result-card{
+  width:100% !important;
+}
 
 </style>
 
