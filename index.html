@@ -9,64 +9,55 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
 <style>
 body{
   margin:0;
   font-family:Segoe UI,Roboto,Arial;
-  background:radial-gradient(circle at top,#111,#000);
+  background:#0b0f17;
   color:#f1f5f9;
-  display:flex;
-  flex-direction:column;
-  min-height:100vh;
 }
 
+/* ===== CONTAINER ===== */
 .container{
-  flex:1;
-  width:100%;
-  max-width:1100px;
-  margin:20px auto;
-  padding:0 14px;
-  display:flex;
-  flex-direction:column;
+  max-width:1200px;
+  margin:40px auto;
+  padding:0 20px;
 }
 
+/* ===== TITLE ===== */
 .title{
   text-align:center;
-  margin:30px 0 10px;
-}
-
-.title-main{
-  font-size:26px;
-  font-weight:900;
-  letter-spacing:1px;
-  background:linear-gradient(90deg,#FFD700,#facc15,#FFD700);
+  font-size:24px;
+  font-weight:800;
+  margin-bottom:25px;
+  background:linear-gradient(90deg,#facc15,#f59e0b);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
 
-.title-sub{
-  font-size:13px;
-  opacity:0.6;
-  margin-top:6px;
-  letter-spacing:2px;
-}
-
+/* ===== CHECK BOX ===== */
 .check-inline{
   position:relative;
-  width:100%;
-  margin-top:10px;
+  margin-bottom:30px;
 }
 
 .check-inline input{
   width:100%;
-  padding:14px 50px 14px 14px;
-  border-radius:50px;
-  border:1px solid rgba(255,215,0,0.3);
-  background:#111;
+  height:52px;
+  padding:0 55px 0 18px;
+  border-radius:14px;
+  border:1px solid #1f2937;
+  background:#111827;
   color:white;
   font-size:15px;
+  transition:0.3s;
+}
+
+.check-inline input:focus{
+  border-color:#2563eb;
+  box-shadow:0 0 0 3px rgba(37,99,235,0.25);
   outline:none;
-  box-sizing:border-box;
 }
 
 .check-icon{
@@ -74,55 +65,133 @@ body{
   right:10px;
   top:50%;
   transform:translateY(-50%);
-  width:34px;
-  height:34px;
-  border-radius:50%;
-  border:1px solid rgba(255,255,255,0.1);
-  background:#111;
-  color:#aaa;
+  width:38px;
+  height:38px;
+  border-radius:10px;
+  border:none;
+  background:#1f2937;
+  color:#9ca3af;
   cursor:pointer;
-  font-size:15px;
   transition:0.2s;
 }
 
 .check-icon:hover{
-  border-color:#facc15;
-  color:#facc15;
+  background:#2563eb;
+  color:white;
 }
 
+/* ===== RESULT GRID ===== */
 #out{
   display:grid;
-  grid-template-columns:repeat(auto-fill, minmax(280px,1fr));
-  gap:14px;
-  margin-top:20px;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:18px;
 }
 
-.item{
-  background:linear-gradient(145deg,#0e0e0e,#181818);
-  border-radius:18px;
-  padding:14px;
-  border:1px solid rgba(255,215,0,0.15);
+/* ===== RESULT CARD ===== */
+.result-card{
+  background:#111827;
+  border:1px solid #1f2937;
+  border-radius:16px;
+  padding:18px;
+  transition:0.25s;
+}
+
+.result-card:hover{
+  transform:translateY(-4px);
+  border-color:#2563eb;
+  box-shadow:0 10px 25px rgba(37,99,235,0.25);
+}
+
+/* ===== ADMIN PANEL ===== */
+#adminPanel{
+  margin-top:40px;
+  padding-top:25px;
+  border-top:1px solid #1f2937;
+}
+
+.create-link-btn{
+  padding:8px 18px;
+  border-radius:10px;
+  border:none;
+  background:#2563eb;
+  color:white;
+  font-weight:600;
+  cursor:pointer;
   transition:0.2s;
 }
 
-.item:hover{
-  border-color:#facc15;
-  box-shadow:0 0 15px rgba(250,204,21,0.2);
-  transform:translateY(-3px);
+.create-link-btn:hover{
+  background:#1d4ed8;
 }
 
-.badge{
-  display:inline-flex;
+/* ===== LINK GRID ===== */
+#linkList{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:15px;
+  margin-top:20px;
+}
+
+/* ===== LINK CARD ===== */
+.link-card{
+  background:#0f172a;
+  border:1px solid #1f2937;
+  border-radius:14px;
+  padding:14px;
+  display:flex;
+  justify-content:space-between;
   align-items:center;
-  gap:4px;
-  padding:4px 12px;
-  border-radius:999px;
-  font-size:11px;
-  font-weight:800;
-  margin-top:6px;
+  transition:0.2s;
 }
 
+.link-card:hover{
+  border-color:#2563eb;
+}
+
+.link-id{
+  font-weight:600;
+  font-size:14px;
+}
+
+.link-status{
+  margin-top:6px;
+  font-size:12px;
+}
+
+.link-actions{
+  display:flex;
+  gap:8px;
+}
+
+.icon-btn{
+  border:none;
+  background:#1f2937;
+  padding:6px 10px;
+  border-radius:8px;
+  cursor:pointer;
+  transition:0.2s;
+  color:white;
+}
+
+.icon-btn:hover{
+  background:#2563eb;
+}
+
+.icon-btn.delete:hover{
+  background:#dc2626;
+}
+
+/* ===== MOBILE ===== */
+@media(max-width:768px){
+  #out{
+    grid-template-columns:1fr;
+  }
+  #linkList{
+    grid-template-columns:1fr;
+  }
+}
 </style>
+
 </head>
 
 <body>
