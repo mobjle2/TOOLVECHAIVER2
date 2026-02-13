@@ -11,7 +11,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
 
-/* ================= CLEAN CENTERED PRO UI ================= */
+/* ================= TOOLVECHAIVER2 UI PRO ================= */
 
 body{
   margin:0;
@@ -31,7 +31,7 @@ body{
   text-align:center;
 }
 
-/* ===== TITLE CENTER ===== */
+/* ===== TITLE ===== */
 .title{
   font-size:34px;
   font-weight:800;
@@ -41,18 +41,18 @@ body{
   -webkit-text-fill-color:transparent;
 }
 
-/* ===== CHECK CENTER ===== */
+/* ===== SEARCH (NO BUTTON STYLE) ===== */
 .check-group{
   position:relative;
   margin:0 auto 50px auto;
-  max-width:600px;
+  max-width:550px;
 }
 
 .check-group input{
   width:100%;
-  height:58px;
-  padding:0 130px 0 25px;
-  border-radius:18px;
+  height:60px;
+  padding:0 60px 0 25px;
+  border-radius:999px;
   border:1px solid rgba(255,255,255,0.08);
   background:linear-gradient(145deg,#0f172a,#0b1220);
   color:white;
@@ -67,58 +67,54 @@ body{
   outline:none;
 }
 
-.check-group button{
+.search-btn{
   position:absolute;
   right:8px;
   top:50%;
   transform:translateY(-50%);
-  height:44px;
-  padding:0 28px;
+  width:46px;
+  height:46px;
+  border-radius:50%;
   border:none;
-  border-radius:12px;
-  background:linear-gradient(90deg,#2563eb,#7c3aed);
-  font-weight:700;
   cursor:pointer;
+  background:linear-gradient(135deg,#2563eb,#7c3aed);
+  color:white;
+  font-size:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 10px 30px rgba(124,58,237,0.5);
   transition:0.3s;
 }
 
-.check-group button:hover{
-  transform:translateY(-50%) scale(1.05);
+.search-btn:hover{
+  transform:translateY(-50%) scale(1.1);
 }
 
 /* ===== GRID 4 CỘT ===== */
 .result-grid{
   display:grid;
   grid-template-columns:repeat(4,1fr);
-  gap:20px;
-  margin-top:20px;
+  gap:22px;
 }
 
 @media(max-width:1300px){
-  .result-grid{
-    grid-template-columns:repeat(3,1fr);
-  }
+  .result-grid{grid-template-columns:repeat(3,1fr);}
 }
-
 @media(max-width:900px){
-  .result-grid{
-    grid-template-columns:repeat(2,1fr);
-  }
+  .result-grid{grid-template-columns:repeat(2,1fr);}
 }
-
 @media(max-width:600px){
-  .result-grid{
-    grid-template-columns:1fr;
-  }
+  .result-grid{grid-template-columns:1fr;}
 }
 
-/* ===== CARD NHỎ LẠI CÂN ĐỐI ===== */
+/* ===== CARD ===== */
 .result-card{
   background:linear-gradient(160deg,#0f172a,#111827);
   border-radius:20px;
   padding:20px;
   border:1px solid rgba(255,255,255,0.06);
-  transition:all 0.3s ease;
+  transition:0.3s;
   box-shadow:0 20px 50px rgba(0,0,0,0.6);
   text-align:left;
 }
@@ -139,21 +135,82 @@ body{
   border:1px solid rgba(255,255,255,0.08);
 }
 
-/* ===== VIP ===== */
-.vip-8{
-  background:linear-gradient(90deg,#4f46e5,#6366f1);
-  box-shadow:0 0 15px rgba(99,102,241,0.4);
+/* ================= VIP COLOR SYSTEM ================= */
+
+/* VIP 1–4 (mờ, không nổi) */
+.vip-1,.vip-2,.vip-3,.vip-4{
+  background:#1e293b;
+  color:#94a3b8;
 }
 
-.vip-9{
+/* VIP 5 */
+.vip-5{
+  background:linear-gradient(90deg,#22c55e,#16a34a);
+}
+
+/* VIP 6 */
+.vip-6{
   background:linear-gradient(90deg,#06b6d4,#0ea5e9);
-  box-shadow:0 0 15px rgba(14,165,233,0.4);
 }
 
+/* VIP 7 */
+.vip-7{
+  background:linear-gradient(90deg,#6366f1,#8b5cf6);
+}
+
+/* VIP 8 */
+.vip-8{
+  background:linear-gradient(90deg,#a855f7,#ec4899);
+}
+
+/* VIP 9 */
+.vip-9{
+  background:linear-gradient(90deg,#f97316,#ef4444);
+}
+
+/* VIP 10 (đỉnh) */
 .vip-10{
   background:linear-gradient(90deg,#FFD700,#ffcc00,#FFD700);
   color:black;
   box-shadow:0 0 25px rgba(255,215,0,0.8);
+}
+
+/* VIP 11–13 (hiếm, màu khác hẳn) */
+.vip-11{
+  background:linear-gradient(90deg,#00ffcc,#00bfff);
+  color:black;
+}
+
+.vip-12{
+  background:linear-gradient(90deg,#ff00cc,#ff0066);
+}
+
+.vip-13{
+  background:linear-gradient(90deg,#000000,#434343);
+  border:1px solid red;
+}
+
+/* ================= MMC COLOR SYSTEM ================= */
+
+.mmc-1,.mmc-2{
+  color:#64748b;
+}
+
+.mmc-3{
+  color:#22c55e;
+}
+
+.mmc-4{
+  color:#06b6d4;
+}
+
+.mmc-5{
+  color:#a855f7;
+}
+
+.mmc-6{
+  color:#f97316;
+  font-weight:600;
 }
 
 /* ===== LOGIN ===== */
@@ -209,11 +266,8 @@ body{
 </style>
 
 
-
 </head>
-
 <body>
-
 <!-- LOGIN SCREEN -->
 <!-- LOGIN SCREEN -->
 <div id="loginScreen" class="login-wrapper">
@@ -245,19 +299,16 @@ body{
  <h2 class="title" style="margin-top:40px;">
   🛠 TOOLVECHAIVER2 Check VIP
 </h2>
-
-
- <div class="check-group">
+<div class="check-group">
 
   <input id="q"
          placeholder="Nhập mã cần kiểm tra"
-         autocomplete="off">
+         autocomplete="off"
+         onkeydown="if(event.key==='Enter') check()">
 
-  <button onclick="check()">CHECK</button>
+  <button class="search-btn" onclick="check()">🔎</button>
 
 </div>
-
-
 
 
   <!-- ADMIN PANEL -->
