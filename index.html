@@ -406,8 +406,11 @@ async function runUserMode(id){
 /* ================= LOGIN ================= */
 
 async function secureLogin(){
-  const email = loginEmail.value.trim();
-  const pass = loginPass.value.trim();
+
+  const email = document.getElementById("loginEmail").value.trim();
+  const pass = document.getElementById("loginPass").value.trim();
+  const loginError = document.getElementById("loginError");
+
   loginError.style.display = "none";
 
   try{
@@ -417,6 +420,7 @@ async function secureLogin(){
     loginError.style.display = "block";
   }
 }
+
 
 function togglePassword(){
   loginPass.type = loginPass.type === "password" ? "text" : "password";
