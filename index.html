@@ -9,7 +9,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<style>
+
 body{
   margin:0;
   font-family:Segoe UI,Roboto,Arial;
@@ -121,82 +121,10 @@ body{
   font-weight:800;
   margin-top:6px;
 }
-/* ===== LOGIN ===== */
 
-.login-wrapper{
-  position:fixed;
-  inset:0;
-  background:#000;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:999;
-}
 
-.login-box{
-  background:#111;
-  padding:30px;
-  border-radius:16px;
-  width:320px;
-  border:1px solid rgba(255,215,0,0.2);
-}
 
-.login-title{
-  text-align:center;
-  margin-bottom:20px;
-  font-weight:800;
-  color:#facc15;
-}
 
-.input-group{
-  position:relative;
-  margin-bottom:14px;
-}
-
-.input-group input{
-  width:100%;
-  padding:10px 36px 10px 10px;
-  border-radius:8px;
-  border:1px solid rgba(255,255,255,0.1);
-  background:#000;
-  color:white;
-}
-
-.input-icon{
-  position:absolute;
-  left:10px;
-  top:50%;
-  transform:translateY(-50%);
-  opacity:0.5;
-}
-
-.toggle-pass{
-  position:absolute;
-  right:10px;
-  top:50%;
-  transform:translateY(-50%);
-  cursor:pointer;
-  opacity:0.6;
-}
-
-.login-box button{
-  width:100%;
-  padding:10px;
-  border:none;
-  border-radius:8px;
-  background:#facc15;
-  font-weight:700;
-  cursor:pointer;
-}
-
-.login-error{
-  color:#ef4444;
-  margin-top:10px;
-  display:none;
-  font-size:13px;
-}
-
-</style>
 </head>
 
 <body>
@@ -228,19 +156,18 @@ body{
 
 
 
-<div class="container">
+<div class="main-container">
  <h2 class="title" style="margin-top:40px;">
   🛠 TOOLVECHAIVER2 Check VIP
 </h2>
 
 
-<div class="check-inline">
+<div class="check-group">
   <input id="q"
          placeholder="Nhập mã cần kiểm tra"
          autocomplete="off">
-  <button class="check-icon" onclick="check()">🔍</button>
+  <span class="search-icon" onclick="check()" style="cursor:pointer;">🔍</span>
 </div>
-
 
 
   <!-- ADMIN PANEL -->
@@ -282,11 +209,10 @@ const userParam = params.get("u");
 /* ================= USER MODE ================= */
 
 if(userParam){
-  document.getElementById("loginScreen").remove();
+  document.getElementById("loginScreen").style.display = "none";
   document.getElementById("adminPanel").style.display = "none";
   runUserMode(userParam);
 }
-
 
 async function runUserMode(id){
   try{
@@ -477,7 +403,7 @@ if(!snap || snap.empty){
 }
 
 
-    let html = "";
+    let html = `<div class="result-grid">`;
 
     snap.forEach(doc=>{
       const x = doc.data();
@@ -602,54 +528,31 @@ if(x.models && Array.isArray(x.models)){
 
 
       html += `
-  <div class="item">
+        <div class="result-card">
 
-  <div style="
-    font-size:17px;
-    font-weight:800;
-    margin-bottom:8px;
-    letter-spacing:0.4px;
-  ">
-    ${x.code}
-  </div>
+          <div style="font-size:18px;font-weight:700;">
+            ${x.code}
+          </div>
 
-  <div style="margin-top:8px;font-size:15px;">
-    ${secondLine}
-  </div>
+          <div style="margin-top:6px;">
+            ${secondLine}
+          </div>
 
-  <div style="
-    margin-top:8px;
-    color:${chip.color};
-    font-size:14px;
-    display:flex;
-    align-items:center;
-    gap:6px;
-  ">
-    <span style="
-      width:8px;
-      height:8px;
-      border-radius:50%;
-      background:${chip.color};
-      display:inline-block;
-    "></span>
-    ${chip.name}
-  </div>
+          <div style="margin-top:6px;color:${chip.color};">
+            <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${chip.color};margin-right:6px;"></span>
+            ${chip.name}
+          </div>
 
-  <div style="
-    margin-top:10px;
-    font-size:14px;
-    line-height:1.5;
-    opacity:0.9;
-  ">
-    ${modelLine}
-  </div>
+          <div style="margin-top:6px;">
+            ${modelLine}
+          </div>
 
-</div>
-`;
+        </div>
+      `;
+    });
 
-
-
-  out.innerHTML = html;
+    html += `</div>`;
+    out.innerHTML = html;
 
   }catch(err){
     console.error(err);
