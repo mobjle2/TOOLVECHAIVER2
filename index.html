@@ -816,81 +816,87 @@ if(!snap || snap.empty){
   }
 
   let html = `<div class="result-grid">`;
+filtered.forEach(d=>{
+  const x = d.data();
+  const chip = detectChip(x.code);
+  const vipNumber = x.value.replace("VIP ","");
 
-  filtered.forEach(d=>{
-    const x = d.data();
-    const chip = detectChip(x.code);
-    const vipNumber = x.value.replace("VIP ","");
+  // ===== LẤY DUNG LƯỢNG TỪ MMC (nếu có) =====
+  let sizeText = "";
+  if(x.mmc){
+    const mmcMap = {
+      MMC1:"16G",
+      MMC2:"32G",
+      MMC3:"64G",
+      MMC4:"128G",
+      MMC5:"256G",
+      MMC6:"512G"
+    };
+    sizeText = mmcMap[x.mmc] || "";
+  }
 
-    html += `
-      <div class="result-card">
-        <div class="code-title">
-          <span class="code-badge">💾 ${x.code}</span>
-        </div>
+  // ===== GROUP MODEL =====
+  let modelHTML = "";
 
-        ${
-          x.models?.length
-            ? `<div style="font-size:14px;color:#94a3b8;margin-bottom:10px;">
-                 📱 ${x.models.join(" | ")}
-               </div>`
-            : ""
-        }
+  if(x.models && x.models.length){
+    let groups = {};
 
-        <div class="chip-vip-line">
-          <div class="chip-info" style="color:${chip.color}">
-            <span class="chip-dot" style="background:${chip.color};"></span>
-            ${chip.name}
-          </div>
+    x.models.forEach(m => {
 
-          <div class="vip-badge vip-${vipNumber}">
-            👑 VIP ${vipNumber}
-          </div>
-        </div>
-      </div>
-    `;
-  });
+      let brand = "KHÁC";
 
-  html += `</div>`;
-  out.innerHTML = html;
-  return;
-}
+      if(m.toUpperCase().includes("SAMSUNG")) brand = "SAMSUNG";
+      else if(m.toUpperCase().includes("OPPO")) brand = "OPPO";
+      else if(m.toUpperCase().includes("VIVO")) brand = "VIVO";
 
+      let cleaned = m
+        .replace(/SAMSUNG\s/i,"")
+        .replace(/OPPO\s/i,"")
+        .replace(/VIVO\s/i,"")
+        .replace(/\s\d+GB/i,"")
+        .toUpperCase();
 
-    if(!snap || snap.empty){
-      out.innerHTML = `
-        <div style="color:#ef4444;margin-top:15px;">
-          ❌ Không tìm thấy mã
-        </div>
-      `;
-      return;
-    }
-
-    let html = `<div class="result-grid">`;
-
-    snap.forEach(doc=>{
-      const x = doc.data();
-      const chip = detectChip(x.code);
-      const vipNumber = x.value.replace("VIP ","");
-
-      html += `
-        <div class="result-card">
-          <div class="code-title">
-            <span class="code-badge">💾 ${x.code}</span>
-          </div>
-
-          <div class="chip-vip-line">
-            <div class="chip-info" style="color:${chip.color}">
-              <span class="chip-dot" style="background:${chip.color};"></span>
-              ${chip.name}
-            </div>
-
-            <div class="vip-badge vip-${vipNumber}">
-              👑 VIP ${vipNumber}
-            </div>
-          </div>
-        </div>
-      `;
+      if(!groups[brand]) groups[brand] = [];
+      groups[brand].push(cleaned);
     });
+
+    modelHTML = Object.keys(groups).map(b =>
+      `📱 ${b}: ${groups[b].join(" / ")}`
+    ).join("<br>");
+  }
+
+  html += `
+    <div class="result-card">
+
+      <!-- DÒNG 1: CODE -->
+      <div style="font-weight:700;font-size:16px;">
+        ${x.code}
+      </div>
+
+      <!-- DÒNG 2: VIP -->
+      <div style="margin-top:6px;font-weight:600;">
+        💾 VIP ${vipNumber}
+      </div>
+
+      <!-- DÒNG 3: CHIP + SIZE -->
+      <div style="margin-top:6px;">
+        <span style="color:${chip.color};font-weight:600;">
+          🟢 ${chip.name}
+        </span>
+        ${sizeText ? `&nbsp; 💾 ${sizeText}` : ""}
+      </div>
+
+      <!-- DÒNG 4: MODEL -->
+      ${modelHTML ? `
+        <div style="margin-top:8px;color:#94a3b8;font-size:14px;line-height:1.5;">
+          ${modelHTML}
+        </div>
+      ` : ""}
+
+    </div>
+  `;
+});
+
 
     html += `</div>`;
     out.innerHTML = html;
