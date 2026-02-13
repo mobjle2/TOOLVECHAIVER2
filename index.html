@@ -177,7 +177,6 @@ body{
     grid-template-columns:1fr;
   }
 }
-
 /* ================= CHECK INPUT ================= */
 
 .check-group{
@@ -188,7 +187,7 @@ body{
 .check-group input{
   width:100%;
   height:56px;
-  padding:0 60px 0 20px;
+  padding:0 45px 0 20px; /* giảm padding vì bỏ button */
   border-radius:14px;
   border:1px solid #222;
   background:#0f0f0f;
@@ -204,25 +203,15 @@ body{
   outline:none;
 }
 
-.check-group button{
+/* ICON SEARCH */
+.search-icon{
   position:absolute;
-  right:10px;
+  right:15px;
   top:50%;
   transform:translateY(-50%);
-  height:38px;
-  width:38px;
-  border:none;
-  border-radius:50%;
-  background:linear-gradient(90deg,#2563eb,#3b82f6);
-  color:white;
   font-size:16px;
-  cursor:pointer;
-  transition:0.3s;
-}
-
-.check-group button:hover{
-  transform:translateY(-50%) scale(1.1);
-  box-shadow:0 8px 20px rgba(37,99,235,0.4);
+  opacity:0.6;
+  pointer-events:none;
 }
 
 /* ================= LOADING ================= */
@@ -245,6 +234,7 @@ body{
   66%{content:'..';}
   100%{content:'...';}
 }
+
 
 /* ================= MOBILE ================= */
 
@@ -305,17 +295,12 @@ body{
 </h2>
 
 
- <div class="check-group">
-
+<div class="check-group">
   <input id="q"
          placeholder="Nhập mã cần kiểm tra"
          autocomplete="off">
-
-  <button onclick="check()">CHECK</button>
-
+  <span class="search-icon">🔍</span>
 </div>
-
-
 
 
   <!-- ADMIN PANEL -->
@@ -697,6 +682,12 @@ async function deleteLink(id){
   await db.collection("shareLinks").doc(id).delete();
   loadLinks();
 }
+document.getElementById("q").addEventListener("keydown", function(e){
+  if(e.key === "Enter"){
+    check();
+  }
+});
+
 </script>
 
 
