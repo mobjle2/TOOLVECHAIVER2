@@ -529,24 +529,78 @@ async function check(){
     snap.forEach(doc=>{
       const x = doc.data();
       const chip = detectChip(x.code);
-      const vipNumber = x.value.replace("VIP ","");
+
+      let secondLine = "";
+      let sizeText = "";
+
+      // ===== MMC =====
+      if(x.type === "MMC"){
+        const sizeMap = {
+          MMC1:"16G",
+          MMC2:"32G",
+          MMC3:"64G",
+          MMC4:"128G",
+          MMC5:"256G",
+          MMC6:"512G"
+        };
+
+        sizeText = sizeMap[x.value] ? ` (${sizeMap[x.value]})` : "";
+        secondLine = `💾 ${x.value}${sizeText}`;
+      }
+
+      // ===== VIP =====
+      if(x.type === "VIP"){
+        secondLine = `👑 ${x.value}`;
+      }
+
+      // ===== MODEL GROUP =====
+      let modelLine = "";
+      if(x.models && Array.isArray(x.models)){
+        let groups = {};
+
+        x.models.forEach(m=>{
+          let brand = "KHÁC";
+
+          if(m.includes("SAMSUNG")) brand = "SAMSUNG";
+          else if(m.includes("OPPO")) brand = "OPPO";
+          else if(m.includes("VIVO")) brand = "VIVO";
+
+          let cleaned = m
+            .replace("SAMSUNG ","")
+            .replace("OPPO ","")
+            .replace("VIVO ","")
+            .replace(/\s\d+GB/i,"")
+            .toUpperCase();
+
+          if(!groups[brand]) groups[brand] = [];
+          groups[brand].push(cleaned);
+        });
+
+        modelLine = Object.keys(groups).map(b =>
+          `📱 ${b}: ${groups[b].join(" / ")}`
+        ).join("<br>");
+      }
 
       html += `
         <div class="result-card">
-          <div class="code-title">
-            <span class="code-badge">💾 ${x.code}</span>
+
+          <div style="font-size:18px;font-weight:700;">
+            ${x.code}
           </div>
 
-          <div class="chip-vip-line">
-            <div class="chip-info" style="color:${chip.color}">
-              <span class="chip-dot" style="background:${chip.color};"></span>
-              ${chip.name}
-            </div>
-
-            <div class="vip-badge vip-${vipNumber}">
-              👑 VIP ${vipNumber}
-            </div>
+          <div style="margin-top:6px;">
+            ${secondLine}
           </div>
+
+          <div style="margin-top:6px;color:${chip.color};">
+            <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${chip.color};margin-right:6px;"></span>
+            ${chip.name}
+          </div>
+
+          <div style="margin-top:6px;">
+            ${modelLine}
+          </div>
+
         </div>
       `;
     });
@@ -578,6 +632,7 @@ async function createLink(){
 
   loadLinks();
 }
+
 
 
 /* ===== LOAD LINKS ===== */
