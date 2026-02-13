@@ -497,13 +497,14 @@ async function check(){
 
   out.innerHTML = `
     <div class="loading">
-      🔎 Đang quét dữ liệu...
+      🔎 Đang quét dữ liệu<span class="dots"></span>
     </div>
   `;
 
   try{
     let snap = null;
 
+    // ===== FULL CODE =====
     if(key.length > 4){
       snap = await db.collection("codes")
         .where("full","==",key)
@@ -511,6 +512,7 @@ async function check(){
         .get();
     }
 
+    // ===== HEAD4 / TAIL4 =====
     if((!snap || snap.empty) && key.length === 4){
       snap = await db.collection("codes")
         .where("head4","==",key)
@@ -525,43 +527,44 @@ async function check(){
       }
     }
 
-   // ===== Nếu không tìm thấy bằng full/head/tail fallback search models =====
-if(!snap || snap.empty){
+    // ===== FALLBACK SEARCH MODELS =====
+    if(!snap || snap.empty){
 
-  const allSnap = await db.collection("codes").limit(500).get();
-  let modelDocs = [];
+      const allSnap = await db.collection("codes").limit(500).get();
+      let modelDocs = [];
 
-  allSnap.forEach(doc=>{
-    const data = doc.data();
+      allSnap.forEach(doc=>{
+        const data = doc.data();
 
-    if(data.models && Array.isArray(data.models)){
-      const match = data.models.some(m =>
-        m.toUpperCase().includes(raw)
-      );
+        if(data.models && Array.isArray(data.models)){
+          const match = data.models.some(m =>
+            m.toUpperCase().includes(raw)
+          );
 
-      if(match){
-        modelDocs.push(doc);
+          if(match){
+            modelDocs.push(doc);
+          }
+        }
+      });
+
+      if(modelDocs.length === 0){
+        out.innerHTML = `
+          <div style="color:#ef4444;margin-top:15px;">
+            ❌ Không tìm thấy mã
+          </div>
+        `;
+        return;
       }
+
+      snap = {
+        forEach: function(cb){
+          modelDocs.forEach(cb);
+        }
+      };
     }
-  });
 
-  if(modelDocs.length === 0){
-    out.innerHTML = `
-      <div style="color:#ef4444;margin-top:15px;">
-        ❌ Không tìm thấy mã
-      </div>
-    `;
-    return;
-  }
-
-  // Gán snap giả để dùng chung phần render bên dưới
-  snap = {
-    forEach: (cb) => modelDocs.forEach(cb)
-  };
-}
-
-
-    let html = "";
+    // ===== RENDER =====
+    let html = `<div class="result-grid">`;
 
     snap.forEach(doc=>{
       const x = doc.data();
@@ -570,7 +573,6 @@ if(!snap || snap.empty){
       let secondLine = "";
       let sizeText = "";
 
-      // ===== MMC =====
       if(x.type === "MMC"){
         const sizeMap = {
           MMC1:"16G",
@@ -585,155 +587,112 @@ if(!snap || snap.empty){
         secondLine = `💾 ${x.value}${sizeText}`;
       }
 
-      // ===== VIP =====
       if(x.type === "VIP"){
         secondLine = `👑 ${x.value}`;
       }
 
-     // ===== MODEL GROUP (PRO VERSION) =====
-let modelLine = "";
+      // ===== GROUP MODELS BY BRAND =====
+      let modelLine = "";
 
-if(x.models && Array.isArray(x.models)){
+      if(x.models && Array.isArray(x.models)){
 
-  let groups = {};
+        let groups = {};
 
-  x.models.forEach(m=>{
+        x.models.forEach(m=>{
+          let upper = m.toUpperCase();
+          let brand = "KHÁC";
 
-    let upper = m.toUpperCase();
-    let brand = "KHÁC";
+          if(
+            upper.includes("SAMSUNG") ||
+            /^A\d{3}/.test(upper) ||
+            /^J\d{3}/.test(upper) ||
+            /^S\d{1,2}/.test(upper) ||
+            /^NOTE\s?\d/.test(upper) ||
+            upper.includes("SM-")
+          ){
+            brand = "SAMSUNG";
+          }
+          else if(
+            upper.includes("OPPO") ||
+            upper.includes("RENO") ||
+            upper.includes("FIND") ||
+            upper.includes("CPH")
+          ){
+            brand = "OPPO";
+          }
+          else if(
+            upper.includes("VIVO") ||
+            /^V\d{2}/.test(upper) ||
+            /^Y\d{2}/.test(upper)
+          ){
+            brand = "VIVO";
+          }
+          else if(
+            upper.includes("XIAOMI") ||
+            upper.includes("REDMI") ||
+            upper.includes("POCO") ||
+            upper.includes("MI ")
+          ){
+            brand = "XIAOMI";
+          }
+          else if(
+            upper.includes("REALME") ||
+            /^RMX/.test(upper)
+          ){
+            brand = "REALME";
+          }
+          else if(
+            upper.includes("IPHONE") ||
+            /^A\d{4}/.test(upper)
+          ){
+            brand = "APPLE";
+          }
+          else if(
+            upper.includes("HUAWEI") ||
+            upper.includes("NOVA") ||
+            upper.includes("MATE")
+          ){
+            brand = "HUAWEI";
+          }
 
-    // ===== SAMSUNG =====
-    if(
-      upper.includes("SAMSUNG") ||
-      /^A\d{3}/.test(upper) ||
-      /^J\d{3}/.test(upper) ||
-      /^S\d{1,2}/.test(upper) ||
-      /^NOTE\s?\d/.test(upper) ||
-      upper.includes("SM-")
-    ){
-      brand = "SAMSUNG";
-    }
+          let cleaned = upper
+            .replace(/SAMSUNG |OPPO |VIVO |XIAOMI |REALME |IPHONE |HUAWEI /gi,"")
+            .replace(/\s\d+GB/i,"")
+            .trim();
 
-    // ===== OPPO =====
-    else if(
-      upper.includes("OPPO") ||
-      upper.includes("RENO") ||
-      upper.includes("FIND") ||
-      upper.includes("CPH")
-    ){
-      brand = "OPPO";
-    }
+          if(!groups[brand]) groups[brand] = [];
+          groups[brand].push(cleaned);
+        });
 
-    // ===== VIVO =====
-    else if(
-      upper.includes("VIVO") ||
-      /^V\d{2}/.test(upper) ||
-      /^Y\d{2}/.test(upper)
-    ){
-      brand = "VIVO";
-    }
-
-    // ===== XIAOMI =====
-    else if(
-      upper.includes("XIAOMI") ||
-      upper.includes("REDMI") ||
-      upper.includes("POCO") ||
-      upper.includes("MI ")
-    ){
-      brand = "XIAOMI";
-    }
-
-    // ===== REALME =====
-    else if(
-      upper.includes("REALME") ||
-      /^RMX/.test(upper)
-    ){
-      brand = "REALME";
-    }
-
-    // ===== IPHONE =====
-    else if(
-      upper.includes("IPHONE") ||
-      /^A\d{4}/.test(upper)
-    ){
-      brand = "APPLE";
-    }
-
-    // ===== HUAWEI =====
-    else if(
-      upper.includes("HUAWEI") ||
-      upper.includes("NOVA") ||
-      upper.includes("MATE")
-    ){
-      brand = "HUAWEI";
-    }
-
-    // Làm sạch tên hiển thị
-    let cleaned = upper
-      .replace(/SAMSUNG |OPPO |VIVO |XIAOMI |REALME |IPHONE |HUAWEI /gi,"")
-      .replace(/\s\d+GB/i,"")
-      .trim();
-
-    if(!groups[brand]) groups[brand] = [];
-    groups[brand].push(cleaned);
-
-  });
-
-  modelLine = Object.keys(groups).map(b =>
-    `📱 ${b}: ${groups[b].join(" / ")}`
-  ).join("<br>");
-}
-
+        modelLine = Object.keys(groups).map(b =>
+          `📱 ${b}: ${groups[b].join(" / ")}`
+        ).join("<br>");
+      }
 
       html += `
-  <div class="item">
+        <div class="result-card">
+          <div class="code-title">
+            <span class="code-badge">💾 ${x.code}</span>
+          </div>
 
-  <div style="
-    font-size:17px;
-    font-weight:800;
-    margin-bottom:8px;
-    letter-spacing:0.4px;
-  ">
-    ${x.code}
-  </div>
+          <div class="chip-vip-line">
+            <div class="chip-info" style="color:${chip.color}">
+              <span class="chip-dot" style="background:${chip.color};"></span>
+              ${chip.name}
+            </div>
 
-  <div style="margin-top:8px;font-size:15px;">
-    ${secondLine}
-  </div>
+            <div class="vip-badge">
+              ${secondLine}
+            </div>
+          </div>
 
-  <div style="
-    margin-top:8px;
-    color:${chip.color};
-    font-size:14px;
-    display:flex;
-    align-items:center;
-    gap:6px;
-  ">
-    <span style="
-      width:8px;
-      height:8px;
-      border-radius:50%;
-      background:${chip.color};
-      display:inline-block;
-    "></span>
-    ${chip.name}
-  </div>
+          ${modelLine ? `<div style="margin-top:12px;font-size:13px;line-height:1.5;opacity:0.9;">${modelLine}</div>` : ""}
+        </div>
+      `;
+    });
 
-  <div style="
-    margin-top:10px;
-    font-size:14px;
-    line-height:1.5;
-    opacity:0.9;
-  ">
-    ${modelLine}
-  </div>
-
-</div>
-`;
-
-
-
-  out.innerHTML = html;
+    html += `</div>`;
+    out.innerHTML = html;
 
   }catch(err){
     console.error(err);
@@ -744,6 +703,7 @@ if(x.models && Array.isArray(x.models)){
     `;
   }
 }
+
 
 
 /* ===== CREATE LINK ===== */
