@@ -541,10 +541,23 @@ let vipHTML = "";
 /* ===== Nếu là MMC ===== */
 if(rawValue.startsWith("MMC")){
 
-  let mmcLevel = rawValue.replace("MMC","");
-  vipHTML = `<span class="mmc-${mmcLevel}">MMC ${mmcLevel}</span>`;
+  let mmcLevel = parseInt(rawValue.replace("MMC","").trim());
+
+  if(!isNaN(mmcLevel) && mmcLevel >=1 && mmcLevel <=6){
+
+    let capacity = 16 * Math.pow(2, mmcLevel - 1);
+
+    vipHTML = `
+      <span class="mmc-${mmcLevel}">
+        MMC ${mmcLevel} • ${capacity}GB
+      </span>
+    `;
+  }else{
+    vipHTML = `<span>MMC</span>`;
+  }
 
 }
+
 
 /* ===== Nếu là VIP ===== */
 else if(rawValue.startsWith("VIP")){
