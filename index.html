@@ -569,6 +569,64 @@ gap:14px;
 .edit-icon:hover{
   opacity:1;
 }
+/* ===== CLEAN CHECK FINAL ===== */
+.clean-check{
+  position:relative;
+  margin-top:25px;
+}
+
+.clean-check input{
+  width:100%;
+  height:54px;
+  padding:0 60px 0 20px;
+  border-radius:16px;
+  border:1px solid #1f2937;
+  background:#0f172a;
+  color:white;
+  font-size:15px;
+  transition:0.25s;
+}
+
+.clean-check input:focus{
+  border-color:#2563eb;
+  box-shadow:0 0 0 3px rgba(37,99,235,0.25);
+  outline:none;
+}
+
+.clean-check .check-btn{
+  position:absolute;
+  right:8px;
+  top:50%;
+  transform:translateY(-50%);
+  height:42px;
+  width:42px;
+  border:none;
+  border-radius:12px;
+  background:#1f2937;
+  color:#94a3b8;
+  font-size:16px;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.clean-check .check-btn:hover{
+  background:#2563eb;
+  color:white;
+}
+
+/* ===== ADMIN CARD CLEAN ===== */
+.link-card{
+  background:#0f172a !important;
+  border:1px solid #1f2937 !important;
+  border-radius:16px !important;
+  padding:16px !important;
+  transition:0.25s !important;
+}
+
+.link-card:hover{
+  border-color:#2563eb !important;
+  box-shadow:0 10px 30px rgba(37,99,235,0.25);
+}
 
 </style>
 
@@ -610,15 +668,16 @@ gap:14px;
 </h2>
 
 
- <div class="check-group">
+<div class="check-group clean-check">
 
   <input id="q"
-         placeholder="Nhập mã cần kiểm tra"
+         placeholder="Nhập mã hoặc model cần kiểm tra"
          autocomplete="off">
 
-  <button onclick="check()">CHECK</button>
+  <button class="check-btn" onclick="check()">🔍</button>
 
 </div>
+
 
 
 
@@ -1453,6 +1512,11 @@ function startRename(id){
   });
 }
 
+document.getElementById("q").addEventListener("keydown",function(e){
+  if(e.key==="Enter"){
+    check();
+  }
+});
 
 
 
