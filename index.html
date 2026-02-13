@@ -253,36 +253,39 @@ body{
 </head>
 
 <body>
-
-<!-- LOGIN SCREEN -->
 <!-- LOGIN SCREEN -->
 <div id="loginScreen" class="login-wrapper">
+
   <div class="login-box">
-    <h1 class="login-title"> TOOLVECHAIVER2</h1>
+    <h1 class="login-title">TOOLVECHAIVER2</h1>
 
     <!-- USER -->
     <div class="input-group">
       <span class="input-icon">👤</span>
-      <input id="loginEmail" type="email" placeholder="USER">
+      <input id="loginEmail" type="email" placeholder="USER" autocomplete="off">
     </div>
 
     <!-- PASS -->
     <div class="input-group">
       <span class="input-icon">🔒</span>
-      <input id="loginPass" type="password" placeholder="PASS">
+      <input id="loginPass" type="password" placeholder="PASS" autocomplete="off">
       <span class="toggle-pass" onclick="togglePassword()">👁</span>
     </div>
 
-    <button onclick="secureLogin()">ĐĂNG NHẬP</button>
+    <button class="login-btn" onclick="secureLogin()">ĐĂNG NHẬP</button>
 
     <div id="loginError" class="login-error">Sai tài khoản!</div>
   </div>
+
 </div>
 
 
 
-<div class="container">
- <h2 class="title" style="margin-top:40px;">
+<!-- MAIN APP (ẨN KHI CHƯA LOGIN) -->
+<div id="appContent" class="container" style="display:none;">
+  <h2 class="title" style="margin-top:40px;">
+
+
   🛠 TOOLVECHAIVER2 Check VIP
 </h2>
 
