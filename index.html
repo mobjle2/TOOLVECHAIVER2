@@ -951,73 +951,31 @@ async function check(){
         secondLine = `👑 ${x.value}`;
       }
 
-      // ===== GROUP MODELS BY BRAND =====
+      // ===== GROUP MODELS BY BRAND (SAFE FIX) =====
       let modelLine = "";
 
-      if(x.models && Array.isArray(x.models)){
+      if(Array.isArray(x.models) && x.models.length){
 
         let groups = {};
 
         x.models.forEach(m=>{
+
+          if(!m) return;
+
           let upper = m.toUpperCase();
           let brand = "KHÁC";
 
-          if(
-            upper.includes("SAMSUNG") ||
-            /^A\d{3}/.test(upper) ||
-            /^J\d{3}/.test(upper) ||
-            /^S\d{1,2}/.test(upper) ||
-            /^NOTE\s?\d/.test(upper) ||
-            upper.includes("SM-")
-          ){
-            brand = "SAMSUNG";
-          }
-          else if(
-            upper.includes("OPPO") ||
-            upper.includes("RENO") ||
-            upper.includes("FIND") ||
-            upper.includes("CPH")
-          ){
-            brand = "OPPO";
-          }
-          else if(
-            upper.includes("VIVO") ||
-            /^V\d{2}/.test(upper) ||
-            /^Y\d{2}/.test(upper)
-          ){
-            brand = "VIVO";
-          }
-          else if(
-            upper.includes("XIAOMI") ||
-            upper.includes("REDMI") ||
-            upper.includes("POCO") ||
-            upper.includes("MI ")
-          ){
-            brand = "XIAOMI";
-          }
-          else if(
-            upper.includes("REALME") ||
-            /^RMX/.test(upper)
-          ){
-            brand = "REALME";
-          }
-          else if(
-            upper.includes("IPHONE") ||
-            /^A\d{4}/.test(upper)
-          ){
-            brand = "APPLE";
-          }
-          else if(
-            upper.includes("HUAWEI") ||
-            upper.includes("NOVA") ||
-            upper.includes("MATE")
-          ){
-            brand = "HUAWEI";
-          }
+          if(upper.includes("SAMSUNG")) brand = "SAMSUNG";
+          else if(upper.includes("OPPO") || upper.includes("RENO") || upper.includes("CPH")) brand = "OPPO";
+          else if(upper.includes("VIVO")) brand = "VIVO";
+          else if(upper.includes("XIAOMI") || upper.includes("REDMI") || upper.includes("POCO")) brand = "XIAOMI";
+          else if(upper.includes("REALME")) brand = "REALME";
+          else if(upper.includes("IPHONE")) brand = "APPLE";
+          else if(upper.includes("HUAWEI")) brand = "HUAWEI";
 
           let cleaned = upper
             .replace(/SAMSUNG |OPPO |VIVO |XIAOMI |REALME |IPHONE |HUAWEI /gi,"")
-            .replace(/\s\d+GB/i,"")
+            .replace(/\s\d+GB/gi,"")
             .trim();
 
           if(!groups[brand]) groups[brand] = [];
@@ -1063,7 +1021,6 @@ async function check(){
     `;
   }
 }
-
 
 
 
