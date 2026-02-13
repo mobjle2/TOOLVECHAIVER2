@@ -565,35 +565,100 @@ if(!snap || snap.empty){
         secondLine = `👑 ${x.value}`;
       }
 
-      // ===== MODEL GROUP =====
-      let modelLine = "";
-      if(x.models && Array.isArray(x.models)){
-        let groups = {};
+     // ===== MODEL GROUP (PRO VERSION) =====
+let modelLine = "";
 
-        x.models.forEach(m=>{
-          let brand = "KHÁC";
+if(x.models && Array.isArray(x.models)){
 
-         if(m.includes("SAMSUNG")) brand = "SAMSUNG";
-else if(m.includes("OPPO") || m.includes("RENO") || m.includes("FIND") || m.includes("A5"))
-  brand = "OPPO";
-else if(m.includes("VIVO")) brand = "VIVO";
+  let groups = {};
 
+  x.models.forEach(m=>{
 
-          let cleaned = m
-            .replace("SAMSUNG ","")
-            .replace("OPPO ","")
-            .replace("VIVO ","")
-            .replace(/\s\d+GB/i,"")
-            .toUpperCase();
+    let upper = m.toUpperCase();
+    let brand = "KHÁC";
 
-          if(!groups[brand]) groups[brand] = [];
-          groups[brand].push(cleaned);
-        });
+    // ===== SAMSUNG =====
+    if(
+      upper.includes("SAMSUNG") ||
+      /^A\d{3}/.test(upper) ||
+      /^J\d{3}/.test(upper) ||
+      /^S\d{1,2}/.test(upper) ||
+      /^NOTE\s?\d/.test(upper) ||
+      upper.includes("SM-")
+    ){
+      brand = "SAMSUNG";
+    }
 
-        modelLine = Object.keys(groups).map(b =>
-          `📱 ${b}: ${groups[b].join(" / ")}`
-        ).join("<br>");
-      }
+    // ===== OPPO =====
+    else if(
+      upper.includes("OPPO") ||
+      upper.includes("RENO") ||
+      upper.includes("FIND") ||
+      upper.includes("CPH")
+    ){
+      brand = "OPPO";
+    }
+
+    // ===== VIVO =====
+    else if(
+      upper.includes("VIVO") ||
+      /^V\d{2}/.test(upper) ||
+      /^Y\d{2}/.test(upper)
+    ){
+      brand = "VIVO";
+    }
+
+    // ===== XIAOMI =====
+    else if(
+      upper.includes("XIAOMI") ||
+      upper.includes("REDMI") ||
+      upper.includes("POCO") ||
+      upper.includes("MI ")
+    ){
+      brand = "XIAOMI";
+    }
+
+    // ===== REALME =====
+    else if(
+      upper.includes("REALME") ||
+      /^RMX/.test(upper)
+    ){
+      brand = "REALME";
+    }
+
+    // ===== IPHONE =====
+    else if(
+      upper.includes("IPHONE") ||
+      /^A\d{4}/.test(upper)
+    ){
+      brand = "APPLE";
+    }
+
+    // ===== HUAWEI =====
+    else if(
+      upper.includes("HUAWEI") ||
+      upper.includes("NOVA") ||
+      upper.includes("MATE")
+    ){
+      brand = "HUAWEI";
+    }
+
+    // Làm sạch tên hiển thị
+    let cleaned = upper
+      .replace(/SAMSUNG |OPPO |VIVO |XIAOMI |REALME |IPHONE |HUAWEI /gi,"")
+      .replace(/\s\d+GB/i,"")
+      .trim();
+
+    if(!groups[brand]) groups[brand] = [];
+    groups[brand].push(cleaned);
+
+  });
+
+  modelLine = Object.keys(groups).map(b =>
+    `📱 ${b}: ${groups[b].join(" / ")}`
+  ).join("<br>");
+}
+
 
       html += `
         <div class="result-card">
