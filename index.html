@@ -299,7 +299,7 @@ body{
   <input id="q"
          placeholder="Nhập mã cần kiểm tra"
          autocomplete="off">
-  <span class="search-icon">🔍</span>
+  <span class="search-icon" onclick="check()" style="cursor:pointer;">🔍</span>
 </div>
 
 
@@ -573,9 +573,11 @@ if(!snap || snap.empty){
         x.models.forEach(m=>{
           let brand = "KHÁC";
 
-          if(m.includes("SAMSUNG")) brand = "SAMSUNG";
-          else if(m.includes("OPPO")) brand = "OPPO";
-          else if(m.includes("VIVO")) brand = "VIVO";
+         if(m.includes("SAMSUNG")) brand = "SAMSUNG";
+else if(m.includes("OPPO") || m.includes("RENO") || m.includes("FIND") || m.includes("A5"))
+  brand = "OPPO";
+else if(m.includes("VIVO")) brand = "VIVO";
+
 
           let cleaned = m
             .replace("SAMSUNG ","")
