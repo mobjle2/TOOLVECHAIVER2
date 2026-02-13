@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>IMPORT V1 → V2 FINAL</title>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<!-- DATA FILE -->
+<script src="./data.js"></script>
+</head>
+
+<body style="background:#0b0b0b;color:white;font-family:Arial;padding:40px;">
+
+<h2>🚀 IMPORT DATA V1 → V2</h2>
+<button onclick="startImport()" style="padding:12px 25px;font-weight:700;">
+IMPORT NGAY
+</button>
+
+<pre id="log" style="margin-top:20px;"></pre>
+
+<script>
+
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "toolvechaiver2.firebaseapp.com",
+  projectId: "toolvechaiver2",
+  storageBucket: "toolvechaiver2.appspot.com",
+  messagingSenderId: "855001765940",
+  appId: "1:855001765940:web:xxxx"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+function log(msg){
+  document.getElementById("log").innerText += msg + "\n";
+}
+
+function normalize(str){
+  return str.toUpperCase().replace(/[^A-Z0-9]/g,"");
+}
+
+async function startImport(){
+
+  if(typeof data === "undefined" || !Array.isArray(data)){
+    alert("❌ Không load được data.js");
+    return;
+  }
+
+  log("🔄 Bắt đầu import...");
+  log("Tổng dòng trong data.js: " + data.length);
+
+  let batch = db.batch();
+  let batchCount = 0;
+  let total = 0;
+
+  for(const item of data){
+
+    if(!item.code) continue;
+
+    const originalCode = item.code.toUpperCase().trim();
+    const full = normalize(originalCode);
+
+    if(full.length < 4) continue;
+
+    const head4 = full.slice(0,4);
+    const tail4 = full.slice(-4);
+    const search4 = [head4, tail4];
+
+    let type = "";
+    let value = "";
+
+    if(item.vip){
+      type = "VIP";
+      value = item.vip.trim();
+    }
+    else if(item.mmc){
+      type = "MMC";
+      value = item.mmc;
+    }
+    else{
+      type = "UNKNOWN";
+      value = "";
+    }
+
+    const ref = db.collection("codes").doc(full);
+
+    batch.set(ref,{
+      code: originalCode,
+      full: full,
+      head4: head4,
+      tail4: tail4,
+      search4: search4,
+      type: type,
+      value: value,
+      models: Array.isArray(item.model) ? item.model : [],
+      used: false,
+      usedAt: "",
+      usedBy: "",
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    batchCount++;
+    total++;
+
+    if(batchCount === 400){
+      await batch.commit();
+      log("✅ Commit 400 codes...");
+      batch = db.batch();
+      batchCount = 0;
+    }
+  }
+
+  if(batchCount > 0){
+    await batch.commit();
+  }
+
+  log("🎉 IMPORT XONG: " + total + " codes");
+  alert("✅ Import thành công " + total + " codes");
+}
+
+</script>
+
+</body>
+</html>
