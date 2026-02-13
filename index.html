@@ -966,7 +966,7 @@ async function check(){
 
     // ===== RENDER =====
    
-    snap.forEach(doc=>{
+       snap.forEach(doc=>{
       const x = doc.data();
       const chip = detectChip(x.code);
 
@@ -991,7 +991,7 @@ async function check(){
         secondLine = `👑 ${x.value}`;
       }
 
-      // ===== GROUP MODELS BY BRAND (SAFE FIX) =====
+      // ===== GROUP MODELS BY BRAND =====
       let modelLine = "";
 
       if(Array.isArray(x.models) && x.models.length){
@@ -999,7 +999,6 @@ async function check(){
         let groups = {};
 
         x.models.forEach(m=>{
-
           if(!m) return;
 
           let upper = m.toUpperCase();
@@ -1049,7 +1048,7 @@ async function check(){
       `;
     });
 
-    let html = "";
+    html += `</div>`;
     out.innerHTML = html;
 
   }catch(err){
