@@ -950,31 +950,17 @@ auth.onAuthStateChanged(async (user) => {
 
   // Nếu có ?u= thì bỏ qua hoàn toàn auth
   if(window.location.search.includes("u=")){
+    document.getElementById("loginScreen").style.display = "none";
     return;
   }
 
-if(!user){
-  return; // không ép show login nữa
-}
-
-
-  try{
-    const snap = await db.collection("users").doc(user.email).get();
-
-    if(!snap.exists || snap.data().role !== "admin"){
-      await auth.signOut();
-      return;
-    }
-
-    document.getElementById("loginScreen").style.display = "none";
-    document.getElementById("adminPanel").style.display = "block";
-
-    loadLinks();
-
-  }catch(err){
-    console.error(err);
+  if(!user){
+    return;
   }
+
+  ...
 });
+
 
 
 
