@@ -402,7 +402,7 @@ if(!snap || snap.empty){
 }
 
 
-    let html = `<div class="result-grid">`;
+    let html = "";
 
     snap.forEach(doc=>{
       const x = doc.data();
@@ -550,8 +550,7 @@ if(x.models && Array.isArray(x.models)){
       `;
     });
 
-    html += `</div>`;
-    out.innerHTML = html;
+  out.innerHTML = html;
 
   }catch(err){
     console.error(err);
