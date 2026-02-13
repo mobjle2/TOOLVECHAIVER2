@@ -965,8 +965,7 @@ async function check(){
     }
 
     // ===== RENDER =====
-    let html = `<div class="result-grid">`;
-
+   
     snap.forEach(doc=>{
       const x = doc.data();
       const chip = detectChip(x.code);
@@ -1050,7 +1049,7 @@ async function check(){
       `;
     });
 
-    html += `</div>`;
+    let html = "";
     out.innerHTML = html;
 
   }catch(err){
