@@ -779,67 +779,82 @@ async function check(){
       }
     }
 
-    // ===== MODEL CHỨA (match 1 phần như A530) =====
-    if(!snap || snap.empty){
+    // ===== MATCH CODE HOẶC MODEL (LIKE FILE MẪU) =====
+if(!snap || snap.empty){
 
-      const all = await db.collection("codes").get();
+  const all = await db.collection("codes").get();
 
-      const filtered = all.docs.filter(d => {
-        const x = d.data();
-        if(!x.models) return false;
+  const normalize = s =>
+    s.toUpperCase().replace(/[^A-Z0-9]/g,"");
 
-        return x.models.some(m =>
-          m.toUpperCase().includes(raw)
-        );
-      });
+  const keyNormalized = normalize(raw);
 
-      if(filtered.length === 0){
-        out.innerHTML = `
-          <div style="color:#ef4444;margin-top:15px;">
-            ❌ Không tìm thấy mã
+  const filtered = all.docs.filter(d => {
+    const x = d.data();
+
+    // match code
+    const matchCode = normalize(x.code).includes(keyNormalized);
+
+    // match models
+    let matchModel = false;
+    if(x.models && Array.isArray(x.models)){
+      matchModel = x.models.some(m =>
+        normalize(m).includes(keyNormalized)
+      );
+    }
+
+    return matchCode || matchModel;
+  });
+
+  if(filtered.length === 0){
+    out.innerHTML = `
+      <div style="color:#ef4444;margin-top:15px;">
+        ❌ Không tìm thấy mã
+      </div>
+    `;
+    return;
+  }
+
+  let html = `<div class="result-grid">`;
+
+  filtered.forEach(d=>{
+    const x = d.data();
+    const chip = detectChip(x.code);
+    const vipNumber = x.value.replace("VIP ","");
+
+    html += `
+      <div class="result-card">
+        <div class="code-title">
+          <span class="code-badge">💾 ${x.code}</span>
+        </div>
+
+        ${
+          x.models?.length
+            ? `<div style="font-size:14px;color:#94a3b8;margin-bottom:10px;">
+                 📱 ${x.models.join(" | ")}
+               </div>`
+            : ""
+        }
+
+        <div class="chip-vip-line">
+          <div class="chip-info" style="color:${chip.color}">
+            <span class="chip-dot" style="background:${chip.color};"></span>
+            ${chip.name}
           </div>
-        `;
-        return;
-      }
 
-      let html = `<div class="result-grid">`;
+          <div class="vip-badge vip-${vipNumber}">
+            👑 VIP ${vipNumber}
+          </div>
+        </div>
+      </div>
+    `;
+  });
 
-      filtered.forEach(d=>{
-        const x = d.data();
-        const chip = detectChip(x.code);
-        const vipNumber = x.value.replace("VIP ","");
-
-        html += `
-          <div class="result-card">
-            <div class="code-title">
-              <span class="code-badge">💾 ${x.code}</span>
-            </div>
-            ${ (x.models && x.models.length)
-    ? `<div style="font-size:14px;color:#94a3b8;margin-bottom:10px;">
-         📱 ${x.models.join(" | ")}
-       </div>`
-    : ""
+  html += `</div>`;
+  out.innerHTML = html;
+  return;
 }
 
-
-            <div class="chip-vip-line">
-              <div class="chip-info" style="color:${chip.color}">
-                <span class="chip-dot" style="background:${chip.color};"></span>
-                ${chip.name}
-              </div>
-
-              <div class="vip-badge vip-${vipNumber}">
-                👑 VIP ${vipNumber}
-              </div>
-            </div>
-          </div>
-        `;
-      });
-
-      html += `</div>`;
-      out.innerHTML = html;
-      return;
-    }
 
     if(!snap || snap.empty){
       out.innerHTML = `
