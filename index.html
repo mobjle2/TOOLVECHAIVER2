@@ -500,14 +500,41 @@ async function check(){
       }
     }
 
-    if(!snap || snap.empty){
-      out.innerHTML = `
-        <div style="color:#ef4444;margin-top:15px;">
-          ❌ Không tìm thấy mã
-        </div>
-      `;
-      return;
+   // ===== Nếu không tìm thấy bằng full/head/tail → fallback search models =====
+if(!snap || snap.empty){
+
+  const allSnap = await db.collection("codes").limit(500).get();
+  let modelDocs = [];
+
+  allSnap.forEach(doc=>{
+    const data = doc.data();
+
+    if(data.models && Array.isArray(data.models)){
+      const match = data.models.some(m =>
+        m.toUpperCase().includes(raw)
+      );
+
+      if(match){
+        modelDocs.push(doc);
+      }
     }
+  });
+
+  if(modelDocs.length === 0){
+    out.innerHTML = `
+      <div style="color:#ef4444;margin-top:15px;">
+        ❌ Không tìm thấy mã
+      </div>
+    `;
+    return;
+  }
+
+  // Gán snap giả để dùng chung phần render bên dưới
+  snap = {
+    forEach: (cb) => modelDocs.forEach(cb)
+  };
+}
+
 
     let html = `<div class="result-grid">`;
 
