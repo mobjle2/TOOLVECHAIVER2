@@ -282,10 +282,11 @@ const userParam = params.get("u");
 /* ================= USER MODE ================= */
 
 if(userParam){
-  document.getElementById("loginScreen").style.display = "none";
+  document.getElementById("loginScreen").remove();
   document.getElementById("adminPanel").style.display = "none";
   runUserMode(userParam);
 }
+
 
 async function runUserMode(id){
   try{
