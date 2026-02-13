@@ -888,87 +888,32 @@ function detectChip(code){
 
 async function check(){
 
-  const inputEl = document.getElementById("q");
+  const q = document.getElementById("q").value.trim().toUpperCase();
   const out = document.getElementById("out");
 
-  let raw = inputEl.value.trim().toUpperCase();
-  let key = raw.replace(/[^A-Z0-9]/g,"");
-
-  if(!raw) return;
-
-  out.innerHTML = `
-    <div class="loading">
-      🔎 Đang quét dữ liệu<span class="dots"></span>
-    </div>
-  `;
+  if(!q){
+    out.innerHTML = "";
+    return;
+  }
 
   try{
-    let snap = null;
 
-    // ===== FULL CODE =====
-    if(key.length > 4){
-      snap = await db.collection("codes")
-        .where("full","==",key)
-        .limit(20)
-        .get();
-    }
+    let html = `<div class="result-grid">`;
 
-    // ===== HEAD4 / TAIL4 =====
-    if((!snap || snap.empty) && key.length === 4){
-      snap = await db.collection("codes")
-        .where("head4","==",key)
-        .limit(20)
-        .get();
+    const snap = await db.collection("codes").get();
 
-      if(snap.empty){
-        snap = await db.collection("codes")
-          .where("tail4","==",key)
-          .limit(20)
-          .get();
-      }
-    }
+    snap.forEach(doc=>{
 
-    // ===== FALLBACK SEARCH MODELS =====
-    if(!snap || snap.empty){
+      const x = doc.data();
 
-      const allSnap = await db.collection("codes").limit(500).get();
-      let modelDocs = [];
-
-      allSnap.forEach(doc=>{
-        const data = doc.data();
-
-        if(data.models && Array.isArray(data.models)){
-          const match = data.models.some(m =>
-            m.toUpperCase().includes(raw)
-          );
-
-          if(match){
-            modelDocs.push(doc);
-          }
-        }
-      });
-
-      if(modelDocs.length === 0){
-        out.innerHTML = `
-          <div style="color:#ef4444;margin-top:15px;">
-            ❌ Không tìm thấy mã
-          </div>
-        `;
+      if(
+        !x.code.toUpperCase().includes(q) &&
+        !(Array.isArray(x.models) && x.models.some(m => m.toUpperCase().includes(q)))
+      ){
         return;
       }
 
-      snap = {
-        forEach: function(cb){
-          modelDocs.forEach(cb);
-        }
-      };
-    }
-
-    // ===== RENDER =====
-   
-       snap.forEach(doc=>{
-      const x = doc.data();
-      const chip = detectChip(x.code);
+      const chip = detectChip(x.code) || {name:"UNKNOWN",color:"#999"};
 
       let secondLine = "";
       let sizeText = "";
@@ -991,7 +936,6 @@ async function check(){
         secondLine = `👑 ${x.value}`;
       }
 
-      // ===== GROUP MODELS BY BRAND =====
       let modelLine = "";
 
       if(Array.isArray(x.models) && x.models.length){
@@ -1005,9 +949,9 @@ async function check(){
           let brand = "KHÁC";
 
           if(upper.includes("SAMSUNG")) brand = "SAMSUNG";
-          else if(upper.includes("OPPO") || upper.includes("RENO") || upper.includes("CPH")) brand = "OPPO";
+          else if(upper.includes("OPPO")) brand = "OPPO";
           else if(upper.includes("VIVO")) brand = "VIVO";
-          else if(upper.includes("XIAOMI") || upper.includes("REDMI") || upper.includes("POCO")) brand = "XIAOMI";
+          else if(upper.includes("XIAOMI") || upper.includes("REDMI")) brand = "XIAOMI";
           else if(upper.includes("REALME")) brand = "REALME";
           else if(upper.includes("IPHONE")) brand = "APPLE";
           else if(upper.includes("HUAWEI")) brand = "HUAWEI";
