@@ -406,20 +406,22 @@ async function runUserMode(id){
 /* ================= LOGIN ================= */
 
 async function secureLogin(){
-
-  const email = document.getElementById("loginEmail").value.trim();
-  const pass = document.getElementById("loginPass").value.trim();
-  const loginError = document.getElementById("loginError");
-
-  loginError.style.display = "none";
-
   try{
+    const email = document.getElementById("loginEmail").value.trim();
+    const pass = document.getElementById("loginPass").value.trim();
+    const loginError = document.getElementById("loginError");
+
+    loginError.style.display = "none";
+
     await auth.signInWithEmailAndPassword(email, pass);
+
   }catch(e){
+    const loginError = document.getElementById("loginError");
     loginError.innerText = "Sai tài khoản hoặc mật khẩu!";
     loginError.style.display = "block";
   }
 }
+
 
 
 function togglePassword(){
@@ -521,7 +523,7 @@ async function check(){
       }
     }
 
-   // ===== Nếu không tìm thấy bằng full/head/tail → fallback search models =====
+   // ===== Nếu không tìm thấy bằng full/head/tail fallback search models =====
 if(!snap || snap.empty){
 
   const allSnap = await db.collection("codes").limit(500).get();
