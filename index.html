@@ -534,7 +534,31 @@ async function check(){
 
       const x = item.data;
       const chip = detectChip(item.id);
-      const vipNumber = (x.value || "VIP 0").replace("VIP ","");
+      let rawValue = (x.value || "").toUpperCase().trim();
+
+let vipHTML = "";
+
+/* ===== Nếu là MMC ===== */
+if(rawValue.startsWith("MMC")){
+
+  let mmcLevel = rawValue.replace("MMC","");
+  vipHTML = `<span class="mmc-${mmcLevel}">MMC ${mmcLevel}</span>`;
+
+}
+
+/* ===== Nếu là VIP ===== */
+else if(rawValue.startsWith("VIP")){
+
+  let vipLevel = rawValue.replace("VIP","").trim();
+  vipHTML = `<span class="vip-${vipLevel}">VIP ${vipLevel}</span>`;
+
+}
+
+/* ===== Nếu trống ===== */
+else{
+  vipHTML = `<span>---</span>`;
+}
+
 
       // ===== LẤY DUNG LƯỢNG =====
       let capacity = "";
@@ -580,7 +604,8 @@ async function check(){
           </div>
 
           <div style="margin:10px 0 14px 0; font-weight:600;">
-            <span style="margin-right:18px;">👑 VIP ${vipNumber}</span>
+            <span style="margin-right:18px;">${vipHTML}</span>
+
 
             <span style="margin-right:18px; color:${chip.color};">
               <span class="chip-dot" style="background:${chip.color};"></span>
