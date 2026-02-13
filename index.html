@@ -42,16 +42,20 @@ body{
 }
 
 /* ===== SEARCH (NO BUTTON STYLE) ===== */
+/* ===== SEARCH STYLE OUTSIDE ICON ===== */
+
 .check-group{
   position:relative;
-  margin:0 auto 50px auto;
-  max-width:550px;
+  margin:0 auto 60px auto;
+  max-width:600px;
+  display:flex;
+  align-items:center;
 }
 
 .check-group input{
-  width:100%;
+  flex:1;
   height:60px;
-  padding:0 60px 0 25px;
+  padding:0 25px;
   border-radius:999px;
   border:1px solid rgba(255,255,255,0.08);
   background:linear-gradient(145deg,#0f172a,#0b1220);
@@ -68,28 +72,28 @@ body{
 }
 
 .search-btn{
-  position:absolute;
-  right:8px;
-  top:50%;
-  transform:translateY(-50%);
-  width:46px;
-  height:46px;
+  margin-left:-55px;
+  width:55px;
+  height:55px;
   border-radius:50%;
   border:none;
   cursor:pointer;
   background:linear-gradient(135deg,#2563eb,#7c3aed);
   color:white;
-  font-size:18px;
+  font-size:20px;
   display:flex;
   align-items:center;
   justify-content:center;
-  box-shadow:0 10px 30px rgba(124,58,237,0.5);
+  box-shadow:0 15px 35px rgba(124,58,237,0.5);
   transition:0.3s;
+  z-index:2;
 }
 
 .search-btn:hover{
-  transform:translateY(-50%) scale(1.1);
+  transform:scale(1.1);
+  box-shadow:0 20px 45px rgba(124,58,237,0.7);
 }
+
 
 /* ===== GRID 4 CỘT ===== */
 .result-grid{
