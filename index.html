@@ -12,7 +12,7 @@
 
 <style>
 
-/* ================= DARK GOLD CLEAN SYSTEM ================= */
+/* ================= BADGE SYSTEM V2 ================= */
 
 body{
   margin:0;
@@ -21,39 +21,32 @@ body{
   color:#f1f5f9;
 }
 
-/* ===== CONTAINER ===== */
-.container{
-  max-width:1100px;
+.main-container{
+  max-width:1200px;
   margin:40px auto;
-  padding:0 16px;
+  padding:0 20px;
 }
 
 /* ===== TITLE ===== */
-.title-main{
+.title{
   font-size:26px;
   font-weight:900;
-  letter-spacing:1px;
   background:linear-gradient(90deg,#FFD700,#facc15,#FFD700);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
-}
-
-.title-sub{
-  font-size:13px;
-  opacity:0.6;
-  margin-top:6px;
-  letter-spacing:2px;
+  margin-bottom:30px;
 }
 
 /* ===== SEARCH ===== */
-.check-inline{
+.check-group{
   position:relative;
-  margin-top:20px;
+  max-width:600px;
+  margin-bottom:40px;
 }
 
-.check-inline input{
+.check-group input{
   width:100%;
-  padding:14px 50px 14px 16px;
+  padding:14px 50px 14px 18px;
   border-radius:50px;
   border:1px solid rgba(255,215,0,0.4);
   background:#111;
@@ -61,9 +54,9 @@ body{
   font-size:15px;
 }
 
-.check-icon{
+.search-btn{
   position:absolute;
-  right:12px;
+  right:10px;
   top:50%;
   transform:translateY(-50%);
   width:36px;
@@ -73,35 +66,39 @@ body{
   background:#111;
   color:#aaa;
   cursor:pointer;
-  transition:0.2s;
 }
 
-.check-icon:hover{
+.search-btn:hover{
   border-color:#facc15;
   color:#facc15;
 }
 
-/* ===== RESULT GRID ===== */
-#out{
+/* ===== GRID ===== */
+.result-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
-  gap:16px;
-  margin-top:24px;
+  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:20px;
 }
 
 /* ===== CARD ===== */
-.item{
+.result-card{
   background:linear-gradient(145deg,#0e0e0e,#181818);
   border-radius:18px;
-  padding:16px;
+  padding:18px;
   border:1px solid rgba(255,215,0,0.15);
   transition:0.2s;
 }
 
-.item:hover{
+.result-card:hover{
   border-color:#facc15;
-  box-shadow:0 0 15px rgba(250,204,21,0.25);
+  box-shadow:0 0 18px rgba(250,204,21,0.25);
   transform:translateY(-3px);
+}
+
+.code-title{
+  font-weight:700;
+  font-size:15px;
+  margin-bottom:12px;
 }
 
 /* ===== BADGE BASE ===== */
@@ -113,61 +110,48 @@ body{
   border-radius:999px;
   font-size:12px;
   font-weight:800;
-  margin-top:8px;
-  transition:0.2s;
+  margin-right:6px;
+  margin-top:6px;
 }
 
-.badge:hover{
-  transform:scale(1.05);
-}
-
-/* ===== CHIP BADGE ===== */
-.badge:has(🟢),
-.badge:has(🟣),
-.badge:has(🔵),
-.badge:has(🟠),
-.badge:has(🔴){
+/* ===== CHIP ===== */
+.badge-chip{
   background:#111;
   border:1px solid #333;
 }
 
-/* ===== MMC BADGE ===== */
-.badge:has(MMC1){background:#1f2937;color:#9ca3af;}
-.badge:has(MMC2){background:#0ea5e9;color:black;}
-.badge:has(MMC3){background:#22c55e;color:black;}
-.badge:has(MMC4){background:#a855f7;color:white;}
-.badge:has(MMC5){background:#f97316;color:black;}
-.badge:has(MMC6){background:#ef4444;color:white;}
+/* ===== MMC ===== */
+.mmc-1{background:#1f2937;color:#9ca3af;}
+.mmc-2{background:#0ea5e9;color:black;}
+.mmc-3{background:#22c55e;color:black;}
+.mmc-4{background:#a855f7;color:white;}
+.mmc-5{background:#f97316;color:black;}
+.mmc-6{background:#ef4444;color:white;}
 
-/* ===== VIP BADGE ===== */
-.badge:has(VIP1),
-.badge:has(VIP2),
-.badge:has(VIP3),
-.badge:has(VIP4){
+/* ===== VIP ===== */
+.vip-1,.vip-2,.vip-3,.vip-4{
   background:#2e2e2e;
   color:#888;
 }
 
-.badge:has(VIP5){background:#0ea5e9;color:black;}
-.badge:has(VIP6){background:#22c55e;color:black;}
-.badge:has(VIP7){background:#a855f7;color:white;}
-.badge:has(VIP8){background:#7c3aed;color:white;}
-.badge:has(VIP9){background:#facc15;color:black;}
-.badge:has(VIP10){background:#ef4444;color:white;}
+.vip-5{background:#0ea5e9;color:black;}
+.vip-6{background:#22c55e;color:black;}
+.vip-7{background:#a855f7;color:white;}
+.vip-8{background:#7c3aed;color:white;}
+.vip-9{background:#facc15;color:black;}
+.vip-10{background:#ef4444;color:white;}
 
-.badge:has(VIP11),
-.badge:has(VIP12),
-.badge:has(VIP13){
+.vip-11,.vip-12,.vip-13{
   background:black;
   border:1px solid red;
   color:red;
 }
 
-/* ===== MODEL BADGE ===== */
-.badge:has(📱){
+/* ===== MODEL ===== */
+.badge-model{
   background:#22c55e;
   color:black;
-  line-height:1.6;
+  font-weight:700;
 }
 
 </style>
@@ -513,28 +497,43 @@ else{
       }
 
       html += `
-        <div class="result-card">
+     html += `
+  <div class="result-card">
 
-          <div class="code-title">
-            <span class="code-badge">💾 ${item.id}</span>
-          </div>
+    <div class="code-title">
+      <span class="code-badge">⚡ ${item.id}</span>
+    </div>
 
-          <div style="margin:10px 0 14px 0; font-weight:600;">
-            <span style="margin-right:18px;">${vipHTML}</span>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 14px 0;">
 
-
-            <span style="margin-right:18px; color:${chip.color};">
-              <span class="chip-dot" style="background:${chip.color};"></span>
-              ${chip.name}
-            </span>
-
-            ${capacity ? `<span>💾 ${capacity}</span>` : ""}
-          </div>
-
-          ${modelHTML}
-
+      ${vipHTML ? `
+        <div class="badge ${vipHTML.includes('MMC') 
+          ? 'mmc-' + vipHTML.match(/MMC\\s*(\\d+)/)?.[1] 
+          : 'vip-' + vipHTML.match(/VIP\\s*(\\d+)/)?.[1]}">
+          ${vipHTML}
         </div>
-      `;
+      ` : ""}
+
+      <div class="badge badge-chip">
+        ${chip.icon} ${chip.name}
+      </div>
+
+      ${capacity ? `
+        <div class="badge badge-capacity">
+          💾 ${capacity}
+        </div>
+      ` : ""}
+
+    </div>
+
+    ${modelHTML ? `
+      <div class="badge badge-model">
+        ${modelHTML}
+      </div>
+    ` : ""}
+
+  </div>
+`;
 
     });
 
