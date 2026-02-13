@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>IMPORT CLEAN</title>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+  <!-- data.js -->
+  <script src="data.js"></script>
+</head>
+
+<body style="background:#111;color:white;font-family:Arial;padding:30px;">
+
+<h2>🔥 IMPORT CLEAN DATA</h2>
+<button onclick="runImport()">XÓA CŨ & IMPORT LẠI</button>
+
+<pre id="log" style="margin-top:20px;"></pre>
+
+<script>
+/* ===== FIREBASE CONFIG ===== */
+const firebaseConfig = {
+  apiKey: "YOUR_KEY",
+  authDomain: "YOUR_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const logEl = document.getElementById("log");
+
+/* ===== DELETE COLLECTION ===== */
+async function deleteCollection(collectionPath, batchSize) {
+  const collectionRef = db.collection(collectionPath);
+  const query = collectionRef.limit(batchSize);
+
+  return new Promise((resolve, reject) => {
+    deleteQueryBatch(query, batchSize, resolve).catch(reject);
+  });
+}
+
+async function deleteQueryBatch(query, batchSize, resolve) {
+  const snapshot = await query.get();
+
+  if (snapshot.size === 0) {
+    resolve();
+    return;
+  }
+
+  const batch = db.batch();
+  snapshot.docs.forEach(doc => {
+    batch.delete(doc.ref);
+  });
+
+  await batch.commit();
+
+  setTimeout(() => {
+    deleteQueryBatch(query, batchSize, resolve);
+  }, 0);
+}
+
+/* ===== IMPORT FUNCTION ===== */
+async function runImport() {
+
+  logEl.innerText = "Đang xóa collection codes...\n";
+
+  await deleteCollection("codes", 100);
+
+  logEl.innerText += "Đã xóa xong.\n";
+  logEl.innerText += "Bắt đầu import...\n";
+
+  let batch = db.batch();
+
+  data.forEach(item => {
+
+    const docRef = db.collection("codes").doc(item.code);
+
+    const docData = {
+      code: item.code,
+      full: item.code.replace(/-/g,""),
+      head4: item.code.substring(0,4),
+      tail4: item.code.slice(-4),
+      search4: [
+        item.code.substring(0,4),
+        item.code.slice(-4)
+      ],
+      type: item.mmc ? "MMC" : "VIP",
+      value: item.mmc ? item.mmc : item.vip,
+      used: false,
+      usedAt: "",
+      usedBy: ""
+    };
+
+    if(item.model){
+      docData.models = item.model;
+    }
+
+    batch.set(docRef, docData);
+  });
+
+  await batch.commit();
+
+  logEl.innerText += "IMPORT HOÀN TẤT ✅";
+}
+</script>
+
+</body>
+</html>
