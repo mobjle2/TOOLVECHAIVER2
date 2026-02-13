@@ -822,11 +822,20 @@ async function deleteLink(id){
   await db.collection("shareLinks").doc(id).delete();
   loadLinks();
 }
-document.getElementById("q").addEventListener("keydown", function(e){
-  if(e.key === "Enter"){
-    check();
+document.addEventListener("DOMContentLoaded", function(){
+
+  const qInput = document.getElementById("q");
+
+  if(qInput){
+    qInput.addEventListener("keydown", function(e){
+      if(e.key === "Enter"){
+        check();
+      }
+    });
   }
+
 });
+
 
 </script>
 </body>
