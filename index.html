@@ -271,6 +271,31 @@ body{
   border-color:#facc15;
   box-shadow:0 25px 60px rgba(250,204,21,0.25);
 }
+/* ===== CHIP LINE PRO ===== */
+.chip-line{
+  display:flex;
+  align-items:center;
+  gap:18px;
+  margin-top:6px;
+  font-size:15px;
+  font-weight:600;
+}
+
+/* mỗi item */
+.chip-item{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+/* dot cao cấp */
+.pro-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  box-shadow:0 0 6px currentColor;
+}
+
 /* ================= VIP TEXT STYLE (KHÔNG VÒNG TRÒN) ================= */
 
 .vip-badge{
@@ -1037,11 +1062,12 @@ if (x.type === "VIP") {
 
   sizeText = vipMap[vipNumber] || "";
 
-  secondLine = `
-    <div class="vip-badge ${vipClass}">
-      💾 VIP ${vipNumber}
-    </div>
-  `;
+secondLine = `
+  <div class="vip-badge ${vipClass}">
+    VIP ${vipNumber}
+  </div>
+`;
+
 }
 
 
@@ -1089,12 +1115,20 @@ html += `
     ${x.type === "VIP" ? secondLine : ""}
 
     <div class="chip-line" style="color:${chip.color}">
-      <span class="chip-dot" style="background:${chip.color};"></span>
-      ${chip.name}
-      <span class="size-badge">
-        💾 ${sizeText || "?"}
-      </span>
-    </div>
+<div class="chip-line">
+
+  <div class="chip-item" style="color:${chip.color}">
+    <span class="pro-dot" style="background:${chip.color}"></span>
+    ${chip.name}
+  </div>
+
+  <div class="chip-item ${vipClass}">
+    <span class="pro-dot"></span>
+    ${sizeText ? sizeText : "?"}
+  </div>
+
+</div>
+
 
     ${modelLine ? `
       <div class="model-line">
