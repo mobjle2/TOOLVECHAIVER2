@@ -999,34 +999,51 @@ async function check(){
       const chip = detectChip(x.code) || {name:"UNKNOWN",color:"#999"};
 
       let secondLine = "";
-      let sizeText = "";
-
-      if(x.type === "MMC"){
-        const sizeMap = {
-          MMC1:"16G",
-          MMC2:"32G",
-          MMC3:"64G",
-          MMC4:"128G",
-          MMC5:"256G",
-          MMC6:"512G"
-        };
-
-        sizeText = sizeMap[x.value] ? ` (${sizeMap[x.value]})` : "";
-        secondLine = `💾 ${x.value}${sizeText}`;
-      }
-
+ let sizeText = "";
 let vipClass = "";
+let vipNumber = "";
 
-if(x.type === "VIP"){
-  const vipNumber = x.value.replace(/\D/g,""); // lấy số
+/* ===== MAP DUNG LƯỢNG MMC ===== */
+const mmcMap = {
+  MMC1: "16G",
+  MMC2: "32G",
+  MMC3: "64G",
+  MMC4: "128G",
+  MMC5: "256G",
+  MMC6: "512G"
+};
+
+/* ===== MAP DUNG LƯỢNG VIP ===== */
+const vipMap = {
+  4: "16G",
+  5: "32G",
+  6: "64G",
+  7: "128G",
+  8: "RAM 8 / 128G",
+  9: "256G",
+  10: "512G"
+};
+
+/* ===== MMC ===== */
+if (x.type === "MMC") {
+  sizeText = mmcMap[x.value] || "";
+  secondLine = ""; // MMC không còn hiển thị ở dòng VIP nữa
+}
+
+/* ===== VIP ===== */
+if (x.type === "VIP") {
+  vipNumber = parseInt(x.value.replace(/\D/g, ""));
   vipClass = `vip-${vipNumber}`;
+
+  sizeText = vipMap[vipNumber] || "";
+
   secondLine = `
     <div class="vip-badge ${vipClass}">
-      <span class="vip-dot"></span>
-      VIP ${vipNumber}
+      💾 VIP ${vipNumber}
     </div>
   `;
 }
+
 
 
       let modelLine = "";
@@ -1062,32 +1079,37 @@ if(x.type === "VIP"){
           `📱 ${b}: ${groups[b].join(" / ")}`
         ).join("<br>");
       }
+html += `
+  <div class="result-card">
 
-      html += `
-        <div class="result-card">
-          <div class="code-title">
-            <span class="code-badge">💾 ${x.code}</span>
-          </div>
+    <div class="code-main">
+      ${x.code}
+    </div>
 
-    <div class="chip-vip-line">
-  <div class="chip-info" style="color:${chip.color}">
-    <span class="chip-dot" style="background:${chip.color};"></span>
-    ${chip.name}
+    ${x.type === "VIP" ? secondLine : ""}
+
+    <div class="chip-line" style="color:${chip.color}">
+      <span class="chip-dot" style="background:${chip.color};"></span>
+      ${chip.name}
+      <span class="size-badge">
+        💾 ${sizeText || "?"}
+      </span>
+    </div>
+
+    ${modelLine ? `
+      <div class="model-line">
+        ${modelLine}
+      </div>
+    ` : ""}
+
   </div>
+`;
+    });  // 🔥 ĐÓNG snap.forEach Ở ĐÂY
 
-  ${secondLine}
-</div>
-
-
-          ${modelLine ? `<div style="margin-top:12px;font-size:13px;line-height:1.5;opacity:0.9;">${modelLine}</div>` : ""}
-        </div>
-      `;
-    });
-
-    html += `</div>`;
+    html += `</div>`;  // 🔥 ĐÓNG result-grid CHỈ 1 LẦN
     out.innerHTML = html;
 
-  }catch(err){
+  } catch (err) {
     console.error(err);
     out.innerHTML = `
       <div style="color:#ef4444;margin-top:15px;">
@@ -1096,6 +1118,7 @@ if(x.type === "VIP"){
     `;
   }
 }
+
 
 
 
