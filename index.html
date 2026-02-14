@@ -301,76 +301,48 @@ body{
   border-color:#facc15;
   box-shadow:0 25px 60px rgba(250,204,21,0.25);
 }
-
-
-/* ================= VIP BADGE TRÒN CAO CẤP ================= */
+/* ================= VIP TEXT STYLE (KHÔNG VÒNG TRÒN) ================= */
 
 .vip-badge{
-  min-width:85px;
-  height:85px;
-  border-radius:50%;
   display:flex;
-  flex-direction:column;
-  justify-content:center;
   align-items:center;
-  font-weight:700;
-  font-size:15px;
-  box-shadow:inset 0 0 20px rgba(0,0,0,0.6);
-  transition:0.3s;
+  gap:6px;
+  font-size:13px;
+  font-weight:600;
+  padding:0;
+  background:none;
+  line-height:1.2;
 }
 
-
-
-
-/* ================= MÀU VIP ĐẸP CAO CẤP ================= */
-
-/* VIP 8 – Tím neon */
-.vip-8{
-  background:radial-gradient(circle at 30% 30%,#c084fc,#6d28d9 60%);
-  color:white;
+/* Chấm màu giống CHIP */
+.vip-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
 }
 
-/* VIP 9 – Xanh biển sáng */
-.vip-9{
-  background:radial-gradient(circle at 30% 30%,#38bdf8,#0ea5e9 60%);
-  color:white;
-}
+/* ================= MÀU VIP ================= */
 
-/* VIP 10 – Vàng kim loại */
-.vip-10{
-  background:radial-gradient(circle at 30% 30%,#fff8b0,#FFD700 60%);
-  color:black;
-  box-shadow:
-    inset 0 0 15px rgba(255,255,255,0.4),
-    0 0 25px rgba(255,215,0,0.5);
-}
+/* VIP 1 → 4 */
+.vip-1 .vip-dot{ background:#94a3b8; }
+.vip-2 .vip-dot{ background:#64748b; }
+.vip-3 .vip-dot{ background:#a855f7; }
+.vip-4 .vip-dot{ background:#c084fc; }
 
-/* VIP 5 → 7 nâng cấp nhẹ */
-.vip-5{
-  background:#facc15;
-  color:black;
-}
+/* VIP 5 → 7 */
+.vip-5 .vip-dot{ background:#38bdf8; }
+.vip-6 .vip-dot{ background:#22c55e; }
+.vip-7 .vip-dot{ background:#f97316; }
 
-.vip-6{
-  background:linear-gradient(135deg,#facc15,#fb923c);
-  color:black;
-}
+/* VIP 8 → 9 */
+.vip-8 .vip-dot{ background:#6366f1; }
+.vip-9 .vip-dot{ background:#0ea5e9; }
 
-.vip-7{
-  background:linear-gradient(135deg,#fb923c,#ef4444);
-  color:white;
-}
-
-/* VIP cao */
-.vip-11{
-  background:linear-gradient(135deg,#ff4d00,#ff0000);
-  color:white;
-}
-
-.vip-13{
-  background:linear-gradient(135deg,#5b0000,#ff0000,#5b0000);
-  color:white;
-}
+/* VIP 10 → 13 */
+.vip-10 .vip-dot{ background:#facc15; }
+.vip-11 .vip-dot{ background:#ef4444; }
+.vip-12 .vip-dot{ background:#dc2626; }
+.vip-13 .vip-dot{ background:#7f1d1d; }
 
 /* ================= CLEAN LOGIN FINAL ================= */
 
@@ -490,8 +462,6 @@ body{
   font-weight:600;
   display:none;
 }
-
-
 
 
 /* ===== CARD FOOTER GỌN ĐẸP ===== */
@@ -1075,9 +1045,19 @@ async function check(){
         secondLine = `💾 ${x.value}${sizeText}`;
       }
 
-      if(x.type === "VIP"){
-        secondLine = `👑 ${x.value}`;
-      }
+let vipClass = "";
+
+if(x.type === "VIP"){
+  const vipNumber = x.value.replace(/\D/g,""); // lấy số
+  vipClass = `vip-${vipNumber}`;
+  secondLine = `
+    <div class="vip-badge ${vipClass}">
+      <span class="vip-dot"></span>
+      VIP ${vipNumber}
+    </div>
+  `;
+}
+
 
       let modelLine = "";
 
