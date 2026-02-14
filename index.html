@@ -994,6 +994,7 @@ function detectChip(code){
   return {name:"UNKNOWN",color:"#6b7280"};
 }
 
+
 async function check(){
 
   const q = document.getElementById("q").value.trim().toUpperCase();
@@ -1021,57 +1022,53 @@ async function check(){
         return;
       }
 
-      const chip = detectChip(x.code) || {name:"UNKNOWN",color:"#999"};
+      const chip = detectChip(x.code);
 
+      let sizeText = "";
       let secondLine = "";
- let sizeText = "";
-let vipClass = "";
-let vipNumber = "";
+      let vipClass = "";
+      let vipNumber = "";
 
-/* ===== MAP DUNG LƯỢNG MMC ===== */
-const mmcMap = {
-  MMC1: "16G",
-  MMC2: "32G",
-  MMC3: "64G",
-  MMC4: "128G",
-  MMC5: "256G",
-  MMC6: "512G"
-};
+      /* ===== MAP MMC ===== */
+      const mmcMap = {
+        MMC1:"16G",
+        MMC2:"32G",
+        MMC3:"64G",
+        MMC4:"128G",
+        MMC5:"256G",
+        MMC6:"512G"
+      };
 
-/* ===== MAP DUNG LƯỢNG VIP ===== */
-const vipMap = {
-  4: "16G",
-  5: "32G",
-  6: "64G",
-  7: "128G",
-  8: "RAM 8 / 128G",
-  9: "256G",
-  10: "512G"
-};
+      /* ===== MAP VIP ===== */
+      const vipMap = {
+        4:"16G",
+        5:"32G",
+        6:"64G",
+        7:"128G",
+        8:"RAM 8 / 128G",
+        9:"256G",
+        10:"512G"
+      };
 
-/* ===== MMC ===== */
-if (x.type === "MMC") {
-  sizeText = mmcMap[x.value] || "";
-  secondLine = ""; // MMC không còn hiển thị ở dòng VIP nữa
-}
+      /* ===== MMC ===== */
+      if(x.type === "MMC"){
+        sizeText = mmcMap[x.value] || "";
+      }
 
-/* ===== VIP ===== */
-if (x.type === "VIP") {
-  vipNumber = parseInt(x.value.replace(/\D/g, ""));
-  vipClass = `vip-${vipNumber}`;
+      /* ===== VIP ===== */
+      if(x.type === "VIP"){
+        vipNumber = parseInt(x.value.replace(/\D/g,""));
+        vipClass = `vip-${vipNumber}`;
+        sizeText = vipMap[vipNumber] || "";
 
-  sizeText = vipMap[vipNumber] || "";
+        secondLine = `
+          <div class="vip-badge ${vipClass}">
+            VIP ${vipNumber}
+          </div>
+        `;
+      }
 
-secondLine = `
-  <div class="vip-badge ${vipClass}">
-    VIP ${vipNumber}
-  </div>
-`;
-
-}
-
-
-
+      /* ===== MODEL GROUP ===== */
       let modelLine = "";
 
       if(Array.isArray(x.models) && x.models.length){
@@ -1105,52 +1102,56 @@ secondLine = `
           `📱 ${b}: ${groups[b].join(" / ")}`
         ).join("<br>");
       }
-html += `
-  <div class="result-card">
 
-    <div class="code-main">
-      ${x.code}
-    </div>
+      /* ===== BUILD CARD ===== */
+      html += `
+        <div class="result-card">
 
-    ${x.type === "VIP" ? secondLine : ""}
+          <div class="code-main">
+            ${x.code}
+          </div>
 
-    <div class="chip-line" style="color:${chip.color}">
-<div class="chip-line">
+          ${secondLine}
 
-  <div class="chip-item" style="color:${chip.color}">
-    <span class="pro-dot" style="background:${chip.color}"></span>
-    ${chip.name}
-  </div>
+          <div class="chip-line">
 
-  <div class="chip-item ${vipClass}">
-    <span class="pro-dot"></span>
-    ${sizeText ? sizeText : "?"}
-  </div>
+            <div class="chip-item" style="color:${chip.color}">
+              <span class="pro-dot" style="background:${chip.color}"></span>
+              ${chip.name}
+            </div>
 
-</div>
+            <div class="chip-item ${vipClass}">
+              <span class="pro-dot"></span>
+              ${sizeText ? sizeText : "?"}
+            </div>
 
+          </div>
 
-    ${modelLine ? `
-      <div class="model-line">
-        ${modelLine}
-      </div>
-    ` : ""}
+          ${modelLine ? `
+            <div class="model-line">
+              ${modelLine}
+            </div>
+          ` : ""}
 
-  </div>
-`;
-    });  // 🔥 ĐÓNG snap.forEach Ở ĐÂY
+        </div>
+      `;
 
-    html += `</div>`;  // 🔥 ĐÓNG result-grid CHỈ 1 LẦN
+    }); // đóng forEach
+
+    html += `</div>`; // đóng result-grid
     out.innerHTML = html;
 
   } catch (err) {
+
     console.error(err);
     out.innerHTML = `
       <div style="color:#ef4444;margin-top:15px;">
         ⚠️ Lỗi hệ thống
       </div>
     `;
+
   }
+
 }
 
 
