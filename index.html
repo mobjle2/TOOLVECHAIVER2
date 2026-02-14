@@ -136,12 +136,7 @@ body{
 .icon-btn.delete:hover{
   background:#dc2626;
 }
-#linkList{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:20px;
-}
-/* ===== RESULT GRID (3 Ô PC) ===== */
+/* ===== RESULT GRID (PC) ===== */
 #out{
   display:grid;
   grid-template-columns:repeat(3,1fr);
@@ -149,14 +144,14 @@ body{
   margin-top:25px;
 }
 
-/* ===== ADMIN LINK GRID ===== */
+/* ===== ADMIN LINK GRID (PC) ===== */
 #linkList{
   display:grid;
   grid-template-columns:repeat(3,1fr);
   gap:20px;
 }
 
-/* Tablet */
+/* ===== TABLET ===== */
 @media(max-width:1200px){
   #out{
     grid-template-columns:repeat(2,1fr);
@@ -166,7 +161,7 @@ body{
   }
 }
 
-/* Mobile */
+/* ===== MOBILE ===== */
 @media(max-width:768px){
   #out{
     grid-template-columns:1fr;
