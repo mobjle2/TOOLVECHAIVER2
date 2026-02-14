@@ -1041,34 +1041,53 @@ async function check(){
         MMC6:"512G"
       };
 
-      /* ===== MAP VIP ===== */
-      const vipMap = {
-        4:"16G",
-        5:"32G",
-        6:"64G",
-        7:"128G",
-        8:"RAM 8 / 128G",
-        9:"256G",
-        10:"512G"
-      };
+/* ===== MAP MMC ===== */
+const mmcMap = {
+  MMC1:"16G",
+  MMC2:"32G",
+  MMC3:"64G",
+  MMC4:"128G",
+  MMC5:"256G",
+  MMC6:"512G"
+};
 
-      /* ===== MMC ===== */
-      if(x.type === "MMC"){
-        sizeText = mmcMap[x.value] || "";
-      }
+/* ===== MAP VIP ===== */
+const vipMap = {
+  4:"16G",
+  5:"32G",
+  6:"64G",
+  7:"128G",
+  8:"RAM 8 / 128G",
+  9:"256G",
+  10:"512G"
+};
 
-      /* ===== VIP ===== */
-      if(x.type === "VIP"){
-        vipNumber = parseInt(x.value.replace(/\D/g,""));
-        vipClass = `vip-${vipNumber}`;
-        sizeText = vipMap[vipNumber] || "";
+/* ===== MMC ===== */
+if(x.type === "MMC"){
 
-        secondLine = `
-          <div class="vip-badge ${vipClass}">
-            VIP ${vipNumber}
-          </div>
-        `;
-      }
+  sizeText = mmcMap[x.value] || "";
+
+  secondLine = `
+    <div class="mmc-badge">
+      ${x.value}
+    </div>
+  `;
+}
+
+/* ===== VIP ===== */
+if(x.type === "VIP"){
+
+  const vipNumber = parseInt(x.value.replace(/\D/g,""));
+  vipClass = `vip-${vipNumber}`;
+
+  sizeText = vipMap[vipNumber] || "";
+
+  secondLine = `
+    <div class="vip-badge ${vipClass}">
+      VIP ${vipNumber}
+    </div>
+  `;
+}
 
       /* ===== MODEL GROUP ===== */
       let modelLine = "";
