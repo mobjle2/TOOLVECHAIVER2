@@ -1085,37 +1085,43 @@ if(x.type === "VIP"){
       /* ===== MODEL GROUP ===== */
       let modelLine = "";
 
-      if(Array.isArray(x.models) && x.models.length){
+if(Array.isArray(x.models) && x.models.length){
 
-        let groups = {};
+  let groups = {};
 
-        x.models.forEach(m=>{
-          if(!m) return;
+  x.models.forEach(m=>{
+    if(!m) return;
 
-          let upper = m.toUpperCase();
-          let brand = "KHÁC";
+    let upper = m.toUpperCase();
+    let brand = "KHÁC";
 
-          if(upper.includes("SAMSUNG")) brand = "SAMSUNG";
-          else if(upper.includes("OPPO")) brand = "OPPO";
-          else if(upper.includes("VIVO")) brand = "VIVO";
-          else if(upper.includes("XIAOMI") || upper.includes("REDMI")) brand = "XIAOMI";
-          else if(upper.includes("REALME")) brand = "REALME";
-          else if(upper.includes("IPHONE")) brand = "APPLE";
-          else if(upper.includes("HUAWEI")) brand = "HUAWEI";
+    if(upper.includes("SAMSUNG")) brand = "SAMSUNG";
+    else if(upper.includes("OPPO")) brand = "OPPO";
+    else if(upper.includes("VIVO")) brand = "VIVO";
+    else if(upper.includes("XIAOMI") || upper.includes("REDMI")) brand = "XIAOMI";
+    else if(upper.includes("REALME")) brand = "REALME";
+    else if(upper.includes("IPHONE")) brand = "APPLE";
+    else if(upper.includes("HUAWEI")) brand = "HUAWEI";
 
-          let cleaned = upper
-            .replace(/SAMSUNG |OPPO |VIVO |XIAOMI |REALME |IPHONE |HUAWEI /gi,"")
-            .replace(/\s\d+GB/gi,"")
-            .trim();
+    let cleaned = upper
+      .replace(/SAMSUNG |OPPO |VIVO |XIAOMI |REALME |IPHONE |HUAWEI /gi,"")
+      .replace(/\s\d+GB/gi,"")
+      .trim();
 
-          if(!groups[brand]) groups[brand] = [];
-          groups[brand].push(cleaned);
-        });
+    if(!groups[brand]) groups[brand] = [];
+    groups[brand].push(cleaned);
+  });
 
-        modelLine = Object.keys(groups).map(b =>
-          `📱 ${b}: ${groups[b].join(" / ")}`
-        ).join("<br>");
-      }
+  modelLine = Object.keys(groups).map(b =>
+    `📱 ${b}: ${groups[b].join(" / ")}`
+  ).join("<br>");
+
+} else {
+
+  // 🔥 nếu chưa có model
+  modelLine = `📱 Đang cập nhật model...`;
+
+}
 
       /* ===== BUILD CARD ===== */
       html += `
