@@ -768,18 +768,35 @@ body{
   width:100%;
   box-sizing:border-box;
 }
+
+/* ===== MMC COLOR LEVELS ===== */
+.mmc-1{ color:#22d3ee; }
+.mmc-2{ color:#34d399; }
+.mmc-3{ color:#60a5fa; }
+.mmc-4{ color:#f59e0b; }
+.mmc-5{ color:#f97316; }
+.mmc-6{ color:#ef4444; }
+
+/* ===== MMC BADGE ===== */
 .mmc-badge{
   display:inline-block;
   margin:6px 0 10px 0;
   font-size:13px;
   font-weight:700;
   letter-spacing:1px;
-  padding:4px 12px;
+  padding:5px 14px;
   border-radius:20px;
-  background:rgba(255,255,255,0.05);
-  color:#e5e7eb;
+  background:rgba(255,255,255,0.04);
+  box-shadow:0 0 12px rgba(255,255,255,0.06);
 }
 
+/* ===== MMC DOT ===== */
+.mmc-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  box-shadow:0 0 10px currentColor;
+}
 
 </style>
 
@@ -1071,12 +1088,16 @@ if(x.type === "MMC"){
 
   sizeText = mmcMap[x.value] || "";
 
+  const level = x.value.replace("MMC","");
+  vipClass = `mmc-${level}`;
+
   secondLine = `
-    <div class="mmc-badge">
-      ${x.value}
+    <div class="mmc-badge ${vipClass}">
+      MMC${level}
     </div>
   `;
 }
+
 
 /* ===== VIP ===== */
 if(x.type === "VIP"){
@@ -1151,10 +1172,10 @@ if(Array.isArray(x.models) && x.models.length){
               ${chip.name}
             </div>
 
-            <div class="chip-item ${vipClass}">
-              <span class="pro-dot"></span>
-              ${sizeText ? sizeText : "?"}
-            </div>
+<div class="chip-item ${vipClass}">
+  <span class="mmc-dot"></span>
+  ${sizeText ? sizeText : "?"}
+</div>
 
           </div>
 
