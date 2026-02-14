@@ -11,85 +11,105 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <style>
+/* ================= BASE ================= */
+
 body{
-  font-family:Arial;
+  margin:0;
+  font-family:Arial, sans-serif;
   background:#0b0b0b;
   color:white;
 }
 
-/* ===== GRID ===== */
-/* ===== DASHBOARD GRID ===== */
+.main-container{
+  padding:40px 60px;
+  max-width:1400px;
+  margin:auto;
+}
 
-.result-grid{
+/* ================= GRID ================= */
+
+#out{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:18px;
+  grid-template-columns:repeat(3,1fr);
+  gap:25px;
   margin-top:30px;
 }
 
-/* ÉP 1 CỘT CHẮC CHẮN TRÊN MOBILE */
-@media (max-width:768px){
-  .result-grid{
-    grid-template-columns:1fr !important;
-  }
+#linkList{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:20px;
+  margin-top:15px;
 }
 
+/* ================= RESULT CARD ================= */
 
-
-
-
-
-/* Laptop */
-
-
-
-
-
-
-
+.result-card{
+  background:linear-gradient(145deg,#0f172a,#111827);
+  border-radius:22px;
+  padding:22px;
+  border:1px solid rgba(255,255,255,0.06);
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  transition:0.25s ease;
+  box-shadow:0 8px 25px rgba(0,0,0,0.5);
+}
 
 .result-card:hover{
+  transform:translateY(-5px);
   border-color:#facc15;
-  transform:translateY(-4px);
+  box-shadow:0 15px 35px rgba(250,204,21,0.25);
 }
 
-/* ===== BRAND ===== */
-.brand{
-  color:#22c55e;
-  font-size:13px;
-  margin-top:8px;
-}
+/* ================= BADGES ================= */
 
-/* ===== VIP BADGE ===== */
 .vip-badge{
   display:inline-flex;
   align-items:center;
   gap:6px;
-  padding:6px 14px;
+  padding:8px 18px;
   border-radius:999px;
-  font-size:12px;
-  font-weight:700;
+  font-size:14px;
+  font-weight:600;
   background:#1e293b;
 }
 
+/* ================= CHIP INFO ================= */
 
+.chip-info{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:14px;
+  font-weight:500;
+}
+
+.chip-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+}
+
+/* ================= ADMIN LINK CARD ================= */
 
 .link-card{
-  background:#141414;
-  border:1px solid #222;
-  border-radius:14px;
-  padding:14px 18px;
+  background:#0f172a;
+  border:1px solid #1f2937;
+  border-radius:16px;
+  padding:14px 16px;
   display:flex;
   justify-content:space-between;
   align-items:center;
-  margin-bottom:12px;
-  transition:0.2s;
+  transition:0.2s ease;
 }
 
 .link-card:hover{
   border-color:#2563eb;
-  transform:translateY(-2px);
+  box-shadow:0 10px 30px rgba(37,99,235,0.25);
 }
+
+/* ================= LINK INFO ================= */
 
 .link-id{
   font-weight:600;
@@ -114,17 +134,20 @@ body{
   color:#facc15;
 }
 
+/* ================= LINK ACTIONS ================= */
+
 .link-actions{
   display:flex;
-  gap:8px;
+  gap:6px;
 }
 
 .icon-btn{
   border:none;
-  background:#1f1f1f;
-  padding:8px 10px;
-  border-radius:10px;
+  background:#1f2937;
+  padding:6px 8px;
+  border-radius:8px;
   cursor:pointer;
+  font-size:13px;
   transition:0.2s;
 }
 
@@ -136,123 +159,53 @@ body{
 .icon-btn.delete:hover{
   background:#dc2626;
 }
-/* ===== RESULT GRID (PC) ===== */
-#out{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:20px;
+
+/* ================= CHECK INPUT ================= */
+
+.clean-check{
+  position:relative;
   margin-top:25px;
 }
 
-/* ===== ADMIN LINK GRID (PC) ===== */
-#linkList{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:20px;
-}
-
-/* ===== TABLET ===== */
-@media(max-width:1200px){
-  #out{
-    grid-template-columns:repeat(2,1fr);
-  }
-  #linkList{
-    grid-template-columns:repeat(2,1fr);
-  }
-}
-
-/* ===== MOBILE ===== */
-@media(max-width:768px){
-  #out{
-    grid-template-columns:1fr;
-  }
-  #linkList{
-    grid-template-columns:1fr;
-  }
-}
-
-/* ===== LOADING ===== */
-.loading{
-  text-align:center;
-  margin-top:20px;
-  font-size:14px;
-  color:#facc15;
-  letter-spacing:1px;
-}
-
-.dots::after{
-  content:'';
-  animation:dots 1.2s infinite;
-}
-
-@keyframes dots{
-  0%{content:'';}
-  33%{content:'.';}
-  66%{content:'..';}
-  100%{content:'...';}
-}
-
-
-/* ===== RESULT CARD FINAL ===== */
-.result-card{
-  background:linear-gradient(145deg,#0f172a,#111827);
-  border-radius:22px;
-  padding:22px;
-  border:1px solid rgba(255,255,255,0.06);
-  transition:all 0.25s ease;
-  box-shadow:
-    0 8px 25px rgba(0,0,0,0.5),
-    inset 0 0 0 1px rgba(255,255,255,0.03);
-
+.clean-check input{
   width:100%;
-  box-sizing:border-box;
-
-  display:flex;
-  flex-direction:column;
-  justify-content:flex-start;
-  gap:14px;
+  height:54px;
+  padding:0 60px 0 20px;
+  border-radius:16px;
+  border:1px solid #1f2937;
+  background:#0f172a;
+  color:white;
+  font-size:15px;
+  transition:0.25s;
 }
 
-.result-card:hover{
-  transform:translateY(-5px);
-  border-color:#facc15;
-  box-shadow:
-    0 15px 35px rgba(250,204,21,0.25),
-    inset 0 0 0 1px rgba(255,255,255,0.05);
+.clean-check input:focus{
+  border-color:#2563eb;
+  box-shadow:0 0 0 3px rgba(37,99,235,0.25);
+  outline:none;
 }
 
+.clean-check .check-btn{
+  position:absolute;
+  right:8px;
+  top:50%;
+  transform:translateY(-50%);
+  height:42px;
+  width:42px;
+  border:none;
+  border-radius:12px;
+  background:#1f2937;
+  color:#94a3b8;
+  cursor:pointer;
+  transition:0.2s;
+}
 
-.vip-8{
-  background:linear-gradient(90deg,#6d28d9,#a855f7);
+.clean-check .check-btn:hover{
+  background:#2563eb;
   color:white;
 }
 
-.vip-9{
-  background:linear-gradient(90deg,#06b6d4,#0ea5e9);
-  color:white;
-}
-
-.vip-10{
-  background:linear-gradient(90deg,#FFD700,#ffcc00,#FFD700);
-  color:black;
-}
-
-.vip-5{ background:#facc15; color:black; }
-.vip-6{ background:linear-gradient(90deg,#facc15,#fb923c); color:black; }
-.vip-7{ background:linear-gradient(90deg,#fb923c,#ef4444); color:white; }
-.vip-11{ background:linear-gradient(90deg,#ff4d00,#ff0000); color:white; }
-.vip-13{ background:linear-gradient(90deg,#5b0000,#ff0000,#5b0000); color:white; }
-
-@media(max-width:768px){
-  .result-card{
-    padding:16px;
-  }
-  .badge{
-    font-size:11px;
-    padding:5px 14px;
-  }
-}
-/* ================= CLEAN LOGIN FINAL ================= */
+/* ================= LOGIN ================= */
 
 .login-wrapper{
   position:fixed;
@@ -288,7 +241,6 @@ body{
   -webkit-text-fill-color:transparent;
 }
 
-/* INPUT */
 .input-group{
   position:relative;
   margin-bottom:25px;
@@ -307,17 +259,12 @@ body{
   transition:0.3s ease;
 }
 
-.input-group input::placeholder{
-  color:#64748b;
-}
-
 .input-group input:focus{
   border-color:#2563eb;
   box-shadow:0 0 0 3px rgba(37,99,235,0.25);
   outline:none;
 }
 
-/* ICON LEFT */
 .input-icon{
   position:absolute;
   left:18px;
@@ -327,7 +274,6 @@ body{
   color:#facc15;
 }
 
-/* ICON RIGHT */
 .toggle-pass{
   position:absolute;
   right:18px;
@@ -344,7 +290,6 @@ body{
   transform:translateY(-50%) scale(1.1);
 }
 
-/* BUTTON */
 .login-box button{
   width:100%;
   height:56px;
@@ -363,7 +308,6 @@ body{
   box-shadow:0 20px 45px rgba(37,99,235,0.6);
 }
 
-/* ERROR */
 .login-error{
   margin-top:15px;
   color:#f87171;
@@ -371,297 +315,40 @@ body{
   display:none;
 }
 
+/* ================= RESPONSIVE ================= */
 
-
-
-/* ===== CARD FOOTER GỌN ĐẸP ===== */
-
-.card-footer{
-  margin-top:14px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+@media(max-width:1200px){
+  #out{
+    grid-template-columns:repeat(2,1fr);
+  }
+  #linkList{
+    grid-template-columns:repeat(2,1fr);
+  }
 }
 
-.chip-info{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  font-size:14px;
-  font-weight:500;
-  color:#22c55e;
-}
-
-.chip-dot{
-  width:8px;
-  height:8px;
-  border-radius:50%;
-}
-
-/* ===== CODE BADGE (DÒNG TRÊN) ===== */
-.code-title{
-  margin-bottom:12px;
-}
-
-.code-badge{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  padding:6px 14px;
-  border-radius:14px;
-  background:rgba(255,255,255,0.05);
-  border:1px solid rgba(255,255,255,0.08);
-  font-size:15px;
-  font-weight:600;
-}
-
-
-/* ===== VIP BADGE (DÒNG DƯỚI) ===== */
-.vip-badge{
-  padding:8px 18px;
-  border-radius:999px;
-  font-size:14px;
-  font-weight:600;
-}
-
-
-.chip-vip-line{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-}
-
-
-
-/* ================= MOBILE OPTIMIZE ================= */
-@media(max-width:640px){
-
-  /* Main container */
-  .main-container{
-    padding:20px 15px !important;
+@media(max-width:768px){
+  #out,
+  #linkList{
+    grid-template-columns:1fr;
   }
 
-  /* Login box */
+  .main-container{
+    padding:20px 15px;
+  }
+
+  .result-card{
+    padding:16px;
+  }
+
   .login-box{
     width:90%;
     padding:30px 20px;
-    border-radius:18px;
   }
 
   .login-title{
     font-size:26px;
     margin-bottom:20px;
   }
-
-  .login-box input{
-    height:46px;
-    font-size:14px;
-  }
-
-  .login-box button{
-    height:46px;
-    font-size:14px;
-  }
-
-  /* Dashboard cards */
-  .result-grid{
-    grid-template-columns:repeat(2,1fr);
-    gap:10px;
-  }
-
-  .result-card{
-    padding:14px;
-    border-radius:16px;
-  }
-
-  .code-title{
-    font-size:14px;
-  }
-
-  .chip-vip-line{
-    font-size:13px;
-    gap:10px;
-  }
-
-  .vip-badge{
-    font-size:12px;
-    padding:3px 8px;
-  }
-
-}
-/* Desktop container */
-.main-container{
-  padding:40px 60px;
-  max-width:1400px;
-  margin:auto;
-}
- /* ===== CREATE LINK BUTTON PRO ===== */
-
-.create-link-btn{
-  padding:8px 18px;
-  border-radius:999px;
-  border:1px solid rgba(34,197,94,0.4);
-  background:rgba(34,197,94,0.15);
-  color:#22c55e;
-  font-size:14px;
-  font-weight:600;
-  cursor:pointer;
-  transition:0.3s ease;
-}
-
-.create-link-btn:hover{
-  background:#22c55e;
-  color:black;
-  box-shadow:0 8px 20px rgba(34,197,94,0.4);
-}
- 
-/* ===== CHECK INPUT INLINE BUTTON ===== */
-
-.check-group{
-  position:relative;
-  margin-top:15px;
-}
-
-.check-group input{
-  width:100%;
-  height:56px;
-  padding:0 120px 0 20px;
-  border-radius:14px;
-  border:1px solid #222;
-  background:#0f0f0f;
-  color:white;
-  font-size:15px;
-  box-sizing:border-box;
-  transition:0.3s;
-}
-
-.check-group input:focus{
-  border-color:#2563eb;
-  box-shadow:0 0 0 3px rgba(37,99,235,0.25);
-  outline:none;
-}
-
-.check-group button{
-  position:absolute;
-  right:6px;
-  top:50%;
-  transform:translateY(-50%);
-  height:44px;
-  padding:0 25px;
-  border:none;
-  border-radius:10px;
-  background:linear-gradient(90deg,#2563eb,#3b82f6);
-  color:white;
-  font-weight:700;
-  cursor:pointer;
-  transition:0.3s;
-}
-
-.check-group button:hover{
-  transform:translateY(-50%) scale(1.05);
-  box-shadow:0 8px 20px rgba(37,99,235,0.4);
-}
-
-/* ===== THÊM NGAY DƯỚI ĐÂY (ICON ✏️) ===== */
-
-.link-id-row{
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-
-.edit-icon{
-  cursor:pointer;
-  opacity:0.7;
-  font-size:14px;
-}
-
-.edit-icon:hover{
-  opacity:1;
-}
-/* ===== CLEAN CHECK FINAL ===== */
-.clean-check{
-  position:relative;
-  margin-top:25px;
-}
-
-.clean-check input{
-  width:100%;
-  height:54px;
-  padding:0 60px 0 20px;
-  border-radius:16px;
-  border:1px solid #1f2937;
-  background:#0f172a;
-  color:white;
-  font-size:15px;
-  transition:0.25s;
-}
-
-.clean-check input:focus{
-  border-color:#2563eb;
-  box-shadow:0 0 0 3px rgba(37,99,235,0.25);
-  outline:none;
-}
-
-.clean-check .check-btn{
-  position:absolute;
-  right:8px;
-  top:50%;
-  transform:translateY(-50%);
-  height:42px;
-  width:42px;
-  border:none;
-  border-radius:12px;
-  background:#1f2937;
-  color:#94a3b8;
-  font-size:16px;
-  cursor:pointer;
-  transition:0.2s;
-}
-
-.clean-check .check-btn:hover{
-  background:#2563eb;
-  color:white;
-}
-
-/* ===== ADMIN CARD CLEAN ===== */
-.link-card{
-  background:#0f172a !important;
-  border:1px solid #1f2937 !important;
-  border-radius:16px !important;
-  padding:16px !important;
-  transition:0.25s !important;
-}
-
-.link-card:hover{
-  border-color:#2563eb !important;
-  box-shadow:0 10px 30px rgba(37,99,235,0.25);
-}
-/* ===== FORCE 3 CARD GRID ===== */
-#out{
-  display:grid !important;
-  grid-template-columns:repeat(3,1fr) !important;
-  gap:25px !important;
-  margin-top:30px;
-}
-
-/* Tablet */
-@media(max-width:1200px){
-  #out{
-    grid-template-columns:repeat(2,1fr) !important;
-  }
-}
-
-/* Mobile */
-@media(max-width:768px){
-  #out{
-    grid-template-columns:1fr !important;
-  }
-}
-
-/* Đảm bảo card không bị co */
-.result-card{
-  width:100% !important;
 }
 
 </style>
