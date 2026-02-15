@@ -993,6 +993,20 @@ font-weight:500;
   font-weight:600;
   transition:all 0.3s ease;
 }
+/* ===== CREATE LINK AUTO HIDE ===== */
+
+.create-link-btn{
+  opacity:0;
+  transform:translateY(-5px);
+  pointer-events:none;
+  transition:all 0.3s ease;
+}
+
+.create-link-btn.show{
+  opacity:1;
+  transform:translateY(0);
+  pointer-events:auto;
+}
 
 .create-link-btn.small:hover{
   background:#22c55e;
@@ -1530,6 +1544,10 @@ setTimeout(() => {
   if(toggleBtn){
     toggleBtn.classList.add("active");
   }
+const createBtn = document.querySelector(".create-link-btn");
+if(createBtn){
+  createBtn.classList.add("show");
+}
 
 }, 100);
 
@@ -1930,6 +1948,7 @@ function toggleAdmin(){
 
   const content = document.getElementById("adminContent");
   const toggleBtn = document.getElementById("adminToggle");
+  const createBtn = document.querySelector(".create-link-btn");
 
   if(!content) return;
 
@@ -1938,12 +1957,15 @@ function toggleAdmin(){
   if(isOpen){
     content.classList.remove("open");
     if(toggleBtn) toggleBtn.classList.remove("active");
+    if(createBtn) createBtn.classList.remove("show");
   } else {
     content.classList.add("open");
     if(toggleBtn) toggleBtn.classList.add("active");
+    if(createBtn) createBtn.classList.add("show");
   }
 
 }
+
 
 
 
