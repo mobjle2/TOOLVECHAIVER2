@@ -1512,10 +1512,27 @@ if(!user){
       return;
     }
 
-    document.getElementById("loginScreen").style.display = "none";
-    document.getElementById("adminPanel").style.display = "block";
+document.getElementById("loginScreen").style.display = "none";
+document.getElementById("adminPanel").style.display = "block";
 
-    loadLinks();
+loadLinks();
+
+/* ===== MỞ ADMIN CONTENT SAU LOGIN ===== */
+setTimeout(() => {
+
+  const content = document.getElementById("adminContent");
+  const toggleBtn = document.getElementById("adminToggle");
+
+  if(content){
+    content.classList.add("open");
+  }
+
+  if(toggleBtn){
+    toggleBtn.classList.add("active");
+  }
+
+}, 100);
+
 
   }catch(err){
     console.error(err);
@@ -1912,25 +1929,22 @@ document.getElementById("q").addEventListener("keydown",function(e){
 function toggleAdmin(){
 
   const content = document.getElementById("adminContent");
-  const createBtn = document.querySelector(".create-link-btn");
   const toggleBtn = document.getElementById("adminToggle");
 
   if(!content) return;
 
-  const isHidden = content.style.display === "none";
+  const isOpen = content.classList.contains("open");
 
-  if(isHidden){
-    content.style.display = "block";
-    if(createBtn) createBtn.style.display = "inline-block";
-    if(toggleBtn) toggleBtn.classList.add("active");
-  }
-  else{
-    content.style.display = "none";
-    if(createBtn) createBtn.style.display = "none";
+  if(isOpen){
+    content.classList.remove("open");
     if(toggleBtn) toggleBtn.classList.remove("active");
+  } else {
+    content.classList.add("open");
+    if(toggleBtn) toggleBtn.classList.add("active");
   }
 
 }
+
 
 
 
