@@ -1806,18 +1806,23 @@ document.getElementById("q").addEventListener("keydown",function(e){
 });
 function toggleAdmin(){
 
-  const panel = document.getElementById("adminPanel");
-  if(!panel) return;
+  const content = document.getElementById("adminContent");
+  const createBtn = document.querySelector(".create-link-btn");
 
-  // Nếu đang ẩn hoặc chưa có display
-  if(panel.style.display === "none" || panel.style.display === ""){
-    panel.style.display = "block";
-  } 
-  else{
-    panel.style.display = "none";
+  if(!content) return;
+
+  const isHidden = content.style.display === "none";
+
+  if(isHidden){
+    content.style.display = "block";
+    if(createBtn) createBtn.style.display = "inline-block";
+  }else{
+    content.style.display = "none";
+    if(createBtn) createBtn.style.display = "none";
   }
 
 }
+
 
 
 </script>
