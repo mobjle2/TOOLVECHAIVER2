@@ -1488,27 +1488,32 @@ if(!vipNumber && x.type === "MMC"){
 
 if(!vipNumber && x.type === "VIP"){
 
-  const vipMap = {
-    4:"2G / 16G",
-    5:"3G / 32G",
-    6:"4G / 64G",
-    7:"6G / 128G",
-    8:"8G / 128G",
-    9:"8G / 256G",
-    10:"12G / 512G"
-  };
+  // nếu VIP là số thuần (4,5,6,7...)
+  if(/^\d+$/.test(String(x.value).trim())){
 
-  const vipNum = parseInt(x.value.replace(/\D/g,""));
-  vipClass = `vip-${vipNum}`;
+    const vipNum = parseInt(x.value.trim());
 
-  sizeText = vipMap[vipNum] || "";
+    vipClass = `vip-${vipNum}`;
+    sizeText = "";
+    secondLine = `
+      <div class="vip-badge ${vipClass}">
+        VIP ${vipNum}
+      </div>
+    `;
 
-  secondLine = `
-    <div class="vip-badge ${vipClass}">
-      VIP ${vipNum}
-    </div>
-  `;
+  } else {
+
+    // VIP custom như "VIP 6+ (Sam Sung V7)"
+    vipClass = "vip-custom";
+
+    secondLine = `
+      <div class="vip-badge ${vipClass}">
+        ${x.value}
+      </div>
+    `;
+  }
 }
+
 
 
 
