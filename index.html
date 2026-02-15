@@ -11,287 +11,23 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <style>
+
+/* ================= GLOBAL ================= */
+
 body{
+  margin:0;
   background:linear-gradient(160deg,#111827,#1e293b);
   color:#e5e7eb;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;
 }
 
-
-
-
-/* ===== GRID ===== */
-.result-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
-  gap:24px;
-  margin:30px auto 0 auto;
-  max-width:1100px;
-}
-
-/* ÉP 1 CỘT TRÊN MOBILE */
-@media (max-width:768px){
-  .result-grid{
-    grid-template-columns:1fr!important;
-  }
-}
-
-.result-card:hover{
-  border-color:#facc15;
-  transform:translateY(-4px);
-}
-
-/* ===== BRAND ===== */
-.brand{
-  color:#22c55e;
-  font-size:13px;
-  margin-top:6px;
-}
-
-/* ===== VIP BADGE ===== */
-.vip-badge{
-  display:flex;
-  align-items:center;
-  gap:6px;
-  font-weight:700;
-  font-size:14px;
-}
-
-/* VIP 1-4 */
-.vip-1,.vip-2,.vip-3,.vip-4{
-  color:#94a3b8;
-}
-.vip-1 .vip-dot,
-.vip-2 .vip-dot,
-.vip-3 .vip-dot,
-.vip-4 .vip-dot{
-  background:#64748b;
-}
-
-/* VIP 5-9 (SÁNG – KHÔNG TRÙNG CHIP) */
-.vip-5{ color:#00e5ff; }
-.vip-5 .vip-dot{ background:#00e5ff; }
-
-.vip-6{ color:#00ff88; }
-.vip-6 .vip-dot{ background:#00ff88; }
-
-.vip-7{ color:#ff9f1c; }
-.vip-7 .vip-dot{ background:#ff9f1c; }
-
-.vip-8{ color:#8b5cf6; }
-.vip-8 .vip-dot{ background:#8b5cf6; }
-
-.vip-9{ color:#ff4ecd; }
-.vip-9 .vip-dot{ background:#ff4ecd; }
-
-/* VIP 10-13 */
-.vip-10{ color:#facc15; }
-.vip-10 .vip-dot{ background:#facc15; }
-
-.vip-11{ color:#ef4444; }
-.vip-11 .vip-dot{ background:#ef4444; }
-
-.vip-12{
-  color:#dc2626;
-  text-shadow:0 0 6px rgba(220,38,38,0.6);
-}
-.vip-12 .vip-dot{ background:#dc2626; }
-
-.vip-13{
-  color:#ff003c;
-  text-shadow:0 0 8px rgba(255,0,60,0.8);
-}
-.vip-13 .vip-dot{ background:#ff003c; }
-
-  .link-card{
-  background:#141414;
-  border:1px solid #222;
-  border-radius:14px;
-  padding:14px 18px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:12px;
-  transition:0.2s;
-}
-
-.link-card:hover{
-  border-color:#2563eb;
-  transform:translateY(-2px);
-}
-
-.link-id{
-  font-weight:600;
-  font-size:14px;
-}
-.chip-brand{
-  font-weight:500;
-  font-size:13.5px;
-  opacity:0.9;
-}
-
-.link-status{
-  margin-top:6px;
-  font-size:12px;
-  padding:4px 10px;
-  border-radius:999px;
-  display:inline-block;
-}
-
-.link-status.open{
-  background:#16a34a22;
-  color:#22c55e;
-}
-
-.link-status.lock{
-  background:#facc1522;
-  color:#facc15;
-}
-
-.link-actions{
-  display:flex;
-  gap:8px;
-}
-
-.icon-btn{
-  border:none;
-  background:#1f1f1f;
-  padding:8px 10px;
-  border-radius:10px;
-  cursor:pointer;
-  transition:0.2s;
-}
-
-.icon-btn:hover{
-  background:#2563eb;
-  color:white;
-}
-
-.icon-btn.delete:hover{
-  background:#dc2626;
-}
-
-
-/* ================= GRID CHUẨN ĐẸP ================= */
-
-/* Container ngoài */
-#out{
-  margin-top:50px;
-}
-
-/* Grid kết quả */
-.result-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:40px;
-  max-width:1100px;
-  margin:0 auto;
-}
-
-
-
-/* Tablet */
-@media(max-width:1200px){
-  .result-grid{
-    grid-template-columns:repeat(2,1fr);
-  }
-  #linkList{
-    grid-template-columns:repeat(2,1fr);
-  }
-}
-
-/* Mobile */
-@media(max-width:768px){
-  .result-grid{
-    grid-template-columns:1fr;
-    gap:25px;
-  }
-  #linkList{
-    grid-template-columns:1fr;
-  }
-}
-
-
-/* ================= CARD STYLE ================= */
-
-.result-card{
-  background:linear-gradient(145deg,#1e293b,#111827);
-  border-radius:22px;
-  padding:22px;
-  border:1px solid rgba(255,255,255,0.06);
-  box-shadow:0 12px 30px rgba(0,0,0,0.45);
-  transition:all 0.3s ease;
-  position:relative;
-  overflow:hidden;
-}
-
-
-.result-card:hover{
-  transform:translateY(-8px);
-  border-color:#facc15;
-  box-shadow:0 25px 60px rgba(250,204,21,0.25);
-}
-/* ===== CHIP LINE ===== */
-.chip-line{
-  display:flex;
-  align-items:center;
-  gap:18px;
-  margin-top:10px;
-font-size:14px;
-font-weight:500;
-
-}
-
-.chip-item{
-  display:flex;
-  align-items:center;
-  gap:6px;
-  font-size:14px;
-  font-weight:500;
-}
-
-/* ===== MODEL LINE ===== */
-.model-line{
-  margin-top:14px;
-  padding-top:12px;
-  border-top:1px solid rgba(255,255,255,0.06);
-  font-size:13px;
-  line-height:1.6;
-  opacity:0.85;
-}
-
-.model-icon{
-  font-size:12px;
-  opacity:0.6;
-  margin-right:6px;
-}
-
-.model-brand{
-  font-weight:500;
-  opacity:0.75;
-  letter-spacing:0.3px;
-}
-
-.model-sep{
-  margin:0 6px;
-  opacity:0.4;
-}
-
-.model-list{
-  font-weight:500;
-  color:#e2e8f0;
-}
-.admin-panel{
-  max-width:1150px;
-  margin:30px auto 0 auto;
-}
-
+/* ================= HEADER ================= */
 
 .main-container{
   padding:5px 20px 25px 20px;
   max-width:1100px;
   margin:0 auto;
 }
-
 
 .main-title{
   text-align:center;
@@ -303,319 +39,58 @@ font-weight:500;
   text-shadow:0 0 20px rgba(59,130,246,0.25);
 }
 
-
-
 .sub-title{
   text-align:center;
-  margin-top:5px;
+  margin:5px 0 0 0;
   font-size:14px;
-  opacity:0.75;
   letter-spacing:3px;
+  opacity:0.75;
   color:#94a3b8;
 }
 
+/* ================= ADMIN TOP BAR ================= */
 
-
-/* ===== VIP BADGE ===== */
-.vip-badge{
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  margin:6px 0 8px 0;
-  padding:5px 14px;
-  border-radius:999px;
-  font-size:13px;
-  font-weight:700;
-  letter-spacing:0.6px;
-  background:rgba(255,255,255,0.04);
-  box-shadow:0 4px 12px rgba(0,0,0,0.1);
+.admin-panel{
+  max-width:1150px;
+  margin:30px auto 0 auto;
 }
 
-.vip-dot{
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  background:currentColor;
-  box-shadow:0 0 8px currentColor;
-}
-
-/* ===== VIP COLORS ===== */
-
-/* 1-4 */
-.vip-1{ color:#94a3b8; }
-.vip-2{ color:#64748b; }
-.vip-3{ color:#a78bfa; }
-.vip-4{ color:#c084fc; }
-
-/* 5-9 (SÁNG – KHÔNG TRÙNG CHIP) */
-.vip-5{ color:#00e5ff; }
-.vip-6{ color:#00ff88; }
-.vip-7{ color:#ff9f1c; }
-.vip-8{ color:#8b5cf6; }
-.vip-9{ color:#ff4ecd; }
-
-/* 10-13 */
-.vip-10{ color:#facc15; }
-.vip-11{ color:#ef4444; }
-.vip-12{
-  color:#dc2626;
-  text-shadow:0 0 6px rgba(220,38,38,0.6);
-}
-.vip-13{
-  color:#ff003c;
-  text-shadow:0 0 8px rgba(255,0,60,0.8);
-}
-
-/* ================= CLEAN LOGIN FINAL ================= */
-
-.login-wrapper{
-  position:fixed;
-  inset:0;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background:
-    radial-gradient(circle at 20% 20%, rgba(59,130,246,0.25), transparent 40%),
-    linear-gradient(160deg,#020617,#0f172a);
-  z-index:9999;
-}
-
-.login-box{
-  width:420px;
-  padding:60px 45px;
-  border-radius:24px;
-  background:rgba(15,23,42,0.9);
-  backdrop-filter:blur(20px);
-  border:1px solid rgba(255,255,255,0.05);
-  box-shadow:0 50px 120px rgba(0,0,0,0.8);
-  text-align:center;
-}
-
-.login-title{
-  font-family:'Poppins',sans-serif;
-  font-size:42px;
-  font-weight:800;
-  margin-bottom:50px;
-  letter-spacing:2px;
-  background:linear-gradient(90deg,#f59e0b,#fbbf24);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
-
-/* INPUT */
-.input-group{
-  position:relative;
-  margin-bottom:25px;
-}
-
-.input-group input{
-  width:100%;
-  height:56px;
-  padding:0 55px;
-  border-radius:16px;
-  border:1px solid rgba(255,255,255,0.08);
-  background:#0b1220;
-  color:white;
-  font-size:15px;
-  box-sizing:border-box;
-  transition:0.3s ease;
-}
-
-.input-group input::placeholder{
-  color:#64748b;
-}
-
-.input-group input:focus{
-  border-color:#2563eb;
-  box-shadow:0 0 0 3px rgba(37,99,235,0.25);
-  outline:none;
-}
-
-/* ICON LEFT */
-.input-icon{
-  position:absolute;
-  left:18px;
-  top:50%;
-  transform:translateY(-50%);
-  font-size:18px;
-  color:#facc15;
-}
-
-/* ICON RIGHT */
-.toggle-pass{
-  position:absolute;
-  right:18px;
-  top:50%;
-  transform:translateY(-50%);
-  cursor:pointer;
-  font-size:18px;
-  color:#cbd5e1;
-  transition:0.2s ease;
-}
-
-.toggle-pass:hover{
-  color:#facc15;
-  transform:translateY(-50%) scale(1.1);
-}
-
-/* BUTTON */
-.login-box button{
-  width:100%;
-  height:56px;
-  border:none;
-  border-radius:16px;
-  background:linear-gradient(90deg,#2563eb,#3b82f6);
-  font-weight:700;
-  font-size:16px;
-  cursor:pointer;
-  transition:0.3s ease;
-  box-shadow:0 15px 35px rgba(37,99,235,0.4);
-}
-
-.login-box button:hover{
-  transform:translateY(-3px);
-  box-shadow:0 20px 45px rgba(37,99,235,0.6);
-}
-
-/* ERROR */
-.login-error{
-  margin-top:15px;
-  color:#f87171;
-  font-weight:600;
-  display:none;
-}
-
-
-/* ===== CARD FOOTER GỌN ĐẸP ===== */
-
-.card-footer{
-  margin-top:14px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.chip-info{
+.admin-top-bar{
   display:flex;
   align-items:center;
-  gap:8px;
-  font-size:14px;
-  font-weight:500;
-  color:#22c55e;
-}
-
-.chip-dot{
-  width:8px;
-  height:8px;
-  border-radius:50%;
-}
-
-/* ===== CODE BADGE (DÒNG TRÊN) ===== */
-.code-title{
-  margin-bottom:12px;
-}
-
-.code-badge{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  padding:6px 14px;
-  border-radius:14px;
-  background:rgba(255,255,255,0.05);
-  border:1px solid rgba(255,255,255,0.08);
-  font-size:15px;
-  font-weight:600;
-}
-
-
-/* ===== VIP BADGE (DÒNG DƯỚI) ===== */
-.vip-badge{
-  margin:6px 0 10px 0;
-  letter-spacing:0.5px;
-  font-size:14px;
-  font-weight:700;
-}
-
-
-
-.chip-vip-line{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-}
-
-
-
-/* ================= MOBILE OPTIMIZE ================= */
-@media(max-width:640px){
-
-  /* Main container */
-  .main-container{
-    padding:20px 15px !important;
-  }
-/* ===== CENTER HEADER + INPUT ===== */
-
-.title{
-  text-align:center;
-  margin-top:40px;
-}
-
-.clean-check{
+  gap:15px;
   max-width:1000px;
   margin:25px auto 0 auto;
 }
 
-  /* Login box */
-  .login-box{
-    width:90%;
-    padding:30px 20px;
-    border-radius:18px;
-  }
+/* ================= ADMIN BUTTON ================= */
 
-  .login-title{
-    font-size:26px;
-    margin-bottom:20px;
-  }
-
-  .login-box input{
-    height:46px;
-    font-size:14px;
-  }
-
-  .login-box button{
-    height:46px;
-    font-size:14px;
-  }
-
-  /* Dashboard cards */
-  .result-grid{
-    grid-template-columns:repeat(2,1fr);
-    gap:10px;
-  }
-
-  .result-card{
-    padding:14px;
-    border-radius:16px;
-  }
-
-  .code-title{
-    font-size:14px;
-  }
-
-  .chip-vip-line{
-    font-size:13px;
-    gap:10px;
-  }
-
-  .vip-badge{
-    font-size:12px;
-    padding:3px 8px;
-  }
-
+.admin-toggle-btn{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 22px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.1);
+  background:rgba(255,255,255,0.04);
+  color:#e2e8f0;
+  font-weight:600;
+  cursor:pointer;
+  transition:all 0.3s ease;
 }
-/* Desktop container */
 
- /* ===== CREATE LINK BUTTON PRO ===== */
+.admin-toggle-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 25px rgba(37,99,235,0.3);
+}
+
+.admin-toggle-btn.active{
+  background:linear-gradient(90deg,#2563eb,#3b82f6);
+  border:none;
+  color:white;
+}
+
+/* ================= CREATE LINK ================= */
 
 .create-link-btn{
   padding:8px 18px;
@@ -627,6 +102,13 @@ font-weight:500;
   font-weight:600;
   cursor:pointer;
   transition:0.3s ease;
+  opacity:0;
+  pointer-events:none;
+}
+
+.create-link-btn.show{
+  opacity:1;
+  pointer-events:auto;
 }
 
 .create-link-btn:hover{
@@ -634,76 +116,13 @@ font-weight:500;
   color:black;
   box-shadow:0 8px 20px rgba(34,197,94,0.4);
 }
- 
-/* ===== CHECK INPUT INLINE BUTTON ===== */
 
-.check-group{
-  position:relative;
-  margin-top:15px;
-}
+/* ================= SEARCH INPUT ================= */
 
-.check-group input{
-  width:100%;
-  height:56px;
-  padding:0 120px 0 20px;
-  border-radius:14px;
-  border:1px solid #222;
-  background:#0f0f0f;
-  color:white;
-  font-size:15px;
-  box-sizing:border-box;
-  transition:0.3s;
-}
-
-.check-group input:focus{
-  border-color:#2563eb;
-  box-shadow:0 0 0 3px rgba(37,99,235,0.25);
-  outline:none;
-}
-
-.check-group button{
-  position:absolute;
-  right:6px;
-  top:50%;
-  transform:translateY(-50%);
-  height:44px;
-  padding:0 25px;
-  border:none;
-  border-radius:10px;
-  background:linear-gradient(90deg,#2563eb,#3b82f6);
-  color:white;
-  font-weight:700;
-  cursor:pointer;
-  transition:0.3s;
-}
-
-.check-group button:hover{
-  transform:translateY(-50%) scale(1.05);
-  box-shadow:0 8px 20px rgba(37,99,235,0.4);
-}
-
-/* ===== THÊM NGAY DƯỚI ĐÂY (ICON ✏️) ===== */
-
-.link-id-row{
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-
-.edit-icon{
-  cursor:pointer;
-  opacity:0.7;
-  font-size:14px;
-}
-
-.edit-icon:hover{
-  opacity:1;
-}
-/* ===== CLEAN CHECK FINAL ===== */
 .clean-check{
   position:relative;
-  margin-top:25px;
-  margin-bottom:35px;   /* thêm dòng này */
+  flex:1;
+  margin:0;
 }
 
 .clean-check input{
@@ -715,24 +134,15 @@ font-weight:500;
   background:#0b1220;
   color:white;
   font-size:15px;
-  transition:all 0.25s ease;
+  transition:0.25s ease;
 }
 
-/* Hover nhẹ */
-.clean-check input:hover{
-  border-color:#1d4ed8;
-  box-shadow:0 0 15px rgba(37,99,235,0.2);
-  background:#0e1628;
-}
-
-/* Focus Glow PRO */
 .clean-check input:focus{
   border-color:#2563eb;
   box-shadow:
     0 0 0 3px rgba(37,99,235,0.25),
     0 0 25px rgba(37,99,235,0.35);
   outline:none;
-  background:#0f172a;
 }
 
 .clean-check .check-btn{
@@ -746,31 +156,33 @@ font-weight:500;
   border-radius:12px;
   background:#1f2937;
   color:#94a3b8;
-  font-size:16px;
   cursor:pointer;
-  transition:all 0.25s ease;
+  transition:0.25s;
 }
 
-/* Hover nút search */
 .clean-check .check-btn:hover{
   background:#2563eb;
   color:white;
-  box-shadow:0 0 15px rgba(37,99,235,0.4);
 }
 
-/* Khi input focus thì nút cũng sáng */
-.clean-check input:focus + .check-btn{
-  background:#2563eb;
-  color:white;
+/* ================= ADMIN GRID ================= */
+
+#linkList{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:25px;
+  max-width:1100px;
+  margin:25px auto 0 auto;
 }
 
-
-/* ===== ADMIN CARD CLEAN ===== */
 .link-card{
   background:#0f172a;
   border:1px solid #1f2937;
   border-radius:16px;
   padding:16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
   transition:0.25s ease;
 }
 
@@ -779,14 +191,29 @@ font-weight:500;
   box-shadow:0 10px 30px rgba(37,99,235,0.25);
 }
 
+.link-status{
+  margin-top:6px;
+  font-size:12px;
+  padding:4px 10px;
+  border-radius:999px;
+}
 
-/* ===== RESULT GRID FINAL (FIX ĐÈ CARD) ===== */
+.link-status.open{
+  background:#16a34a22;
+  color:#22c55e;
+}
+
+.link-status.lock{
+  background:#facc1522;
+  color:#facc15;
+}
+
+/* ================= RESULT GRID ================= */
 
 #out{
   margin-top:30px;
 }
 
-/* ===== RESULT GRID ===== */
 .result-grid{
   display:grid;
   grid-template-columns:repeat(3,1fr);
@@ -795,270 +222,41 @@ font-weight:500;
   margin:0 auto;
 }
 
-/* Tablet */
+.result-card{
+  background:linear-gradient(145deg,#1e293b,#111827);
+  border-radius:22px;
+  padding:22px;
+  border:1px solid rgba(255,255,255,0.06);
+  box-shadow:0 12px 30px rgba(0,0,0,0.45);
+  transition:0.3s ease;
+}
+
+.result-card:hover{
+  transform:translateY(-6px);
+  border-color:#facc15;
+  box-shadow:0 25px 60px rgba(250,204,21,0.25);
+}
+
+/* ================= RESPONSIVE ================= */
+
 @media(max-width:1200px){
   .result-grid{
     grid-template-columns:repeat(2,1fr);
   }
+  #linkList{
+    grid-template-columns:repeat(2,1fr);
+  }
 }
 
-/* Mobile */
 @media(max-width:768px){
-  .result-grid{
+  .result-grid,
+  #linkList{
     grid-template-columns:1fr;
   }
 }
 
-/* ===== ADMIN GRID (LUÔN 3 CỘT DESKTOP) ===== */
-#linkList{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:25px;
-  max-width:1150px;  /* đổi từ 1050 thành 1100 */
-  margin:0 auto;
-}
-
-
-/* Card full width chuẩn */
-.result-card{
-  width:100%;
-  box-sizing:border-box;
-}
-
-/* ===== MMC COLOR LEVELS ===== */
-.mmc-1{ color:#22d3ee; }
-.mmc-2{ color:#34d399; }
-.mmc-3{ color:#60a5fa; }
-.mmc-4{ color:#f59e0b; }
-.mmc-5{ color:#f97316; }
-.mmc-6{ color:#ef4444; }
-
-/* ===== MMC BADGE ===== */
-.mmc-badge{
-  display:inline-block;
-  margin:6px 0 10px 0;
-  font-size:13px;
-  font-weight:700;
-  letter-spacing:1px;
-  padding:5px 14px;
-  border-radius:20px;
-  background:rgba(255,255,255,0.04);
-  box-shadow:0 4px 12px rgba(0,0,0,0.1);
-}
-
-
-/* ===== MMC DOT ===== */
-.mmc-dot{
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  background:currentColor;
-  box-shadow:0 0 10px currentColor;
-}
-
-.pro-dot{
-  width:7px;
-  height:7px;
-  border-radius:50%;
-  background:currentColor;
-  box-shadow:0 0 6px currentColor;
-}
-
-
-.model-placeholder{
-  margin-top:14px;
-  font-size:13px;
-  opacity:0.7;
-  font-style:italic;
-  display:flex;
-  align-items:center;
-  gap:8px;
-  letter-spacing:0.3px;
-  color:#cbd5e1;
-}
-.chip-item{
-  font-weight:500;
-  font-size:14px;
-  letter-spacing:0.3px;
-}
-
-.model-line{
-  margin-top:14px;
-  font-size:13px;
-  line-height:1.7;
-}
-
-.model-icon{
-  font-size:12px;
-  opacity:0.6;
-  margin-right:6px;
-}
-
-.model-brand{
-  font-weight:500;
-  opacity:0.75;
-  letter-spacing:0.3px;
-}
-
-.model-sep{
-  margin:0 6px;
-  opacity:0.4;
-}
-
-.model-list{
-  font-weight:500;
-  color:#e2e8f0;
-}
-#linkList{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:25px;
-  max-width:1050px;
-  margin:0 auto;
-}
-/* ===== ADMIN TOP BAR ===== */
-.admin-top-bar{
-  display:flex;
-  align-items:center;
-  gap:15px;
-}
-
-
-/* ===== ADMIN TOGGLE ULTRA PRO ===== */
-
-.admin-toggle-btn{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:10px 22px;
-  border-radius:999px;
-  border:1px solid rgba(255,255,255,0.1);
-  background:rgba(255,255,255,0.04);
-  backdrop-filter:blur(10px);
-  color:#e2e8f0;
-  font-weight:600;
-  letter-spacing:0.5px;
-  cursor:pointer;
-  transition:all 0.35s cubic-bezier(.4,0,.2,1);
-  position:relative;
-  overflow:hidden;
-}
-
-/* Gradient glow nền */
-.admin-toggle-btn::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:linear-gradient(90deg,#2563eb,#3b82f6,#06b6d4);
-  opacity:0;
-  transition:0.4s;
-  z-index:0;
-}
-
-.admin-toggle-btn span{
-  position:relative;
-  z-index:1;
-}
-
-/* Hover */
-.admin-toggle-btn:hover{
-  transform:translateY(-2px);
-  box-shadow:0 12px 30px rgba(37,99,235,0.3);
-}
-
-/* Active state */
-.admin-toggle-btn.active{
-  color:white;
-  border-color:transparent;
-  box-shadow:0 15px 40px rgba(37,99,235,0.5);
-}
-
-.admin-toggle-btn.active::before{
-  opacity:1;
-}
-
-/* Icon xoay */
-.admin-icon{
-  transition:transform 0.4s ease;
-}
-
-.admin-toggle-btn.active .admin-icon{
-  transform:rotate(180deg);
-}
-
-/* Mũi tên dropdown */
-.admin-arrow{
-  margin-left:auto;
-  transition:transform 0.4s ease;
-}
-
-.admin-toggle-btn.active .admin-arrow{
-  transform:rotate(180deg);
-}
-
-/* ===== CREATE LINK BUTTON ===== */
-.create-link-btn.small{
-  padding:8px 18px;
-  font-size:13px;
-  border-radius:999px;
-  border:1px solid rgba(34,197,94,0.4);
-  background:rgba(34,197,94,0.15);
-  color:#22c55e;
-  font-weight:600;
-  transition:all 0.3s ease;
-}
-/* ===== CREATE LINK AUTO HIDE ===== */
-
-.create-link-btn{
-  opacity:0;
-  transform:translateY(-5px);
-  pointer-events:none;
-  transition:all 0.3s ease;
-}
-
-.create-link-btn.show{
-  opacity:1;
-  transform:translateY(0);
-  pointer-events:auto;
-}
-
-.create-link-btn.small:hover{
-  background:#22c55e;
-  color:black;
-  box-shadow:0 8px 20px rgba(34,197,94,0.4);
-}
-
-/* ===== ACCORDION ADMIN CONTENT PRO ===== */
-
-/* ===== ACCORDION ADMIN CONTENT STABLE ===== */
-
-#adminContent{
-  max-height:0;
-  overflow:hidden;
-  opacity:0;
-  transform:translateY(-8px);
-  transition:
-    max-height 0.45s cubic-bezier(.4,0,.2,1),
-    opacity 0.35s ease,
-    transform 0.35s ease;
-}
-
-#adminContent.open{
-  max-height:3000px; /* đủ lớn để không bị cắt */
-  opacity:1;
-  transform:translateY(0);
-}
-
-
-#adminContent.open{
-  grid-template-rows:1fr;
-  opacity:1;
-  transform:translateY(0);
-}
-
-
-
 </style>
+
 
 
 </head>
