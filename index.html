@@ -436,6 +436,51 @@ body{
 }
 
 </style>
+<script>
+/* ================= FIREBASE INIT ================= */
+
+const firebaseConfig = {
+  apiKey: "AIzaSyClXx0V66GQHKGO0EwQc0nYNguFLc705A0",
+  authDomain: "toolvechaiver2.firebaseapp.com",
+  projectId: "toolvechaiver2",
+  storageBucket: "toolvechaiver2.firebasestorage.app",
+  messagingSenderId: "855001765940",
+  appId: "1:855001765940:web:0a562c54618377aaae5261"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+
+/* ================= LOGIN ================= */
+
+async function secureLogin(){
+  const email = document.getElementById("loginEmail").value.trim();
+  const pass  = document.getElementById("loginPass").value.trim();
+  const err   = document.getElementById("loginError");
+
+  err.style.display = "none";
+
+  try{
+    await auth.signInWithEmailAndPassword(email, pass);
+  }catch(e){
+    err.style.display = "block";
+  }
+}
+
+function togglePassword(){
+  const input = document.getElementById("loginPass");
+  input.type = input.type === "password" ? "text" : "password";
+}
+
+/* ================= AUTH STATE ================= */
+
+auth.onAuthStateChanged(user=>{
+  if(user){
+    document.getElementById("loginScreen").style.display="none";
+    document.getElementById("adminPanel").style.display="block";
+  }
+});
+</script>
 
 </body>
 </html>
