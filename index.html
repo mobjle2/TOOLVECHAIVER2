@@ -925,6 +925,49 @@ font-weight:500;
   padding:6px 14px;
   font-size:13px;
 }
+/* ===== ADMIN TOGGLE PRO ===== */
+
+.admin-toggle-btn{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 18px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.15);
+  background:rgba(255,255,255,0.05);
+  color:#e2e8f0;
+  font-weight:600;
+  cursor:pointer;
+  transition:all 0.3s ease;
+}
+
+.admin-toggle-btn:hover{
+  background:#334155;
+  color:white;
+  transform:translateY(-2px);
+}
+
+.admin-toggle-btn.active{
+  background:linear-gradient(90deg,#2563eb,#3b82f6);
+  border-color:#2563eb;
+  color:white;
+  box-shadow:0 8px 25px rgba(37,99,235,0.4);
+}
+
+.admin-icon{
+  display:inline-block;
+  transition:transform 0.3s ease;
+}
+
+.admin-toggle-btn.active .admin-icon{
+  transform:rotate(90deg);
+}
+
+/* hiệu ứng trượt adminContent */
+#adminContent{
+  transition:all 0.3s ease;
+  overflow:hidden;
+}
 
 
 </style>
@@ -976,9 +1019,11 @@ font-weight:500;
   <div class="admin-top-bar">
     <div style="display:flex;gap:10px;">
 
-      <button class="admin-toggle-btn" onclick="toggleAdmin()">
-        ⚙ Admin
-      </button>
+<button class="admin-toggle-btn" id="adminToggle" onclick="toggleAdmin()">
+  <span class="admin-icon">⚙</span>
+  <span class="admin-text">Admin</span>
+</button>
+
 
       <button class="create-link-btn small" onclick="createLink()">
         ＋ Tạo link
@@ -1808,6 +1853,7 @@ function toggleAdmin(){
 
   const content = document.getElementById("adminContent");
   const createBtn = document.querySelector(".create-link-btn");
+  const toggleBtn = document.getElementById("adminToggle");
 
   if(!content) return;
 
@@ -1816,12 +1862,16 @@ function toggleAdmin(){
   if(isHidden){
     content.style.display = "block";
     if(createBtn) createBtn.style.display = "inline-block";
-  }else{
+    if(toggleBtn) toggleBtn.classList.add("active");
+  }
+  else{
     content.style.display = "none";
     if(createBtn) createBtn.style.display = "none";
+    if(toggleBtn) toggleBtn.classList.remove("active");
   }
 
 }
+
 
 
 
