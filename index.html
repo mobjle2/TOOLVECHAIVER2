@@ -10,252 +10,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
-<style>
 
-/* ================= GLOBAL ================= */
-
-body{
-  margin:0;
-  background:linear-gradient(160deg,#111827,#1e293b);
-  color:#e5e7eb;
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;
-}
-
-/* ================= HEADER ================= */
-
-.main-container{
-  padding:5px 20px 25px 20px;
-  max-width:1100px;
-  margin:0 auto;
-}
-
-.main-title{
-  text-align:center;
-  margin:0;
-  font-size:34px;
-  font-weight:800;
-  letter-spacing:2px;
-  color:#f1f5f9;
-  text-shadow:0 0 20px rgba(59,130,246,0.25);
-}
-
-.sub-title{
-  text-align:center;
-  margin:5px 0 0 0;
-  font-size:14px;
-  letter-spacing:3px;
-  opacity:0.75;
-  color:#94a3b8;
-}
-
-/* ================= ADMIN TOP BAR ================= */
-
-.admin-panel{
-  max-width:1150px;
-  margin:30px auto 0 auto;
-}
-
-.admin-top-bar{
-  display:flex;
-  align-items:center;
-  gap:15px;
-  max-width:1000px;
-  margin:25px auto 0 auto;
-}
-
-/* ================= ADMIN BUTTON ================= */
-
-.admin-toggle-btn{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:10px 22px;
-  border-radius:999px;
-  border:1px solid rgba(255,255,255,0.1);
-  background:rgba(255,255,255,0.04);
-  color:#e2e8f0;
-  font-weight:600;
-  cursor:pointer;
-  transition:all 0.3s ease;
-}
-
-.admin-toggle-btn:hover{
-  transform:translateY(-2px);
-  box-shadow:0 10px 25px rgba(37,99,235,0.3);
-}
-
-.admin-toggle-btn.active{
-  background:linear-gradient(90deg,#2563eb,#3b82f6);
-  border:none;
-  color:white;
-}
-
-/* ================= CREATE LINK ================= */
-
-.create-link-btn{
-  padding:8px 18px;
-  border-radius:999px;
-  border:1px solid rgba(34,197,94,0.4);
-  background:rgba(34,197,94,0.15);
-  color:#22c55e;
-  font-size:14px;
-  font-weight:600;
-  cursor:pointer;
-  transition:0.3s ease;
-  opacity:0;
-  pointer-events:none;
-}
-
-.create-link-btn.show{
-  opacity:1;
-  pointer-events:auto;
-}
-
-.create-link-btn:hover{
-  background:#22c55e;
-  color:black;
-  box-shadow:0 8px 20px rgba(34,197,94,0.4);
-}
-
-/* ================= SEARCH INPUT ================= */
-
-.clean-check{
-  position:relative;
-  flex:1;
-  margin:0;
-}
-
-.clean-check input{
-  width:100%;
-  height:54px;
-  padding:0 60px 0 20px;
-  border-radius:16px;
-  border:1px solid rgba(255,255,255,0.08);
-  background:#0b1220;
-  color:white;
-  font-size:15px;
-  transition:0.25s ease;
-}
-
-.clean-check input:focus{
-  border-color:#2563eb;
-  box-shadow:
-    0 0 0 3px rgba(37,99,235,0.25),
-    0 0 25px rgba(37,99,235,0.35);
-  outline:none;
-}
-
-.clean-check .check-btn{
-  position:absolute;
-  right:8px;
-  top:50%;
-  transform:translateY(-50%);
-  height:42px;
-  width:42px;
-  border:none;
-  border-radius:12px;
-  background:#1f2937;
-  color:#94a3b8;
-  cursor:pointer;
-  transition:0.25s;
-}
-
-.clean-check .check-btn:hover{
-  background:#2563eb;
-  color:white;
-}
-
-/* ================= ADMIN GRID ================= */
-
-#linkList{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:25px;
-  max-width:1100px;
-  margin:25px auto 0 auto;
-}
-
-.link-card{
-  background:#0f172a;
-  border:1px solid #1f2937;
-  border-radius:16px;
-  padding:16px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  transition:0.25s ease;
-}
-
-.link-card:hover{
-  border-color:#2563eb;
-  box-shadow:0 10px 30px rgba(37,99,235,0.25);
-}
-
-.link-status{
-  margin-top:6px;
-  font-size:12px;
-  padding:4px 10px;
-  border-radius:999px;
-}
-
-.link-status.open{
-  background:#16a34a22;
-  color:#22c55e;
-}
-
-.link-status.lock{
-  background:#facc1522;
-  color:#facc15;
-}
-
-/* ================= RESULT GRID ================= */
-
-#out{
-  margin-top:30px;
-}
-
-.result-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:30px;
-  max-width:1100px;
-  margin:0 auto;
-}
-
-.result-card{
-  background:linear-gradient(145deg,#1e293b,#111827);
-  border-radius:22px;
-  padding:22px;
-  border:1px solid rgba(255,255,255,0.06);
-  box-shadow:0 12px 30px rgba(0,0,0,0.45);
-  transition:0.3s ease;
-}
-
-.result-card:hover{
-  transform:translateY(-6px);
-  border-color:#facc15;
-  box-shadow:0 25px 60px rgba(250,204,21,0.25);
-}
-
-/* ================= RESPONSIVE ================= */
-
-@media(max-width:1200px){
-  .result-grid{
-    grid-template-columns:repeat(2,1fr);
-  }
-  #linkList{
-    grid-template-columns:repeat(2,1fr);
-  }
-}
-
-@media(max-width:768px){
-  .result-grid,
-  #linkList{
-    grid-template-columns:1fr;
-  }
-}
-
-</style>
 
 
 
@@ -302,8 +57,8 @@ body{
 <!-- ===== ADMIN PANEL (ĐƯA LÊN TRÊN Ô CHECK) ===== -->
 <div id="adminPanel" class="admin-panel" style="display:none;">
 
-<div class="admin-top-bar"
-     style="max-width:1000px;margin:25px auto 0 auto;gap:15px;">
+<div class="admin-top-bar">
+
 
   <!-- BÊN TRÁI: ADMIN -->
   <button class="admin-toggle-btn" id="adminToggle" onclick="toggleAdmin()">
@@ -339,6 +94,9 @@ body{
 <!-- ===== KẾT QUẢ ===== -->
 <div id="out" style="margin-top:20px;"></div>
 
+
+
+
 <style>
 
 /* ================= GLOBAL ================= */
@@ -355,6 +113,8 @@ body{
 .main-container{
   padding:20px 20px 30px;
   text-align:center;
+  max-width:1100px;
+  margin:0 auto;
 }
 
 .main-title{
@@ -381,7 +141,12 @@ body{
   color:#94a3b8;
 }
 
-/* ================= ADMIN BAR ================= */
+/* ================= ADMIN PANEL ================= */
+
+.admin-panel{
+  max-width:1150px;
+  margin:30px auto 0 auto;
+}
 
 .admin-top-bar{
   display:flex;
@@ -410,6 +175,11 @@ body{
   box-shadow:0 0 25px rgba(37,99,235,0.8);
 }
 
+.admin-toggle-btn.active{
+  background:#2563eb;
+  color:white;
+}
+
 .create-link-btn{
   padding:8px 18px;
   border-radius:999px;
@@ -419,6 +189,13 @@ body{
   cursor:pointer;
   transition:0.3s;
   box-shadow:0 0 15px rgba(34,197,94,0.4);
+  opacity:0;
+  pointer-events:none;
+}
+
+.create-link-btn.show{
+  opacity:1;
+  pointer-events:auto;
 }
 
 .create-link-btn:hover{
@@ -427,7 +204,7 @@ body{
   box-shadow:0 0 25px rgba(34,197,94,0.9);
 }
 
-/* ================= INPUT ================= */
+/* ================= SEARCH INPUT ================= */
 
 .clean-check{
   position:relative;
@@ -478,6 +255,16 @@ body{
 
 /* ================= ADMIN GRID ================= */
 
+#adminContent{
+  max-height:0;
+  overflow:hidden;
+  transition:max-height 0.4s ease;
+}
+
+#adminContent.open{
+  max-height:3000px;
+}
+
 #linkList{
   display:grid;
   grid-template-columns:repeat(3,1fr);
@@ -501,6 +288,23 @@ body{
   box-shadow:
     0 0 20px rgba(0,255,255,0.6),
     0 20px 50px rgba(0,0,0,0.6);
+}
+
+.link-status{
+  margin-top:6px;
+  font-size:12px;
+  padding:4px 10px;
+  border-radius:999px;
+}
+
+.link-status.open{
+  background:#16a34a22;
+  color:#22c55e;
+}
+
+.link-status.lock{
+  background:#facc1522;
+  color:#facc15;
 }
 
 /* ================= RESULT GRID ================= */
@@ -547,10 +351,95 @@ body{
     grid-template-columns:1fr;
   }
 }
+/* ================= LOGIN ================= */
+
+.login-wrapper{
+  position:fixed;
+  inset:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:radial-gradient(circle at 20% 20%, #0f172a, #020617 70%);
+  z-index:9999;
+}
+
+.login-box{
+  width:420px;
+  padding:50px 40px;
+  border-radius:24px;
+  background:#0f172a;
+  border:1px solid rgba(255,255,255,0.05);
+  box-shadow:
+    0 0 40px rgba(0,255,255,0.4),
+    0 40px 80px rgba(0,0,0,0.6);
+  text-align:center;
+}
+
+.login-title{
+  font-size:32px;
+  margin-bottom:30px;
+  background:linear-gradient(90deg,#00f5ff,#8b5cf6);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.input-group{
+  position:relative;
+  margin-bottom:18px;
+}
+
+.input-group input{
+  width:100%;
+  height:50px;
+  padding:0 45px;
+  border-radius:14px;
+  border:1px solid #1e293b;
+  background:#0b1220;
+  color:white;
+  font-size:14px;
+}
+
+.input-icon{
+  position:absolute;
+  left:15px;
+  top:50%;
+  transform:translateY(-50%);
+  opacity:0.6;
+}
+
+.toggle-pass{
+  position:absolute;
+  right:15px;
+  top:50%;
+  transform:translateY(-50%);
+  cursor:pointer;
+  opacity:0.6;
+}
+
+.login-box button{
+  width:100%;
+  height:50px;
+  border:none;
+  border-radius:14px;
+  background:#2563eb;
+  color:white;
+  font-weight:600;
+  cursor:pointer;
+  margin-top:10px;
+  transition:0.3s;
+}
+
+.login-box button:hover{
+  box-shadow:0 0 20px rgba(37,99,235,0.7);
+}
+
+.login-error{
+  margin-top:10px;
+  color:#f87171;
+  display:none;
+}
 
 </style>
-
-
 
 </body>
 </html>
