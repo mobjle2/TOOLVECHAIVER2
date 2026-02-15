@@ -1320,10 +1320,13 @@ function autoDecodeSamsung(code){
 
   const main = code.toUpperCase().split("-")[0];
 
-  if(main.length < 5) return null;
+  if(main.length < 9) return null;
 
+  // NAND: ký tự thứ 4
   const nandKey = main[3];
-  const ramKey  = main[main.length - 2];
+
+  // RAM: ký tự thứ 9
+  const ramKey = main[8];
 
   const nandMap = {
     "3":16,"E":16,
@@ -1362,6 +1365,7 @@ function autoDecodeSamsung(code){
   return { vip, nand, ram };
 }
 
+
 async function check(){
 
   const q = document.getElementById("q").value.trim().toUpperCase();
@@ -1395,120 +1399,84 @@ async function check(){
       let secondLine = "";
       let vipClass = "";
       let vipNumber = null;
+// =========================
+// PRIORITY LOGIC (CLEAN)
+// =========================
 
-      // =========================
-      // SAMSUNG LOGIC (PRIORITY)
-      // =========================
+if(x.type === "VIP"){
 
-      if(chip.name === "Samsung"){
+  const raw = String(x.value).trim();
 
-        // Nếu DB có VIP → ưu tiên DB
-        if(x.type === "VIP"){
+  // VIP số thuần
+  if(/^\d+$/.test(raw)){
 
-          const raw = String(x.value).trim();
+    const vipNum = parseInt(raw);
+    vipNumber = vipNum;
+    vipClass = `vip-${vipNum}`;
 
-          // VIP số thuần
-          if(/^\d+$/.test(raw)){
+    secondLine = `
+      <div class="vip-badge ${vipClass}">
+        VIP ${vipNum}
+      </div>
+    `;
 
-            const vipNum = parseInt(raw);
-            vipNumber = vipNum;
-            vipClass = `vip-${vipNum}`;
+  } else {
 
-            secondLine = `
-              <div class="vip-badge ${vipClass}">
-                VIP ${vipNum}
-              </div>
-            `;
+    // VIP custom: VIP 6+ (VIP 7 MAIN SAMSUNG)
+    vipClass = "vip-custom";
 
-          } else {
+    secondLine = `
+      <div class="vip-badge ${vipClass}">
+        ${raw}
+      </div>
+    `;
+  }
 
-            // VIP custom: VIP 6+ (Sam Sung V7)
-            vipClass = "vip-custom";
+}
 
-            secondLine = `
-              <div class="vip-badge ${vipClass}">
-                ${raw}
-              </div>
-            `;
-          }
+// Không có VIP trong DB → Samsung auto
+else if(chip.name === "Samsung"){
 
-        } else {
+  const auto = autoDecodeSamsung(x.code);
 
-          // Không có VIP trong DB → auto
-          const auto = autoDecodeSamsung(x.code);
+  if(auto){
+    vipNumber = auto.vip;
+    vipClass = `vip-${vipNumber}`;
+    sizeText = `${auto.ram}G / ${auto.nand}G`;
 
-          if(auto){
-            vipNumber = auto.vip;
-            vipClass = `vip-${vipNumber}`;
-            sizeText = `${auto.ram}G / ${auto.nand}G`;
+    secondLine = `
+      <div class="vip-badge ${vipClass}">
+        VIP ${vipNumber}
+      </div>
+    `;
+  }
+}
 
-            secondLine = `
-              <div class="vip-badge ${vipClass}">
-                VIP ${vipNumber}
-              </div>
-            `;
-          }
-        }
-      }
+// MMC fallback
+else if(x.type === "MMC"){
 
-      // =========================
-      // MMC FALLBACK (non Samsung)
-      // =========================
+  const mmcMap = {
+    MMC1:"16G",
+    MMC2:"32G",
+    MMC3:"64G",
+    MMC4:"128G",
+    MMC5:"256G",
+    MMC6:"512G"
+  };
 
-      if(!vipNumber && x.type === "MMC"){
+  sizeText = mmcMap[x.value] || "";
 
-        const mmcMap = {
-          MMC1:"16G",
-          MMC2:"32G",
-          MMC3:"64G",
-          MMC4:"128G",
-          MMC5:"256G",
-          MMC6:"512G"
-        };
+  const level = x.value.replace("MMC","");
+  vipClass = `mmc-${level}`;
 
-        sizeText = mmcMap[x.value] || "";
+  secondLine = `
+    <div class="mmc-badge ${vipClass}">
+      MMC${level}
+    </div>
+  `;
+}
 
-        const level = x.value.replace("MMC","");
-        vipClass = `mmc-${level}`;
-
-        secondLine = `
-          <div class="mmc-badge ${vipClass}">
-            MMC${level}
-          </div>
-        `;
-      }
-
-      // =========================
-      // VIP FALLBACK (non Samsung)
-      // =========================
-
-      if(!vipNumber && x.type === "VIP"){
-
-        const raw = String(x.value).trim();
-
-        if(/^\d+$/.test(raw)){
-
-          const vipNum = parseInt(raw);
-          vipClass = `vip-${vipNum}`;
-
-          secondLine = `
-            <div class="vip-badge ${vipClass}">
-              VIP ${vipNum}
-            </div>
-          `;
-
-        } else {
-
-          vipClass = "vip-custom";
-
-          secondLine = `
-            <div class="vip-badge ${vipClass}">
-              ${raw}
-            </div>
-          `;
-        }
-      }
-
+ 
       // ===== BUILD CARD =====
 
       html += `
