@@ -1316,6 +1316,52 @@ function detectChip(code){
 
   return {name:"UNKNOWN", color:"#6b7280"};
 }
+function autoDecodeSamsung(code){
+
+  const main = code.toUpperCase().split("-")[0];
+
+  if(main.length < 5) return null;
+
+  const nandKey = main[3];
+  const ramKey  = main[main.length - 2];
+
+  const nandMap = {
+    "3":16,"E":16,
+    "4":32,"D":32,"X":32,"Z":32,
+    "H":64,
+    "V":128,"G":128,
+    "F":256,"S":256,"B":256
+  };
+
+  const ramMap = {
+    "K":2,
+    "A":3,"B":3,
+    "D":4,
+    "J":8,"C":8,
+    "L":10,
+    "M":12
+  };
+
+  const nand = nandMap[nandKey] || null;
+  const ram  = ramMap[ramKey] || null;
+
+  if(!nand || !ram) return null;
+
+  let vip = null;
+
+  if(ram === 2 && nand === 16) vip = 4;
+  else if(ram === 3 && nand === 32) vip = 5;
+  else if(ram === 4 && nand === 64) vip = 6;
+  else if(ram === 6 && nand === 128) vip = 7;
+  else if(ram === 8 && nand === 128) vip = 8;
+  else if(ram === 8 && nand === 256) vip = 9;
+  else if(ram === 12 && nand === 512) vip = 10;
+
+  if(!vip) return null;
+
+  return { vip, nand, ram };
+}
+
 
 async function check(){
 
@@ -1344,39 +1390,70 @@ async function check(){
         return;
       }
 
-      const chip = detectChip(x.code);
+const chip = detectChip(x.code);
 
-      let sizeText = "";
-      let secondLine = "";
-      let vipClass = "";
-      let vipNumber = "";
+let sizeText = "";
+let secondLine = "";
+let vipClass = "";
+let vipNumber = "";
+
+// ===== AUTO SAMSUNG (VIP 4 → 9) =====
+if(chip.name === "Samsung"){
+
+  const auto = autoDecodeSamsung(x.code);
+
+  if(auto){
+
+    vipNumber = auto.vip;
+    vipClass = `vip-${vipNumber}`;
+
+    if(auto.ram){
+      sizeText = `${auto.nand}G / RAM ${auto.ram}G`;
+    }else{
+      sizeText = `${auto.nand}G`;
+    }
+
+    secondLine = `
+      <div class="vip-badge ${vipClass}">
+        VIP ${vipNumber}
+      </div>
+    `;
+  }
+}
+
+/* ===== AUTO PRIORITY (Samsung) ===== */
+
+if(chip.name === "Samsung"){
+
+  const auto = autoDecodeSamsung(x.code);
+
+  if(auto){
+
+    vipNumber = auto.vip;
+    vipClass = `vip-${vipNumber}`;
+    sizeText = `${auto.ram}G / ${auto.nand}G`;
+
+    secondLine = `
+      <div class="vip-badge ${vipClass}">
+        VIP ${vipNumber}
+      </div>
+    `;
+  }
+}
 
 
+/* ===== FALLBACK MMC (Non-Samsung only) ===== */
 
+if(!vipNumber && x.type === "MMC"){
 
-/* ===== MAP MMC ===== */
-const mmcMap = {
-  MMC1:"16G",
-  MMC2:"32G",
-  MMC3:"64G",
-  MMC4:"128G",
-  MMC5:"256G",
-  MMC6:"512G"
-};
-
-/* ===== MAP VIP ===== */
-const vipMap = {
-  4:"16G",
-  5:"32G",
-  6:"64G",
-  7:"128G",
-  8:"RAM 8 / 128G",
-  9:"256G",
-  10:"512G"
-};
-
-/* ===== MMC ===== */
-if(x.type === "MMC"){
+  const mmcMap = {
+    MMC1:"16G",
+    MMC2:"32G",
+    MMC3:"64G",
+    MMC4:"128G",
+    MMC5:"256G",
+    MMC6:"512G"
+  };
 
   sizeText = mmcMap[x.value] || "";
 
@@ -1391,20 +1468,35 @@ if(x.type === "MMC"){
 }
 
 
-/* ===== VIP ===== */
-if(x.type === "VIP"){
+/* ===== FALLBACK VIP (Non-Samsung only) ===== */
 
-  const vipNumber = parseInt(x.value.replace(/\D/g,""));
-  vipClass = `vip-${vipNumber}`;
+if(!vipNumber && x.type === "VIP"){
 
-  sizeText = vipMap[vipNumber] || "";
+  const vipMap = {
+    4:"2G / 16G",
+    5:"3G / 32G",
+    6:"4G / 64G",
+    7:"6G / 128G",
+    8:"8G / 128G",
+    9:"8G / 256G",
+    10:"12G / 512G"
+  };
+
+  const vipNum = parseInt(x.value.replace(/\D/g,""));
+  vipClass = `vip-${vipNum}`;
+
+  sizeText = vipMap[vipNum] || "";
 
   secondLine = `
     <div class="vip-badge ${vipClass}">
-      VIP ${vipNumber}
+      VIP ${vipNum}
     </div>
   `;
 }
+
+
+
+
 
       /* ===== MODEL GROUP ===== */
       let modelLine = "";
