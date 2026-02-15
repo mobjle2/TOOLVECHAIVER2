@@ -1362,7 +1362,6 @@ function autoDecodeSamsung(code){
   return { vip, nand, ram };
 }
 
-
 async function check(){
 
   const q = document.getElementById("q").value.trim().toUpperCase();
@@ -1390,238 +1389,149 @@ async function check(){
         return;
       }
 
-const chip = detectChip(x.code);
+      const chip = detectChip(x.code);
 
-let sizeText = "";
-let secondLine = "";
-let vipClass = "";
-let vipNumber = "";
+      let sizeText = "";
+      let secondLine = "";
+      let vipClass = "";
+      let vipNumber = null;
 
-// ===== AUTO SAMSUNG =====
+      // =========================
+      // SAMSUNG LOGIC (PRIORITY)
+      // =========================
 
-// chỉ auto khi KHÔNG có VIP trong DB
-if(chip.name === "Samsung" && x.type !== "VIP"){
+      if(chip.name === "Samsung"){
 
-  const auto = autoDecodeSamsung(x.code);
+        // Nếu DB có VIP → ưu tiên DB
+        if(x.type === "VIP"){
 
-  if(auto){
+          const raw = String(x.value).trim();
 
-    vipNumber = auto.vip;
-    vipClass = `vip-${vipNumber}`;
-    sizeText = `${auto.ram}G / ${auto.nand}G`;
+          // VIP số thuần
+          if(/^\d+$/.test(raw)){
 
-    secondLine = `
-      <div class="vip-badge ${vipClass}">
-        VIP ${vipNumber}
-      </div>
-    `;
-  }
-}
+            const vipNum = parseInt(raw);
+            vipNumber = vipNum;
+            vipClass = `vip-${vipNum}`;
 
+            secondLine = `
+              <div class="vip-badge ${vipClass}">
+                VIP ${vipNum}
+              </div>
+            `;
 
-if(chip.name === "Samsung" && !isCustomVip){
+          } else {
 
-  const auto = autoDecodeSamsung(x.code);
+            // VIP custom: VIP 6+ (Sam Sung V7)
+            vipClass = "vip-custom";
 
-  if(auto){
+            secondLine = `
+              <div class="vip-badge ${vipClass}">
+                ${raw}
+              </div>
+            `;
+          }
 
-    vipNumber = auto.vip;
-    vipClass = `vip-${vipNumber}`;
-    sizeText = `${auto.ram}G / ${auto.nand}G`;
+        } else {
 
-    secondLine = `
-      <div class="vip-badge ${vipClass}">
-        VIP ${vipNumber}
-      </div>
-    `;
-  }
-}
+          // Không có VIP trong DB → auto
+          const auto = autoDecodeSamsung(x.code);
 
+          if(auto){
+            vipNumber = auto.vip;
+            vipClass = `vip-${vipNumber}`;
+            sizeText = `${auto.ram}G / ${auto.nand}G`;
 
-/* ===== AUTO PRIORITY (Samsung) ===== */
+            secondLine = `
+              <div class="vip-badge ${vipClass}">
+                VIP ${vipNumber}
+              </div>
+            `;
+          }
+        }
+      }
 
-if(chip.name === "Samsung"){
+      // =========================
+      // MMC FALLBACK (non Samsung)
+      // =========================
 
-  const auto = autoDecodeSamsung(x.code);
+      if(!vipNumber && x.type === "MMC"){
 
-  if(auto){
+        const mmcMap = {
+          MMC1:"16G",
+          MMC2:"32G",
+          MMC3:"64G",
+          MMC4:"128G",
+          MMC5:"256G",
+          MMC6:"512G"
+        };
 
-    vipNumber = auto.vip;
-    vipClass = `vip-${vipNumber}`;
-    sizeText = `${auto.ram}G / ${auto.nand}G`;
+        sizeText = mmcMap[x.value] || "";
 
-    secondLine = `
-      <div class="vip-badge ${vipClass}">
-        VIP ${vipNumber}
-      </div>
-    `;
-  }
-}
+        const level = x.value.replace("MMC","");
+        vipClass = `mmc-${level}`;
 
+        secondLine = `
+          <div class="mmc-badge ${vipClass}">
+            MMC${level}
+          </div>
+        `;
+      }
 
-/* ===== FALLBACK MMC (Non-Samsung only) ===== */
+      // =========================
+      // VIP FALLBACK (non Samsung)
+      // =========================
 
-if(!vipNumber && x.type === "MMC"){
+      if(!vipNumber && x.type === "VIP"){
 
-  const mmcMap = {
-    MMC1:"16G",
-    MMC2:"32G",
-    MMC3:"64G",
-    MMC4:"128G",
-    MMC5:"256G",
-    MMC6:"512G"
-  };
+        const raw = String(x.value).trim();
 
-  sizeText = mmcMap[x.value] || "";
+        if(/^\d+$/.test(raw)){
 
-  const level = x.value.replace("MMC","");
-  vipClass = `mmc-${level}`;
+          const vipNum = parseInt(raw);
+          vipClass = `vip-${vipNum}`;
 
-  secondLine = `
-    <div class="mmc-badge ${vipClass}">
-      MMC${level}
-    </div>
-  `;
-}
+          secondLine = `
+            <div class="vip-badge ${vipClass}">
+              VIP ${vipNum}
+            </div>
+          `;
 
+        } else {
 
-/* ===== FALLBACK VIP (Non-Samsung only) ===== */
+          vipClass = "vip-custom";
 
-if(!vipNumber && x.type === "VIP"){
+          secondLine = `
+            <div class="vip-badge ${vipClass}">
+              ${raw}
+            </div>
+          `;
+        }
+      }
 
-  // nếu VIP là số thuần (4,5,6,7...)
-  if(/^\d+$/.test(String(x.value).trim())){
+      // ===== BUILD CARD =====
 
-    const vipNum = parseInt(x.value.trim());
-
-    vipClass = `vip-${vipNum}`;
-    sizeText = "";
-    secondLine = `
-      <div class="vip-badge ${vipClass}">
-        VIP ${vipNum}
-      </div>
-    `;
-
-  } else {
-
-    // VIP custom như "VIP 6+ (Sam Sung V7)"
-    vipClass = "vip-custom";
-
-    secondLine = `
-      <div class="vip-badge ${vipClass}">
-        ${x.value}
-      </div>
-    `;
-  }
-}
-
-
-
-
-
-
-      /* ===== MODEL GROUP ===== */
-      let modelLine = "";
-
-if(Array.isArray(x.models) && x.models.length){
-
-  let groups = {};
-
-  x.models.forEach(m=>{
-    if(!m) return;
-
-    let upper = m.toUpperCase();
-    let brand = "KHÁC";
-
-    if(upper.includes("SAMSUNG")) brand = "SAMSUNG";
-    else if(upper.includes("OPPO")) brand = "OPPO";
-    else if(upper.includes("VIVO")) brand = "VIVO";
-    else if(upper.includes("XIAOMI") || upper.includes("REDMI")) brand = "XIAOMI";
-    else if(upper.includes("REALME")) brand = "REALME";
-    else if(upper.includes("IPHONE")) brand = "APPLE";
-    else if(upper.includes("HUAWEI")) brand = "HUAWEI";
-
-    let cleaned = upper
-      .replace(/SAMSUNG |OPPO |VIVO |XIAOMI |REALME |IPHONE |HUAWEI /gi,"")
-      .replace(/\s\d+GB/gi,"")
-      .trim();
-
-    if(!groups[brand]) groups[brand] = [];
-    groups[brand].push(cleaned);
-  });
-
-modelLine = Object.keys(groups).map(b =>
-  `<span class="model-icon">📱</span>
-   <span class="model-brand">${b}</span>
-   <span class="model-sep">•</span>
-   <span class="model-list">${groups[b].join(" / ")}</span>`
-).join("<br>");
-
-
-} else {
-
-  modelLine = `
-    <div class="model-placeholder">
-      <span class="model-icon">📱</span>
-      Đang cập nhật model...
-    </div>
-  `;
-
-}
-
-
-      /* ===== BUILD CARD ===== */
       html += `
         <div class="result-card">
-
-          <div class="code-main">
-            ${x.code}
-          </div>
-
+          <div class="result-code">${x.code}</div>
+          <div class="result-chip">${chip.name}</div>
+          <div class="result-size">${sizeText}</div>
           ${secondLine}
-
-          <div class="chip-line">
-
-    <div class="chip-item chip-brand" style="color:${chip.color}">
-  <span class="pro-dot" style="background:${chip.color}"></span>
-  ${chip.name}
-</div>
-
-
-<div class="chip-item ${vipClass}">
-  <span class="mmc-dot"></span>
-  ${sizeText ? sizeText : "?"}
-</div>
-
-
-          </div>
-
-          ${modelLine ? `
-            <div class="model-line">
-              ${modelLine}
-            </div>
-          ` : ""}
-
         </div>
       `;
 
-    }); // đóng forEach
+    });
 
-    html += `</div>`; // đóng result-grid
+    html += `</div>`;
     out.innerHTML = html;
 
-  } catch (err) {
-
-    console.error(err);
-    out.innerHTML = `
-      <div style="color:#ef4444;margin-top:15px;">
-        ⚠️ Lỗi hệ thống
-      </div>
-    `;
-
+  } catch(e){
+    console.error(e);
+    out.innerHTML = `<div style="color:red;">⚠ Lỗi hệ thống</div>`;
   }
-
 }
+
+
 
 
 
