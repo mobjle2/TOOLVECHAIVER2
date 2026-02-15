@@ -935,10 +935,9 @@ font-weight:500;
 <body>
 
 <!-- LOGIN SCREEN -->
-<!-- LOGIN SCREEN -->
 <div id="loginScreen" class="login-wrapper">
   <div class="login-box">
-    <h1 class="login-title"> TOOLVECHAIVER2</h1>
+    <h1 class="login-title">TOOLVECHAIVER2</h1>
 
     <!-- USER -->
     <div class="input-group">
@@ -954,18 +953,15 @@ font-weight:500;
     </div>
 
     <button onclick="secureLogin()">ĐĂNG NHẬP</button>
-
     <div id="loginError" class="login-error">Sai tài khoản!</div>
   </div>
 </div>
 
 
-
+<!-- MAIN -->
 <div class="main-container">
 
-  <h2 class="main-title">
-    TOOLVECHAIVER2
-  </h2>
+  <h2 class="main-title">TOOLVECHAIVER2</h2>
 
   <div class="sub-title">
     VIP • MMC • Model
@@ -974,10 +970,33 @@ font-weight:500;
 </div>
 
 
+<!-- ===== ADMIN PANEL (ĐƯA LÊN TRÊN Ô CHECK) ===== -->
+<div id="adminPanel" class="admin-panel" style="display:none;">
 
+  <div class="admin-top-bar">
+    <div style="display:flex;gap:10px;">
+
+      <button class="admin-toggle-btn" onclick="toggleAdmin()">
+        ⚙ Admin
+      </button>
+
+      <button class="create-link-btn small" onclick="createLink()">
+        ＋ Tạo link
+      </button>
+
+    </div>
+  </div>
+
+  <div id="adminContent">
+    <div id="linkList"></div>
+  </div>
+
+</div>
+
+
+<!-- ===== Ô NHẬP KIỂM TRA ===== -->
 <div class="check-group clean-check"
      style="max-width:1000px;margin:25px auto 0 auto;">
-
 
   <input id="q"
          placeholder="Nhập mã hoặc model cần kiểm tra"
@@ -988,35 +1007,9 @@ font-weight:500;
 </div>
 
 
+<!-- ===== KẾT QUẢ ===== -->
+<div id="out" style="margin-top:20px;"></div>
 
-
-<!-- ADMIN PANEL -->
-<div id="adminPanel" class="admin-panel">
-
-  <div class="admin-top-bar">
-    <button class="admin-toggle-btn" onclick="toggleAdmin()">
-      ⚙ Admin
-    </button>
-
-    <button class="create-link-btn small" onclick="createLink()">
-      ＋ Tạo link
-    </button>
-  </div>
-
-  <div id="adminContent">
-    <div id="linkList"></div>
-  </div>
-
-</div>
-
-
-
-
-    <div id="linkList" style="margin-top:15px;"></div>
-  </div>
-
-  <div id="out" style="margin-top:20px;"></div>
-</div>
 
 <script>
 const firebaseConfig = {
@@ -1812,21 +1805,19 @@ document.getElementById("q").addEventListener("keydown",function(e){
   }
 });
 function toggleAdmin(){
-  const panel = document.getElementById("adminPanel");
 
+  const panel = document.getElementById("adminPanel");
+  if(!panel) return;
+
+  // Nếu đang ẩn hoặc chưa có display
   if(panel.style.display === "none" || panel.style.display === ""){
     panel.style.display = "block";
-  } else {
+  } 
+  else{
     panel.style.display = "none";
   }
-}
-function toggleAdmin(){
-  const box = document.getElementById("adminContent");
-  if(!box) return;
 
-  box.style.display = box.style.display === "none" ? "block" : "none";
 }
-
 
 
 </script>
