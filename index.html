@@ -905,69 +905,119 @@ font-weight:500;
   margin-bottom:20px;
 }
 
-/* Nút toggle admin */
-.admin-toggle-btn{
-  padding:8px 16px;
-  border-radius:999px;
-  border:1px solid rgba(255,255,255,0.15);
-  background:rgba(255,255,255,0.05);
-  color:#e2e8f0;
-  cursor:pointer;
-}
-
-.admin-toggle-btn:hover{
-  background:#334155;
-  color:white;
-}
-
-/* Nút tạo link nhỏ gọn */
-.create-link-btn.small{
-  padding:6px 14px;
-  font-size:13px;
-}
-/* ===== ADMIN TOGGLE PRO ===== */
+/* ===== ADMIN TOGGLE ULTRA PRO ===== */
 
 .admin-toggle-btn{
   display:flex;
   align-items:center;
-  gap:8px;
-  padding:8px 18px;
+  gap:10px;
+  padding:10px 22px;
   border-radius:999px;
-  border:1px solid rgba(255,255,255,0.15);
-  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+  background:rgba(255,255,255,0.04);
+  backdrop-filter:blur(10px);
   color:#e2e8f0;
   font-weight:600;
+  letter-spacing:0.5px;
   cursor:pointer;
-  transition:all 0.3s ease;
+  transition:all 0.35s cubic-bezier(.4,0,.2,1);
+  position:relative;
+  overflow:hidden;
 }
 
+/* Gradient glow nền */
+.admin-toggle-btn::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg,#2563eb,#3b82f6,#06b6d4);
+  opacity:0;
+  transition:0.4s;
+  z-index:0;
+}
+
+.admin-toggle-btn span{
+  position:relative;
+  z-index:1;
+}
+
+/* Hover */
 .admin-toggle-btn:hover{
-  background:#334155;
-  color:white;
   transform:translateY(-2px);
+  box-shadow:0 12px 30px rgba(37,99,235,0.3);
 }
 
+/* Active state */
 .admin-toggle-btn.active{
-  background:linear-gradient(90deg,#2563eb,#3b82f6);
-  border-color:#2563eb;
   color:white;
-  box-shadow:0 8px 25px rgba(37,99,235,0.4);
+  border-color:transparent;
+  box-shadow:0 15px 40px rgba(37,99,235,0.5);
 }
 
+.admin-toggle-btn.active::before{
+  opacity:1;
+}
+
+/* Icon xoay */
 .admin-icon{
-  display:inline-block;
-  transition:transform 0.3s ease;
+  transition:transform 0.4s ease;
 }
 
 .admin-toggle-btn.active .admin-icon{
-  transform:rotate(90deg);
+  transform:rotate(180deg);
 }
 
-/* hiệu ứng trượt adminContent */
-#adminContent{
+/* Mũi tên dropdown */
+.admin-arrow{
+  margin-left:auto;
+  transition:transform 0.4s ease;
+}
+
+.admin-toggle-btn.active .admin-arrow{
+  transform:rotate(180deg);
+}
+
+/* ===== CREATE LINK BUTTON ===== */
+.create-link-btn.small{
+  padding:8px 18px;
+  font-size:13px;
+  border-radius:999px;
+  border:1px solid rgba(34,197,94,0.4);
+  background:rgba(34,197,94,0.15);
+  color:#22c55e;
+  font-weight:600;
   transition:all 0.3s ease;
+}
+
+.create-link-btn.small:hover{
+  background:#22c55e;
+  color:black;
+  box-shadow:0 8px 20px rgba(34,197,94,0.4);
+}
+
+/* ===== ACCORDION ADMIN CONTENT PRO ===== */
+
+#adminContent{
+  display:grid;
+  overflow:hidden;
+  grid-template-rows:0fr;
+  transition:grid-template-rows 0.45s cubic-bezier(.4,0,.2,1),
+             opacity 0.35s ease,
+             transform 0.35s ease;
+  opacity:0;
+  transform:translateY(-8px);
+}
+
+#adminContent > *{
   overflow:hidden;
 }
+
+#adminContent.open{
+  grid-template-rows:1fr;
+  opacity:1;
+  transform:translateY(0);
+}
+
 
 
 </style>
