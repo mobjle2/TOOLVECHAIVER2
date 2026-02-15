@@ -162,6 +162,11 @@ body{
   font-weight:600;
   font-size:14px;
 }
+.chip-brand{
+  font-weight:500;
+  font-size:13.5px;
+  opacity:0.9;
+}
 
 .link-status{
   margin-top:6px;
@@ -256,7 +261,8 @@ body{
 /* ================= CARD STYLE ================= */
 
 .result-card{
-  background:linear-gradient(145deg,#0e0e0e,#181818);
+  background:linear-gradient(145deg,#111827,#1e293b);
+
   border-radius:22px;
   padding:22px;
   border:1px solid rgba(255,215,0,0.15);
@@ -820,8 +826,11 @@ body{
 
 
 .chip-item{
-  font-weight:600;
+  font-weight:500;
+  font-size:14px;
+  letter-spacing:0.3px;
 }
+
 
 </style>
 
@@ -1032,7 +1041,7 @@ function detectChip(code){
   code = code.toUpperCase();
 
   if(code.startsWith("KM")||code.startsWith("KLM")||code.startsWith("KLU"))
-    return {name:"SAMSUNG",color:"#22c55e"};
+    return {name:"Samsung",color:"#22c55e"};
 
   if(code.startsWith("H9")||code.startsWith("H26")||code.startsWith("H5"))
     return {name:"SK hynix",color:"#a855f7"};
@@ -1197,7 +1206,8 @@ if(Array.isArray(x.models) && x.models.length){
 
           <div class="chip-line">
 
-            <div class="chip-item" style="color:${chip.color}">
+            <div class="chip-item chip-brand" style="color:${chip.color}">
+
               <span class="pro-dot" style="background:${chip.color}"></span>
               ${chip.name}
             </div>
