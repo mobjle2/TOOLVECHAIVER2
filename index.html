@@ -294,7 +294,7 @@ font-weight:500;
 
 .main-title{
   text-align:center;
-  margin-top:40px;
+  margin-top:10px;
   font-size:34px;
   font-weight:800;
   letter-spacing:2px;
@@ -921,9 +921,9 @@ font-weight:500;
 .admin-top-bar{
   display:flex;
   align-items:center;
-  justify-content:space-between;
-  margin-bottom:20px;
+  gap:15px;
 }
+
 
 /* ===== ADMIN TOGGLE ULTRA PRO ===== */
 
@@ -1105,20 +1105,30 @@ font-weight:500;
 <!-- ===== ADMIN PANEL (ĐƯA LÊN TRÊN Ô CHECK) ===== -->
 <div id="adminPanel" class="admin-panel" style="display:none;">
 
-  <div class="admin-top-bar">
-    <div style="display:flex;gap:10px;">
+<div class="admin-top-bar"
+     style="max-width:1000px;margin:25px auto 0 auto;gap:15px;">
 
-<button class="admin-toggle-btn" id="adminToggle" onclick="toggleAdmin()">
-  <span class="admin-icon">⚙</span>
-  <span class="admin-text">Admin</span>
-</button>
+  <!-- BÊN TRÁI: ADMIN -->
+  <button class="admin-toggle-btn" id="adminToggle" onclick="toggleAdmin()">
+    <span class="admin-icon">⚙</span>
+    <span class="admin-text">Admin</span>
+  </button>
 
+  <!-- Ở GIỮA: INPUT -->
+  <div class="check-group clean-check" style="flex:1;margin:0;">
+    <input id="q"
+           placeholder="Nhập mã hoặc model cần kiểm tra"
+           autocomplete="off">
+    <button class="check-btn" onclick="check()">🔍</button>
+  </div>
 
-      <button class="create-link-btn small" onclick="createLink()">
-        ＋ Tạo link
-      </button>
+  <!-- BÊN PHẢI: TẠO LINK -->
+  <button class="create-link-btn small" onclick="createLink()">
+    ＋ Tạo link
+  </button>
 
-    </div>
+</div>
+
   </div>
 
   <div id="adminContent">
@@ -1127,18 +1137,6 @@ font-weight:500;
 
 </div>
 
-
-<!-- ===== Ô NHẬP KIỂM TRA ===== -->
-<div class="check-group clean-check"
-     style="max-width:1000px;margin:25px auto 0 auto;">
-
-  <input id="q"
-         placeholder="Nhập mã hoặc model cần kiểm tra"
-         autocomplete="off">
-
-  <button class="check-btn" onclick="check()">🔍</button>
-
-</div>
 
 
 <!-- ===== KẾT QUẢ ===== -->
