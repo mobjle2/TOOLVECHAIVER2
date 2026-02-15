@@ -1272,26 +1272,50 @@ document.body.appendChild(box);
 }
 
 function detectChip(code){
-  code = code.toUpperCase();
 
-  if(code.startsWith("KM")||code.startsWith("KLM")||code.startsWith("KLU"))
-    return {name:"Samsung",color:"#22c55e"};
+  if(!code) return {name:"UNKNOWN",color:"#6b7280"};
 
-  if(code.startsWith("H9")||code.startsWith("H26")||code.startsWith("H5"))
-    return {name:"SK hynix",color:"#a855f7"};
+  code = code.toUpperCase().trim();
 
-  if(code.startsWith("MT")||code.startsWith("JZ"))
-    return {name:"MICRON",color:"#0ea5e9"};
+  // ===== SAMSUNG =====
+  if(/^(KM|KLM|KLU|KLUD|KLMB|KMQ)/.test(code)){
+    return {name:"Samsung", color:"#22c55e"};
+  }
 
-  if(code.startsWith("THG"))
-    return {name:"KIOXIA",color:"#f97316"};
+  // ===== SK HYNIX =====
+  if(/^H[0-9A-Z]/.test(code)){
+    return {name:"SK hynix", color:"#a855f7"};
+  }
 
-  if(code.startsWith("SD")||code.startsWith("WDC"))
-    return {name:"SANDISK / WD",color:"#ef4444"};
+  // ===== MICRON =====
+  if(/^(MT|JZ|NW)/.test(code)){
+    return {name:"MICRON", color:"#0ea5e9"};
+  }
 
-  return {name:"UNKNOWN",color:"#6b7280"};
+  // ===== TOSHIBA / KIOXIA =====
+  // Toshiba thường bắt đầu bằng:
+  // TH (THG...), TC (TC58...), TY (TYA..., TYD...)
+  if(/^(TH|TC|TY)/.test(code)){
+    return {name:"TOSHIBA / KIOXIA", color:"#f97316"};
+  }
+
+  // ===== SANDISK / WD =====
+  if(/^(SD|WDC)/.test(code)){
+    return {name:"SANDISK / WD", color:"#ef4444"};
+  }
+
+  // ===== YMTC =====
+  if(/^YM/.test(code)){
+    return {name:"YMTC", color:"#06b6d4"};
+  }
+
+  // ===== FORESEE / LONGSYS =====
+  if(/^FS/.test(code)){
+    return {name:"FORESEE", color:"#10b981"};
+  }
+
+  return {name:"UNKNOWN", color:"#6b7280"};
 }
-
 
 async function check(){
 
