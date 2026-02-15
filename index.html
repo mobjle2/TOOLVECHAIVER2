@@ -1397,8 +1397,19 @@ let secondLine = "";
 let vipClass = "";
 let vipNumber = "";
 
-// ===== AUTO SAMSUNG (VIP 4 → 9) =====
-if(chip.name === "Samsung"){
+// ===== AUTO SAMSUNG =====
+
+// kiểm tra VIP custom (ví dụ: "VIP 6+ (Sam Sung V7)")
+let isCustomVip = false;
+
+if(x.type === "VIP" && typeof x.value === "string"){
+  const cleaned = x.value.replace("VIP","").trim();
+  if(!/^\d+$/.test(cleaned)){
+    isCustomVip = true;
+  }
+}
+
+if(chip.name === "Samsung" && !isCustomVip){
 
   const auto = autoDecodeSamsung(x.code);
 
@@ -1406,12 +1417,7 @@ if(chip.name === "Samsung"){
 
     vipNumber = auto.vip;
     vipClass = `vip-${vipNumber}`;
-
-    if(auto.ram){
-      sizeText = `${auto.nand}G / RAM ${auto.ram}G`;
-    }else{
-      sizeText = `${auto.nand}G`;
-    }
+    sizeText = `${auto.ram}G / ${auto.nand}G`;
 
     secondLine = `
       <div class="vip-badge ${vipClass}">
@@ -1420,6 +1426,7 @@ if(chip.name === "Samsung"){
     `;
   }
 }
+
 
 /* ===== AUTO PRIORITY (Samsung) ===== */
 
