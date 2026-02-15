@@ -1399,7 +1399,7 @@ let vipNumber = "";
 
 // ===== AUTO SAMSUNG =====
 
-// Chỉ auto khi KHÔNG có VIP trong DB
+// chỉ auto khi KHÔNG có VIP trong DB
 if(chip.name === "Samsung" && x.type !== "VIP"){
 
   const auto = autoDecodeSamsung(x.code);
@@ -1417,6 +1417,7 @@ if(chip.name === "Samsung" && x.type !== "VIP"){
     `;
   }
 }
+
 
 if(chip.name === "Samsung" && !isCustomVip){
 
