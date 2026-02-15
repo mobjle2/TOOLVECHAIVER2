@@ -169,13 +169,7 @@ body{
 .icon-btn.delete:hover{
   background:#dc2626;
 }
-#linkList{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:25px;
-  max-width:1000px;
-  margin:0 auto;
-}
+
 
 /* ================= GRID CHUẨN ĐẸP ================= */
 
@@ -193,13 +187,6 @@ body{
   margin:0 auto;
 }
 
-#linkList{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:25px;
-  max-width:950px;
-  margin:0 auto;
-}
 
 
 /* Tablet */
@@ -299,12 +286,6 @@ font-weight:500;
   max-width:950px;
   margin-left:auto;
   margin-right:auto;
-}
-
-#linkList{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:25px;
 }
 
   .main-container{
@@ -783,15 +764,18 @@ font-weight:500;
 
 
 /* ===== RESULT GRID FINAL (FIX ĐÈ CARD) ===== */
+
 #out{
   margin-top:30px;
 }
 
-/* Grid thật sự nằm ở result-grid */
+/* ===== RESULT GRID ===== */
 .result-grid{
   display:grid;
   grid-template-columns:repeat(3,1fr);
-  gap:25px;
+  gap:30px;
+  max-width:1100px;
+  margin:0 auto;
 }
 
 /* Tablet */
@@ -806,6 +790,15 @@ font-weight:500;
   .result-grid{
     grid-template-columns:1fr;
   }
+}
+
+/* ===== ADMIN GRID (LUÔN 3 CỘT DESKTOP) ===== */
+#linkList{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:25px;
+  max-width:1050px;
+  margin:0 auto;
 }
 
 /* Card full width chuẩn */
@@ -897,6 +890,13 @@ font-weight:500;
 .model-list{
   font-weight:500;
   color:#e2e8f0;
+}
+#linkList{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:25px;
+  max-width:1050px;
+  margin:0 auto;
 }
 
 
