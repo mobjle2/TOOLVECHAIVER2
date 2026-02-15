@@ -817,18 +817,38 @@ body{
   letter-spacing:0.3px;
   color:#cbd5e1;
 }
-
-
-.model-icon{
-  opacity:0.5;
-  font-size:14px;
-}
-
-
 .chip-item{
   font-weight:500;
   font-size:14px;
   letter-spacing:0.3px;
+}
+
+.model-line{
+  margin-top:14px;
+  font-size:13px;
+  line-height:1.7;
+}
+
+.model-icon{
+  font-size:12px;
+  opacity:0.6;
+  margin-right:6px;
+}
+
+.model-brand{
+  font-weight:500;
+  opacity:0.75;
+  letter-spacing:0.3px;
+}
+
+.model-sep{
+  margin:0 6px;
+  opacity:0.4;
+}
+
+.model-list{
+  font-weight:500;
+  color:#e2e8f0;
 }
 
 
@@ -1178,9 +1198,13 @@ if(Array.isArray(x.models) && x.models.length){
     groups[brand].push(cleaned);
   });
 
-  modelLine = Object.keys(groups).map(b =>
-    `📱 ${b}: ${groups[b].join(" / ")}`
-  ).join("<br>");
+modelLine = Object.keys(groups).map(b =>
+  `<span class="model-icon">📱</span>
+   <span class="model-brand">${b}</span>
+   <span class="model-sep">•</span>
+   <span class="model-list">${groups[b].join(" / ")}</span>`
+).join("<br>");
+
 
 } else {
 
