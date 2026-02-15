@@ -1399,13 +1399,22 @@ let vipNumber = "";
 
 // ===== AUTO SAMSUNG =====
 
-// kiểm tra VIP custom (ví dụ: "VIP 6+ (Sam Sung V7)")
-let isCustomVip = false;
+// Chỉ auto khi KHÔNG có VIP trong DB
+if(chip.name === "Samsung" && x.type !== "VIP"){
 
-if(x.type === "VIP" && typeof x.value === "string"){
-  const cleaned = x.value.replace("VIP","").trim();
-  if(!/^\d+$/.test(cleaned)){
-    isCustomVip = true;
+  const auto = autoDecodeSamsung(x.code);
+
+  if(auto){
+
+    vipNumber = auto.vip;
+    vipClass = `vip-${vipNumber}`;
+    sizeText = `${auto.ram}G / ${auto.nand}G`;
+
+    secondLine = `
+      <div class="vip-badge ${vipClass}">
+        VIP ${vipNumber}
+      </div>
+    `;
   }
 }
 
