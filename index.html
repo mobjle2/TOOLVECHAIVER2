@@ -1218,16 +1218,17 @@ modelLine = Object.keys(groups).map(b =>
 
           <div class="chip-line">
 
-            <div class="chip-item chip-brand" style="color:${chip.color}">
+    <div class="chip-item chip-brand" style="color:${chip.color}">
+  <span class="pro-dot" style="background:${chip.color}"></span>
+  ${chip.name}
+</div>
 
-              <span class="pro-dot" style="background:${chip.color}"></span>
-              ${chip.name}
-            </div>
 
 <div class="chip-item ${vipClass}">
   <span class="mmc-dot"></span>
   ${sizeText ? sizeText : "?"}
 </div>
+
 
           </div>
 
