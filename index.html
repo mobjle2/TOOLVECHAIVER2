@@ -1,0 +1,2015 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title> TOOLVECHAIVER2</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<style>
+body{
+  background:linear-gradient(160deg,#111827,#1e293b);
+  color:#e5e7eb;
+}
+
+
+
+
+/* ===== GRID ===== */
+.result-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:24px;
+  margin:30px auto 0 auto;
+  max-width:1100px;
+}
+
+/* ÉP 1 CỘT TRÊN MOBILE */
+@media (max-width:768px){
+  .result-grid{
+    grid-template-columns:1fr!important;
+  }
+}
+
+.result-card:hover{
+  border-color:#facc15;
+  transform:translateY(-4px);
+}
+
+/* ===== BRAND ===== */
+.brand{
+  color:#22c55e;
+  font-size:13px;
+  margin-top:6px;
+}
+
+/* ===== VIP BADGE ===== */
+.vip-badge{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-weight:700;
+  font-size:14px;
+}
+
+/* VIP 1-4 */
+.vip-1,.vip-2,.vip-3,.vip-4{
+  color:#94a3b8;
+}
+.vip-1 .vip-dot,
+.vip-2 .vip-dot,
+.vip-3 .vip-dot,
+.vip-4 .vip-dot{
+  background:#64748b;
+}
+
+/* VIP 5-9 (SÁNG – KHÔNG TRÙNG CHIP) */
+.vip-5{ color:#00e5ff; }
+.vip-5 .vip-dot{ background:#00e5ff; }
+
+.vip-6{ color:#00ff88; }
+.vip-6 .vip-dot{ background:#00ff88; }
+
+.vip-7{ color:#ff9f1c; }
+.vip-7 .vip-dot{ background:#ff9f1c; }
+
+.vip-8{ color:#8b5cf6; }
+.vip-8 .vip-dot{ background:#8b5cf6; }
+
+.vip-9{ color:#ff4ecd; }
+.vip-9 .vip-dot{ background:#ff4ecd; }
+
+/* VIP 10-13 */
+.vip-10{ color:#facc15; }
+.vip-10 .vip-dot{ background:#facc15; }
+
+.vip-11{ color:#ef4444; }
+.vip-11 .vip-dot{ background:#ef4444; }
+
+.vip-12{
+  color:#dc2626;
+  text-shadow:0 0 6px rgba(220,38,38,0.6);
+}
+.vip-12 .vip-dot{ background:#dc2626; }
+
+.vip-13{
+  color:#ff003c;
+  text-shadow:0 0 8px rgba(255,0,60,0.8);
+}
+.vip-13 .vip-dot{ background:#ff003c; }
+
+  .link-card{
+  background:#141414;
+  border:1px solid #222;
+  border-radius:14px;
+  padding:14px 18px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+  transition:0.2s;
+}
+
+.link-card:hover{
+  border-color:#2563eb;
+  transform:translateY(-2px);
+}
+
+.link-id{
+  font-weight:600;
+  font-size:14px;
+}
+.chip-brand{
+  font-weight:500;
+  font-size:13.5px;
+  opacity:0.9;
+}
+
+.link-status{
+  margin-top:6px;
+  font-size:12px;
+  padding:4px 10px;
+  border-radius:999px;
+  display:inline-block;
+}
+
+.link-status.open{
+  background:#16a34a22;
+  color:#22c55e;
+}
+
+.link-status.lock{
+  background:#facc1522;
+  color:#facc15;
+}
+
+.link-actions{
+  display:flex;
+  gap:8px;
+}
+
+.icon-btn{
+  border:none;
+  background:#1f1f1f;
+  padding:8px 10px;
+  border-radius:10px;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.icon-btn:hover{
+  background:#2563eb;
+  color:white;
+}
+
+.icon-btn.delete:hover{
+  background:#dc2626;
+}
+
+
+/* ================= GRID CHUẨN ĐẸP ================= */
+
+/* Container ngoài */
+#out{
+  margin-top:50px;
+}
+
+/* Grid kết quả */
+.result-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:40px;
+  max-width:1100px;
+  margin:0 auto;
+}
+
+
+
+/* Tablet */
+@media(max-width:1200px){
+  .result-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+  #linkList{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
+/* Mobile */
+@media(max-width:768px){
+  .result-grid{
+    grid-template-columns:1fr;
+    gap:25px;
+  }
+  #linkList{
+    grid-template-columns:1fr;
+  }
+}
+
+
+/* ================= CARD STYLE ================= */
+
+.result-card{
+  background:linear-gradient(145deg,#1e293b,#111827);
+  border-radius:22px;
+  padding:22px;
+  border:1px solid rgba(255,255,255,0.06);
+  box-shadow:0 12px 30px rgba(0,0,0,0.45);
+  transition:all 0.3s ease;
+  position:relative;
+  overflow:hidden;
+}
+
+
+.result-card:hover{
+  transform:translateY(-8px);
+  border-color:#facc15;
+  box-shadow:0 25px 60px rgba(250,204,21,0.25);
+}
+/* ===== CHIP LINE ===== */
+.chip-line{
+  display:flex;
+  align-items:center;
+  gap:18px;
+  margin-top:10px;
+font-size:14px;
+font-weight:500;
+
+}
+
+.chip-item{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:14px;
+  font-weight:500;
+}
+
+/* ===== MODEL LINE ===== */
+.model-line{
+  margin-top:14px;
+  padding-top:12px;
+  border-top:1px solid rgba(255,255,255,0.06);
+  font-size:13px;
+  line-height:1.6;
+  opacity:0.85;
+}
+
+.model-icon{
+  font-size:12px;
+  opacity:0.6;
+  margin-right:6px;
+}
+
+.model-brand{
+  font-weight:500;
+  opacity:0.75;
+  letter-spacing:0.3px;
+}
+
+.model-sep{
+  margin:0 6px;
+  opacity:0.4;
+}
+
+.model-list{
+  font-weight:500;
+  color:#e2e8f0;
+}
+.admin-panel{
+  max-width:1150px;
+  margin:30px auto 0 auto;
+}
+
+
+  .main-container{
+  max-width:1100px;
+  margin:0 auto;
+  padding:40px 20px;
+}
+
+.main-title{
+  text-align:center;
+  margin-top:40px;
+  font-size:34px;
+  font-weight:800;
+  letter-spacing:2px;
+  color:#f1f5f9;
+  text-shadow:0 0 20px rgba(59,130,246,0.25);
+}
+
+
+.sub-title{
+  text-align:center;
+  margin-top:10px;
+  font-size:14px;
+  opacity:0.75;
+  letter-spacing:3px;
+  color:#94a3b8;
+}
+
+
+
+/* ===== VIP BADGE ===== */
+.vip-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  margin:6px 0 8px 0;
+  padding:5px 14px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:0.6px;
+  background:rgba(255,255,255,0.04);
+  box-shadow:0 4px 12px rgba(0,0,0,0.1);
+}
+
+.vip-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:currentColor;
+  box-shadow:0 0 8px currentColor;
+}
+
+/* ===== VIP COLORS ===== */
+
+/* 1-4 */
+.vip-1{ color:#94a3b8; }
+.vip-2{ color:#64748b; }
+.vip-3{ color:#a78bfa; }
+.vip-4{ color:#c084fc; }
+
+/* 5-9 (SÁNG – KHÔNG TRÙNG CHIP) */
+.vip-5{ color:#00e5ff; }
+.vip-6{ color:#00ff88; }
+.vip-7{ color:#ff9f1c; }
+.vip-8{ color:#8b5cf6; }
+.vip-9{ color:#ff4ecd; }
+
+/* 10-13 */
+.vip-10{ color:#facc15; }
+.vip-11{ color:#ef4444; }
+.vip-12{
+  color:#dc2626;
+  text-shadow:0 0 6px rgba(220,38,38,0.6);
+}
+.vip-13{
+  color:#ff003c;
+  text-shadow:0 0 8px rgba(255,0,60,0.8);
+}
+
+/* ================= CLEAN LOGIN FINAL ================= */
+
+.login-wrapper{
+  position:fixed;
+  inset:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(59,130,246,0.25), transparent 40%),
+    linear-gradient(160deg,#020617,#0f172a);
+  z-index:9999;
+}
+
+.login-box{
+  width:420px;
+  padding:60px 45px;
+  border-radius:24px;
+  background:rgba(15,23,42,0.9);
+  backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,0.05);
+  box-shadow:0 50px 120px rgba(0,0,0,0.8);
+  text-align:center;
+}
+
+.login-title{
+  font-family:'Poppins',sans-serif;
+  font-size:42px;
+  font-weight:800;
+  margin-bottom:50px;
+  letter-spacing:2px;
+  background:linear-gradient(90deg,#f59e0b,#fbbf24);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+/* INPUT */
+.input-group{
+  position:relative;
+  margin-bottom:25px;
+}
+
+.input-group input{
+  width:100%;
+  height:56px;
+  padding:0 55px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,0.08);
+  background:#0b1220;
+  color:white;
+  font-size:15px;
+  box-sizing:border-box;
+  transition:0.3s ease;
+}
+
+.input-group input::placeholder{
+  color:#64748b;
+}
+
+.input-group input:focus{
+  border-color:#2563eb;
+  box-shadow:0 0 0 3px rgba(37,99,235,0.25);
+  outline:none;
+}
+
+/* ICON LEFT */
+.input-icon{
+  position:absolute;
+  left:18px;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:18px;
+  color:#facc15;
+}
+
+/* ICON RIGHT */
+.toggle-pass{
+  position:absolute;
+  right:18px;
+  top:50%;
+  transform:translateY(-50%);
+  cursor:pointer;
+  font-size:18px;
+  color:#cbd5e1;
+  transition:0.2s ease;
+}
+
+.toggle-pass:hover{
+  color:#facc15;
+  transform:translateY(-50%) scale(1.1);
+}
+
+/* BUTTON */
+.login-box button{
+  width:100%;
+  height:56px;
+  border:none;
+  border-radius:16px;
+  background:linear-gradient(90deg,#2563eb,#3b82f6);
+  font-weight:700;
+  font-size:16px;
+  cursor:pointer;
+  transition:0.3s ease;
+  box-shadow:0 15px 35px rgba(37,99,235,0.4);
+}
+
+.login-box button:hover{
+  transform:translateY(-3px);
+  box-shadow:0 20px 45px rgba(37,99,235,0.6);
+}
+
+/* ERROR */
+.login-error{
+  margin-top:15px;
+  color:#f87171;
+  font-weight:600;
+  display:none;
+}
+
+
+/* ===== CARD FOOTER GỌN ĐẸP ===== */
+
+.card-footer{
+  margin-top:14px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.chip-info{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:14px;
+  font-weight:500;
+  color:#22c55e;
+}
+
+.chip-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+}
+
+/* ===== CODE BADGE (DÒNG TRÊN) ===== */
+.code-title{
+  margin-bottom:12px;
+}
+
+.code-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 14px;
+  border-radius:14px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.08);
+  font-size:15px;
+  font-weight:600;
+}
+
+
+/* ===== VIP BADGE (DÒNG DƯỚI) ===== */
+.vip-badge{
+  margin:6px 0 10px 0;
+  letter-spacing:0.5px;
+  font-size:14px;
+  font-weight:700;
+}
+
+
+
+.chip-vip-line{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+
+
+/* ================= MOBILE OPTIMIZE ================= */
+@media(max-width:640px){
+
+  /* Main container */
+  .main-container{
+    padding:20px 15px !important;
+  }
+/* ===== CENTER HEADER + INPUT ===== */
+
+.title{
+  text-align:center;
+  margin-top:40px;
+}
+
+.clean-check{
+  max-width:1000px;
+  margin:25px auto 0 auto;
+}
+
+  /* Login box */
+  .login-box{
+    width:90%;
+    padding:30px 20px;
+    border-radius:18px;
+  }
+
+  .login-title{
+    font-size:26px;
+    margin-bottom:20px;
+  }
+
+  .login-box input{
+    height:46px;
+    font-size:14px;
+  }
+
+  .login-box button{
+    height:46px;
+    font-size:14px;
+  }
+
+  /* Dashboard cards */
+  .result-grid{
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+  }
+
+  .result-card{
+    padding:14px;
+    border-radius:16px;
+  }
+
+  .code-title{
+    font-size:14px;
+  }
+
+  .chip-vip-line{
+    font-size:13px;
+    gap:10px;
+  }
+
+  .vip-badge{
+    font-size:12px;
+    padding:3px 8px;
+  }
+
+}
+/* Desktop container */
+.main-container{
+  padding:40px 20px;
+  max-width:1100px;
+  margin:0 auto;
+}
+
+ /* ===== CREATE LINK BUTTON PRO ===== */
+
+.create-link-btn{
+  padding:8px 18px;
+  border-radius:999px;
+  border:1px solid rgba(34,197,94,0.4);
+  background:rgba(34,197,94,0.15);
+  color:#22c55e;
+  font-size:14px;
+  font-weight:600;
+  cursor:pointer;
+  transition:0.3s ease;
+}
+
+.create-link-btn:hover{
+  background:#22c55e;
+  color:black;
+  box-shadow:0 8px 20px rgba(34,197,94,0.4);
+}
+ 
+/* ===== CHECK INPUT INLINE BUTTON ===== */
+
+.check-group{
+  position:relative;
+  margin-top:15px;
+}
+
+.check-group input{
+  width:100%;
+  height:56px;
+  padding:0 120px 0 20px;
+  border-radius:14px;
+  border:1px solid #222;
+  background:#0f0f0f;
+  color:white;
+  font-size:15px;
+  box-sizing:border-box;
+  transition:0.3s;
+}
+
+.check-group input:focus{
+  border-color:#2563eb;
+  box-shadow:0 0 0 3px rgba(37,99,235,0.25);
+  outline:none;
+}
+
+.check-group button{
+  position:absolute;
+  right:6px;
+  top:50%;
+  transform:translateY(-50%);
+  height:44px;
+  padding:0 25px;
+  border:none;
+  border-radius:10px;
+  background:linear-gradient(90deg,#2563eb,#3b82f6);
+  color:white;
+  font-weight:700;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.check-group button:hover{
+  transform:translateY(-50%) scale(1.05);
+  box-shadow:0 8px 20px rgba(37,99,235,0.4);
+}
+
+/* ===== THÊM NGAY DƯỚI ĐÂY (ICON ✏️) ===== */
+
+.link-id-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.edit-icon{
+  cursor:pointer;
+  opacity:0.7;
+  font-size:14px;
+}
+
+.edit-icon:hover{
+  opacity:1;
+}
+/* ===== CLEAN CHECK FINAL ===== */
+.clean-check{
+  position:relative;
+  margin-top:25px;
+}
+.clean-check input{
+  width:100%;
+  height:54px;
+  padding:0 60px 0 20px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,0.08);
+  background:#0b1220;
+  color:white;
+  font-size:15px;
+  transition:all 0.25s ease;
+}
+
+/* Hover nhẹ */
+.clean-check input:hover{
+  border-color:#1d4ed8;
+  box-shadow:0 0 15px rgba(37,99,235,0.2);
+  background:#0e1628;
+}
+
+/* Focus Glow PRO */
+.clean-check input:focus{
+  border-color:#2563eb;
+  box-shadow:
+    0 0 0 3px rgba(37,99,235,0.25),
+    0 0 25px rgba(37,99,235,0.35);
+  outline:none;
+  background:#0f172a;
+}
+
+.clean-check .check-btn{
+  position:absolute;
+  right:8px;
+  top:50%;
+  transform:translateY(-50%);
+  height:42px;
+  width:42px;
+  border:none;
+  border-radius:12px;
+  background:#1f2937;
+  color:#94a3b8;
+  font-size:16px;
+  cursor:pointer;
+  transition:all 0.25s ease;
+}
+
+/* Hover nút search */
+.clean-check .check-btn:hover{
+  background:#2563eb;
+  color:white;
+  box-shadow:0 0 15px rgba(37,99,235,0.4);
+}
+
+/* Khi input focus thì nút cũng sáng */
+.clean-check input:focus + .check-btn{
+  background:#2563eb;
+  color:white;
+}
+
+
+/* ===== ADMIN CARD CLEAN ===== */
+.link-card{
+  background:#0f172a;
+  border:1px solid #1f2937;
+  border-radius:16px;
+  padding:16px;
+  transition:0.25s ease;
+}
+
+.link-card:hover{
+  border-color:#2563eb;
+  box-shadow:0 10px 30px rgba(37,99,235,0.25);
+}
+
+
+/* ===== RESULT GRID FINAL (FIX ĐÈ CARD) ===== */
+
+#out{
+  margin-top:30px;
+}
+
+/* ===== RESULT GRID ===== */
+.result-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:30px;
+  max-width:1100px;
+  margin:0 auto;
+}
+
+/* Tablet */
+@media(max-width:1200px){
+  .result-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
+/* Mobile */
+@media(max-width:768px){
+  .result-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+/* ===== ADMIN GRID (LUÔN 3 CỘT DESKTOP) ===== */
+#linkList{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:25px;
+  max-width:1150px;  /* đổi từ 1050 thành 1100 */
+  margin:0 auto;
+}
+
+
+/* Card full width chuẩn */
+.result-card{
+  width:100%;
+  box-sizing:border-box;
+}
+
+/* ===== MMC COLOR LEVELS ===== */
+.mmc-1{ color:#22d3ee; }
+.mmc-2{ color:#34d399; }
+.mmc-3{ color:#60a5fa; }
+.mmc-4{ color:#f59e0b; }
+.mmc-5{ color:#f97316; }
+.mmc-6{ color:#ef4444; }
+
+/* ===== MMC BADGE ===== */
+.mmc-badge{
+  display:inline-block;
+  margin:6px 0 10px 0;
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:1px;
+  padding:5px 14px;
+  border-radius:20px;
+  background:rgba(255,255,255,0.04);
+  box-shadow:0 4px 12px rgba(0,0,0,0.1);
+}
+
+
+/* ===== MMC DOT ===== */
+.mmc-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:currentColor;
+  box-shadow:0 0 10px currentColor;
+}
+
+.pro-dot{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:currentColor;
+  box-shadow:0 0 6px currentColor;
+}
+
+
+.model-placeholder{
+  margin-top:14px;
+  font-size:13px;
+  opacity:0.7;
+  font-style:italic;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  letter-spacing:0.3px;
+  color:#cbd5e1;
+}
+.chip-item{
+  font-weight:500;
+  font-size:14px;
+  letter-spacing:0.3px;
+}
+
+.model-line{
+  margin-top:14px;
+  font-size:13px;
+  line-height:1.7;
+}
+
+.model-icon{
+  font-size:12px;
+  opacity:0.6;
+  margin-right:6px;
+}
+
+.model-brand{
+  font-weight:500;
+  opacity:0.75;
+  letter-spacing:0.3px;
+}
+
+.model-sep{
+  margin:0 6px;
+  opacity:0.4;
+}
+
+.model-list{
+  font-weight:500;
+  color:#e2e8f0;
+}
+#linkList{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:25px;
+  max-width:1050px;
+  margin:0 auto;
+}
+/* ===== ADMIN TOP BAR ===== */
+.admin-top-bar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:20px;
+}
+
+/* ===== ADMIN TOGGLE ULTRA PRO ===== */
+
+.admin-toggle-btn{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 22px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.1);
+  background:rgba(255,255,255,0.04);
+  backdrop-filter:blur(10px);
+  color:#e2e8f0;
+  font-weight:600;
+  letter-spacing:0.5px;
+  cursor:pointer;
+  transition:all 0.35s cubic-bezier(.4,0,.2,1);
+  position:relative;
+  overflow:hidden;
+}
+
+/* Gradient glow nền */
+.admin-toggle-btn::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg,#2563eb,#3b82f6,#06b6d4);
+  opacity:0;
+  transition:0.4s;
+  z-index:0;
+}
+
+.admin-toggle-btn span{
+  position:relative;
+  z-index:1;
+}
+
+/* Hover */
+.admin-toggle-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 30px rgba(37,99,235,0.3);
+}
+
+/* Active state */
+.admin-toggle-btn.active{
+  color:white;
+  border-color:transparent;
+  box-shadow:0 15px 40px rgba(37,99,235,0.5);
+}
+
+.admin-toggle-btn.active::before{
+  opacity:1;
+}
+
+/* Icon xoay */
+.admin-icon{
+  transition:transform 0.4s ease;
+}
+
+.admin-toggle-btn.active .admin-icon{
+  transform:rotate(180deg);
+}
+
+/* Mũi tên dropdown */
+.admin-arrow{
+  margin-left:auto;
+  transition:transform 0.4s ease;
+}
+
+.admin-toggle-btn.active .admin-arrow{
+  transform:rotate(180deg);
+}
+
+/* ===== CREATE LINK BUTTON ===== */
+.create-link-btn.small{
+  padding:8px 18px;
+  font-size:13px;
+  border-radius:999px;
+  border:1px solid rgba(34,197,94,0.4);
+  background:rgba(34,197,94,0.15);
+  color:#22c55e;
+  font-weight:600;
+  transition:all 0.3s ease;
+}
+/* ===== CREATE LINK AUTO HIDE ===== */
+
+.create-link-btn{
+  opacity:0;
+  transform:translateY(-5px);
+  pointer-events:none;
+  transition:all 0.3s ease;
+}
+
+.create-link-btn.show{
+  opacity:1;
+  transform:translateY(0);
+  pointer-events:auto;
+}
+
+.create-link-btn.small:hover{
+  background:#22c55e;
+  color:black;
+  box-shadow:0 8px 20px rgba(34,197,94,0.4);
+}
+
+/* ===== ACCORDION ADMIN CONTENT PRO ===== */
+
+/* ===== ACCORDION ADMIN CONTENT STABLE ===== */
+
+#adminContent{
+  max-height:0;
+  overflow:hidden;
+  opacity:0;
+  transform:translateY(-8px);
+  transition:
+    max-height 0.45s cubic-bezier(.4,0,.2,1),
+    opacity 0.35s ease,
+    transform 0.35s ease;
+}
+
+#adminContent.open{
+  max-height:3000px; /* đủ lớn để không bị cắt */
+  opacity:1;
+  transform:translateY(0);
+}
+
+
+#adminContent.open{
+  grid-template-rows:1fr;
+  opacity:1;
+  transform:translateY(0);
+}
+
+
+
+</style>
+
+
+</head>
+
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen" class="login-wrapper">
+  <div class="login-box">
+    <h1 class="login-title">TOOLVECHAIVER2</h1>
+
+    <!-- USER -->
+    <div class="input-group">
+      <span class="input-icon">👤</span>
+      <input id="loginEmail" type="email" placeholder="USER">
+    </div>
+
+    <!-- PASS -->
+    <div class="input-group">
+      <span class="input-icon">🔒</span>
+      <input id="loginPass" type="password" placeholder="PASS">
+      <span class="toggle-pass" onclick="togglePassword()">👁</span>
+    </div>
+
+    <button onclick="secureLogin()">ĐĂNG NHẬP</button>
+    <div id="loginError" class="login-error">Sai tài khoản!</div>
+  </div>
+</div>
+
+
+<!-- MAIN -->
+<div class="main-container">
+
+  <h2 class="main-title">TOOLVECHAIVER2</h2>
+
+  <div class="sub-title">
+    VIP • MMC • Model
+  </div>
+
+</div>
+
+
+<!-- ===== ADMIN PANEL (ĐƯA LÊN TRÊN Ô CHECK) ===== -->
+<div id="adminPanel" class="admin-panel" style="display:none;">
+
+  <div class="admin-top-bar">
+    <div style="display:flex;gap:10px;">
+
+<button class="admin-toggle-btn" id="adminToggle" onclick="toggleAdmin()">
+  <span class="admin-icon">⚙</span>
+  <span class="admin-text">Admin</span>
+</button>
+
+
+      <button class="create-link-btn small" onclick="createLink()">
+        ＋ Tạo link
+      </button>
+
+    </div>
+  </div>
+
+  <div id="adminContent">
+    <div id="linkList"></div>
+  </div>
+
+</div>
+
+
+<!-- ===== Ô NHẬP KIỂM TRA ===== -->
+<div class="check-group clean-check"
+     style="max-width:1000px;margin:25px auto 0 auto;">
+
+  <input id="q"
+         placeholder="Nhập mã hoặc model cần kiểm tra"
+         autocomplete="off">
+
+  <button class="check-btn" onclick="check()">🔍</button>
+
+</div>
+
+
+<!-- ===== KẾT QUẢ ===== -->
+<div id="out" style="margin-top:20px;"></div>
+
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyClXx0V66GQHKGO0EwQc0nYNguFLc705A0",
+  authDomain: "toolvechaiver2.firebaseapp.com",
+  projectId: "toolvechaiver2",
+  storageBucket: "toolvechaiver2.firebasestorage.app",
+  messagingSenderId: "855001765940",
+  appId: "1:855001765940:web:0a562c54618377aaae5261"
+};
+
+
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// ===== AUTH PERSISTENCE (PHẢI ĐẶT TRƯỚC) =====
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
+// ===== FORCE LOGOUT ADMIN ON REFRESH =====
+const urlParams = new URLSearchParams(window.location.search);
+const isUserMode = urlParams.has("u");
+
+if(!isUserMode){
+  auth.signOut();
+}
+
+
+
+
+// ===== USER MODE (?u=) =====
+const params = new URLSearchParams(window.location.search);
+const userParam = params.get("u");
+
+if(userParam){
+  document.getElementById("loginScreen").style.display = "none";
+  document.getElementById("adminPanel").style.display = "none";
+
+  // QUAN TRỌNG: không cho auth listener chạy
+  setTimeout(() => {
+    runUserMode(userParam);
+  }, 0);
+}
+
+async function runUserMode(id){
+  try{
+    const doc = await db.collection("shareLinks").doc(id).get();
+
+    if(!doc.exists){
+      document.body.innerHTML = "❌ Link không tồn tại!";
+      return;
+    }
+
+    if(!doc.data().active){
+      document.body.innerHTML = "🔒 Link đã bị khóa!";
+      return;
+    }
+
+    const data = doc.data();
+
+    if(data.expiresAt && data.expiresAt.toDate() < new Date()){
+      await db.collection("shareLinks").doc(id).update({
+        active:false
+      });
+
+      document.body.innerHTML = "⛔ Link đã hết hạn!";
+      return;
+    }
+
+    await db.collection("shareLinks").doc(id).update({
+      views: firebase.firestore.FieldValue.increment(1)
+    });
+
+    const login = document.getElementById("loginScreen");
+    if(login) login.style.display = "none";
+
+    const admin = document.getElementById("adminPanel");
+    if(admin) admin.style.display = "none";
+
+    if(data.expiresAt){
+const box = document.createElement("div");
+box.id = "countdownBox";
+box.style.position = "fixed";
+box.style.top = "12px";
+box.style.right = "16px";
+box.style.background = "rgba(15,23,42,0.9)";
+box.style.border = "1px solid #334155";
+box.style.borderRadius = "10px";
+box.style.padding = "8px 14px";
+box.style.fontSize = "14px";
+box.style.fontWeight = "600";
+box.style.color = "#facc15";
+box.style.zIndex = "9999";
+box.style.boxShadow = "0 8px 25px rgba(0,0,0,0.4)";
+document.body.appendChild(box);
+;
+
+      const end = data.expiresAt.toDate();
+
+      setInterval(async ()=>{
+        const now = new Date();
+        const diff = end - now;
+
+        if(diff <= 0){
+          await db.collection("shareLinks").doc(id).update({
+            active:false
+          });
+
+          box.innerText = "⛔ Link đã hết hạn!";
+          return;
+        }
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((diff / (1000 * 60)) % 60);
+
+        box.innerText = `⏳ Còn ${days} ngày ${hours} giờ ${minutes} phút`;
+      }, 1000);
+    }
+
+  }catch(e){
+    console.error(e);
+    document.body.innerHTML = "❌ Lỗi quyền truy cập!";
+  }
+}
+
+function detectChip(code){
+
+  if(!code) return {name:"UNKNOWN",color:"#6b7280"};
+
+  code = code.toUpperCase().trim();
+
+  // ===== SAMSUNG =====
+  if(/^(KM|KLM|KLU|KLUD|KLMB|KMQ)/.test(code)){
+    return {name:"Samsung", color:"#22c55e"};
+  }
+
+  // ===== SK HYNIX =====
+  if(/^H[0-9A-Z]/.test(code)){
+    return {name:"SK hynix", color:"#a855f7"};
+  }
+
+  // ===== MICRON =====
+  if(/^(MT|JZ|NW)/.test(code)){
+    return {name:"MICRON", color:"#0ea5e9"};
+  }
+
+  // ===== TOSHIBA / KIOXIA =====
+  // Toshiba thường bắt đầu bằng:
+  // TH (THG...), TC (TC58...), TY (TYA..., TYD...)
+  if(/^(TH|TC|TY)/.test(code)){
+    return {name:"TOSHIBA / KIOXIA", color:"#f97316"};
+  }
+
+  // ===== SANDISK / WD =====
+  if(/^(SD|WDC)/.test(code)){
+    return {name:"SANDISK / WD", color:"#ef4444"};
+  }
+
+  // ===== YMTC =====
+  if(/^YM/.test(code)){
+    return {name:"YMTC", color:"#06b6d4"};
+  }
+
+  // ===== FORESEE / LONGSYS =====
+  if(/^FS/.test(code)){
+    return {name:"FORESEE", color:"#10b981"};
+  }
+
+  return {name:"UNKNOWN", color:"#6b7280"};
+}
+
+async function check(){
+
+  const q = document.getElementById("q").value.trim().toUpperCase();
+  const out = document.getElementById("out");
+
+  if(!q){
+    out.innerHTML = "";
+    return;
+  }
+
+  try{
+
+    let html = `<div class="result-grid">`;
+
+    const snap = await db.collection("codes").get();
+
+    snap.forEach(doc=>{
+
+      const x = doc.data();
+
+      if(
+        !x.code.toUpperCase().includes(q) &&
+        !(Array.isArray(x.models) && x.models.some(m => m.toUpperCase().includes(q)))
+      ){
+        return;
+      }
+
+      const chip = detectChip(x.code);
+
+      let sizeText = "";
+      let secondLine = "";
+      let vipClass = "";
+      let vipNumber = "";
+
+
+
+
+/* ===== MAP MMC ===== */
+const mmcMap = {
+  MMC1:"16G",
+  MMC2:"32G",
+  MMC3:"64G",
+  MMC4:"128G",
+  MMC5:"256G",
+  MMC6:"512G"
+};
+
+/* ===== MAP VIP ===== */
+const vipMap = {
+  4:"16G",
+  5:"32G",
+  6:"64G",
+  7:"128G",
+  8:"RAM 8 / 128G",
+  9:"256G",
+  10:"512G"
+};
+
+/* ===== MMC ===== */
+if(x.type === "MMC"){
+
+  sizeText = mmcMap[x.value] || "";
+
+  const level = x.value.replace("MMC","");
+  vipClass = `mmc-${level}`;
+
+  secondLine = `
+    <div class="mmc-badge ${vipClass}">
+      MMC${level}
+    </div>
+  `;
+}
+
+
+/* ===== VIP ===== */
+if(x.type === "VIP"){
+
+  const vipNumber = parseInt(x.value.replace(/\D/g,""));
+  vipClass = `vip-${vipNumber}`;
+
+  sizeText = vipMap[vipNumber] || "";
+
+  secondLine = `
+    <div class="vip-badge ${vipClass}">
+      VIP ${vipNumber}
+    </div>
+  `;
+}
+
+      /* ===== MODEL GROUP ===== */
+      let modelLine = "";
+
+if(Array.isArray(x.models) && x.models.length){
+
+  let groups = {};
+
+  x.models.forEach(m=>{
+    if(!m) return;
+
+    let upper = m.toUpperCase();
+    let brand = "KHÁC";
+
+    if(upper.includes("SAMSUNG")) brand = "SAMSUNG";
+    else if(upper.includes("OPPO")) brand = "OPPO";
+    else if(upper.includes("VIVO")) brand = "VIVO";
+    else if(upper.includes("XIAOMI") || upper.includes("REDMI")) brand = "XIAOMI";
+    else if(upper.includes("REALME")) brand = "REALME";
+    else if(upper.includes("IPHONE")) brand = "APPLE";
+    else if(upper.includes("HUAWEI")) brand = "HUAWEI";
+
+    let cleaned = upper
+      .replace(/SAMSUNG |OPPO |VIVO |XIAOMI |REALME |IPHONE |HUAWEI /gi,"")
+      .replace(/\s\d+GB/gi,"")
+      .trim();
+
+    if(!groups[brand]) groups[brand] = [];
+    groups[brand].push(cleaned);
+  });
+
+modelLine = Object.keys(groups).map(b =>
+  `<span class="model-icon">📱</span>
+   <span class="model-brand">${b}</span>
+   <span class="model-sep">•</span>
+   <span class="model-list">${groups[b].join(" / ")}</span>`
+).join("<br>");
+
+
+} else {
+
+  modelLine = `
+    <div class="model-placeholder">
+      <span class="model-icon">📱</span>
+      Đang cập nhật model...
+    </div>
+  `;
+
+}
+
+
+      /* ===== BUILD CARD ===== */
+      html += `
+        <div class="result-card">
+
+          <div class="code-main">
+            ${x.code}
+          </div>
+
+          ${secondLine}
+
+          <div class="chip-line">
+
+    <div class="chip-item chip-brand" style="color:${chip.color}">
+  <span class="pro-dot" style="background:${chip.color}"></span>
+  ${chip.name}
+</div>
+
+
+<div class="chip-item ${vipClass}">
+  <span class="mmc-dot"></span>
+  ${sizeText ? sizeText : "?"}
+</div>
+
+
+          </div>
+
+          ${modelLine ? `
+            <div class="model-line">
+              ${modelLine}
+            </div>
+          ` : ""}
+
+        </div>
+      `;
+
+    }); // đóng forEach
+
+    html += `</div>`; // đóng result-grid
+    out.innerHTML = html;
+
+  } catch (err) {
+
+    console.error(err);
+    out.innerHTML = `
+      <div style="color:#ef4444;margin-top:15px;">
+        ⚠️ Lỗi hệ thống
+      </div>
+    `;
+
+  }
+
+}
+
+
+
+
+// ===== LOGIN =====
+async function secureLogin(){
+  const email = document.getElementById("loginEmail").value.trim();
+  const pass = document.getElementById("loginPass").value.trim();
+  const err = document.getElementById("loginError");
+
+  err.style.display = "none";
+
+  try{
+    await auth.signInWithEmailAndPassword(email, pass);
+    // KHÔNG làm gì thêm
+  }catch(e){
+    err.style.display = "block";
+    err.innerText = "Sai tài khoản hoặc mật khẩu!";
+    return; // QUAN TRỌNG
+  }
+}
+
+
+
+// ===== TOGGLE PASSWORD =====
+function togglePassword(){
+  const passInput = document.getElementById("loginPass");
+
+  if(passInput.type === "password"){
+    passInput.type = "text";
+  }else{
+    passInput.type = "password";
+  }
+}
+
+
+// ===== CHECK ROLE =====
+auth.onAuthStateChanged(async (user) => {
+
+  // Nếu có ?u= thì bỏ qua hoàn toàn auth
+  if(window.location.search.includes("u=")){
+    return;
+  }
+
+if(!user){
+  return; // không ép show login nữa
+}
+
+
+  try{
+    const snap = await db.collection("users").doc(user.email).get();
+
+    if(!snap.exists || snap.data().role !== "admin"){
+      await auth.signOut();
+      return;
+    }
+
+document.getElementById("loginScreen").style.display = "none";
+document.getElementById("adminPanel").style.display = "block";
+
+loadLinks();
+
+/* ===== MỞ ADMIN CONTENT SAU LOGIN ===== */
+setTimeout(() => {
+
+  const content = document.getElementById("adminContent");
+  const toggleBtn = document.getElementById("adminToggle");
+
+  if(content){
+    content.classList.add("open");
+  }
+
+  if(toggleBtn){
+    toggleBtn.classList.add("active");
+  }
+const createBtn = document.querySelector(".create-link-btn");
+if(createBtn){
+  createBtn.classList.add("show");
+}
+
+}, 100);
+
+
+  }catch(err){
+    console.error(err);
+  }
+});
+
+
+
+
+async function createLink(){
+  const id = Date.now().toString(36) + Math.random().toString(36).substring(2,6);
+
+  await db.collection("shareLinks").doc(id).set({
+    active: true,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    expiresAt: null,
+    views: 0
+  });
+
+  loadLinks();
+}
+
+
+
+
+
+
+
+async function loadLinks(){
+  const snap = await db.collection("shareLinks").get();
+  let html = "";
+
+  // clear countdown cũ (tránh chạy chồng)
+  if(window.adminTimers){
+    Object.values(window.adminTimers).forEach(t => clearInterval(t));
+  }
+  window.adminTimers = {};
+
+  snap.forEach(doc=>{
+    const d = doc.data();
+    const id = doc.id;
+
+   html += `
+  <div class="link-card">
+    
+    <div class="link-left">
+
+<div class="link-id-row">
+  <div class="link-id editable-name" id="name-${id}">
+    ${localStorage.getItem("alias_" + id) || id}
+  </div>
+  <span class="edit-icon" onclick="startRename('${id}')">✏️</span>
+</div>
+
+
+
+      <div class="link-status ${d.active?'open':'lock'}">
+        ${d.active?'🟢 Đang mở':'🟡 Đang khóa'}
+      </div>
+
+      <div id="remain-${id}" style="margin-top:6px;font-size:12px;color:#facc15;">
+        ${d.expiresAt ? '⏳ Đang tính...' : '♾ Không giới hạn'}
+      </div>
+
+  <div style="margin-top:4px;font-size:12px;color:#22c55e;">
+    👁 Lượt truy cập: ${d.views || 0}
+  </div>
+</div>
+
+<div class="link-actions">
+  <button class="icon-btn" onclick="copyLink('${id}',this)">📋</button>
+<button class="icon-btn"
+  style="background:${d.active?'#16a34a':'#f59e0b'};color:white"
+  onclick="toggleLink('${id}',${d.active})">
+  ${d.active?'🔓':'🔒'}
+</button>
+
+  <button class="icon-btn" onclick="configExpire('${id}')">⏰</button>
+<button class="icon-btn delete"
+  style="background:#dc2626;color:white"
+  onclick="deleteLink('${id}')">
+  🗑
+</button>
+
+</div>
+
+  </div>
+`;
+  });
+
+  document.getElementById("linkList").innerHTML = html;
+
+  // ===== COUNTDOWN REALTIME CHO ADMIN =====
+  snap.forEach(doc=>{
+    const d = doc.data();
+    const id = doc.id;
+
+    if(!d.expiresAt) return;
+
+    const end = d.expiresAt.toDate();
+    const el = document.getElementById(`remain-${id}`);
+    if(!el) return;
+
+    window.adminTimers[id] = setInterval(async ()=>{
+      const now = new Date();
+      const diff = end - now;
+
+      if(diff <= 0){
+        clearInterval(window.adminTimers[id]);
+        el.innerText = "⛔ Đã hết hạn";
+
+        if(d.active){
+          await db.collection("shareLinks").doc(id).update({
+            active:false
+          });
+          loadLinks();
+        }
+        return;
+      }
+
+      const days = Math.floor(diff / (1000*60*60*24));
+      const hours = Math.floor((diff / (1000*60*60)) % 24);
+      const minutes = Math.floor((diff / (1000*60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+
+      el.innerText = `⏳ ${days}d ${hours}h ${minutes}m ${seconds}s`;
+    }, 1000);
+  });
+}
+
+/* ===== EDIT LINK ALIAS (ADMIN ONLY) ===== */
+async function editAlias(id, current){
+  const name = prompt("Nhập tên để nhớ cho link:", current);
+  if(name === null) return;
+
+  const ref = db.collection("shareLinks").doc(id);
+
+  if(name.trim() === ""){
+    await ref.update({
+      alias: firebase.firestore.FieldValue.delete()
+    });
+  }else{
+    await ref.update({
+      alias: name.trim()
+    });
+  }
+
+  loadLinks();
+}
+
+// ===== POPUP CÀI THỜI GIAN (ADMIN) =====
+
+async function configExpire(id){
+
+  closeExpireBox();
+
+  let days = "";
+  let hours = "";
+  let minutes = "";
+
+  try{
+    const doc = await db.collection("shareLinks").doc(id).get();
+    if(doc.exists && doc.data().expiresAt){
+      const now = new Date();
+      const end = doc.data().expiresAt.toDate();
+      let diff = Math.max(0, end - now);
+
+      days = Math.floor(diff / (1000*60*60*24));
+      diff %= (1000*60*60*24);
+      hours = Math.floor(diff / (1000*60*60));
+      diff %= (1000*60*60);
+      minutes = Math.floor(diff / (1000*60));
+    }
+  }catch(e){
+    console.warn("Không đọc được expiresAt", e);
+  }
+
+  const html = `
+  <div id="expireBox" style="
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.6);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:9999;
+  ">
+    <div style="
+      background:#0f172a;
+      padding:25px;
+      border-radius:18px;
+      width:340px;
+      box-shadow:0 20px 50px rgba(0,0,0,0.6);
+    ">
+      <h3 style="margin-bottom:15px;">⏰ Cài thời gian hết hạn</h3>
+
+<div style="margin-bottom:4px;font-size:13px;color:#cbd5e1;">📅 Số ngày</div>
+<input id="expireDays" type="number"
+  value="${days}"
+  style="width:100%;height:42px;margin-bottom:10px;
+  border-radius:10px;border:1px solid #333;
+  background:#020617;color:white;padding:0 12px">
+
+<div style="margin-bottom:4px;font-size:13px;color:#cbd5e1;">⏰ Giờ</div>
+<input id="expireHours" type="number"
+  value="${hours}"
+  style="width:100%;height:42px;margin-bottom:10px;
+  border-radius:10px;border:1px solid #333;
+  background:#020617;color:white;padding:0 12px">
+
+<div style="margin-bottom:4px;font-size:13px;color:#cbd5e1;">⏱ Phút</div>
+<input id="expireMinutes" type="number"
+  value="${minutes}"
+  style="width:100%;height:42px;margin-bottom:15px;
+  border-radius:10px;border:1px solid #333;
+  background:#020617;color:white;padding:0 12px">
+
+
+      <div style="display:flex;justify-content:flex-end;gap:10px;">
+        <button onclick="closeExpireBox()"
+          style="padding:6px 12px;border-radius:8px;
+          border:1px solid #444;background:#1f2937;color:white">
+          Hủy
+        </button>
+
+        <button onclick="saveExpire('${id}')"
+          style="padding:6px 12px;border-radius:8px;
+          background:#2563eb;color:white;border:none">
+          Lưu
+        </button>
+      </div>
+    </div>
+  </div>
+  `;
+
+  document.body.insertAdjacentHTML("beforeend", html);
+}
+
+function closeExpireBox(){
+  const box = document.getElementById("expireBox");
+  if(box) box.remove();
+}
+
+async function saveExpire(id){
+  const d = parseInt(document.getElementById("expireDays").value || 0);
+  const h = parseInt(document.getElementById("expireHours").value || 0);
+  const m = parseInt(document.getElementById("expireMinutes").value || 0);
+
+  if(d === 0 && h === 0 && m === 0){
+    await db.collection("shareLinks").doc(id).update({
+      expiresAt: null
+    });
+  }else{
+    const future = new Date();
+    future.setDate(future.getDate() + d);
+    future.setHours(future.getHours() + h);
+    future.setMinutes(future.getMinutes() + m);
+
+    await db.collection("shareLinks").doc(id).update({
+      expiresAt: firebase.firestore.Timestamp.fromDate(future)
+    });
+  }
+
+  closeExpireBox();
+  loadLinks();
+}
+// ===== COPY LINK =====
+function copyLink(id, btn){
+  const link = window.location.origin + window.location.pathname + "?u=" + id;
+  navigator.clipboard.writeText(link);
+
+  const old = btn.innerText;
+  btn.innerText = "✓";
+  btn.style.background = "#16a34a";
+  btn.style.color = "white";
+
+  setTimeout(()=>{
+    btn.innerText = old;
+    btn.style.background = "";
+    btn.style.color = "";
+  },1500);
+}
+
+
+// ===== TOGGLE LINK (MỞ / KHÓA) =====
+async function toggleLink(id, current){
+  await db.collection("shareLinks").doc(id).update({
+    active: !current
+  });
+  loadLinks();
+}
+
+
+// ===== DELETE LINK (POPUP ĐẸP) =====
+function deleteLink(id){
+
+  const html = `
+  <div id="deleteBox" style="
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.6);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:9999;
+  ">
+    <div style="
+      background:#0f172a;
+      padding:24px;
+      border-radius:18px;
+      width:320px;
+      box-shadow:0 20px 50px rgba(0,0,0,0.6);
+      text-align:center;
+    ">
+      <div style="font-size:18px;margin-bottom:10px;">🗑 Xóa link</div>
+      <div style="font-size:14px;color:#94a3b8;margin-bottom:20px;">
+        Bạn có chắc muốn xóa link này?
+      </div>
+
+      <div style="display:flex;justify-content:center;gap:12px;">
+        <button onclick="closeDeleteBox()"
+          style="padding:8px 16px;border-radius:10px;
+          border:1px solid #334155;background:#1f2937;color:white">
+          Hủy
+        </button>
+
+        <button onclick="confirmDelete('${id}')"
+          style="padding:8px 16px;border-radius:10px;
+          background:#dc2626;color:white;border:none">
+          Xóa
+        </button>
+      </div>
+    </div>
+  </div>
+  `;
+
+  document.body.insertAdjacentHTML("beforeend", html);
+}
+
+function closeDeleteBox(){
+  const box = document.getElementById("deleteBox");
+  if(box) box.remove();
+}
+
+async function confirmDelete(id){
+  await db.collection("shareLinks").doc(id).delete();
+  closeDeleteBox();
+  loadLinks();
+}
+function startRename(id){
+  const el = document.getElementById("name-" + id);
+  if(!el || el.querySelector("input")) return;
+
+  const oldText = el.innerText;
+  const input = document.createElement("input");
+
+  input.type = "text";
+  input.value = oldText;
+  input.style.width = "100%";
+  input.style.background = "transparent";
+  input.style.color = "inherit";
+  input.style.border = "1px solid rgba(255,255,255,0.3)";
+  input.style.borderRadius = "6px";
+  input.style.padding = "4px 6px";
+  input.style.fontSize = "14px";
+
+  el.innerHTML = "";
+  el.appendChild(input);
+  input.focus();
+  input.select();
+
+  function finish(){
+    const val = input.value.trim();
+    el.innerText = val || oldText;
+
+    if(val){
+      // ✅ GIỮ TÊN KỂ CẢ ĐÓNG TAB
+      localStorage.setItem("alias_" + id, val);
+    }
+  }
+
+  input.addEventListener("blur", finish);
+  input.addEventListener("keydown", e=>{
+    if(e.key === "Enter") input.blur();
+    if(e.key === "Escape") el.innerText = oldText;
+  });
+}
+
+document.getElementById("q").addEventListener("keydown",function(e){
+  if(e.key==="Enter"){
+    check();
+  }
+});
+function toggleAdmin(){
+
+  const content = document.getElementById("adminContent");
+  const toggleBtn = document.getElementById("adminToggle");
+  const createBtn = document.querySelector(".create-link-btn");
+
+  if(!content) return;
+
+  const isOpen = content.classList.contains("open");
+
+  if(isOpen){
+    content.classList.remove("open");
+    if(toggleBtn) toggleBtn.classList.remove("active");
+    if(createBtn) createBtn.classList.remove("show");
+  } else {
+    content.classList.add("open");
+    if(toggleBtn) toggleBtn.classList.add("active");
+    if(createBtn) createBtn.classList.add("show");
+  }
+
+}
+
+
+
+
+
+
+</script>
+</body>
+</html>
