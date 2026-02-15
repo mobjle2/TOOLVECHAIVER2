@@ -931,13 +931,16 @@ font-weight:500;
   max-width:1050px;
   margin:0 auto;
 }
+
 /* ===== ADMIN TOP BAR ===== */
 .admin-top-bar{
   display:flex;
   align-items:center;
-  justify-content:space-between;
-  margin-bottom:20px;
+  gap:15px;
+  max-width:1100px;
+  margin:25px auto 0 auto;
 }
+
 
 /* ===== ADMIN TOGGLE ULTRA PRO ===== */
 
@@ -1116,23 +1119,30 @@ font-weight:500;
 </div>
 
 
-<!-- ===== ADMIN PANEL (ĐƯA LÊN TRÊN Ô CHECK) ===== -->
+<!-- ===== ADMIN PANEL ===== -->
 <div id="adminPanel" class="admin-panel" style="display:none;">
 
   <div class="admin-top-bar">
-    <div style="display:flex;gap:10px;">
 
-<button class="admin-toggle-btn" id="adminToggle" onclick="toggleAdmin()">
-  <span class="admin-icon">⚙</span>
-  <span class="admin-text">Admin</span>
-</button>
+    <!-- ADMIN -->
+    <button class="admin-toggle-btn" id="adminToggle" onclick="toggleAdmin()">
+      <span class="admin-icon">⚙</span>
+      <span class="admin-text">Admin</span>
+    </button>
 
-
-      <button class="create-link-btn small" onclick="createLink()">
-        ＋ Tạo link
-      </button>
-
+    <!-- INPUT -->
+    <div class="clean-check">
+      <input id="q"
+             placeholder="Nhập mã hoặc model cần kiểm tra"
+             autocomplete="off">
+      <button class="check-btn" onclick="check()">🔍</button>
     </div>
+
+    <!-- TẠO LINK -->
+    <button class="create-link-btn small" onclick="createLink()">
+      ＋ Tạo link
+    </button>
+
   </div>
 
   <div id="adminContent">
