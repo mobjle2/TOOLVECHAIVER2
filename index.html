@@ -2055,15 +2055,16 @@ function toggleAdmin(){
 
   if(isOpen){
     content.classList.remove("open");
-    if(toggleBtn) toggleBtn.classList.remove("active");
-    if(createBtn) createBtn.classList.remove("show");
+    toggleBtn?.classList.remove("active");
+    createBtn?.classList.remove("show");
   } else {
     content.classList.add("open");
-    if(toggleBtn) toggleBtn.classList.add("active");
-    if(createBtn) createBtn.classList.add("show");
+    toggleBtn?.classList.add("active");
+    createBtn?.classList.add("show");
   }
 
 }
+
 
 </script>
 </body>
