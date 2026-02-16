@@ -1294,9 +1294,10 @@ function calculateVip(ram, rom){
   if(ram === 12 && rom === 256) return 9;
   return null;
 }
-
 // ===== SAMSUNG =====
 function decodeSamsung(code){
+
+  code = code.toUpperCase().trim();
 
   const ramMap = {
     "S":1,"2":1,"6":1.5,"K":2,"1":2,"3":2,
@@ -1307,14 +1308,18 @@ function decodeSamsung(code){
   const romMap = {
     "4":4,"8":8,"A":16,"B":32,
     "C":64,"D":128,"E":256,
-    "F":512,"G":1024
+    "F":512,"G":1024,
+    "J":128,"M":256
   };
 
   let ram = ramMap[code[2]] || null;
 
   let rom = null;
-  const match = code.match(/([A-Z0-9])M-/);
-  if(match) rom = romMap[match[1]] || null;
+  const romMatch = code.match(/9001([A-Z0-9])M|8001([A-Z0-9])M|7001([A-Z0-9])M|6001([A-Z0-9])M|1001([A-Z0-9])M/);
+  if(romMatch){
+    const key = romMatch[1] || romMatch[2] || romMatch[3] || romMatch[4] || romMatch[5];
+    rom = romMap[key] || null;
+  }
 
   let storage = "Unknown";
   if(code.includes("900")) storage = "UFS 3.1";
@@ -1333,6 +1338,8 @@ function decodeSamsung(code){
 
 // ===== SK HYNIX =====
 function decodeHynix(code){
+
+  code = code.toUpperCase().trim();
 
   let storage = "Unknown";
   if(code.startsWith("H9") || code.startsWith("H26")) storage = "eMMC";
@@ -1353,7 +1360,7 @@ function decodeHynix(code){
   if(ramMatch) ram = ramMap[ramMatch[0]] || null;
 
   let rom = null;
-  const romMatch = code.match(/([0-9]{2})/);
+  const romMatch = code.match(/H[0-9A-Z]+?(32|64|17|18|19|26|27|25|53|16)/);
   if(romMatch) rom = romMap[romMatch[1]] || null;
 
   return {
@@ -1363,6 +1370,7 @@ function decodeHynix(code){
     vip: calculateVip(ram, rom)
   };
 }
+
 
 // ===== MAIN DECODER =====
 function autoDecodeChip(code, dbData){
