@@ -1318,12 +1318,14 @@ function decodeSamsung(code){
     "J":128,"L":128,"M":256
   };
 
-  const romMatch = code.match(/01([A-Z0-9])M/);
-  if(romMatch){
-    rom = romMap[romMatch[1]] || null;
+  // Lấy ký tự trước chữ M cuối cùng
+  const mIndex = code.lastIndexOf("M");
+  if(mIndex > 0){
+    const key = code[mIndex - 1];
+    rom = romMap[key] || null;
   }
 
-  // ===== RAM (series KM) =====
+  // ===== RAM =====
   if(code.startsWith("KM8")) ram = 8;
   else if(code.startsWith("KM6")) ram = 6;
   else if(code.startsWith("KM4")) ram = 4;
