@@ -1318,17 +1318,17 @@ function decodeSamsung(code){
     "J":128,"M":256
   };
 
-  const romMatch = code.match(/9001([A-Z0-9])M|8001([A-Z0-9])M|7001([A-Z0-9])M|6001([A-Z0-9])M|1001([A-Z0-9])M/);
+  // Bắt mọi dạng xxxx1XM (9001JM, 8001LM, 7001JA...)
+  const romMatch = code.match(/[0-9]{3}1([A-Z0-9])M?/);
   if(romMatch){
-    const key = romMatch[1] || romMatch[2] || romMatch[3] || romMatch[4] || romMatch[5];
-    rom = romMap[key] || null;
+    rom = romMap[romMatch[1]] || null;
   }
 
-  // ===== RAM (dòng KM8 = 8GB) =====
+  // ===== RAM (series KM) =====
   if(code.startsWith("KM8")) ram = 8;
+  else if(code.startsWith("KM6")) ram = 6;
   else if(code.startsWith("KM4")) ram = 4;
   else if(code.startsWith("KM2")) ram = 2;
-  else if(code.startsWith("KM6")) ram = 6;
 
   return {
     ram,
