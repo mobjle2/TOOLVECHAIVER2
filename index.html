@@ -1464,35 +1464,39 @@ html += `
       ${x.code}
     </div>
 
-    <div style="
-      display:flex;
-      align-items:center;
-      gap:6px;
-      margin-top:8px;
-      flex-wrap:nowrap;
-    ">
+<div style="
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-top:10px;
+  flex-wrap:nowrap;
+">
 
-      ${decoded?.vip ? `
-        <div class="vip-badge vip-${decoded.vip}"
-             style="
-               padding:4px 10px;
-               font-size:12px;
-               border-radius:14px;
-             ">
-          VIP ${decoded.vip}
-        </div>
-      ` : ""}
-
-      <div style="
-        font-weight:600;
-        font-size:14px;
-        letter-spacing:0.3px;
-        opacity:0.9;
-      ">
-        ${decoded?.ram && decoded?.rom ? decoded.ram + "/" + decoded.rom : "?"}
-      </div>
-
+  ${decoded?.vip ? `
+    <div class="vip-badge vip-${decoded.vip}"
+         style="
+           padding:6px 14px;
+           font-size:13px;
+           border-radius:18px;
+           font-weight:600;
+         ">
+      VIP ${decoded.vip}
     </div>
+  ` : ""}
+
+  <div style="
+    padding:6px 14px;
+    border-radius:18px;
+    font-weight:600;
+    font-size:14px;
+    background:rgba(139,92,246,0.15);
+    color:#c084fc;
+  ">
+    ${decoded?.ram && decoded?.rom ? decoded.ram + "/" + decoded.rom : "?"}
+  </div>
+
+</div>
+
 
     <div style="
       margin-top:6px;
