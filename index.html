@@ -1038,31 +1038,34 @@ font-weight:500;
 <body>
 
 <!-- LOGIN SCREEN -->
-<div id="loginScreen" class="login-wrapper">
-  <div class="login-box">
+<div class="login-box">
 
-    <div class="login-sub">
-      Secure Admin Access
-    </div>
-
-    <!-- USER -->
-    <div class="input-group">
-      <span class="input-icon">👤</span>
-      <input id="loginEmail" type="email" placeholder="USER">
-    </div>
-
-
-    <!-- PASS -->
-    <div class="input-group">
-      <span class="input-icon">🔒</span>
-      <input id="loginPass" type="password" placeholder="PASS">
-      <span class="toggle-pass" onclick="togglePassword()">👁</span>
-    </div>
-
-    <button onclick="secureLogin()">ĐĂNG NHẬP</button>
-    <div id="loginError" class="login-error">Sai tài khoản!</div>
+  <div class="login-header">
+    <div class="login-logo">🔐</div>
+    <div class="login-title-small">Admin Login</div>
   </div>
+
+  <!-- USER -->
+  <div class="input-group">
+    <span class="input-icon">👤</span>
+    <input id="loginEmail" type="email" placeholder="Email">
+  </div>
+
+  <!-- PASS -->
+  <div class="input-group">
+    <span class="input-icon">🔒</span>
+    <input id="loginPass" type="password" placeholder="Password">
+    <span class="toggle-pass" onclick="togglePassword()">👁</span>
+  </div>
+
+  <button onclick="secureLogin()">ĐĂNG NHẬP</button>
+
+  <div id="loginError" class="login-error">
+    Sai tài khoản hoặc mật khẩu!
+  </div>
+
 </div>
+
 
 
 <!-- MAIN -->
