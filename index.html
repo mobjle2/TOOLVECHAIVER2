@@ -1295,47 +1295,40 @@ function calculateVip(ram, rom){
   return null;
 }
 // ===== SAMSUNG =====
-// ===== SAMSUNG =====
 function decodeSamsung(code){
 
-  code = code.toUpperCase().trim();
+  code = code.toUpperCase().replace("-", "").trim();
 
-  let ram = null;
-  let rom = null;
-  let storage = "Unknown";
-
-  // ===== STORAGE =====
-  if(code.includes("900")) storage = "UFS 3.1";
-  else if(code.includes("800")) storage = "UFS 2.1";
-  else if(code.includes("700")) storage = "UFS 2.1";
-  else if(code.includes("600")) storage = "eMMC 5.1";
-  else if(code.includes("100")) storage = "eMMC 5.0";
-
-  // ===== ROM (ký tự thứ 4 từ trái) =====
   const romMap = {
-    "F":128,
-    "V":128,
-    "L":128,
-    "M":256,
     "B":32,
     "C":64,
     "D":128,
     "E":256,
-    "G":512
+    "F":256,
+    "G":512,
+    "V":128,
+    "L":128
   };
 
-  rom = romMap[code[3]] || null;
+  const ramMap = {
+    "A":3,"B":3,"8":3,
+    "D":4,"4":4,
+    "C":6,
+    "J":8,"P":8,
+    "L":10,
+    "M":12
+  };
 
-  // ===== RAM =====
-  if(code.startsWith("KM8")) ram = 8;
-  else if(code.startsWith("KM6")) ram = 6;
-  else if(code.startsWith("KM4")) ram = 4;
-  else if(code.startsWith("KM2")) ram = 2;
+  const rom = romMap[code[3]] || null;
+  const ram = ramMap[code[8]] || null;
 
   return {
     ram,
     rom,
-    storage,
+    storage: code.includes("900") ? "UFS 3.1" :
+             code.includes("800") ? "UFS 2.1" :
+             code.includes("700") ? "UFS 2.1" :
+             code.includes("600") ? "eMMC 5.1" : "Unknown",
     vip: calculateVip(ram, rom)
   };
 }
