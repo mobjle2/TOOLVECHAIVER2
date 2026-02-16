@@ -19,14 +19,7 @@ body{
 
 
 
-/* ===== GRID ===== */
-.result-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
-  gap:24px;
-  margin:30px auto 0 auto;
-  max-width:1100px;
-}
+
 
 /* ÉP 1 CỘT TRÊN MOBILE */
 @media (max-width:768px){
@@ -47,14 +40,7 @@ body{
   margin-top:6px;
 }
 
-/* ===== VIP BADGE ===== */
-.vip-badge{
-  display:flex;
-  align-items:center;
-  gap:6px;
-  font-weight:700;
-  font-size:14px;
-}
+
 
 /* VIP 1-4 */
 .vip-1,.vip-2,.vip-3,.vip-4{
@@ -102,22 +88,7 @@ body{
 }
 .vip-13 .vip-dot{ background:#ff003c; }
 
-  .link-card{
-  background:#141414;
-  border:1px solid #222;
-  border-radius:14px;
-  padding:14px 18px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:12px;
-  transition:0.2s;
-}
-
-.link-card:hover{
-  border-color:#2563eb;
-  transform:translateY(-2px);
-}
+  
 
 .link-id{
   font-weight:600;
@@ -366,10 +337,12 @@ font-weight:500;
   justify-content:center;
   align-items:center;
   background:
-    radial-gradient(circle at 20% 20%, rgba(59,130,246,0.25), transparent 40%),
+    radial-gradient(circle at 15% 20%, rgba(59,130,246,0.25), transparent 40%),
+    radial-gradient(circle at 85% 80%, rgba(139,92,246,0.25), transparent 40%),
     linear-gradient(160deg,#020617,#0f172a);
-  z-index:9999;
+  overflow:hidden;
 }
+
 
 .login-box{
   width:420px;
@@ -904,13 +877,7 @@ font-weight:500;
   font-weight:500;
   color:#e2e8f0;
 }
-#linkList{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:25px;
-  max-width:1050px;
-  margin:0 auto;
-}
+
 /* ===== ADMIN TOP BAR ===== */
 .admin-top-bar{
   display:flex;
@@ -1046,15 +1013,12 @@ font-weight:500;
 }
 
 
-#adminContent.open{
-  grid-template-rows:1fr;
-  opacity:1;
-  transform:translateY(0);
-}
+
 
 
 
 </style>
+
 
 
 </head>
