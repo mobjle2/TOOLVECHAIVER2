@@ -1299,12 +1299,18 @@ function decodeSamsung(code){
 
   code = code.toUpperCase().trim();
 
-  const ramMap = {
-    "S":1,"2":1,"6":1.5,"K":2,"1":2,"3":2,
-    "A":3,"B":3,"8":3,"D":4,"4":4,
-    "C":6,"J":8,"P":8,"L":10,"M":12
-  };
+  let ram = null;
+  let rom = null;
+  let storage = "Unknown";
 
+  // ===== STORAGE =====
+  if(code.includes("900")) storage = "UFS 3.1";
+  else if(code.includes("800")) storage = "UFS 2.1";
+  else if(code.includes("700")) storage = "UFS 2.1";
+  else if(code.includes("600")) storage = "eMMC 5.1";
+  else if(code.includes("100")) storage = "eMMC 5.0";
+
+  // ===== ROM =====
   const romMap = {
     "4":4,"8":8,"A":16,"B":32,
     "C":64,"D":128,"E":256,
@@ -1312,21 +1318,17 @@ function decodeSamsung(code){
     "J":128,"M":256
   };
 
-  let ram = ramMap[code[2]] || null;
-
-  let rom = null;
   const romMatch = code.match(/9001([A-Z0-9])M|8001([A-Z0-9])M|7001([A-Z0-9])M|6001([A-Z0-9])M|1001([A-Z0-9])M/);
   if(romMatch){
     const key = romMatch[1] || romMatch[2] || romMatch[3] || romMatch[4] || romMatch[5];
     rom = romMap[key] || null;
   }
 
-  let storage = "Unknown";
-  if(code.includes("900")) storage = "UFS 3.1";
-  else if(code.includes("800")) storage = "UFS 2.1";
-  else if(code.includes("700")) storage = "UFS 2.1";
-  else if(code.includes("600")) storage = "eMMC 5.1";
-  else if(code.includes("100")) storage = "eMMC 5.0";
+  // ===== RAM (dòng KM8 = 8GB) =====
+  if(code.startsWith("KM8")) ram = 8;
+  else if(code.startsWith("KM4")) ram = 4;
+  else if(code.startsWith("KM2")) ram = 2;
+  else if(code.startsWith("KM6")) ram = 6;
 
   return {
     ram,
