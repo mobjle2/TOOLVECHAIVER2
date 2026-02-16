@@ -1286,14 +1286,22 @@ function detectChip(code){
 
 // ===== VIP RULE =====
 function calculateVip(ram, rom){
+
   if((ram === 2 || ram === 3) && rom === 16) return 4;
+
   if((ram === 2 || ram === 3) && rom === 32) return 5;
+
   if((ram === 3 || ram === 4) && rom === 64) return 6;
+
   if((ram === 4 || ram === 6) && rom === 128) return 7;
-  if(ram === 8 && rom === 128) return 8;
+
+  if((ram === 8 || ram === 10) && rom === 128) return 8;
+
   if(ram === 12 && rom === 256) return 9;
+
   return null;
 }
+
 // ===== SAMSUNG =====
 function decodeSamsung(code){
 
