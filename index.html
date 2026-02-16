@@ -1499,14 +1499,38 @@ html += `
 </div>
 
 
+<div style="
+  margin-top:12px;
+  font-size:14px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+">
 
-    <div style="
-      margin-top:6px;
-      opacity:0.85;
-      font-size:14px;
-    ">
-      ${chip.name} ${decoded?.storage || ""}
-    </div>
+  <span style="
+    color:#4ade80;
+    font-weight:600;
+  ">
+    ${chip.name}
+  </span>
+
+  <span style="
+    width:5px;
+    height:5px;
+    border-radius:50%;
+    background:#64748b;
+    display:inline-block;
+  "></span>
+
+  <span style="
+    color:#cbd5e1;
+    font-weight:500;
+  ">
+    ${decoded?.storage || ""}
+  </span>
+
+</div>
+
 
     ${modelLine ? `
       <div class="model-line" style="
