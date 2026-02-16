@@ -782,7 +782,9 @@ font-weight:500;
 
 /* Tablet */
 @media(max-width:1200px){
-
+  .result-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
 }
 
 /* Mobile */
@@ -1150,136 +1152,98 @@ if(!isUserMode){
   auth.signOut();
 }
 
-// ===== USER MODE (?u=) CLEAN VERSION =====
+
+
+
+// ===== USER MODE (?u=) =====
 const params = new URLSearchParams(window.location.search);
 const userParam = params.get("u");
 
-if (userParam) {
-  initUserMode(userParam);
+if(userParam){
+  document.getElementById("loginScreen").style.display = "none";
+  document.getElementById("adminPanel").style.display = "none";
+
+  // QUAN TRỌNG: không cho auth listener chạy
+  setTimeout(() => {
+    runUserMode(userParam);
+  }, 0);
 }
 
-async function initUserMode(id) {
-
-  // Ẩn login + admin ngay lập tức
-  const login = document.getElementById("loginScreen");
-  const admin = document.getElementById("adminPanel");
-
-  if (login) login.style.display = "none";
-  if (admin) admin.style.display = "none";
-
-  try {
-
+async function runUserMode(id){
+  try{
     const doc = await db.collection("shareLinks").doc(id).get();
 
-    if (!doc.exists) {
-      showUserMessage("❌ Link không tồn tại!");
+    if(!doc.exists){
+      document.body.innerHTML = "❌ Link không tồn tại!";
+      return;
+    }
+
+    if(!doc.data().active){
+      document.body.innerHTML = "🔒 Link đã bị khóa!";
       return;
     }
 
     const data = doc.data();
 
-    if (!data.active) {
-      showUserMessage("🔒 Link đã bị khóa!");
-      return;
-    }
-
-    // Check hết hạn
-    if (data.expiresAt && data.expiresAt.toDate() < new Date()) {
-
+    if(data.expiresAt && data.expiresAt.toDate() < new Date()){
       await db.collection("shareLinks").doc(id).update({
-        active: false
+        active:false
       });
 
-      showUserMessage("⛔ Link đã hết hạn!");
+      document.body.innerHTML = "⛔ Link đã hết hạn!";
       return;
     }
 
-    // Tăng lượt xem
     await db.collection("shareLinks").doc(id).update({
       views: firebase.firestore.FieldValue.increment(1)
     });
 
-    // Countdown nếu có hạn
-    if (data.expiresAt) {
-      startCountdown(data.expiresAt.toDate(), id);
+    const login = document.getElementById("loginScreen");
+    if(login) login.style.display = "none";
+
+    const admin = document.getElementById("adminPanel");
+    if(admin) admin.style.display = "none";
+
+    if(data.expiresAt){
+const box = document.createElement("div");
+box.id = "countdownBox";
+box.style.position = "fixed";
+box.style.top = "12px";
+box.style.right = "16px";
+box.style.background = "rgba(15,23,42,0.9)";
+box.style.border = "1px solid #334155";
+box.style.borderRadius = "10px";
+box.style.padding = "8px 14px";
+box.style.fontSize = "14px";
+box.style.fontWeight = "600";
+box.style.color = "#facc15";
+box.style.zIndex = "9999";
+box.style.boxShadow = "0 8px 25px rgba(0,0,0,0.4)";
+document.body.appendChild(box);
+;
+
+      const end = data.expiresAt.toDate();
+
+      setInterval(async ()=>{
+        const now = new Date();
+        const diff = end - now;
+
+        if(diff <= 0){
+          await db.collection("shareLinks").doc(id).update({
+            active:false
+          });
+
+          box.innerText = "⛔ Link đã hết hạn!";
+          return;
+        }
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((diff / (1000 * 60)) % 60);
+
+        box.innerText = `⏳ Còn ${days} ngày ${hours} giờ ${minutes} phút`;
+      }, 1000);
     }
-
-  } catch (e) {
-
-    console.error("UserMode Error:", e);
-    showUserMessage("⚠️ Lỗi hệ thống hoặc quyền truy cập!");
-
-  }
-}
-
-// ===== Hiển thị thông báo gọn =====
-function showUserMessage(text) {
-
-  const out = document.getElementById("out");
-
-  if (out) {
-    out.innerHTML = `
-      <div style="
-        margin-top:40px;
-        text-align:center;
-        font-size:18px;
-        font-weight:600;
-        color:#f87171;
-      ">
-        ${text}
-      </div>
-    `;
-  }
-}
-
-// ===== Countdown sạch =====
-function startCountdown(endDate, id) {
-
-  let box = document.getElementById("countdownBox");
-
-  if (!box) {
-    box = document.createElement("div");
-    box.id = "countdownBox";
-    box.style.position = "fixed";
-    box.style.top = "12px";
-    box.style.right = "16px";
-    box.style.background = "rgba(15,23,42,0.9)";
-    box.style.border = "1px solid #334155";
-    box.style.borderRadius = "10px";
-    box.style.padding = "8px 14px";
-    box.style.fontSize = "14px";
-    box.style.fontWeight = "600";
-    box.style.color = "#facc15";
-    box.style.zIndex = "9999";
-    box.style.boxShadow = "0 8px 25px rgba(0,0,0,0.4)";
-    document.body.appendChild(box);
-  }
-
-  const timer = setInterval(async () => {
-
-    const now = new Date();
-    const diff = endDate - now;
-
-    if (diff <= 0) {
-
-      clearInterval(timer);
-
-      await db.collection("shareLinks").doc(id).update({
-        active: false
-      });
-
-      box.innerText = "⛔ Link đã hết hạn!";
-      return;
-    }
-
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-    const minutes = Math.floor((diff / (1000 * 60)) % 60);
-
-    box.innerText = `⏳ Còn ${days} ngày ${hours} giờ ${minutes} phút`;
-
-  }, 1000);
-}
 
   }catch(e){
     console.error(e);
@@ -1665,34 +1629,37 @@ function togglePassword(){
 // ===== CHECK ROLE =====
 auth.onAuthStateChanged(async (user) => {
 
-  // 🔥 Nếu là link ?u= thì bỏ qua hoàn toàn auth
-  if (userParam) return;
-
-  // Nếu chưa login → hiện login
-  if (!user) {
-    document.getElementById("loginScreen").style.display = "flex";
-    document.getElementById("adminPanel").style.display = "none";
+  // Nếu có ?u= thì bỏ qua hoàn toàn auth
+  if(window.location.search.includes("u=")){
     return;
   }
 
-  try {
+if(!user){
+  return; // không ép show login nữa
+}
 
+
+  try{
     const snap = await db.collection("users").doc(user.email).get();
 
-    if (!snap.exists || snap.data().role !== "admin") {
+    if(!snap.exists || snap.data().role !== "admin"){
       await auth.signOut();
       return;
     }
 
-    document.getElementById("loginScreen").style.display = "none";
-    document.getElementById("adminPanel").style.display = "block";
-    loadLinks();
+document.getElementById("loginScreen").style.display = "none";
+document.getElementById("adminPanel").style.display = "block";
 
-  } catch (err) {
+loadLinks();
+
+/* ===== MỞ ADMIN CONTENT SAU LOGIN ===== */
+
+
+  }catch(err){
     console.error(err);
   }
-
 });
+
 
 
 
