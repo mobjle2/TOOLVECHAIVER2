@@ -1456,51 +1456,42 @@ async function check(){
         modelLine = x.models.join(" • ");
       }
 
-      /* ===== BUILD CARD ===== */
-      html += `
-        <div class="result-card">
+/* ===== BUILD CARD ===== */
+html += `
+  <div class="result-card">
 
-          <div class="code-main">
-            ${x.code}
-          </div>
+    <div class="code-main">
+      ${x.code}
+    </div>
 
-          ${decoded?.vip ? `
-            <div class="vip-badge vip-${decoded.vip}">
-              VIP ${decoded.vip}
-            </div>
-          ` : ""}
+    <div style="display:flex;gap:10px;align-items:center;margin-top:6px;flex-wrap:wrap;">
 
-          ${mmcBadge}
-
-          <div class="chip-line">
-
-            <div class="chip-item chip-brand" style="color:${chip.color}">
-              <span class="pro-dot" style="background:${chip.color}"></span>
-              ${chip.name}
-            </div>
-
-            <div class="chip-item ${decoded?.vip ? `vip-${decoded.vip}` : ""}">
-              <span class="mmc-dot"></span>
-              ${decoded?.ram ? decoded.ram + "GB / " : ""}
-              ${decoded?.rom ? decoded.rom + "GB" : "?"}
-            </div>
-
-          </div>
-
-          ${decoded?.storage ? `
-            <div style="margin-top:6px;font-size:13px;opacity:0.8;">
-              ${decoded.storage}
-            </div>
-          ` : ""}
-
-          ${modelLine ? `
-            <div class="model-line">
-              ${modelLine}
-            </div>
-          ` : ""}
-
+      ${decoded?.vip ? `
+        <div class="vip-badge vip-${decoded.vip}">
+          VIP ${decoded.vip}
         </div>
-      `;
+      ` : ""}
+
+      <div style="font-weight:600;">
+        ${decoded?.ram ? decoded.ram + "GB / " : ""}
+        ${decoded?.rom ? decoded.rom + "GB" : "?"}
+      </div>
+
+    </div>
+
+    <div style="margin-top:6px;opacity:0.85;">
+      ${chip.name} ${decoded?.storage || ""}
+    </div>
+
+    ${modelLine ? `
+      <div class="model-line" style="margin-top:8px;">
+        ${modelLine}
+      </div>
+    ` : ""}
+
+  </div>
+`;
+
 
     });
 
