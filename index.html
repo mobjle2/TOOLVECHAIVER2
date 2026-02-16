@@ -1464,35 +1464,57 @@ html += `
       ${x.code}
     </div>
 
-    <div style="display:flex;gap:10px;align-items:center;margin-top:6px;flex-wrap:wrap;">
+    <div style="
+      display:flex;
+      align-items:center;
+      gap:6px;
+      margin-top:8px;
+      flex-wrap:nowrap;
+    ">
 
       ${decoded?.vip ? `
-        <div class="vip-badge vip-${decoded.vip}">
+        <div class="vip-badge vip-${decoded.vip}"
+             style="
+               padding:4px 10px;
+               font-size:12px;
+               border-radius:14px;
+             ">
           VIP ${decoded.vip}
         </div>
       ` : ""}
 
-      <div style="font-weight:600;">
-        ${decoded?.ram ? decoded.ram + "GB / " : ""}
-        ${decoded?.rom ? decoded.rom + "GB" : "?"}
+      <div style="
+        font-weight:600;
+        font-size:14px;
+        letter-spacing:0.3px;
+        opacity:0.9;
+      ">
+        ${decoded?.ram && decoded?.rom ? decoded.ram + "/" + decoded.rom : "?"}
       </div>
 
     </div>
 
-    <div style="margin-top:6px;opacity:0.85;">
+    <div style="
+      margin-top:6px;
+      opacity:0.85;
+      font-size:14px;
+    ">
       ${chip.name} ${decoded?.storage || ""}
     </div>
 
     ${modelLine ? `
-      <div class="model-line" style="margin-top:8px;">
+      <div class="model-line" style="
+        margin-top:10px;
+        padding-top:8px;
+        border-top:1px solid rgba(255,255,255,0.08);
+        font-size:14px;
+      ">
         ${modelLine}
       </div>
     ` : ""}
 
   </div>
 `;
-
-
     });
 
     html += `</div>`;
