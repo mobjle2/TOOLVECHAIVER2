@@ -14,10 +14,7 @@
 body{
   background:linear-gradient(160deg,#111827,#1e293b);
   color:#e5e7eb;
-  min-height:100vh;
 }
-
-
 
 
 
@@ -105,28 +102,22 @@ body{
 }
 .vip-13 .vip-dot{ background:#ff003c; }
 
-.link-card{
-  background:linear-gradient(
-    145deg,
-    rgba(15,23,42,0.95),
-    rgba(15,23,42,0.85)
-  );
-  border:1px solid rgba(255,255,255,0.08);
-  border-radius:18px;
-  box-shadow:
-    0 15px 40px rgba(0,0,0,0.5),
-    inset 0 0 20px rgba(255,255,255,0.03);
-  transition:all 0.3s ease;
+  .link-card{
+  background:#141414;
+  border:1px solid #222;
+  border-radius:14px;
+  padding:14px 18px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+  transition:0.2s;
 }
-
-
 
 .link-card:hover{
-  transform:translateY(-6px);
-  box-shadow:0 20px 50px rgba(59,130,246,0.35);
-  border-color:rgba(59,130,246,0.5);
+  border-color:#2563eb;
+  transform:translateY(-2px);
 }
-
 
 .link-id{
   font-weight:600;
@@ -294,33 +285,33 @@ font-weight:500;
   margin:30px auto 0 auto;
 }
 
+
+  .main-container{
+  max-width:1100px;
+  margin:0 auto;
+  padding:40px 20px;
+}
+
 .main-title{
   text-align:center;
-  margin-top:20px;
-  font-family:'Poppins', sans-serif;
-  font-size:42px;
+  margin-top:40px;
+  font-size:34px;
   font-weight:800;
-  letter-spacing:3px;
+  letter-spacing:2px;
   color:#f1f5f9;
   text-shadow:0 0 20px rgba(59,130,246,0.25);
 }
 
 
-
-
-
-
-
-
-
 .sub-title{
   text-align:center;
-  margin-top:5px;
+  margin-top:10px;
   font-size:14px;
   opacity:0.75;
   letter-spacing:3px;
   color:#94a3b8;
 }
+
 
 
 /* ===== VIP BADGE ===== */
@@ -622,11 +613,10 @@ font-weight:500;
 }
 /* Desktop container */
 .main-container{
-  padding:5px 20px 15px;
+  padding:40px 20px;
   max-width:1100px;
   margin:0 auto;
 }
-
 
  /* ===== CREATE LINK BUTTON PRO ===== */
 
@@ -718,11 +708,16 @@ font-weight:500;
   margin-top:25px;
 }
 .clean-check input{
-  background:rgba(15,23,42,0.8);
-  border:1px solid rgba(59,130,246,0.3);
-  box-shadow:0 0 25px rgba(59,130,246,0.2);
+  width:100%;
+  height:54px;
+  padding:0 60px 0 20px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,0.08);
+  background:#0b1220;
+  color:white;
+  font-size:15px;
+  transition:all 0.25s ease;
 }
-
 
 /* Hover nhẹ */
 .clean-check input:hover{
@@ -733,11 +728,13 @@ font-weight:500;
 
 /* Focus Glow PRO */
 .clean-check input:focus{
+  border-color:#2563eb;
   box-shadow:
-    0 0 0 3px rgba(59,130,246,0.3),
-    0 0 40px rgba(59,130,246,0.5);
+    0 0 0 3px rgba(37,99,235,0.25),
+    0 0 25px rgba(37,99,235,0.35);
+  outline:none;
+  background:#0f172a;
 }
-
 
 .clean-check .check-btn{
   position:absolute;
@@ -771,14 +768,12 @@ font-weight:500;
 
 /* ===== ADMIN CARD CLEAN ===== */
 .link-card{
-  background:linear-gradient(145deg,#1e293b,#111827);
-  border-radius:22px;
-  padding:22px;
-  border:1px solid rgba(255,255,255,0.06);
-  box-shadow:0 12px 30px rgba(0,0,0,0.45);
-  transition:all 0.3s ease;
+  background:#0f172a;
+  border:1px solid #1f2937;
+  border-radius:16px;
+  padding:16px;
+  transition:0.25s ease;
 }
-
 
 .link-card:hover{
   border-color:#2563eb;
@@ -925,20 +920,30 @@ font-weight:500;
 /* ===== ADMIN TOP BAR ===== */
 .admin-top-bar{
   display:flex;
-  align-items:center;   /* đảm bảo căn giữa theo trục dọc */
-  gap:15px;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:20px;
 }
-
-
 
 /* ===== ADMIN TOGGLE ULTRA PRO ===== */
 
 .admin-toggle-btn{
-  background:linear-gradient(90deg,#2563eb,#3b82f6);
-  color:white;
-  box-shadow:0 10px 30px rgba(37,99,235,0.4);
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 22px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.1);
+  background:rgba(255,255,255,0.04);
+  backdrop-filter:blur(10px);
+  color:#e2e8f0;
+  font-weight:600;
+  letter-spacing:0.5px;
+  cursor:pointer;
+  transition:all 0.35s cubic-bezier(.4,0,.2,1);
+  position:relative;
+  overflow:hidden;
 }
-
 
 /* Gradient glow nền */
 .admin-toggle-btn::before{
@@ -964,11 +969,10 @@ font-weight:500;
 
 /* Active state */
 .admin-toggle-btn.active{
-  background:#1e293b;
-  color:#3b82f6;
-  box-shadow:0 6px 15px rgba(37,99,235,0.2);
+  color:white;
+  border-color:transparent;
+  box-shadow:0 15px 40px rgba(37,99,235,0.5);
 }
-
 
 .admin-toggle-btn.active::before{
   opacity:1;
@@ -1052,22 +1056,6 @@ font-weight:500;
   opacity:1;
   transform:translateY(0);
 }
-/* ===== WARNING CENTER PRO ===== */
-.note-warning{
-  display:block;
-  width:fit-content;
-  margin:18px auto 0;
-  padding:10px 22px;
-  font-size:13px;
-  font-weight:600;
-  color:#ff6b6b;
-  background:rgba(255,77,79,0.08);
-  border:1px solid rgba(255,77,79,0.3);
-  border-radius:12px;
-  letter-spacing:0.5px;
-  text-align:center;
-  backdrop-filter:blur(6px);
-}
 
 
 
@@ -1110,9 +1098,6 @@ font-weight:500;
   <div class="sub-title">
     VIP • MMC • Model
   </div>
-<div class="note-warning">
-  ⚠️ Tool tổng hợp tự động. Không đảm bảo chính xác tuyệt đối. Vui lòng kiểm tra lại trước khi mua bán.
-</div>
 
 </div>
 
@@ -1120,35 +1105,38 @@ font-weight:500;
 <!-- ===== ADMIN PANEL (ĐƯA LÊN TRÊN Ô CHECK) ===== -->
 <div id="adminPanel" class="admin-panel" style="display:none;">
 
-<div class="admin-top-bar"
-     style="max-width:1000px;margin:25px auto 0 auto;gap:15px;">
+  <div class="admin-top-bar">
+    <div style="display:flex;gap:10px;">
 
-  <!-- BÊN TRÁI: ADMIN -->
-  <button class="admin-toggle-btn" id="adminToggle" onclick="toggleAdmin()">
-    <span class="admin-icon">⚙</span>
-    <span class="admin-text">Admin</span>
-  </button>
+<button class="admin-toggle-btn" id="adminToggle" onclick="toggleAdmin()">
+  <span class="admin-icon">⚙</span>
+  <span class="admin-text">Admin</span>
+</button>
 
-  <!-- Ở GIỮA: INPUT -->
-  <div class="check-group clean-check" style="flex:1;margin:0;">
-    <input id="q"
-           placeholder="Nhập mã hoặc model cần kiểm tra"
-           autocomplete="off">
-    <button class="check-btn" onclick="check()">🔍</button>
-  </div>
 
-  <!-- BÊN PHẢI: TẠO LINK -->
-  <button class="create-link-btn small" onclick="createLink()">
-    ＋ Tạo link
-  </button>
+      <button class="create-link-btn small" onclick="createLink()">
+        ＋ Tạo link
+      </button>
 
-</div>
-
+    </div>
   </div>
 
   <div id="adminContent">
     <div id="linkList"></div>
   </div>
+
+</div>
+
+
+<!-- ===== Ô NHẬP KIỂM TRA ===== -->
+<div class="check-group clean-check"
+     style="max-width:1000px;margin:25px auto 0 auto;">
+
+  <input id="q"
+         placeholder="Nhập mã hoặc model cần kiểm tra"
+         autocomplete="off">
+
+  <button class="check-btn" onclick="check()">🔍</button>
 
 </div>
 
