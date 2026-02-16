@@ -1168,59 +1168,75 @@ if(userParam){
     runUserMode(userParam);
   }, 0);
 }
-
 async function runUserMode(id){
+
+  // ===== ẨN LOGIN + CHỨC NĂNG ADMIN (GIỮ Ô CHECK) =====
+  const login = document.getElementById("loginScreen");
+  if(login) login.style.display = "none";
+
+  const adminToggle = document.getElementById("adminToggle");
+  if(adminToggle) adminToggle.style.display = "none";
+
+  const createBtn = document.querySelector(".create-link-btn");
+  if(createBtn) createBtn.style.display = "none";
+
+  const adminContent = document.getElementById("adminContent");
+  if(adminContent) adminContent.style.display = "none";
+
   try{
+
     const doc = await db.collection("shareLinks").doc(id).get();
 
     if(!doc.exists){
-      document.body.innerHTML = "❌ Link không tồn tại!";
-      return;
-    }
-
-    if(!doc.data().active){
-      document.body.innerHTML = "🔒 Link đã bị khóa!";
+      showUserMessage("❌ Link không tồn tại!");
       return;
     }
 
     const data = doc.data();
 
+    if(!data.active){
+      showUserMessage("🔒 Link đã bị khóa!");
+      return;
+    }
+
+    // ===== HẾT HẠN =====
     if(data.expiresAt && data.expiresAt.toDate() < new Date()){
+
       await db.collection("shareLinks").doc(id).update({
         active:false
       });
 
-      document.body.innerHTML = "⛔ Link đã hết hạn!";
+      showUserMessage("⛔ Link đã hết hạn!");
       return;
     }
 
+    // ===== TĂNG LƯỢT XEM =====
     await db.collection("shareLinks").doc(id).update({
       views: firebase.firestore.FieldValue.increment(1)
     });
 
-    const login = document.getElementById("loginScreen");
-    if(login) login.style.display = "none";
-
-    const admin = document.getElementById("adminPanel");
-    if(admin) admin.style.display = "none";
-
+    // ===== COUNTDOWN =====
     if(data.expiresAt){
-const box = document.createElement("div");
-box.id = "countdownBox";
-box.style.position = "fixed";
-box.style.top = "12px";
-box.style.right = "16px";
-box.style.background = "rgba(15,23,42,0.9)";
-box.style.border = "1px solid #334155";
-box.style.borderRadius = "10px";
-box.style.padding = "8px 14px";
-box.style.fontSize = "14px";
-box.style.fontWeight = "600";
-box.style.color = "#facc15";
-box.style.zIndex = "9999";
-box.style.boxShadow = "0 8px 25px rgba(0,0,0,0.4)";
-document.body.appendChild(box);
-;
+
+      let box = document.getElementById("countdownBox");
+
+      if(!box){
+        box = document.createElement("div");
+        box.id = "countdownBox";
+        box.style.position = "fixed";
+        box.style.top = "12px";
+        box.style.right = "16px";
+        box.style.background = "rgba(15,23,42,0.9)";
+        box.style.border = "1px solid #334155";
+        box.style.borderRadius = "10px";
+        box.style.padding = "8px 14px";
+        box.style.fontSize = "14px";
+        box.style.fontWeight = "600";
+        box.style.color = "#facc15";
+        box.style.zIndex = "9999";
+        box.style.boxShadow = "0 8px 25px rgba(0,0,0,0.4)";
+        document.body.appendChild(box);
+      }
 
       const end = data.expiresAt.toDate();
 
@@ -1232,7 +1248,6 @@ document.body.appendChild(box);
           await db.collection("shareLinks").doc(id).update({
             active:false
           });
-
           box.innerText = "⛔ Link đã hết hạn!";
           return;
         }
@@ -1242,14 +1257,35 @@ document.body.appendChild(box);
         const minutes = Math.floor((diff / (1000 * 60)) % 60);
 
         box.innerText = `⏳ Còn ${days} ngày ${hours} giờ ${minutes} phút`;
-      }, 1000);
+      },1000);
     }
 
   }catch(e){
     console.error(e);
-    document.body.innerHTML = "❌ Lỗi quyền truy cập!";
+    showUserMessage("⚠️ Lỗi quyền truy cập!");
   }
 }
+
+
+// ===== THÊM HÀM NÀY NẾU CHƯA CÓ =====
+function showUserMessage(text){
+  const out = document.getElementById("out");
+  if(out){
+    out.innerHTML = `
+      <div style="
+        margin-top:40px;
+        text-align:center;
+        font-size:18px;
+        font-weight:600;
+        color:#f87171;
+      ">
+        ${text}
+      </div>
+    `;
+  }
+}
+
+
 
 function detectChip(code){
 
