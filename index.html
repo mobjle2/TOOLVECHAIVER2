@@ -327,12 +327,12 @@ font-weight:500;
   color:#ff003c;
   text-shadow:0 0 8px rgba(255,0,60,0.8);
 }
-
 /* ================= CLEAN LOGIN FINAL ================= */
 
 .login-wrapper{
   position:fixed;
   inset:0;
+  z-index:9999; /* QUAN TRỌNG: đè toàn bộ dashboard */
   display:flex;
   justify-content:center;
   align-items:center;
@@ -342,6 +342,8 @@ font-weight:500;
     linear-gradient(160deg,#020617,#0f172a);
   overflow:hidden;
 }
+
+
 
 
 .login-box{
