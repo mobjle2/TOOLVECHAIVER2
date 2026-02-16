@@ -1282,6 +1282,112 @@ function detectChip(code){
 
   return {name:"UNKNOWN", color:"#6b7280"};
 }
+// ================= AUTO DECODER SYSTEM =================
+
+// ===== VIP RULE =====
+function calculateVip(ram, rom){
+  if((ram === 2 || ram === 3) && rom === 16) return 4;
+  if((ram === 2 || ram === 3) && rom === 32) return 5;
+  if((ram === 3 || ram === 4) && rom === 64) return 6;
+  if((ram === 4 || ram === 6) && rom === 128) return 7;
+  if(ram === 8 && rom === 128) return 8;
+  if(ram === 12 && rom === 256) return 9;
+  return null;
+}
+
+// ===== SAMSUNG =====
+function decodeSamsung(code){
+
+  const ramMap = {
+    "S":1,"2":1,"6":1.5,"K":2,"1":2,"3":2,
+    "A":3,"B":3,"8":3,"D":4,"4":4,
+    "C":6,"J":8,"P":8,"L":10,"M":12
+  };
+
+  const romMap = {
+    "4":4,"8":8,"A":16,"B":32,
+    "C":64,"D":128,"E":256,
+    "F":512,"G":1024
+  };
+
+  let ram = ramMap[code[2]] || null;
+
+  let rom = null;
+  const match = code.match(/([A-Z0-9])M-/);
+  if(match) rom = romMap[match[1]] || null;
+
+  let storage = "Unknown";
+  if(code.includes("900")) storage = "UFS 3.1";
+  else if(code.includes("800")) storage = "UFS 2.1";
+  else if(code.includes("700")) storage = "UFS 2.1";
+  else if(code.includes("600")) storage = "eMMC 5.1";
+  else if(code.includes("100")) storage = "eMMC 5.0";
+
+  return {
+    ram,
+    rom,
+    storage,
+    vip: calculateVip(ram, rom)
+  };
+}
+
+// ===== SK HYNIX =====
+function decodeHynix(code){
+
+  let storage = "Unknown";
+  if(code.startsWith("H9") || code.startsWith("H26")) storage = "eMMC";
+  else if(code.startsWith("H28")) storage = "UFS";
+
+  const ramMap = {
+    "A4":0.5,"A8":1,"AB":2,
+    "AC":3,"AD":4,"AE":6
+  };
+
+  const romMap = {
+    "32":4,"64":8,"17":16,"18":16,"19":16,
+    "26":32,"27":32,"25":64,"53":64,"16":128
+  };
+
+  let ram = null;
+  const ramMatch = code.match(/A[0-9A-Z]/);
+  if(ramMatch) ram = ramMap[ramMatch[0]] || null;
+
+  let rom = null;
+  const romMatch = code.match(/([0-9]{2})/);
+  if(romMatch) rom = romMap[romMatch[1]] || null;
+
+  return {
+    ram,
+    rom,
+    storage,
+    vip: calculateVip(ram, rom)
+  };
+}
+
+// ===== MAIN DECODER =====
+function autoDecodeChip(code, dbData){
+
+  code = code.toUpperCase().trim();
+
+  // Samsung
+  if(/^K/.test(code)){
+    return decodeSamsung(code);
+  }
+
+  // SK hynix
+  if(/^H/.test(code)){
+    return decodeHynix(code);
+  }
+
+  // Other brands → fallback database
+  return {
+    ram: null,
+    rom: dbData?.rom || null,
+    storage: dbData?.type || "Unknown",
+    vip: dbData?.vip ? parseInt(dbData.vip.replace(/\D/g,"")) : null
+  };
+}
+
 
 async function check(){
 
@@ -1310,12 +1416,8 @@ async function check(){
         return;
       }
 
-      const chip = detectChip(x.code);
-
-      let sizeText = "";
-      let secondLine = "";
-      let vipClass = "";
-      let vipNumber = "";
+const chip = detectChip(x.code);
+const decoded = autoDecodeChip(x.code, x);
 
 
 
@@ -1357,20 +1459,6 @@ if(x.type === "MMC"){
 }
 
 
-/* ===== VIP ===== */
-if(x.type === "VIP"){
-
-  const vipNumber = parseInt(x.value.replace(/\D/g,""));
-  vipClass = `vip-${vipNumber}`;
-
-  sizeText = vipMap[vipNumber] || "";
-
-  secondLine = `
-    <div class="vip-badge ${vipClass}">
-      VIP ${vipNumber}
-    </div>
-  `;
-}
 
       /* ===== MODEL GROUP ===== */
       let modelLine = "";
@@ -1421,8 +1509,7 @@ modelLine = Object.keys(groups).map(b =>
 
 }
 
-
-      /* ===== BUILD CARD ===== */
+      /* ===== BUILD CARD (AUTO SYSTEM) ===== */
       html += `
         <div class="result-card">
 
@@ -1430,23 +1517,32 @@ modelLine = Object.keys(groups).map(b =>
             ${x.code}
           </div>
 
-          ${secondLine}
+          ${decoded?.vip ? `
+            <div class="vip-badge vip-${decoded.vip}">
+              VIP ${decoded.vip}
+            </div>
+          ` : ""}
 
           <div class="chip-line">
 
-    <div class="chip-item chip-brand" style="color:${chip.color}">
-  <span class="pro-dot" style="background:${chip.color}"></span>
-  ${chip.name}
-</div>
+            <div class="chip-item chip-brand" style="color:${chip.color}">
+              <span class="pro-dot" style="background:${chip.color}"></span>
+              ${chip.name}
+            </div>
 
-
-<div class="chip-item ${vipClass}">
-  <span class="mmc-dot"></span>
-  ${sizeText ? sizeText : "?"}
-</div>
-
+            <div class="chip-item ${decoded?.vip ? `vip-${decoded.vip}` : ""}">
+              <span class="mmc-dot"></span>
+              ${decoded?.ram ? decoded.ram + "GB / " : ""}
+              ${decoded?.rom ? decoded.rom + "GB" : "?"}
+            </div>
 
           </div>
+
+          ${decoded?.storage ? `
+            <div style="margin-top:6px;font-size:13px;opacity:0.8;">
+              ${decoded.storage}
+            </div>
+          ` : ""}
 
           ${modelLine ? `
             <div class="model-line">
