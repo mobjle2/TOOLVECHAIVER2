@@ -1416,9 +1416,16 @@ async function check(){
         return;
       }
 
-const chip = detectChip(x.code);
-const decoded = autoDecodeChip(x.code, x);
+let mmcBadge = "";
 
+if(x.type === "MMC" && x.value){
+  const level = x.value.replace("MMC","");
+  mmcBadge = `
+    <div class="mmc-badge mmc-${level}">
+      MMC${level}
+    </div>
+  `;
+}
 
 
 
@@ -1509,7 +1516,6 @@ modelLine = Object.keys(groups).map(b =>
 
 }
 
-      /* ===== BUILD CARD (AUTO SYSTEM) ===== */
       html += `
         <div class="result-card">
 
@@ -1522,6 +1528,8 @@ modelLine = Object.keys(groups).map(b =>
               VIP ${decoded.vip}
             </div>
           ` : ""}
+
+          ${mmcBadge}
 
           <div class="chip-line">
 
@@ -1552,6 +1560,7 @@ modelLine = Object.keys(groups).map(b =>
 
         </div>
       `;
+
 
     }); // đóng forEach
 
