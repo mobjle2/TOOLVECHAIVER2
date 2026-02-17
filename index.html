@@ -1354,88 +1354,84 @@ function calculateVip(ram, rom){
   return null;
 }
 
-// ===== SAMSUNG =====
 function decodeSamsung(code){
 
-  code = code.toUpperCase().replace("-", "").trim();
+  code = code.toUpperCase().trim();
 
   let ram = null;
   let rom = null;
   let storage = "Unknown";
 
-  // ===== 1️⃣ DÒNG uMCP KMx (KM8xxxxJM...) =====
-  if(/^KM\d[A-Z]/.test(code)){
+  // ===== RAM MAP (uMCP + UFS) =====
+  const ramMap = {
+    "A":3,
+    "B":3,
+    "8":3,
+    "D":4,
+    "4":4,
+    "C":6,
+    "J":8,
+    "P":8,
+    "L":10,
+    "M":12
+  };
 
-    // ===== ROM theo ký tự sau KMx =====
-    const romMap = {
-      "N":8,
-      "E":16,
-      "X":32,
-      "D":32,
-      "C":64,
-      "H":64,
-      "P":64,
-      "G":128,
-      "V":128,
-      "F":256,
-      "S":256
-    };
+  // ===== ROM MAP uMCP (KM8 / KM9) =====
+  const romMapNew = {
+    "N":8,
+    "E":16,
+    "X":32,
+    "D":32,
+    "C":64,
+    "H":64,
+    "P":64,
+    "G":128,
+    "V":128,
+    "F":256,
+    "S":256
+  };
 
-    rom = romMap[code[3]] || null;
+  // ===== ROM MAP eMMC CŨ =====
+  const romMapOld = {
+    "B":32,
+    "C":64,
+    "D":128,
+    "E":256,
+    "F":256,
+    "G":512
+  };
 
-    // ===== RAM theo ký tự gần cuối (JM-B813 → J = 8GB) =====
-    const ramMap = {
-      "A":3,
-      "B":3,
-      "8":3,
-      "D":4,
-      "4":4,
-      "C":6,
-      "J":8,
-      "P":8,
-      "L":10,
-      "M":12
-    };
+  // ===== LẤY PHẦN CHÍNH TRƯỚC DẤU "-" =====
+  const main = code.split("-")[0];
 
-    // Tìm ký tự RAM trước hậu tố package
-    const ramChar = code.match(/[A-Z]\d{3}$/);
-    if(ramChar){
-      ram = ramMap[ramChar[0][0]] || null;
-    } else {
-      ram = ramMap[code[8]] || null;
-    }
+  // =========================================================
+  // 1️⃣ DÒNG KMx (uMCP / UFS)
+  // =========================================================
+  if(/^KM\d/.test(main)){
+
+    // ===== ROM theo ký tự thứ 4 =====
+    rom = romMapNew[main[3]] || null;
+
+    // ===== RAM = ký tự áp chót =====
+    const ramChar = main[main.length - 2];
+    ram = ramMap[ramChar] || null;
 
     // ===== STORAGE VERSION =====
-    if(code.includes("900")) storage = "UFS 3.x";
-    else if(code.includes("800")) storage = "UFS 2.2";
-    else if(code.includes("700")) storage = "UFS 2.1";
-    else if(code.includes("600")) storage = "eMMC 5.1";
+    if(main.includes("900")) storage = "UFS 3.x";
+    else if(main.includes("800")) storage = "UFS 2.2";
+    else if(main.includes("700")) storage = "UFS 2.1";
+    else if(main.includes("600")) storage = "eMMC 5.1";
   }
 
-  // ===== 2️⃣ DÒNG eMMC CŨ (KLM / KLU / KMRX...) =====
+  // =========================================================
+  // 2️⃣ DÒNG KLM / KLU / KMRX (eMMC CŨ)
+  // =========================================================
   else{
 
-    const romMapOld = {
-      "B":32,
-      "C":64,
-      "D":128,
-      "E":256,
-      "F":256,
-      "G":512
-    };
+    rom = romMapOld[main[3]] || null;
 
-    rom = romMapOld[code[3]] || null;
-
-    const ramMapOld = {
-      "A":3,
-      "D":4,
-      "C":6,
-      "J":8,
-      "L":10,
-      "M":12
-    };
-
-    ram = ramMapOld[code[8]] || null;
+    const ramChar = main[main.length - 2];
+    ram = ramMap[ramChar] || null;
 
     storage = "eMMC 5.x";
   }
@@ -1447,6 +1443,7 @@ function decodeSamsung(code){
     vip: calculateVip(ram, rom)
   };
 }
+
 
 // ===== SK HYNIX FULL ENGINE =====
 function decodeHynix(code){
