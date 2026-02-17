@@ -1356,8 +1356,6 @@ function calculateVip(ram, rom){
 
 function decodeSamsung(code){
 
-function decodeSamsung(code){
-
   code = code.toUpperCase().trim();
   const main = code.split("-")[0];
 
@@ -1365,7 +1363,6 @@ function decodeSamsung(code){
   let rom = null;
   let storage = "Unknown";
 
-  // ===== RAM MAP =====
   const ramMap = {
     "A":3,
     "B":3,
@@ -1380,23 +1377,21 @@ function decodeSamsung(code){
   };
 
   // =========================
-  // 1️⃣ ROM THEO SERIES
+  // ROM THEO SERIES
   // =========================
-  if(main.includes("9001")) rom = 512; // mặc định cao
+  if(main.includes("9001")) rom = 512; // cần refine nếu muốn phân biệt 256/512
   else if(main.includes("8001")) rom = 256;
   else if(main.includes("7001")) rom = 128;
   else if(main.includes("6001")) rom = 64;
 
   // =========================
-  // 2️⃣ RAM LINH HOẠT
+  // RAM = ký tự áp chót
   // =========================
-  const last = main[main.length - 1];
-  const secondLast = main[main.length - 2];
-
-  ram = ramMap[secondLast] || ramMap[last] || null;
+  const ramChar = main[main.length - 2];
+  ram = ramMap[ramChar] || null;
 
   // =========================
-  // 3️⃣ UFS VERSION
+  // STORAGE VERSION
   // =========================
   if(main.includes("900")) storage = "UFS 3.x";
   else if(main.includes("800")) storage = "UFS 2.2";
