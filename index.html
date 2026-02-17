@@ -1381,12 +1381,13 @@ function decodeSamsung(code){
 let rom = romMap[code[3]] || null;
 
 // ===== FIX UFS SERIES KM2/KM3/KM5/KM7/KM8 =====
-if(/^KM[2-8]/.test(code)){
+if(!rom && /^KM[2-8]/.test(code)){
   if(code.includes("9001")) rom = 512;
   else if(code.includes("8001")) rom = 256;
   else if(code.includes("7001")) rom = 128;
   else if(code.includes("6001")) rom = 64;
 }
+
 
 // ===== FIX riêng dòng KMRX =====
 if(!rom && code.startsWith("KMRX")){
