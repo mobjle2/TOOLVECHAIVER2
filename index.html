@@ -1720,13 +1720,11 @@ if(Array.isArray(x.models) && x.models.length){
 
   const grouped = {};
 
-  x.models.forEach(m => {
+  x.models.forEach(function(m){
 
-    // Lấy hãng (chữ đầu tiên)
     const brandMatch = m.match(/^[A-Z]+/i);
     const brand = brandMatch ? brandMatch[0] : "Other";
 
-    // Bỏ hãng + bỏ dung lượng
     const cleanModel = m
       .replace(new RegExp("^" + brand, "i"), "")
       .replace(/\s*\d+GB/i,"")
@@ -1739,15 +1737,17 @@ if(Array.isArray(x.models) && x.models.length){
     grouped[brand].push(cleanModel);
   });
 
-  // Render từng hãng thành từng dòng
-modelLine = Object.keys(grouped).map(b =>
-  `<div class="model-row">
-      <span class="brand">${b} :</span>
-      <span class="model-list">
-        ${grouped[b].join(" / ")}
-      </span>
-  </div>`
-).join("");
+  modelLine = Object.keys(grouped).map(function(b){
+    return `
+      <div class="model-row">
+        <span class="brand">${b} :</span>
+        <span class="model-list">
+          ${grouped[b].join(" / ")}
+        </span>
+      </div>
+    `;
+  }).join("");
+}
 
 
 
