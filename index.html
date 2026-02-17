@@ -1499,9 +1499,20 @@ if(storage === "eMMC 5.1"){
     vip = 8;
   }
 
-  else{
-    vip = 5;
-  }
+// ===== 64GB eMMC =====
+else if(rom === 64){
+  vip = 6;
+}
+
+// ===== 32GB eMMC =====
+else if(rom === 32){
+  vip = 5;
+}
+
+else{
+  vip = 5;
+}
+
 }
 
 
