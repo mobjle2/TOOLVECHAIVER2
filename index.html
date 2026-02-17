@@ -1472,13 +1472,31 @@ if(
   let vip = null;
 
   // eMMC (không vượt 8)
-  if(storage === "eMMC 5.1"){
-    if(ram === 6 && rom === 128) vip = 7;
-    else if(ram === 8 && rom === 128) vip = 8;
-    else if(ram === 6 && rom === 256) vip = 8;
-    else if(ram === 8 && rom === 256) vip = 8;
-    else vip = 6;
+if(storage === "eMMC 5.1"){
+
+  // 16GB ROM đời thấp (H9TQ17...)
+  if(rom === 16){
+    vip = 4;
   }
+
+  // 128GB eMMC
+  else if(ram === 6 && rom === 128){
+    vip = 7;
+  }
+  else if(ram === 8 && rom === 128){
+    vip = 8;
+  }
+
+  // 256GB eMMC (không vượt 8)
+  else if(rom === 256){
+    vip = 8;
+  }
+
+  else{
+    vip = 5;
+  }
+}
+
 
   // UFS 2.1
   else if(storage === "UFS 2.1"){
