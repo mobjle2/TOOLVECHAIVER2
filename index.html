@@ -1764,12 +1764,12 @@ else if (decoded && decoded.vip != null) {
 
 
 /* ===== BUILD CARD ===== */
-html +=
-  '<div class="result-card">' +
+html += `
+  <div class="result-card">
+    <div class="code-main">${x.code}</div>
+  </div>
+`;
 
-    '<div class="code-main">' +
-      x.code +
-    '</div>' +
 
     '<div style="display:flex;align-items:center;gap:10px;margin-top:12px;">' +
       badgeHTML +
