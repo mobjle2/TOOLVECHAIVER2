@@ -1402,9 +1402,14 @@ function decodeHynix(code){
   // ===== STORAGE DETECT CHUẨN THEO GENERATION =====
   let storage = "Unknown";
 
-  if(code.startsWith("H9HQ16") || code.startsWith("H26")){
-    storage = "eMMC 5.1";
-  }
+if(
+  code.startsWith("H9HQ16") ||
+  code.startsWith("H26") ||
+  code.startsWith("H9TQ")
+){
+  storage = "eMMC 5.1";
+}
+
   else if(code.startsWith("H9HP16")){
     storage = "UFS 2.1";
   }
