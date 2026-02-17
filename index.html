@@ -1378,24 +1378,36 @@ function decodeSamsung(code){
     "L":10,
     "M":12
   };
+let rom = romMap[code[3]] || null;
 
- let rom = romMap[code[3]] || null;
+// ===== FIX KM8 SERIES (UFS mới) =====
+if(code.startsWith("KM8")){
+  if(code.includes("9001")) rom = 512;
+  else if(code.includes("8001")) rom = 256;
+  else if(code.includes("7001")) rom = 128;
+  else if(code.includes("6001")) rom = 64;
+}
 
-// fix riêng dòng KMRX
+// ===== FIX riêng dòng KMRX =====
 if(!rom && code.startsWith("KMRX")){
   rom = 32;
 }
 
-  const ram = ramMap[code[8]] || null;
+let ram = ramMap[code[8]] || null;
 
-  const mmcMap = {
-    16:1,
-    32:2,
-    64:3,
-    128:4,
-    256:5,
-    512:6
-  };
+// ===== FIX RAM cho KM8 (RAM nằm ở index 9) =====
+if(!ram && code.startsWith("KM8")){
+  ram = ramMap[code[9]] || null;
+}
+
+const mmcMap = {
+  16:1,
+  32:2,
+  64:3,
+  128:4,
+  256:5,
+  512:6
+};
 
 const storage =
   code.includes("900") ? "UFS 3.1" :
