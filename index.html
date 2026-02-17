@@ -1712,73 +1712,50 @@ if(decoded?.mmc){
   `;
 }
 
-/* ===== MODEL LINE ===== */
+
+      /* ===== MODEL LINE ===== */
 let modelLine = "";
 
-if (Array.isArray(x.models) && x.models.length) {
+if(Array.isArray(x.models) && x.models.length){
 
   const grouped = {};
 
-  x.models.forEach(function (m) {
+  x.models.forEach(function(m){
 
     const brandMatch = m.match(/^[A-Z]+/i);
     const brand = brandMatch ? brandMatch[0] : "Other";
 
     const cleanModel = m
       .replace(new RegExp("^" + brand, "i"), "")
-      .replace(/\s*\d+GB/i, "")
+      .replace(/\s*\d+GB/i,"")
       .trim();
 
-    if (!grouped[brand]) {
+    if(!grouped[brand]){
       grouped[brand] = [];
     }
 
     grouped[brand].push(cleanModel);
   });
 
-  for (const b in grouped) {
-    modelLine +=
-      '<div class="model-row">' +
-      '<span class="brand">' + b + ' :</span> ' +
-      '<span class="model-list">' + grouped[b].join(" / ") + '</span>' +
-      '</div>';
-  }
+  modelLine = Object.keys(grouped).map(function(b){
+    return `
+      <div class="model-row">
+        <span class="brand">${b} :</span>
+        <span class="model-list">
+          ${grouped[b].join(" / ")}
+        </span>
+      </div>
+    `;
+  }).join("");
 }
-
-
-/* ===== BADGE BUILD (AN TOÀN) ===== */
-let badgeHTML = "";
-
-if (x.mmc) {
-  badgeHTML =
-    '<div class="mmc-badge mmc-' + x.mmc.replace("MMC", "") + '">' +
-    x.mmc + (decoded && decoded.rom ? " " + decoded.rom + "G" : "") +
-    '</div>';
-}
-else if (decoded && decoded.vip != null) {
-  badgeHTML =
-    '<div class="vip-badge vip-' + Math.floor(decoded.vip) + '">' +
-    'VIP ' + (decoded.vip === 4.5 ? "4+" : decoded.vip) +
-    '</div>';
-}
-
 
 /* ===== BUILD CARD ===== */
 html += `
   <div class="result-card">
-    <div class="code-main">${x.code}</div>
-  </div>
-`;
 
-
-    '<div style="display:flex;align-items:center;gap:10px;margin-top:12px;">' +
-      badgeHTML +
-    '</div>' +
-
-    modelLine +
-
-  '</div>';
-
+    <div class="code-main">
+      ${x.code}
+    </div>
 
     <div style="
       display:flex;
