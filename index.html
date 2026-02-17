@@ -1354,8 +1354,6 @@ function calculateVip(ram, rom){
   return null;
 }
 
-
-
 // ===== SAMSUNG =====
 function decodeSamsung(code){
 
@@ -1384,6 +1382,15 @@ function decodeSamsung(code){
   const rom = romMap[code[3]] || null;
   const ram = ramMap[code[8]] || null;
 
+  const mmcMap = {
+    16:1,
+    32:2,
+    64:3,
+    128:4,
+    256:5,
+    512:6
+  };
+
   return {
     ram,
     rom,
@@ -1391,9 +1398,11 @@ function decodeSamsung(code){
              code.includes("800") ? "UFS 2.1" :
              code.includes("700") ? "UFS 2.1" :
              code.includes("600") ? "eMMC 5.1" : "Unknown",
-    vip: calculateVip(ram, rom)
+    vip: calculateVip(ram, rom),
+    mmc: rom && mmcMap[rom] ? "MMC" + mmcMap[rom] : null
   };
 }
+
 // ===== SK HYNIX FULL ENGINE =====
 function decodeHynix(code){
 
