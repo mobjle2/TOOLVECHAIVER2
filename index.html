@@ -1041,6 +1041,25 @@ font-weight:500;
   }
 
 }
+/* ===== MODEL GROUP STYLE ===== */
+
+.model-row{
+  margin-top:6px;
+  font-size:14px;
+  line-height:1.6;
+  opacity:0.9;
+}
+
+.model-row .brand{
+  color:#4ade80;
+  font-weight:600;
+  letter-spacing:0.3px;
+}
+
+.model-row .model-list{
+  color:#e2e8f0;
+  font-weight:500;
+}
 
 </style>
 
@@ -1695,10 +1714,40 @@ if(decoded?.mmc){
 
 
       /* ===== MODEL LINE ===== */
-      let modelLine = "";
-      if(Array.isArray(x.models)){
-        modelLine = x.models.join(" • ");
-      }
+let modelLine = "";
+
+if(Array.isArray(x.models) && x.models.length){
+
+  const grouped = {};
+
+  x.models.forEach(m => {
+
+    // Lấy hãng (chữ đầu tiên)
+    const brandMatch = m.match(/^[A-Z]+/i);
+    const brand = brandMatch ? brandMatch[0] : "Other";
+
+    // Bỏ hãng + bỏ dung lượng
+    const cleanModel = m
+      .replace(new RegExp("^" + brand, "i"), "")
+      .replace(/\s*\d+GB/i,"")
+      .trim();
+
+    if(!grouped[brand]){
+      grouped[brand] = [];
+    }
+
+    grouped[brand].push(cleanModel);
+  });
+
+  // Render từng hãng thành từng dòng
+  modelLine = Object.keys(grouped).map(b =>
+    `<div class="model-row">
+      <span class="brand">${b} :</span>
+      ${grouped[b].join(" / ")}
+    </div>`
+  ).join("");
+}
+
 
 /* ===== BUILD CARD ===== */
 html += `
