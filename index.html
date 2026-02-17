@@ -1378,14 +1378,23 @@ function decodeSamsung(code){
     "L":10,
     "M":12
   };
-let rom = romMap[code[3]] || null;
+let rom = null;
 
-// ===== FIX UFS SERIES KM2/KM3/KM5/KM7/KM8 =====
-if(!rom && /^KM[2-8]/.test(code)){
+// ===== ƯU TIÊN DÒNG uMCP UFS (KMx?6001/7001/8001/9001) =====
+if(/^KM\d[A-Z0-9]?(6001|7001|8001|9001)/.test(code)){
+
   if(code.includes("9001")) rom = 512;
   else if(code.includes("8001")) rom = 256;
   else if(code.includes("7001")) rom = 128;
   else if(code.includes("6001")) rom = 64;
+
+}
+
+// ===== DÒNG CŨ (eMMC / không có series xxxx001) =====
+else{
+
+  rom = romMap[code[3]] || null;
+
 }
 
 
