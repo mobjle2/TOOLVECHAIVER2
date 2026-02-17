@@ -1742,7 +1742,12 @@ ${decoded?.vip != null ? `
     color:#c084fc;
     box-shadow:0 0 10px rgba(139,92,246,0.2);
   ">
-    ${decoded?.ram && decoded?.rom ? decoded.ram + "/" + decoded.rom : "?"}
+ ${decoded?.ram && decoded?.rom
+  ? decoded.ram + "/" + decoded.rom
+  : decoded?.rom
+    ? decoded.rom + "GB"
+    : ""}
+
   </div>
 
 </div>
