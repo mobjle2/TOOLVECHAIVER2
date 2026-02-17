@@ -1481,16 +1481,27 @@ if(
   }
 
   // ===== RAM MAP FULL =====
-  const ramMap = {
-    "A4":0.5,
-    "A8":1,
-    "AB":2,
-    "AC":3,
-    "AD":4,
-    "AE":6,
-    "AF":8,
-    "AG":12,
-    "AH":16
+const ramMap = {
+  "A":3,
+  "B":3,
+  "8":3,
+  "D":4,
+  "4":4,
+  "C":6,
+  "J":8,
+  "P":8,
+  "L":10,
+  "M":12
+};
+
+// Lấy phần trước dấu "-"
+const main = code.split("-")[0];
+
+// RAM = ký tự thứ 2 từ cuối
+const ramChar = main[main.length - 2];
+
+ram = ramMap[ramChar] || null;
+
   };
 
   // ===== ROM MAP FULL =====
