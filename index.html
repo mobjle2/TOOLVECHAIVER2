@@ -1749,8 +1749,6 @@ if(Array.isArray(x.models) && x.models.length){
   }).join("");
 }
 
-
-
 /* ===== BUILD CARD ===== */
 html += `
   <div class="result-card">
@@ -1759,30 +1757,31 @@ html += `
       ${x.code}
     </div>
 
-<div style="
-  display:flex;
-  align-items:center;
-  gap:10px;
-  margin-top:12px;
-">
+    <div style="
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-top:12px;
+    ">
 
-${decoded?.vip != null ? `
-  <div class="vip-badge vip-${Math.floor(decoded.vip)}"
-       style="
-         padding:6px 16px;
-         font-size:13px;
-         border-radius:20px;
-         font-weight:700;
-         box-shadow:0 0 12px rgba(236,72,153,0.25);
-       ">
-    VIP ${decoded.vip === 4.5 ? "4+" : decoded.vip}
-  </div>
-` : decoded?.mmc ? `
-  <div class="mmc-badge mmc-${decoded.mmc.replace("MMC","")}">
-    ${decoded.mmc}
-  </div>
-` : ""}
+      ${
+        x.mmc
+          ? `
+            <div class="mmc-badge mmc-${x.mmc.replace("MMC","")}">
+              ${x.mmc}${decoded?.rom ? " " + decoded.rom + "G" : ""}
+            </div>
+          `
+          : decoded?.vip != null
+            ? `
+              <div class="vip-badge vip-${Math.floor(decoded.vip)}">
+                VIP ${decoded.vip === 4.5 ? "4+" : decoded.vip}
+              </div>
+            `
+            : ""
+      }
 
+    </div>
+`;
 
   <div style="
     padding:6px 16px;
