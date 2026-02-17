@@ -1363,6 +1363,9 @@ function decodeSamsung(code){
   let rom = null;
   let storage = "Unknown";
 
+  // =========================
+  // RAM MAP (Samsung uMCP)
+  // =========================
   const ramMap = {
     "A":3,
     "B":3,
@@ -1377,34 +1380,44 @@ function decodeSamsung(code){
   };
 
   // =========================
-  // ROM THEO SERIES
+  // 1️⃣ ROM THEO SERIES
   // =========================
-  // ===== ROM THEO SERIES + VARIANT =====
-if(main.includes("9001")){
-  if(main[3] === "G") rom = 512;
-  else rom = 256;   // F, V, S... mặc định 256
-}
-else if(main.includes("8001")) rom = 256;
-else if(main.includes("7001")) rom = 128;
-else if(main.includes("6001")) rom = 64;
-
-  else if(main.includes("8001")) rom = 256;
-  else if(main.includes("7001")) rom = 128;
-  else if(main.includes("6001")) rom = 64;
+  if(main.includes("9001")){
+    // 9001 có cả 256 và 512
+    if(main[3] === "G") rom = 512;
+    else rom = 256;  // F, V, S... = 256
+  }
+  else if(main.includes("8001")){
+    rom = 256;
+  }
+  else if(main.includes("7001")){
+    rom = 128;
+  }
+  else if(main.includes("6001")){
+    rom = 64;
+  }
 
   // =========================
-  // RAM = ký tự áp chót
+  // 2️⃣ RAM = ký tự áp chót
   // =========================
   const ramChar = main[main.length - 2];
   ram = ramMap[ramChar] || null;
 
   // =========================
-  // STORAGE VERSION
+  // 3️⃣ STORAGE VERSION
   // =========================
-  if(main.includes("900")) storage = "UFS 3.x";
-  else if(main.includes("800")) storage = "UFS 2.2";
-  else if(main.includes("700")) storage = "UFS 2.1";
-  else if(main.includes("600")) storage = "eMMC 5.1";
+  if(main.includes("900")){
+    storage = "UFS 3.x";
+  }
+  else if(main.includes("800")){
+    storage = "UFS 2.2";
+  }
+  else if(main.includes("700")){
+    storage = "UFS 2.1";
+  }
+  else if(main.includes("600")){
+    storage = "eMMC 5.1";
+  }
 
   return {
     ram,
@@ -1413,7 +1426,6 @@ else if(main.includes("6001")) rom = 64;
     vip: calculateVip(ram, rom)
   };
 }
-
 
 
 // ===== SK HYNIX FULL ENGINE =====
