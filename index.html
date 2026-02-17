@@ -1380,8 +1380,8 @@ function decodeSamsung(code){
   };
 let rom = romMap[code[3]] || null;
 
-// ===== FIX KM8 SERIES (UFS mới) =====
-if(code.startsWith("KM8")){
+// ===== FIX UFS SERIES KM2/KM3/KM5/KM7/KM8 =====
+if(/^KM[2-8]/.test(code)){
   if(code.includes("9001")) rom = 512;
   else if(code.includes("8001")) rom = 256;
   else if(code.includes("7001")) rom = 128;
@@ -1395,10 +1395,11 @@ if(!rom && code.startsWith("KMRX")){
 
 let ram = ramMap[code[8]] || null;
 
-// ===== FIX RAM cho KM8 (RAM nằm ở index 9) =====
-if(!ram && code.startsWith("KM8")){
+// ===== FIX RAM cho dòng KMx mới (RAM lệch 1 ký tự) =====
+if(!ram && /^KM[2-8]/.test(code)){
   ram = ramMap[code[9]] || null;
 }
+
 
 const mmcMap = {
   16:1,
