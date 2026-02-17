@@ -1620,16 +1620,17 @@ async function check(){
       const decoded = autoDecodeChip(x.code, x);
 
       /* ===== MMC BADGE ===== */
-      let mmcBadge = "";
+let mmcBadge = "";
 
-      if(x.type === "MMC" && x.value){
-        const level = x.value.replace("MMC","");
-        mmcBadge = `
-          <div class="mmc-badge mmc-${level}">
-            MMC${level}
-          </div>
-        `;
-      }
+if(decoded?.mmc){
+  const level = decoded.mmc.replace("MMC","");
+  mmcBadge = `
+    <div class="mmc-badge mmc-${level}">
+      ${decoded.mmc}
+    </div>
+  `;
+}
+
 
       /* ===== MODEL LINE ===== */
       let modelLine = "";
@@ -1653,7 +1654,7 @@ html += `
 ">
 
   ${decoded?.vip ? `
-    <div class="vip-badge vip-${decoded.vip}"
+    <div class="vip-badge vip-${Math.floor(decoded.vip)}"
          style="
            padding:6px 16px;
            font-size:13px;
@@ -1662,6 +1663,12 @@ html += `
            box-shadow:0 0 12px rgba(236,72,153,0.25);
          ">
       VIP ${decoded.vip === 4.5 ? "4+" : decoded.vip}
+    </div>
+  ` : ""}
+
+  ${decoded?.mmc ? `
+    <div class="mmc-badge mmc-${decoded.mmc.replace("MMC","")}">
+      ${decoded.mmc}
     </div>
   ` : ""}
 
@@ -1678,6 +1685,8 @@ html += `
   </div>
 
 </div>
+`;
+
 
 <div style="
   margin-top:14px;
