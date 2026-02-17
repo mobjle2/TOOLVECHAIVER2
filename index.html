@@ -1382,28 +1382,28 @@ function decodeSamsung(code){
     };
 
     rom = romMap[code[3]] || null;
+// ===== RAM MAP =====
+const ramMap = {
+  "A":3,
+  "B":3,
+  "8":3,
+  "D":4,
+  "4":4,
+  "C":6,
+  "J":8,
+  "P":8,
+  "L":10,
+  "M":12
+};
 
-    // ===== RAM theo ký tự gần cuối (JM-B813 → J = 8GB) =====
-    const ramMap = {
-      "A":3,
-      "B":3,
-      "8":3,
-      "D":4,
-      "4":4,
-      "C":6,
-      "J":8,
-      "P":8,
-      "L":10,
-      "M":12
-    };
+// Lấy phần trước dấu "-"
+const main = code.split("-")[0];
 
-    // Tìm ký tự RAM trước hậu tố package
-    const ramChar = code.match(/[A-Z]\d{3}$/);
-    if(ramChar){
-      ram = ramMap[ramChar[0][0]] || null;
-    } else {
-      ram = ramMap[code[8]] || null;
-    }
+// RAM = ký tự áp chót
+const ramChar = main[main.length - 2];
+
+ram = ramMap[ramChar] || null;
+
 
     // ===== STORAGE VERSION =====
     if(code.includes("900")) storage = "UFS 3.x";
