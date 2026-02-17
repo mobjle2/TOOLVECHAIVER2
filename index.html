@@ -1379,7 +1379,13 @@ function decodeSamsung(code){
     "M":12
   };
 
-  const rom = romMap[code[3]] || null;
+ let rom = romMap[code[3]] || null;
+
+// fix riêng dòng KMRX
+if(!rom && code.startsWith("KMRX")){
+  rom = 32;
+}
+
   const ram = ramMap[code[8]] || null;
 
   const mmcMap = {
