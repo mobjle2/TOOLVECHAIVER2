@@ -1740,13 +1740,15 @@ if(Array.isArray(x.models) && x.models.length){
   });
 
   // Render từng hãng thành từng dòng
-  modelLine = Object.keys(grouped).map(b =>
-    `<div class="model-row">
+modelLine = Object.keys(grouped).map(b =>
+  `<div class="model-row">
       <span class="brand">${b} :</span>
-      ${grouped[b].join(" / ")}
-    </div>`
-  ).join("");
-}
+      <span class="model-list">
+        ${grouped[b].join(" / ")}
+      </span>
+  </div>`
+).join("");
+
 
 
 /* ===== BUILD CARD ===== */
