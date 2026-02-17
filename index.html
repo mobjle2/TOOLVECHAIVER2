@@ -1481,7 +1481,7 @@ if(storage === "eMMC 5.1"){
   if(rom === 16){
 
     if(code.includes("ADF")){
-      vip = "4+";
+      vip = 4.5;
     }
     else{
       vip = 4;
@@ -1652,7 +1652,7 @@ html += `
            font-weight:700;
            box-shadow:0 0 12px rgba(236,72,153,0.25);
          ">
-      VIP ${decoded.vip}
+      VIP ${decoded.vip === 4.5 ? "4+" : decoded.vip}
     </div>
   ` : ""}
 
