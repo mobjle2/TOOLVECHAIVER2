@@ -1379,7 +1379,15 @@ function decodeSamsung(code){
   // =========================
   // ROM THEO SERIES
   // =========================
-  if(main.includes("9001")) rom = 512; // cần refine nếu muốn phân biệt 256/512
+  // ===== ROM THEO SERIES + VARIANT =====
+if(main.includes("9001")){
+  if(main[3] === "G") rom = 512;
+  else rom = 256;   // F, V, S... mặc định 256
+}
+else if(main.includes("8001")) rom = 256;
+else if(main.includes("7001")) rom = 128;
+else if(main.includes("6001")) rom = 64;
+
   else if(main.includes("8001")) rom = 256;
   else if(main.includes("7001")) rom = 128;
   else if(main.includes("6001")) rom = 64;
