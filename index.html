@@ -1397,16 +1397,22 @@ if(!rom && code.startsWith("KMRX")){
     512:6
   };
 
-  return {
-    ram,
-    rom,
-    storage: code.includes("900") ? "UFS 3.1" :
-             code.includes("800") ? "UFS 2.1" :
-             code.includes("700") ? "UFS 2.1" :
-             code.includes("600") ? "eMMC 5.1" : "Unknown",
-    vip: calculateVip(ram, rom),
-    mmc: rom && mmcMap[rom] ? "MMC" + mmcMap[rom] : null
-  };
+const storage =
+  code.includes("900") ? "UFS 3.1" :
+  code.includes("800") ? "UFS 2.1" :
+  code.includes("700") ? "UFS 2.1" :
+  code.includes("600") ? "eMMC 5.1" : "Unknown";
+
+return {
+  ram,
+  rom,
+  storage,
+  vip: calculateVip(ram, rom),
+  mmc: storage === "eMMC 5.1" && rom && mmcMap[rom]
+        ? "MMC" + mmcMap[rom]
+        : null
+};
+
 }
 
 // ===== SK HYNIX FULL ENGINE =====
