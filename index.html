@@ -1676,12 +1676,12 @@ ${decoded?.vip != null ? `
   </div>
 ` : ""}
 
+${decoded?.mmc ? `
+  <div class="mmc-badge mmc-${decoded.mmc.replace("MMC","")}">
+    ${decoded.mmc}
+  </div>
+` : ""}
 
-  ${decoded?.mmc ? `
-    <div class="mmc-badge mmc-${decoded.mmc.replace("MMC","")}">
-      ${decoded.mmc}
-    </div>
-  ` : ""}
 
   <div style="
     padding:6px 16px;
