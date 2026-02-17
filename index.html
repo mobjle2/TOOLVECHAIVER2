@@ -1337,19 +1337,33 @@ function detectChip(code){
 // ===== VIP RULE =====
 function calculateVip(ram, rom){
 
-  if((ram === 2 || ram === 3) && rom === 16) return 4;
+  // =========================
+  // uMCP (có RAM)
+  // =========================
+  if(ram && rom){
 
-  if((ram === 2 || ram === 3 || ram === 4) && rom === 32) return 5;
+    if(ram >= 12 && rom >= 256) return 11;
+    if(ram >= 8 && rom >= 256) return 10;
+    if(ram >= 8 && rom >= 128) return 9;
+    if(ram >= 6 && rom >= 128) return 8;
+    if(ram >= 4 && rom >= 64) return 7;
+    if(ram >= 3 && rom >= 64) return 6;
 
-  if((ram === 3 || ram === 4) && rom === 64) return 6;
+    return 5;
+  }
 
-  if((ram === 4 || ram === 6) && rom === 128) return 7;
+  // =========================
+  // eMMC (không RAM)
+  // =========================
+  if(!ram && rom){
 
-  if((ram === 8 || ram === 10) && rom === 128) return 8;
+    if(rom >= 256) return 7;
+    if(rom >= 128) return 6;
+    if(rom >= 64) return 5;
+    if(rom >= 32) return 4;
 
-  if((ram === 6 || ram === 8 || ram === 10) && rom === 256) return 9;
-
-  if(ram === 12 && rom === 256) return 10;
+    return 3;
+  }
 
   return null;
 }
