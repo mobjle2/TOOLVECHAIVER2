@@ -1474,12 +1474,19 @@ if(
   // eMMC (không vượt 8)
 if(storage === "eMMC 5.1"){
 
-  // 16GB ROM đời thấp (H9TQ17...)
+  // ===== H9TQ 16GB (VIP 4 / 4+) =====
   if(rom === 16){
-    vip = 4;
+
+    if(code.includes("ADF")){
+      vip = "4+";
+    }
+    else{
+      vip = 4;
+    }
+
   }
 
-  // 128GB eMMC
+  // ===== 128GB eMMC =====
   else if(ram === 6 && rom === 128){
     vip = 7;
   }
@@ -1487,7 +1494,7 @@ if(storage === "eMMC 5.1"){
     vip = 8;
   }
 
-  // 256GB eMMC (không vượt 8)
+  // ===== 256GB eMMC (trần 8) =====
   else if(rom === 256){
     vip = 8;
   }
@@ -1496,6 +1503,7 @@ if(storage === "eMMC 5.1"){
     vip = 5;
   }
 }
+
 
 
   // UFS 2.1
