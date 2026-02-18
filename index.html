@@ -1341,39 +1341,38 @@ function detectChip(code){
 // ================= AUTO DECODER SYSTEM =================
 
 // ===== VIP RULE =====
+// ===== VIP RULE =====
 function calculateVip(ram, rom){
 
+  if(!ram || !rom) return 0;
+
   // =========================
-// =========================
-// uMCP (có RAM)
-// =========================
-if(ram && rom){
+  // VIP CAO (giữ nguyên của bạn)
+  // =========================
 
-  // VIP 10
-  if((ram >= 10) && rom >= 512) return 10;
+  if(ram >= 12 && rom >= 256) return 11;
+  if(ram >= 8 && rom >= 256) return 10;
+  if(ram >= 8 && rom >= 128) return 9;
+  if(ram >= 6 && rom >= 128) return 8;
+  if(ram >= 4 && rom >= 64) return 7;
+  if(ram >= 3 && rom >= 64) return 6;
 
-  // VIP 9
-  if((ram >= 8) && rom >= 256) return 9;
+  // =========================
+  // VIP THẤP (bổ sung theo bảng của bạn)
+  // =========================
 
-  // VIP 8
-  if((ram >= 8 && ram <= 10) && rom >= 128) return 8;
+  // 3–4GB + 32GB = VIP 5
+  if((ram === 3 || ram === 4) && rom === 32)
+    return 5;
 
-  // VIP 7
-  if((ram >= 4 && ram <= 6) && rom >= 128) return 7;
+  // 2–3GB + 16GB = VIP 4
+  if((ram === 2 || ram === 3) && rom === 16)
+    return 4;
 
-  // VIP 6
-  if((ram >= 4 && ram <= 6) && rom >= 64) return 6;
-
-  // VIP 5
-  if((ram >= 3 && ram <= 4) && rom >= 32) return 5;
-
-  // VIP 4
-  if((ram >= 2 && ram <= 3) && rom >= 16) return 4;
-
-  return 3; // fallback thấp nhất
+  // fallback thấp nhất
+  return 4;
 }
-  return null;
-}
+
 
 function decodeSamsung(code){
 
