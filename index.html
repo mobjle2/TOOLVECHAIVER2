@@ -1409,8 +1409,11 @@ function decodeSamsung(code){
   // PREFIX NHÓM eMMC / uMCP CŨ
   // ============================
 const emmcPrefixes = [
-  "KMG","KMO","KMJ","KMI","KMQ","KMD","KMR","KM3"
+  "KMG","KMO","KMJ","KMI","KMQ",
+  "KMD","KMR",
+  "KM3","KM4"
 ];
+
 
 
   if(emmcPrefixes.some(p => main.startsWith(p))){
@@ -1491,7 +1494,7 @@ if(main.startsWith("KM5") || main.startsWith("KM2")){
   result.storage = "UFS 2.1";
   result.version = "UFS 2.1";
 
-  // ===== ROM CHUẨN =====
+  // ===== FIX ROM CHUẨN =====
   if(main.startsWith("KM2B") && main.includes("8001")){
     result.rom = 256;
   }
@@ -1499,7 +1502,7 @@ if(main.startsWith("KM5") || main.startsWith("KM2")){
     result.rom = 64;
   }
   else if(main.includes("8001")){
-    result.rom = 128; // fallback dòng trung
+    result.rom = 128;
   }
 
   // ===== RAM =====
@@ -1507,9 +1510,13 @@ if(main.startsWith("KM5") || main.startsWith("KM2")){
   const dramToken = dramMatch ? dramMatch[2] : null;
 
   const dramMap = {
-    "DM":4,"DA":4,"4M":4,
-    "CM":6,"CA":6,
-    "8M":3,"2M":3
+    "CM":6,
+    "CA":6,
+    "DM":4,
+    "DA":4,
+    "4M":4,
+    "8M":3,
+    "2M":3
   };
 
   if(dramMap[dramToken] !== undefined){
