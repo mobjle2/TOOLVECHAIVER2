@@ -1762,7 +1762,7 @@ ${x.mmc ? `
          font-weight:700;
          box-shadow:0 0 12px rgba(139,92,246,0.25);
        ">
-    ${x.mmc}${decoded?.rom ? " " + decoded.rom + "G" : ""}
+    ${x.mmc}
   </div>
 ` : decoded?.vip != null ? `
   <div class="vip-badge vip-${Math.floor(decoded.vip)}"
@@ -1776,6 +1776,7 @@ ${x.mmc ? `
     VIP ${decoded.vip === 4.5 ? "4+" : decoded.vip}
   </div>
 ` : ""}
+
 
 
 
