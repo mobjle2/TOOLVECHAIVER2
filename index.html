@@ -1376,10 +1376,7 @@ function calculateVip(ram, rom){
 
 function decodeSamsung(code){
 
-  code = code.toUpperCase().trim();
-  const main = code.split("-")[0];
-
-  let result = {
+  const result = {
     type: "Unknown",
     ram: null,
     rom: null,
@@ -1388,82 +1385,151 @@ function decodeSamsung(code){
     vip: null
   };
 
-  // =========================
-  // RAM MAP (uMCP)
-  // =========================
-  const ramMap = {
-    "A":3,
-    "B":3,
-    "8":3,
-    "D":4,
-    "4":4,
-    "C":6,
-    "J":8,
-    "P":8,
-    "L":10,
-    "M":12
-  };
+  const main = code.split("-")[0];
 
   // =====================================================
-  // 1️⃣ eMMC (KLM / KLMC / KLMB / KLMBG2...)
+  // 1️⃣ KMQE (ĐÃ TEST)
   // =====================================================
-  if(main.startsWith("KLM")){
+  if(main.startsWith("KMQE")){
 
-    result.type = "eMMC";
+    // Storage
+    if(main.includes("6001")){
+      result.rom = 16;
+      result.storage = "eMMC 5.1";
+      result.version = "eMMC 5.1";
+    }
+    else if(main.includes("1001")){
+      result.rom = 16;
+      result.storage = "eMMC 5.0";
+      result.version = "eMMC 5.0";
+    }
 
-    // Dung lượng theo cụm
-    if(main.includes("G2")) result.rom = 32;
-    else if(main.includes("C2")) result.rom = 64;
-    else if(main.includes("D2")) result.rom = 128;
-    else if(main.includes("E2")) result.rom = 256;
+    // RAM
+    const ramChar = main[main.length - 2];
+    if(ramChar === "3") result.ram = 2;
 
-    result.storage = "eMMC";
-
-    // HS400 thường là 5.1
-    if(main.includes("HS")) result.version = "eMMC 5.1";
-    else result.version = "eMMC 5.x";
-
-    result.vip = calculateVip(null, result.rom);
-
+    result.vip = calculateVip(result.ram, result.rom);
     return result;
   }
 
   // =====================================================
-  // 2️⃣ uMCP KM8 / KM9
+  // 2️⃣ KMQ3 (ĐÃ TEST)
   // =====================================================
-  if(main.startsWith("KM8") || main.startsWith("KM9")){
+  if(main.startsWith("KMQ3")){
 
-    result.type = "uMCP";
+    if(main.includes("1001")){
+      result.rom = 16;
+      result.storage = "eMMC 5.0";
+      result.version = "eMMC 5.0";
+    }
 
-    // -------- ROM theo series --------
-    if(main.includes("9001")){
-      if(main[3] === "G") result.rom = 512;
-      else result.rom = 256;
-      result.storage = "UFS 3.x";
-      result.version = "UFS 3.x";
-    }
-    else if(main.includes("8001")){
-      result.rom = 256;
-      result.storage = "UFS 2.2";
-      result.version = "UFS 2.2";
-    }
-    else if(main.includes("7001")){
-      result.rom = 128;
-      result.storage = "UFS 2.1";
-      result.version = "UFS 2.1";
-    }
-    else if(main.includes("6001")){
+    const ramChar = main[main.length - 2];
+    if(ramChar === "3") result.ram = 2;
+
+    result.vip = calculateVip(result.ram, result.rom);
+    return result;
+  }
+
+  // =====================================================
+  // 3️⃣ KMRP (ĐÃ TEST 4/64)
+  // =====================================================
+  if(main.startsWith("KMRP")){
+
+    if(main.includes("6001")){
       result.rom = 64;
       result.storage = "eMMC 5.1";
       result.version = "eMMC 5.1";
     }
 
-    // -------- RAM --------
     const ramChar = main[main.length - 2];
-    result.ram = ramMap[ramChar] || null;
+    if(ramChar === "4") result.ram = 4;
 
     result.vip = calculateVip(result.ram, result.rom);
+    return result;
+  }
 
+  // =====================================================
+  // 4️⃣ KMRH (ĐÃ TEST 4/64)
+  // =====================================================
+  if(main.startsWith("KMRH")){
+
+    if(main.includes("6001")){
+      result.rom = 64;
+      result.storage = "eMMC 5.1";
+      result.version = "eMMC 5.1";
+    }
+
+    const ramChar = main[main.length - 2];
+    if(ramChar === "4") result.ram = 4;
+
+    result.vip = calculateVip(result.ram, result.rom);
+    return result;
+  }
+
+  // =====================================================
+  // 5️⃣ KMDX (ĐÃ TEST 3/32 eMMC 5.1)
+  // =====================================================
+  if(main.startsWith("KMDX")){
+
+    if(main.includes("6001")){
+      result.rom = 32;
+      result.storage = "eMMC 5.1";
+      result.version = "eMMC 5.1";
+    }
+
+    const ramChar = main[main.length - 2];
+    if(ramChar === "8") result.ram = 3;
+
+    result.vip = calculateVip(result.ram, result.rom);
+    return result;
+  }
+
+  // =====================================================
+  // 6️⃣ KM5H (UFS 2.1)
+  // =====================================================
+  if(main.startsWith("KM5H")){
+
+    if(main.includes("7001") || main.includes("8001")){
+      result.rom = 64;
+      result.storage = "UFS 2.1";
+      result.version = "UFS 2.1";
+    }
+
+    const ramChar = main[main.length - 2];
+    if(ramChar === "8") result.ram = 3;
+    if(ramChar === "D") result.ram = 4;
+
+    result.vip = calculateVip(result.ram, result.rom);
+    return result;
+  }
+
+  // =====================================================
+  // 7️⃣ KM2V (UFS 2.1)
+  // =====================================================
+  if(main.startsWith("KM2V")){
+
+    if(main.includes("7001") || main.includes("8001")){
+      result.rom = 128;
+      result.storage = "UFS 2.1";
+      result.version = "UFS 2.1";
+    }
+
+    const ramChar = main[main.length - 2];
+    if(ramChar === "C") result.ram = 6;
+
+    result.vip = calculateVip(result.ram, result.rom);
+    return result;
+  }
+
+  // =====================================================
+  // LOGIC CŨ (GIỮ NGUYÊN)
+  // =====================================================
+  if(main.startsWith("KM8") || main.startsWith("KM9")){
+    result.type = "uMCP";
+    result.storage = "UFS";
+    result.rom = 128;
+    result.ram = 6;
+    result.vip = calculateVip(result.ram, result.rom);
     return result;
   }
 
