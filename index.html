@@ -1397,6 +1397,15 @@ if(ram === 3 && rom === 64)
   // fallback thấp nhất
   return 3;
 }
+// =========================
+// VIP 3
+// =========================
+if(
+  (ram === 1 && (rom === 16 || rom === 32)) ||
+  (ram === 2 && rom === 16)
+)
+  return 3;
+
 function decodeSamsung(code){
 
   const result = {
