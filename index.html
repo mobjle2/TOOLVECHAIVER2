@@ -1406,7 +1406,7 @@ function decodeSamsung(code){
   const main = code.split("-")[0];
 
   // ============================
-  // PREFIX NHÓM eMMC (MÃ CỎ)
+  // PREFIX NHÓM eMMC (MÃ CỎ CŨ)
   // ============================
   const emmcPrefixes = [
     "KMG","KMO","KMJ","KMI","KMQ","KMD","KMR"
@@ -1414,7 +1414,6 @@ function decodeSamsung(code){
 
   if(emmcPrefixes.some(p => main.startsWith(p))){
 
-    // ===== VERSION =====
     if(main.includes("1001")){
       result.storage = "eMMC 5.0";
       result.version = "eMMC 5.0";
@@ -1425,7 +1424,6 @@ function decodeSamsung(code){
       result.storage = "eMMC 5.1";
       result.version = "eMMC 5.1";
 
-      // 6001 có thể là 16 / 32 / 64 tùy dòng
       if(main.startsWith("KMQE") || main.startsWith("KMQ3"))
         result.rom = 16;
       else if(main.startsWith("KMDX"))
@@ -1440,7 +1438,6 @@ function decodeSamsung(code){
       result.rom = 32;
     }
 
-    // ===== RAM =====
     const ramChar = main[main.length - 2];
 
     const ramMap = {
@@ -1462,7 +1459,7 @@ function decodeSamsung(code){
   }
 
   // ============================
-  // UFS DÒNG KM5 / KM2
+  // UFS DÒNG KM5 / KM2 CŨ
   // ============================
   if(main.startsWith("KM5") || main.startsWith("KM2")){
 
@@ -1489,61 +1486,60 @@ function decodeSamsung(code){
     result.vip = calculateVip(result.ram, result.rom);
     return result;
   }
-// =====================================================
-// KM3H (eMMC 5.1 6/64)
-// =====================================================
-if(main.startsWith("KM3H")){
 
-  if(main.includes("6001")){
-    result.rom = 64;
-    result.storage = "eMMC 5.1";
-    result.version = "eMMC 5.1";
+  // =====================================================
+  // KM3H (6/64 eMMC 5.1)
+  // =====================================================
+  if(main.startsWith("KM3H")){
+
+    if(main.includes("6001")){
+      result.rom = 64;
+      result.storage = "eMMC 5.1";
+      result.version = "eMMC 5.1";
+    }
+
+    result.ram = 6;
+
+    result.vip = calculateVip(result.ram, result.rom);
+    return result;
   }
 
-  result.ram = 6;
+  // =====================================================
+  // KM4X (3/32 eMMC 5.1)
+  // =====================================================
+  if(main.startsWith("KM4X")){
 
-  result.vip = calculateVip(result.ram, result.rom);
-  return result;
-}
+    if(main.includes("6000") || main.includes("0001")){
+      result.rom = 32;
+      result.storage = "eMMC 5.1";
+      result.version = "eMMC 5.1";
+    }
 
+    result.ram = 3;
 
-// =====================================================
-// KM4X (3/32 eMMC 5.1)
-// =====================================================
-if(main.startsWith("KM4X")){
-
-  if(main.includes("6000")){
-    result.rom = 32;
-    result.storage = "eMMC 5.1";
-    result.version = "eMMC 5.1";
+    result.vip = calculateVip(result.ram, result.rom);
+    return result;
   }
 
-  result.ram = 3;
+  // =====================================================
+  // KM2B (6/256 UFS 2.1)
+  // =====================================================
+  if(main.startsWith("KM2B")){
 
-  result.vip = calculateVip(result.ram, result.rom);
-  return result;
-}
+    if(main.includes("8001")){
+      result.rom = 256;
+      result.storage = "UFS 2.1";
+      result.version = "UFS 2.1";
+    }
 
+    result.ram = 6;
 
-// =====================================================
-// KM2B (6/256 UFS 2.1)
-// =====================================================
-if(main.startsWith("KM2B")){
-
-  if(main.includes("8001")){
-    result.rom = 256;
-    result.storage = "UFS 2.1";
-    result.version = "UFS 2.1";
+    result.vip = calculateVip(result.ram, result.rom);
+    return result;
   }
-
-  result.ram = 6;
-
-  result.vip = calculateVip(result.ram, result.rom);
-  return result;
-}
 
   // ============================
-  // KM8 / KM9 (GIỮ NGUYÊN CAO)
+  // KM8 / KM9 (GIỮ NGUYÊN)
   // ============================
   if(main.startsWith("KM8") || main.startsWith("KM9")){
     result.type = "uMCP";
