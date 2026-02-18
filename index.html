@@ -1429,6 +1429,24 @@ function decodeSamsung(code){
     result.vip = calculateVip(result.ram, result.rom);
     return result;
   }
+// =====================================================
+// KMDH (ĐÃ TEST)
+// =====================================================
+if(main.startsWith("KMDH")){
+
+  if(main.includes("6001")){
+    result.rom = 64;
+    result.storage = "eMMC 5.1";
+    result.version = "eMMC 5.1";
+  }
+
+  const ramChar = main[main.length - 2];
+
+  if(ramChar === "D") result.ram = 6;
+
+  result.vip = calculateVip(result.ram, result.rom);
+  return result;
+}
 
   // =====================================================
   // 3️⃣ KMRP (ĐÃ TEST 4/64)
