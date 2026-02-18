@@ -1390,9 +1390,6 @@ function calculateVip(ram, rom){
   // fallback thấp nhất
   return 3;
 }
-
-
-
 function decodeSamsung(code){
 
   const result = {
@@ -1404,94 +1401,106 @@ function decodeSamsung(code){
     vip: null
   };
 
+  if(!code) return result;
+
   const main = code.split("-")[0];
 
-  // =====================================================
-  // ===== 1️⃣ eMMC CỎ (BGA221 / 5.0 / 5.1)
-  // =====================================================
+  // ============================
+  // PREFIX NHÓM eMMC (MÃ CỎ)
+  // ============================
+  const emmcPrefixes = [
+    "KMG","KMO","KMJ","KMI","KMQ","KMD","KMR"
+  ];
 
-  // ---- 16GB ----
-  if(main.startsWith("KMQE") || main.startsWith("KMQ3")){
-    result.rom = 16;
+  if(emmcPrefixes.some(p => main.startsWith(p))){
+
+    // ===== VERSION =====
+    if(main.includes("1001")){
+      result.storage = "eMMC 5.0";
+      result.version = "eMMC 5.0";
+      result.rom = 16;
+    }
+
+    if(main.includes("6001")){
+      result.storage = "eMMC 5.1";
+      result.version = "eMMC 5.1";
+
+      // 6001 có thể là 16 / 32 / 64 tùy dòng
+      if(main.startsWith("KMQE") || main.startsWith("KMQ3"))
+        result.rom = 16;
+      else if(main.startsWith("KMDX"))
+        result.rom = 32;
+      else
+        result.rom = 64;
+    }
+
+    if(main.includes("0001")){
+      result.storage = "eMMC 5.1";
+      result.version = "eMMC 5.1";
+      result.rom = 32;
+    }
+
+    // ===== RAM =====
+    const ramChar = main[main.length - 2];
+
+    const ramMap = {
+      "3": 2,
+      "4": 4,
+      "8": 3,
+      "C": 6,
+      "D": 6,
+      "M": 8,
+      "E": 4
+    };
+
+    if(ramMap[ramChar]){
+      result.ram = ramMap[ramChar];
+    }
+
+    result.vip = calculateVip(result.ram, result.rom);
+    return result;
   }
 
-  // ---- 32GB ----
-  if(main.startsWith("KMDX")){
-    result.rom = 32;
-  }
-
-  // ---- 64GB ----
-  if(main.startsWith("KMDH") ||
-     main.startsWith("KMRP") ||
-     main.startsWith("KMRH")){
-    result.rom = 64;
-  }
-
-  // eMMC version
-  if(main.includes("1001")){
-    result.storage = "eMMC 5.0";
-    result.version = "eMMC 5.0";
-  }
-  else if(main.includes("6001")){
-    result.storage = "eMMC 5.1";
-    result.version = "eMMC 5.1";
-  }
-
-  // =====================================================
-  // ===== 2️⃣ UFS 2.1 / UFS cao (GIỮ NGUYÊN CAO)
-  // =====================================================
-
-  // KM5H
-  if(main.startsWith("KM5H")){
-
-    if(main.includes("7001")) result.rom = 128;
-    else if(main.includes("8001")) result.rom = 64;
+  // ============================
+  // UFS DÒNG KM5 / KM2
+  // ============================
+  if(main.startsWith("KM5") || main.startsWith("KM2")){
 
     result.storage = "UFS 2.1";
     result.version = "UFS 2.1";
-  }
 
-  // KM2V
-  if(main.startsWith("KM2V")){
     if(main.includes("7001") || main.includes("8001")){
-      result.rom = 128;
-      result.storage = "UFS 2.1";
-      result.version = "UFS 2.1";
+      result.rom = main.startsWith("KM2") ? 128 : 64;
     }
+
+    const ramChar = main[main.length - 2];
+
+    const ramMap = {
+      "8": 3,
+      "C": 6,
+      "D": 4,
+      "M": 8
+    };
+
+    if(ramMap[ramChar]){
+      result.ram = ramMap[ramChar];
+    }
+
+    result.vip = calculateVip(result.ram, result.rom);
+    return result;
   }
 
-  // KM8 / KM9 (GIỮ NGUYÊN LOGIC CAO CỦA BẠN)
+  // ============================
+  // KM8 / KM9 (GIỮ NGUYÊN CAO)
+  // ============================
   if(main.startsWith("KM8") || main.startsWith("KM9")){
     result.type = "uMCP";
     result.storage = "UFS";
     result.rom = 128;
     result.ram = 6;
+    result.vip = calculateVip(result.ram, result.rom);
+    return result;
   }
-
-  // =====================================================
-  // ===== 3️⃣ RAM decode (MMC CỎ)
-  // =====================================================
-
-  const ramChar = main[main.length - 2];
-
-  const ramMap = {
-    "3": 2,
-    "4": 4,
-    "8": 3,
-    "C": 6,
-    "D": 6,
-    "M": 8
-  };
-
-  if(!result.ram && ramMap[ramChar]){
-    result.ram = ramMap[ramChar];
-  }
-
-  // =====================================================
-  // ===== 4️⃣ TÍNH VIP (GIỮ NGUYÊN HỆ THỐNG CAO)
-  // =====================================================
-
-  result.vip = calculateVip(result.ram, result.rom);
 
   return result;
 }
