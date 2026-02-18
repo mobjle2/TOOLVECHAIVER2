@@ -1673,16 +1673,22 @@ async function check(){
 
     const snap = await db.collection("codes").get();
 
-    snap.forEach(doc=>{
+snap.forEach(doc=>{
 
-      const x = doc.data();
+  const x = doc.data();
 
-      if(
-        !x.code?.toUpperCase().includes(q) &&
-        !(Array.isArray(x.models) && x.models.some(m => m.toUpperCase().includes(q)))
-      ){
-        return;
-      }
+  // ===== MAP MMC TỪ FIRESTORE =====
+  if (x.type === "MMC") {
+    x.mmc = x.value;   // ví dụ: "MMC2"
+  }
+
+  if(
+    !x.code?.toUpperCase().includes(q) &&
+    !(Array.isArray(x.models) && x.models.some(m => m.toUpperCase().includes(q)))
+  ){
+    return;
+  }
+
 
       const chip = detectChip(x.code);
       const decoded = autoDecodeChip(x.code, x);
