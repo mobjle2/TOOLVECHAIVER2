@@ -1406,7 +1406,7 @@ function decodeSamsung(code){
   const main = code.split("-")[0];
 
   // ============================
-  // PREFIX NHÓM eMMC (MÃ CỎ CŨ)
+  // PREFIX NHÓM eMMC / uMCP CŨ
   // ============================
   const emmcPrefixes = [
     "KMG","KMO","KMJ","KMI","KMQ","KMD","KMR"
@@ -1414,22 +1414,36 @@ function decodeSamsung(code){
 
   if(emmcPrefixes.some(p => main.startsWith(p))){
 
+    // ===== STORAGE + ROM =====
     if(main.includes("1001")){
       result.storage = "eMMC 5.0";
       result.version = "eMMC 5.0";
       result.rom = 16;
     }
 
+    if(main.includes("6000")){
+      result.storage = "eMMC 5.1";
+      result.version = "eMMC 5.1";
+      result.rom = 32;
+    }
+
     if(main.includes("6001")){
       result.storage = "eMMC 5.1";
       result.version = "eMMC 5.1";
 
-      if(main.startsWith("KMQE") || main.startsWith("KMQ3"))
-        result.rom = 16;
-      else if(main.startsWith("KMDX"))
+      // nhóm 6001 nhưng 32GB
+      if(
+        main.startsWith("KMDX") ||
+        main.startsWith("KMGP") ||
+        main.startsWith("KMGX") ||
+        main.startsWith("KMQD") ||
+        main.startsWith("KMQX")
+      ){
         result.rom = 32;
-      else
+      }
+      else{
         result.rom = 64;
+      }
     }
 
     if(main.includes("0001")){
@@ -1438,20 +1452,30 @@ function decodeSamsung(code){
       result.rom = 32;
     }
 
-    const ramChar = main[main.length - 2];
+    // ===== DRAM TOKEN (2 ký tự sau ROM code) =====
+    const dramMatch = main.match(/(6000|6001|0001)([A-Z0-9]{1,2})/);
+    const dramToken = dramMatch ? dramMatch[2] : null;
 
-    const ramMap = {
-      "3": 2,
-      "4": 4,
-      "8": 3,
-      "C": 6,
-      "D": 6,
-      "M": 8,
-      "E": 4
-    };
+    if(dramToken){
 
-    if(ramMap[ramChar]){
-      result.ram = ramMap[ramChar];
+      const dramMap = {
+
+        // 16Gb → 2GB
+        "KM":2,"3M":2,"3A":2,
+
+        // 24Gb → 3GB
+        "2M":3,"8M":3,"BA":3,
+
+        // 32Gb → 4GB
+        "DM":4,"DA":4,"4M":4,
+
+        // 48Gb → 6GB
+        "CM":6,"CA":6
+      };
+
+      if(dramMap[dramToken] !== undefined){
+        result.ram = dramMap[dramToken];
+      }
     }
 
     result.vip = calculateVip(result.ram, result.rom);
@@ -1459,7 +1483,7 @@ function decodeSamsung(code){
   }
 
   // ============================
-  // UFS DÒNG KM5 / KM2 CŨ
+  // UFS DÒNG KM5 / KM2
   // ============================
   if(main.startsWith("KM5") || main.startsWith("KM2")){
 
@@ -1467,72 +1491,21 @@ function decodeSamsung(code){
     result.version = "UFS 2.1";
 
     if(main.includes("7001") || main.includes("8001")){
-      result.rom = main.startsWith("KM2") ? 128 : 64;
+      result.rom = 64;
     }
 
-    const ramChar = main[main.length - 2];
+    const dramMatch = main.match(/(7001|8001)([A-Z0-9]{1,2})/);
+    const dramToken = dramMatch ? dramMatch[2] : null;
 
-    const ramMap = {
-      "8": 3,
-      "C": 6,
-      "D": 4,
-      "M": 8
+    const dramMap = {
+      "DM":4,"DA":4,"4M":4,
+      "CM":6,"CA":6,
+      "8M":3,"2M":3
     };
 
-    if(ramMap[ramChar]){
-      result.ram = ramMap[ramChar];
+    if(dramMap[dramToken] !== undefined){
+      result.ram = dramMap[dramToken];
     }
-
-    result.vip = calculateVip(result.ram, result.rom);
-    return result;
-  }
-
-  // =====================================================
-  // KM3H (6/64 eMMC 5.1)
-  // =====================================================
-  if(main.startsWith("KM3H")){
-
-    if(main.includes("6001")){
-      result.rom = 64;
-      result.storage = "eMMC 5.1";
-      result.version = "eMMC 5.1";
-    }
-
-    result.ram = 6;
-
-    result.vip = calculateVip(result.ram, result.rom);
-    return result;
-  }
-
-  // =====================================================
-  // KM4X (3/32 eMMC 5.1)
-  // =====================================================
-  if(main.startsWith("KM4X")){
-
-    if(main.includes("6000") || main.includes("0001")){
-      result.rom = 32;
-      result.storage = "eMMC 5.1";
-      result.version = "eMMC 5.1";
-    }
-
-    result.ram = 3;
-
-    result.vip = calculateVip(result.ram, result.rom);
-    return result;
-  }
-
-  // =====================================================
-  // KM2B (6/256 UFS 2.1)
-  // =====================================================
-  if(main.startsWith("KM2B")){
-
-    if(main.includes("8001")){
-      result.rom = 256;
-      result.storage = "UFS 2.1";
-      result.version = "UFS 2.1";
-    }
-
-    result.ram = 6;
 
     result.vip = calculateVip(result.ram, result.rom);
     return result;
@@ -1552,6 +1525,7 @@ function decodeSamsung(code){
 
   return result;
 }
+
 
 
 // ===== SK HYNIX FULL ENGINE =====
