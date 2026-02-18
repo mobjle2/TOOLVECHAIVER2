@@ -1489,6 +1489,58 @@ function decodeSamsung(code){
     result.vip = calculateVip(result.ram, result.rom);
     return result;
   }
+// =====================================================
+// KM3H (eMMC 5.1 6/64)
+// =====================================================
+if(main.startsWith("KM3H")){
+
+  if(main.includes("6001")){
+    result.rom = 64;
+    result.storage = "eMMC 5.1";
+    result.version = "eMMC 5.1";
+  }
+
+  result.ram = 6;
+
+  result.vip = calculateVip(result.ram, result.rom);
+  return result;
+}
+
+
+// =====================================================
+// KM4X (3/32 eMMC 5.1)
+// =====================================================
+if(main.startsWith("KM4X")){
+
+  if(main.includes("6000")){
+    result.rom = 32;
+    result.storage = "eMMC 5.1";
+    result.version = "eMMC 5.1";
+  }
+
+  result.ram = 3;
+
+  result.vip = calculateVip(result.ram, result.rom);
+  return result;
+}
+
+
+// =====================================================
+// KM2B (6/256 UFS 2.1)
+// =====================================================
+if(main.startsWith("KM2B")){
+
+  if(main.includes("8001")){
+    result.rom = 256;
+    result.storage = "UFS 2.1";
+    result.version = "UFS 2.1";
+  }
+
+  result.ram = 6;
+
+  result.vip = calculateVip(result.ram, result.rom);
+  return result;
+}
 
   // ============================
   // KM8 / KM9 (GIỮ NGUYÊN CAO)
