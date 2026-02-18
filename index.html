@@ -1501,15 +1501,24 @@ if(main.startsWith("KM5") || main.startsWith("KM2")){
   result.storage = "UFS 2.1";
   result.version = "UFS 2.1";
 
-  // ===== FIX ROM CHUẨN =====
+  // ===== ROM UFS CHUẨN =====
+
+  // KM2B8001 = 256GB
   if(main.startsWith("KM2B") && main.includes("8001")){
     result.rom = 256;
   }
-  else if(main.includes("7001")){
+
+  // KM5H8001 & KM5P8001 = 64GB
+  else if(
+    (main.startsWith("KM5H") || main.startsWith("KM5P")) &&
+    main.includes("8001")
+  ){
     result.rom = 64;
   }
-  else if(main.includes("8001")){
-    result.rom = 128;
+
+  // 7001 luôn 64GB
+  else if(main.includes("7001")){
+    result.rom = 64;
   }
 
   // ===== RAM =====
