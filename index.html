@@ -1423,75 +1423,86 @@ const emmcPrefixes = [
 
 
 
-  if(emmcPrefixes.some(p => main.startsWith(p))){
+if(emmcPrefixes.some(p => main.startsWith(p))){
 
-    // ===== STORAGE + ROM =====
-    if(main.includes("1001")){
-      result.storage = "eMMC 5.0";
-      result.version = "eMMC 5.0";
-      result.rom = 16;
-    }
+  // ===== STORAGE + ROM =====
 
-    if(main.includes("6000")){
-      result.storage = "eMMC 5.1";
-      result.version = "eMMC 5.1";
-      result.rom = 32;
-    }
-
-    if(main.includes("6001")){
-      result.storage = "eMMC 5.1";
-      result.version = "eMMC 5.1";
-
-      // nhóm 6001 nhưng 32GB
-      if(
-        main.startsWith("KMDX") ||
-        main.startsWith("KMGP") ||
-        main.startsWith("KMGX") ||
-        main.startsWith("KMQD") ||
-        main.startsWith("KMQX")
-      ){
-        result.rom = 32;
-      }
-      else{
-        result.rom = 64;
-      }
-    }
-
-    if(main.includes("0001")){
-      result.storage = "eMMC 5.1";
-      result.version = "eMMC 5.1";
-      result.rom = 32;
-    }
-
-    // ===== DRAM TOKEN (2 ký tự sau ROM code) =====
-    const dramMatch = main.match(/(6000|6001|0001)([A-Z0-9]{1,2})/);
-    const dramToken = dramMatch ? dramMatch[2] : null;
-
-    if(dramToken){
-
-      const dramMap = {
-
-        // 16Gb → 2GB
-        "KM":2,"3M":2,"3A":2,
-
-        // 24Gb → 3GB
-        "2M":3,"8M":3,"BA":3,
-
-        // 32Gb → 4GB
-        "DM":4,"DA":4,"4M":4,
-
-        // 48Gb → 6GB
-        "CM":6,"CA":6
-      };
-
-      if(dramMap[dramToken] !== undefined){
-        result.ram = dramMap[dramToken];
-      }
-    }
-
-    result.vip = calculateVip(result.ram, result.rom);
-    return result;
+  // eMMC 5.0 (1001)
+  if(main.includes("1001")){
+    result.storage = "eMMC 5.0";
+    result.version = "eMMC 5.0";
+    result.rom = 16;
   }
+
+  // eMMC 5.1 – 32GB (6000)
+  else if(main.includes("6000")){
+    result.storage = "eMMC 5.1";
+    result.version = "eMMC 5.1";
+    result.rom = 32;
+  }
+
+  // eMMC 5.1 – 6001 (có 32 hoặc 64)
+  else if(main.includes("6001")){
+    result.storage = "eMMC 5.1";
+    result.version = "eMMC 5.1";
+
+    // nhóm 6001 nhưng 32GB
+    if(
+      main.startsWith("KMDX") ||
+      main.startsWith("KMGP") ||
+      main.startsWith("KMGX") ||
+      main.startsWith("KMQD") ||
+      main.startsWith("KMQX")
+    ){
+      result.rom = 32;
+    }
+    else{
+      result.rom = 64;
+    }
+  }
+
+  // 0001 = 32GB
+  else if(main.includes("0001")){
+    result.storage = "eMMC 5.1";
+    result.version = "eMMC 5.1";
+    result.rom = 32;
+  }
+
+  // ===== DRAM TOKEN =====
+  const dramMatch = main.match(/\d{4}([A-Z0-9]{1,2})/);
+  const dramToken = dramMatch ? dramMatch[1] : null;
+
+  if(dramToken){
+
+    const dramMap = {
+
+      // 8Gb → 1GB
+      "1M":1,
+
+      // 16Gb → 2GB
+      "KM":2,"3M":2,"3A":2,
+      "BM":2,"RM":2,"MM":2,
+
+      // 24Gb → 3GB
+      "2M":3,"8M":3,"BA":3,
+      "7M":3,
+
+      // 32Gb → 4GB
+      "DM":4,"DA":4,"4M":4,
+
+      // 48Gb → 6GB
+      "CM":6,"CA":6
+    };
+
+    if(dramMap[dramToken] !== undefined){
+      result.ram = dramMap[dramToken];
+    }
+  }
+
+  result.vip = calculateVip(result.ram, result.rom);
+  return result;
+}
+
 
 // ============================
 // UFS DÒNG KM5 / KM2
