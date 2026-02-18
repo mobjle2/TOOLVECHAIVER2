@@ -1753,7 +1753,8 @@ html += `
   margin-top:12px;
 ">
 
-${x.mmc ? `
+${x.mmc
+  ? `
   <div class="mmc-badge mmc-${x.mmc.replace("MMC","")}"
        style="
          padding:6px 16px;
@@ -1764,7 +1765,9 @@ ${x.mmc ? `
        ">
     ${x.mmc}
   </div>
-` : decoded?.vip != null ? `
+`
+  : (decoded && decoded.vip != null)
+    ? `
   <div class="vip-badge vip-${Math.floor(decoded.vip)}"
        style="
          padding:6px 16px;
@@ -1775,7 +1778,9 @@ ${x.mmc ? `
        ">
     VIP ${decoded.vip === 4.5 ? "4+" : decoded.vip}
   </div>
-` : ""}
+`
+    : ""
+}
 
 
 
