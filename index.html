@@ -1558,24 +1558,24 @@ if(main.startsWith("KM8") || main.startsWith("KM9")){
 
   result.type = "uMCP";
 
-  if(main.includes("9001")){
-    result.rom = main[3] === "G" ? 512 : 256;
-    result.storage = "UFS 3.x";
+  const tier = main[3]; // ký tự sau KM8
+
+  if(tier === "G"){
+    result.rom = 512;
   }
-  else if(main.includes("8001")){
-    result.rom = 128;          // 🔥 FIX
-    result.storage = "UFS 2.1"; // 🔥 FIX
+  else if(tier === "B"){
+    result.rom = 256;
   }
-  else if(main.includes("7001")){
-    result.rom = 64;           // 🔥 FIX
-    result.storage = "UFS 2.1";
+  else if(tier === "V"){
+    result.rom = 128;
   }
-  else if(main.includes("6001")){
-    result.rom = 32;
-    result.storage = "eMMC 5.1";
+  else{
+    result.rom = 64; // fallback an toàn
   }
 
-  result.version = result.storage;
+  result.storage = "UFS 2.1";
+  result.version = "UFS 2.1";
+
   result.vip = calculateVip(result.ram, result.rom);
   return result;
 }
