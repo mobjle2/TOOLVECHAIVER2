@@ -1440,13 +1440,21 @@ function decodeSamsung(code){
     const dramMatch = main.match(/\d{4}([A-Z0-9]{1,2})/);
     const dramToken = dramMatch ? dramMatch[1] : null;
 
-    const dramMap = {
-      "JM":8,
-      "HM":8,
-      "DM":6,
-      "CM":6,
-      "EM":12
-    };
+const dramMap = {
+
+  // 8GB (64Gb)
+  "JM":8,"JA":8,"JB":8,"JC":8,"JE":8,"JR":8,"JX":8,
+
+  // 6GB (48Gb)
+  "DM":6,"CM":6,
+
+  // 12GB (96Gb)
+  "EM":12,
+
+  // 16GB (128Gb)
+  "VM":16,"VA":16,"VB":16,"VC":16
+};
+
 
     if(dramMap[dramToken] !== undefined){
       result.ram = dramMap[dramToken];
