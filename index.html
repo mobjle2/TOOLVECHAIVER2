@@ -1856,52 +1856,64 @@ async function check(){
     return;
   }
 
-  // Disable nút
+  // Disable nút khi đang load
   btn.disabled = true;
   btn.style.opacity = "0.6";
 
-// ===== PREMIUM PROGRESS LOADING =====
-out.innerHTML = `
-  <div style="max-width:600px;margin:40px auto;">
-    <div style="margin-bottom:8px;font-size:14px;opacity:0.8;">
-      🔍 Đang phân tích dữ liệu...
+  // ===== PROGRESS LOADING =====
+  out.innerHTML = `
+    <div style="max-width:600px;margin:40px auto;">
+      <div style="margin-bottom:8px;font-size:14px;opacity:0.8;">
+        🔍 Đang phân tích dữ liệu...
+      </div>
+      <div style="
+        width:100%;
+        height:10px;
+        background:#1e293b;
+        border-radius:20px;
+        overflow:hidden;
+      ">
+        <div id="progressFill" style="
+          height:100%;
+          width:0%;
+          background:linear-gradient(90deg,#22c55e,#06b6d4);
+          transition:width 0.25s ease;
+        "></div>
+      </div>
+      <div id="progressText"
+           style="text-align:right;font-size:13px;margin-top:6px;opacity:0.7;">
+        0%
+      </div>
     </div>
-    <div style="
-      width:100%;
-      height:10px;
-      background:#1e293b;
-      border-radius:20px;
-      overflow:hidden;
-    ">
-      <div id="progressFill" style="
-        height:100%;
-        width:0%;
-        background:linear-gradient(90deg,#22c55e,#06b6d4);
-        transition:width 0.25s ease;
-      "></div>
-    </div>
-    <div id="progressText"
-         style="text-align:right;font-size:13px;margin-top:6px;opacity:0.7;">
-      0%
-    </div>
-  </div>
-`;
+  `;
 
-let percent = 0;
-const fill = document.getElementById("progressFill");
-const text = document.getElementById("progressText");
+  let percent = 0;
+  const fill = document.getElementById("progressFill");
+  const text = document.getElementById("progressText");
 
-const fakeLoading = setInterval(()=>{
-  percent += Math.floor(Math.random()*12)+5;
-  if(percent > 95) percent = 95;
-  fill.style.width = percent + "%";
-  text.innerText = percent + "%";
-},120);
+  const fakeLoading = setInterval(()=>{
+    percent += Math.floor(Math.random()*12)+5;
+    if(percent > 95) percent = 95;
+    fill.style.width = percent + "%";
+    text.innerText = percent + "%";
+  },120);
 
-      // ===== FILTER =====
+  await new Promise(resolve => setTimeout(resolve, 500));
+
+  try{
+
+    let html = `<div class="result-grid">`;
+
+    const snap = await db.collection("codes").get();
+
+    snap.forEach(doc=>{
+
+      const x = doc.data();
+
       if(
         !x.code?.toUpperCase().includes(q) &&
-        !(Array.isArray(x.models) && x.models.some(m => m.toUpperCase().includes(q)))
+        !(Array.isArray(x.models) &&
+          x.models.some(m => m.toUpperCase().includes(q)))
       ){
         return;
       }
@@ -1909,58 +1921,18 @@ const fakeLoading = setInterval(()=>{
       const chip = detectChip(x.code);
       const decoded = autoDecodeChip(x.code, x);
 
-      // ===== MODEL GROUP =====
-      let modelLine = "";
-
-      if(Array.isArray(x.models) && x.models.length){
-
-        const grouped = {};
-
-        x.models.forEach(m=>{
-          const brandMatch = m.match(/^[A-Z]+/i);
-          const brand = brandMatch ? brandMatch[0] : "Other";
-
-          const cleanModel = m
-            .replace(new RegExp("^" + brand, "i"), "")
-            .replace(/\s*\d+GB/i,"")
-            .trim();
-
-          if(!grouped[brand]){
-            grouped[brand] = [];
-          }
-
-          grouped[brand].push(cleanModel);
-        });
-
-        modelLine = Object.keys(grouped).map(b=>{
-          return `
-            <div class="model-row">
-              <span class="brand">${b} :</span>
-              <span class="model-list">
-                ${grouped[b].join(" / ")}
-              </span>
-            </div>
-          `;
-        }).join("");
-      }
-
-      // ===== BUILD CARD =====
       html += `
         <div class="result-card">
 
-          <div class="code-main">
-            ${x.code}
-          </div>
+          <div class="code-main">${x.code}</div>
 
-          <div style="display:flex;align-items:center;gap:10px;margin-top:12px;">
+          <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
 
             ${
               decoded?.vip != null
-              ? `
-                <div class="vip-badge vip-${Math.floor(decoded.vip)}">
-                  VIP ${decoded.vip === 4.5 ? "4+" : decoded.vip}
-                </div>
-              `
+              ? `<div class="vip-badge vip-${Math.floor(decoded.vip)}">
+                   VIP ${decoded.vip === 4.5 ? "4+" : decoded.vip}
+                 </div>`
               : ""
             }
 
@@ -1975,8 +1947,6 @@ const fakeLoading = setInterval(()=>{
               ${
                 decoded?.ram && decoded?.rom
                 ? decoded.ram + "/" + decoded.rom
-                : decoded?.rom
-                ? decoded.rom + "GB"
                 : ""
               }
             </div>
@@ -1986,60 +1956,33 @@ const fakeLoading = setInterval(()=>{
           <div style="
             margin-top:14px;
             display:flex;
-            align-items:center;
             gap:10px;
             font-size:15px;
           ">
-
-            <span style="
-              width:6px;
-              height:6px;
-              border-radius:50%;
-              background:#64748b;
-              display:inline-block;
-            "></span>
-
             <span style="color:#4ade80;font-weight:600;">
               ${chip.name}
             </span>
-
-            <span style="
-              width:6px;
-              height:6px;
-              border-radius:50%;
-              background:#64748b;
-              display:inline-block;
-            "></span>
-
             <span style="color:#e2e8f0;font-weight:600;">
               ${decoded?.storage || ""}
             </span>
-
           </div>
-
-          ${
-            modelLine
-            ? `
-              <div class="model-line">
-                ${modelLine}
-              </div>
-            `
-            : ""
-          }
 
         </div>
       `;
     });
 
     html += `</div>`;
-clearInterval(fakeLoading);
-fill.style.width = "100%";
-text.innerText = "100%";
+
+    // Hoàn tất progress
+    clearInterval(fakeLoading);
+    fill.style.width = "100%";
+    text.innerText = "100%";
 
     out.innerHTML = html;
-    out.classList.add("fade-in");
 
   }catch(err){
+
+    clearInterval(fakeLoading);
 
     console.error(err);
 
@@ -2050,10 +1993,10 @@ text.innerText = "100%";
     `;
   }
 
-  // Enable lại nút
   btn.disabled = false;
   btn.style.opacity = "1";
 }
+
 
 
 
