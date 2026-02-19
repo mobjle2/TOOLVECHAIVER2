@@ -1566,22 +1566,40 @@ if(main.startsWith("KM5") || main.startsWith("KM2")){
   return result;
 }
 
+// ============================
+// KM8 / KM9 (DÒNG CAO UFS)
+// ============================
+if(main.startsWith("KM8") || main.startsWith("KM9")){
 
-  // ============================
-  // KM8 / KM9 (GIỮ NGUYÊN)
-  // ============================
-  if(main.startsWith("KM8") || main.startsWith("KM9")){
-    result.type = "uMCP";
-    result.storage = "UFS";
-    result.rom = 128;
-    result.ram = 6;
-    result.vip = calculateVip(result.ram, result.rom);
-    return result;
+  result.type = "uMCP";
+  result.storage = "UFS 2.1";
+  result.version = "UFS 2.1";
+
+  // ===== ROM =====
+  if(main.includes("9001")) result.rom = 512;
+  else if(main.includes("8001")) result.rom = 256;
+  else if(main.includes("7001")) result.rom = 128;
+
+  // ===== RAM =====
+  const dramMatch = main.match(/\d{4}([A-Z0-9]{1,2})/);
+  const dramToken = dramMatch ? dramMatch[1] : null;
+
+  const dramMap = {
+    "JM":8,
+    "HM":8,
+    "DM":6,
+    "CM":6,
+    "EM":12
+  };
+
+  if(dramMap[dramToken] !== undefined){
+    result.ram = dramMap[dramToken];
   }
 
+  // dùng calculateVip như cũ
+  result.vip = calculateVip(result.ram, result.rom);
   return result;
 }
-
 
 
 // ===== SK HYNIX FULL ENGINE =====
