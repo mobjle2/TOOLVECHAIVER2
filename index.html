@@ -1887,6 +1887,7 @@ function autoDecodeChip(code, dbData){
   };
 }
 
+
 async function check(){
 
   const q = document.getElementById("q").value.trim().toUpperCase();
@@ -1898,7 +1899,6 @@ async function check(){
     return;
   }
 
-  // Disable nút khi đang load
   btn.disabled = true;
   btn.style.opacity = "0.6";
 
@@ -1963,58 +1963,57 @@ async function check(){
       const chip = detectChip(x.code);
       const decoded = autoDecodeChip(x.code, x);
 
- html += `
-  <div class="result-card">
+      html += `
+        <div class="result-card">
 
-    <div class="code-main">${x.code}</div>
+          <div class="code-main">${x.code}</div>
 
-    <div class="card-top">
+          <div class="card-top">
 
-      ${
-        decoded?.vip != null
-        ? `<div class="vip-badge vip-${Math.floor(decoded.vip)}">
-             VIP ${decoded.vip === 4.5 ? "4+" : decoded.vip}
-           </div>`
-        : ""
-      }
+            ${
+              decoded?.vip != null
+              ? `<div class="vip-badge vip-${Math.floor(decoded.vip)}">
+                   VIP ${decoded.vip === 4.5 ? "4+" : decoded.vip}
+                 </div>`
+              : ""
+            }
 
-      ${
-        decoded?.ram && decoded?.rom
-        ? `<div class="ram-badge">
-             ${decoded.ram}/${decoded.rom}
-           </div>`
-        : ""
-      }
+            ${
+              decoded?.ram && decoded?.rom
+              ? `<div class="ram-badge">
+                   ${decoded.ram}/${decoded.rom}
+                 </div>`
+              : ""
+            }
 
-    </div>
+          </div>
 
-    <div class="card-bottom">
+          <div class="card-bottom">
 
-      <span class="brand-name">
-        ${chip.name}
-      </span>
+            <span class="brand-name">
+              ${chip.name}
+            </span>
 
-      ${
-        decoded?.storage
-          ? `<span class="storage-badge ${
-                decoded.storage?.includes("UFS")
-                  ? "storage-ufs"
-                  : "storage-emmc"
-              }">
-                ${decoded.storage}
-             </span>`
-          : ""
-      }
+            ${
+              decoded?.storage
+              ? `<span class="storage-badge ${
+                    decoded.storage?.includes("UFS")
+                      ? "storage-ufs"
+                      : "storage-emmc"
+                  }">
+                    ${decoded.storage}
+                 </span>`
+              : ""
+            }
 
-    </div>
+          </div>
 
-  </div>
-`;
-
+        </div>
+      `;
+    });  // 🔥 ĐÓNG snap.forEach
 
     html += `</div>`;
 
-    // Hoàn tất progress
     clearInterval(fakeLoading);
     fill.style.width = "100%";
     text.innerText = "100%";
@@ -2024,7 +2023,6 @@ async function check(){
   }catch(err){
 
     clearInterval(fakeLoading);
-
     console.error(err);
 
     out.innerHTML = `
@@ -2037,7 +2035,6 @@ async function check(){
   btn.disabled = false;
   btn.style.opacity = "1";
 }
-
 
 
 
