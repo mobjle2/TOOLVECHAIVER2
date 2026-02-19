@@ -1047,27 +1047,76 @@ font-weight:500;
   color:#e2e8f0;
   font-weight:500;
 }
-/* ===== LOADING EFFECT ===== */
-.loading-box{
-  margin-top:40px;
-  text-align:center;
-  font-size:18px;
-  font-weight:600;
-  color:#38bdf8;
+/* ================= PREMIUM LOADING ================= */
+
+.skeleton-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:30px;
+  max-width:1100px;
+  margin:0 auto;
 }
 
-.loader{
-  margin:20px auto;
-  width:40px;
-  height:40px;
-  border:4px solid rgba(255,255,255,0.1);
-  border-top:4px solid #3b82f6;
-  border-radius:50%;
-  animation:spin 0.8s linear infinite;
+@media(max-width:1200px){
+  .skeleton-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
 }
 
-@keyframes spin{
-  to{ transform:rotate(360deg); }
+@media(max-width:768px){
+  .skeleton-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+.skeleton-card{
+  background:#0f172a;
+  border-radius:20px;
+  padding:20px;
+  overflow:hidden;
+  position:relative;
+}
+
+.skeleton-line{
+  height:14px;
+  margin-bottom:12px;
+  border-radius:8px;
+  background:linear-gradient(
+    90deg,
+    #1e293b 25%,
+    #334155 37%,
+    #1e293b 63%
+  );
+  background-size:400% 100%;
+  animation:shimmer 1.4s ease infinite;
+}
+
+.skeleton-line.big{
+  height:20px;
+  width:60%;
+}
+
+.skeleton-line.mid{
+  width:40%;
+}
+
+.skeleton-line.small{
+  width:30%;
+}
+
+@keyframes shimmer{
+  0%{ background-position:100% 0; }
+  100%{ background-position:-100% 0; }
+}
+
+/* Fade in effect */
+.fade-in{
+  animation:fadeIn 0.4s ease forwards;
+}
+
+@keyframes fadeIn{
+  from{ opacity:0; transform:translateY(10px); }
+  to{ opacity:1; transform:translateY(0); }
 }
 
 </style>
@@ -1775,251 +1824,202 @@ function autoDecodeChip(code, dbData){
   };
 }
 
-
 async function check(){
 
   const q = document.getElementById("q").value.trim().toUpperCase();
   const out = document.getElementById("out");
+  const btn = document.querySelector(".check-btn");
 
   if(!q){
     out.innerHTML = "";
     return;
   }
 
-  // ===== SHOW LOADING =====
+  // Disable nút
+  btn.disabled = true;
+  btn.style.opacity = "0.6";
+
+  // ===== PREMIUM SKELETON LOADING =====
   out.innerHTML = `
-    <div class="loading-box">
-      <div class="loader"></div>
-      🔄 Đang xử lý dữ liệu...
+    <div class="skeleton-grid">
+      ${[1,2,3].map(()=>`
+        <div class="skeleton-card">
+          <div class="skeleton-line big"></div>
+          <div class="skeleton-line mid"></div>
+          <div class="skeleton-line small"></div>
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line"></div>
+        </div>
+      `).join("")}
     </div>
   `;
 
-  // Delay nhẹ để tạo hiệu ứng mượt
-  await new Promise(resolve => setTimeout(resolve, 600));
+  // Delay nhẹ để UX mượt
+  await new Promise(resolve => setTimeout(resolve, 700));
 
   try{
-
 
     let html = `<div class="result-grid">`;
 
     const snap = await db.collection("codes").get();
 
-snap.forEach(doc=>{
+    snap.forEach(doc=>{
 
-  const x = doc.data();
+      const x = doc.data();
 
-  // ===== MAP MMC TỪ FIRESTORE =====
-  if (x.type === "MMC") {
-    x.mmc = x.value;   // ví dụ: "MMC2"
-  }
-
-  if(
-    !x.code?.toUpperCase().includes(q) &&
-    !(Array.isArray(x.models) && x.models.some(m => m.toUpperCase().includes(q)))
-  ){
-    return;
-  }
-
+      // ===== FILTER =====
+      if(
+        !x.code?.toUpperCase().includes(q) &&
+        !(Array.isArray(x.models) && x.models.some(m => m.toUpperCase().includes(q)))
+      ){
+        return;
+      }
 
       const chip = detectChip(x.code);
       const decoded = autoDecodeChip(x.code, x);
 
-      /* ===== MMC BADGE ===== */
-let mmcBadge = "";
+      // ===== MODEL GROUP =====
+      let modelLine = "";
 
-if(decoded?.mmc){
-  const level = decoded.mmc.replace("MMC","");
-  mmcBadge = `
-    <div class="mmc-badge mmc-${level}">
-      ${decoded.mmc}
-    </div>
-  `;
-}
+      if(Array.isArray(x.models) && x.models.length){
 
+        const grouped = {};
 
-      /* ===== MODEL LINE ===== */
-let modelLine = "";
+        x.models.forEach(m=>{
+          const brandMatch = m.match(/^[A-Z]+/i);
+          const brand = brandMatch ? brandMatch[0] : "Other";
 
-if(Array.isArray(x.models) && x.models.length){
+          const cleanModel = m
+            .replace(new RegExp("^" + brand, "i"), "")
+            .replace(/\s*\d+GB/i,"")
+            .trim();
 
-  const grouped = {};
+          if(!grouped[brand]){
+            grouped[brand] = [];
+          }
 
-  x.models.forEach(function(m){
+          grouped[brand].push(cleanModel);
+        });
 
-    const brandMatch = m.match(/^[A-Z]+/i);
-    const brand = brandMatch ? brandMatch[0] : "Other";
+        modelLine = Object.keys(grouped).map(b=>{
+          return `
+            <div class="model-row">
+              <span class="brand">${b} :</span>
+              <span class="model-list">
+                ${grouped[b].join(" / ")}
+              </span>
+            </div>
+          `;
+        }).join("");
+      }
 
-    const cleanModel = m
-      .replace(new RegExp("^" + brand, "i"), "")
-      .replace(/\s*\d+GB/i,"")
-      .trim();
+      // ===== BUILD CARD =====
+      html += `
+        <div class="result-card">
 
-    if(!grouped[brand]){
-      grouped[brand] = [];
-    }
+          <div class="code-main">
+            ${x.code}
+          </div>
 
-    grouped[brand].push(cleanModel);
-  });
+          <div style="display:flex;align-items:center;gap:10px;margin-top:12px;">
 
-  modelLine = Object.keys(grouped).map(function(b){
-    return `
-      <div class="model-row">
-        <span class="brand">${b} :</span>
-        <span class="model-list">
-          ${grouped[b].join(" / ")}
-        </span>
-      </div>
-    `;
-  }).join("");
-}
+            ${
+              decoded?.vip != null
+              ? `
+                <div class="vip-badge vip-${Math.floor(decoded.vip)}">
+                  VIP ${decoded.vip === 4.5 ? "4+" : decoded.vip}
+                </div>
+              `
+              : ""
+            }
 
+            <div style="
+              padding:6px 16px;
+              border-radius:20px;
+              font-weight:600;
+              font-size:14px;
+              background:rgba(139,92,246,0.18);
+              color:#c084fc;
+            ">
+              ${
+                decoded?.ram && decoded?.rom
+                ? decoded.ram + "/" + decoded.rom
+                : decoded?.rom
+                ? decoded.rom + "GB"
+                : ""
+              }
+            </div>
 
+          </div>
 
-/* ===== BUILD CARD ===== */
-html += `
-  <div class="result-card">
+          <div style="
+            margin-top:14px;
+            display:flex;
+            align-items:center;
+            gap:10px;
+            font-size:15px;
+          ">
 
-    <div class="code-main">
-      ${x.code}
-    </div>
+            <span style="
+              width:6px;
+              height:6px;
+              border-radius:50%;
+              background:#64748b;
+              display:inline-block;
+            "></span>
 
-<div style="
-  display:flex;
-  align-items:center;
-  gap:10px;
-  margin-top:12px;
-">
+            <span style="color:#4ade80;font-weight:600;">
+              ${chip.name}
+            </span>
 
-${x.mmc
-  ? `
-  <div class="mmc-badge mmc-${x.mmc.replace("MMC","")}"
-       style="
-         padding:6px 16px;
-         font-size:13px;
-         border-radius:20px;
-         font-weight:700;
-         box-shadow:0 0 12px rgba(139,92,246,0.25);
-       ">
-    ${x.mmc}
-  </div>
-`
-  : (decoded && decoded.vip != null)
-    ? `
-  <div class="vip-badge vip-${Math.floor(decoded.vip)}"
-       style="
-         padding:6px 16px;
-         font-size:13px;
-         border-radius:20px;
-         font-weight:700;
-         box-shadow:0 0 12px rgba(236,72,153,0.25);
-       ">
-    VIP ${decoded.vip === 4.5 ? "4+" : decoded.vip}
-  </div>
-`
-    : ""
-}
+            <span style="
+              width:6px;
+              height:6px;
+              border-radius:50%;
+              background:#64748b;
+              display:inline-block;
+            "></span>
 
+            <span style="color:#e2e8f0;font-weight:600;">
+              ${decoded?.storage || ""}
+            </span>
 
+          </div>
 
+          ${
+            modelLine
+            ? `
+              <div class="model-line">
+                ${modelLine}
+              </div>
+            `
+            : ""
+          }
 
-  <div style="
-    padding:6px 16px;
-    border-radius:20px;
-    font-weight:600;
-    font-size:14px;
-    background:rgba(139,92,246,0.18);
-    color:#c084fc;
-    box-shadow:0 0 10px rgba(139,92,246,0.2);
-  ">
- ${decoded?.ram && decoded?.rom
-  ? decoded.ram + "/" + decoded.rom
-  : decoded?.rom
-    ? decoded.rom + "GB"
-    : ""}
-
-  </div>
-
-</div>
-
-
-<div style="
-  margin-top:14px;
-  display:flex;
-  align-items:center;
-  gap:10px;
-  font-size:15px;
-">
-
-  <!-- chấm đầu -->
-  <span style="
-    width:6px;
-    height:6px;
-    border-radius:50%;
-    background:#64748b;
-    display:inline-block;
-    opacity:0.8;
-  "></span>
-
-  <!-- Samsung -->
-  <span style="
-    color:#4ade80;
-    font-weight:600;
-  ">
-    ${chip.name}
-  </span>
-
-  <!-- chấm giữa -->
-  <span style="
-    width:6px;
-    height:6px;
-    border-radius:50%;
-    background:#64748b;
-    display:inline-block;
-    opacity:0.8;
-  "></span>
-
-  <!-- UFS -->
-  <span style="
-    color:#e2e8f0;
-    font-weight:600;
-    letter-spacing:0.3px;
-  ">
-    ${decoded?.storage || ""}
-  </span>
-
-</div>
-
-    ${modelLine ? `
-      <div class="model-line" style="
-        margin-top:10px;
-        padding-top:8px;
-        border-top:1px solid rgba(255,255,255,0.08);
-        font-size:14px;
-      ">
-        ${modelLine}
-      </div>
-    ` : ""}
-
-  </div>
-`;
+        </div>
+      `;
     });
 
     html += `</div>`;
-    out.innerHTML = html;
 
-  } catch (err) {
+    out.innerHTML = html;
+    out.classList.add("fade-in");
+
+  }catch(err){
 
     console.error(err);
+
     out.innerHTML = `
-      <div style="color:#ef4444;margin-top:15px;">
+      <div style="color:#ef4444;margin-top:20px;text-align:center;">
         ⚠️ Lỗi hệ thống
       </div>
     `;
-
   }
 
+  // Enable lại nút
+  btn.disabled = false;
+  btn.style.opacity = "1";
 }
-
 
 
 
