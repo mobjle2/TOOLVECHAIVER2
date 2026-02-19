@@ -1585,7 +1585,9 @@ if(main.startsWith("KM5") || main.startsWith("KM2")){
   result.type = "uMCP";
 
   const family = main.substring(0,3);  // KM5 / KM2
+  const ramToken = main.slice(-2);     // 8M / CM / DM / JM
 
+  // ===== ROM =====
   if(main.includes("8001")){
     result.rom = (family === "KM2") ? 256 : 64;
   }
@@ -1599,9 +1601,9 @@ if(main.startsWith("KM5") || main.startsWith("KM2")){
   result.storage = "UFS 2.1";
   result.version = "UFS 2.1";
 
-  const ramToken = main.slice(-2);
-
+  // ===== RAM =====
   const ramMapMid = {
+    "8M":3,
     "CM":6,
     "DM":4,
     "JM":8
