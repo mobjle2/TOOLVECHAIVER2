@@ -1963,7 +1963,7 @@ async function check(){
       const chip = detectChip(x.code);
       const decoded = autoDecodeChip(x.code, x);
 
-html += `
+ html += `
   <div class="result-card">
 
     <div class="code-main">${x.code}</div>
@@ -2011,41 +2011,6 @@ html += `
   </div>
 `;
 
-
-            <div style="
-              padding:6px 16px;
-              border-radius:20px;
-              font-weight:600;
-              font-size:14px;
-              background:rgba(139,92,246,0.18);
-              color:#c084fc;
-            ">
-              ${
-                decoded?.ram && decoded?.rom
-                ? decoded.ram + "/" + decoded.rom
-                : ""
-              }
-            </div>
-
-          </div>
-
-          <div style="
-            margin-top:14px;
-            display:flex;
-            gap:10px;
-            font-size:15px;
-          ">
-            <span style="color:#4ade80;font-weight:600;">
-              ${chip.name}
-            </span>
-            <span style="color:#e2e8f0;font-weight:600;">
-              ${decoded?.storage || ""}
-            </span>
-          </div>
-
-        </div>
-      `;
-    });
 
     html += `</div>`;
 
