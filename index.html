@@ -1047,77 +1047,45 @@ font-weight:500;
   color:#e2e8f0;
   font-weight:500;
 }
-/* ================= PREMIUM LOADING ================= */
-
-.skeleton-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:30px;
-  max-width:1100px;
-  margin:0 auto;
-}
-
-@media(max-width:1200px){
-  .skeleton-grid{
-    grid-template-columns:repeat(2,1fr);
-  }
-}
-
-@media(max-width:768px){
-  .skeleton-grid{
-    grid-template-columns:1fr;
-  }
-}
-
-.skeleton-card{
-  background:#0f172a;
-  border-radius:20px;
+/* ===== PREMIUM PROGRESS LOADING ===== */
+.progress-wrapper{
+  margin-top:20px;
   padding:20px;
+  background:rgba(255,255,255,0.03);
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,0.08);
+}
+
+.progress-title{
+  font-size:14px;
+  margin-bottom:10px;
+  opacity:0.8;
+}
+
+.progress-bar{
+  width:100%;
+  height:10px;
+  background:rgba(255,255,255,0.08);
+  border-radius:10px;
   overflow:hidden;
   position:relative;
 }
 
-.skeleton-line{
-  height:14px;
-  margin-bottom:12px;
-  border-radius:8px;
-  background:linear-gradient(
-    90deg,
-    #1e293b 25%,
-    #334155 37%,
-    #1e293b 63%
-  );
-  background-size:400% 100%;
-  animation:shimmer 1.4s ease infinite;
+.progress-fill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#00f5a0,#00d9ff);
+  border-radius:10px;
+  transition:width 0.3s ease;
 }
 
-.skeleton-line.big{
-  height:20px;
-  width:60%;
+.progress-percent{
+  margin-top:8px;
+  font-size:13px;
+  opacity:0.7;
+  text-align:right;
 }
 
-.skeleton-line.mid{
-  width:40%;
-}
-
-.skeleton-line.small{
-  width:30%;
-}
-
-@keyframes shimmer{
-  0%{ background-position:100% 0; }
-  100%{ background-position:-100% 0; }
-}
-
-/* Fade in effect */
-.fade-in{
-  animation:fadeIn 0.4s ease forwards;
-}
-
-@keyframes fadeIn{
-  from{ opacity:0; transform:translateY(10px); }
-  to{ opacity:1; transform:translateY(0); }
-}
 
 </style>
 
@@ -1892,33 +1860,43 @@ async function check(){
   btn.disabled = true;
   btn.style.opacity = "0.6";
 
-  // ===== PREMIUM SKELETON LOADING =====
-  out.innerHTML = `
-    <div class="skeleton-grid">
-      ${[1,2,3].map(()=>`
-        <div class="skeleton-card">
-          <div class="skeleton-line big"></div>
-          <div class="skeleton-line mid"></div>
-          <div class="skeleton-line small"></div>
-          <div class="skeleton-line"></div>
-          <div class="skeleton-line"></div>
-        </div>
-      `).join("")}
+// ===== PREMIUM PROGRESS LOADING =====
+out.innerHTML = `
+  <div style="max-width:600px;margin:40px auto;">
+    <div style="margin-bottom:8px;font-size:14px;opacity:0.8;">
+      🔍 Đang phân tích dữ liệu...
     </div>
-  `;
+    <div style="
+      width:100%;
+      height:10px;
+      background:#1e293b;
+      border-radius:20px;
+      overflow:hidden;
+    ">
+      <div id="progressFill" style="
+        height:100%;
+        width:0%;
+        background:linear-gradient(90deg,#22c55e,#06b6d4);
+        transition:width 0.25s ease;
+      "></div>
+    </div>
+    <div id="progressText"
+         style="text-align:right;font-size:13px;margin-top:6px;opacity:0.7;">
+      0%
+    </div>
+  </div>
+`;
 
-  // Delay nhẹ để UX mượt
-  await new Promise(resolve => setTimeout(resolve, 700));
+let percent = 0;
+const fill = document.getElementById("progressFill");
+const text = document.getElementById("progressText");
 
-  try{
-
-    let html = `<div class="result-grid">`;
-
-    const snap = await db.collection("codes").get();
-
-    snap.forEach(doc=>{
-
-      const x = doc.data();
+const fakeLoading = setInterval(()=>{
+  percent += Math.floor(Math.random()*12)+5;
+  if(percent > 95) percent = 95;
+  fill.style.width = percent + "%";
+  text.innerText = percent + "%";
+},120);
 
       // ===== FILTER =====
       if(
@@ -2054,6 +2032,9 @@ async function check(){
     });
 
     html += `</div>`;
+clearInterval(fakeLoading);
+fill.style.width = "100%";
+text.innerText = "100%";
 
     out.innerHTML = html;
     out.classList.add("fade-in");
