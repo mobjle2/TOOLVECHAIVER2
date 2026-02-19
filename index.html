@@ -1612,33 +1612,88 @@ function decodeSamsung(code){
     result.vip = calculateVip(result.ram, result.rom);
     return result;
   }
+// =====================================================
+// 🔹 KM8 (HIGH-END UFS)
+// =====================================================
+if(main.startsWith("KM8")){
 
-  // =====================================================
-  // 🔹 4. KM8 / KM9 (HIGH-END UFS)
-  // =====================================================
-  if(main.startsWith("KM8") || main.startsWith("KM9")){
+  result.type = "uMCP";
 
-    result.type = "uMCP";
+  const tier = main[3];      // L / F / G / V / B
+  const ramToken = main.slice(-2);
 
-    const prefix = main.substring(0,8);   // KM8L9001
-    const ramToken = main.slice(-2);      // JM / MM / LM
+  // ===== ROM BASE =====
+  if(main.includes("9001"))
+    result.rom = 256;
+  else if(main.includes("8001"))
+    result.rom = 128;
+  else if(main.includes("7001"))
+    result.rom = 64;
 
-    // ===== ROM MAP THEO PREFIX THỰC TẾ =====
-    const romMap = {
-      "KM8L9001":128,
-      "KM8F9001":256,
-      "KM8G9001":512,
+  // ===== TIER OVERRIDE =====
+  if(tier === "G" && main.includes("9001"))
+    result.rom = 512;
 
-      "KM8V8001":128,
-      "KM8B8001":256,
+  if(["F","B"].includes(tier) && main.includes("8001"))
+    result.rom = 256;
 
-      "KM9F9001":256,
-      "KM9G9001":512
-    };
+  if(tier === "L" && main.includes("9001"))
+    result.rom = 128;
 
-    if(romMap[prefix]){
-      result.rom = romMap[prefix];
-    }
+  // ===== STORAGE =====
+  result.storage = main.includes("9001") ? "UFS 2.2" : "UFS 2.1";
+  result.version = result.storage;
+
+  // ===== RAM =====
+  const ramMap = {
+    "JM":8,
+    "JA":8,
+    "MM":12,
+    "LM":8,
+    "EM":12,
+    "RM":12
+  };
+
+  if(ramMap[ramToken])
+    result.ram = ramMap[ramToken];
+
+  result.vip = calculateVip(result.ram, result.rom);
+  return result;
+}
+// =====================================================
+// 🔹 KM9 (NEW GEN UFS)
+// =====================================================
+if(main.startsWith("KM9")){
+
+  result.type = "uMCP";
+
+  const tier = main[3];
+  const ramToken = main.slice(-2);
+
+  if(main.includes("9001"))
+    result.rom = tier === "G" ? 512 : 256;
+  else if(main.includes("8001"))
+    result.rom = 256;
+  else if(main.includes("7001"))
+    result.rom = 128;
+
+  result.storage = main.includes("9001") ? "UFS 3.x" : "UFS 2.2";
+  result.version = result.storage;
+
+  const ramMap = {
+    "JM":8,
+    "MM":12,
+    "RM":12,
+    "SM":16
+  };
+
+  if(ramMap[ramToken])
+    result.ram = ramMap[ramToken];
+
+  result.vip = calculateVip(result.ram, result.rom);
+  return result;
+}
+
 
     // ===== STORAGE =====
     if(main.includes("9001"))
