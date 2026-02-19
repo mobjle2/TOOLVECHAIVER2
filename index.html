@@ -1551,33 +1551,35 @@ function decodeSamsung(code){
   }
 
   // =====================================================
-  // 1️⃣ KM8 / KM9
-  // =====================================================
-  if(main.startsWith("KM8") || main.startsWith("KM9")){
+// =====================================================
+// 1️⃣ KM8 / KM9 – DÒNG CAO
+// =====================================================
+if(main.startsWith("KM8") || main.startsWith("KM9")){
 
-    result.type = "uMCP";
+  result.type = "uMCP";
 
-    if(main.includes("9001")){
-      result.rom = main[3] === "G" ? 512 : 256;
-      result.storage = "UFS 3.x";
-    }
-    else if(main.includes("8001")){
-      result.rom = 256;
-      result.storage = "UFS 2.2";
-    }
-    else if(main.includes("7001")){
-      result.rom = 128;
-      result.storage = "UFS 2.1";
-    }
-    else if(main.includes("6001")){
-      result.rom = 64;
-      result.storage = "eMMC 5.1";
-    }
-
-    result.version = result.storage;
-    result.vip = calculateVip(result.ram, result.rom);
-    return result;
+  if(main.includes("9001")){
+    result.rom = main[3] === "G" ? 512 : 256;
+    result.storage = "UFS 3.x";
   }
+  else if(main.includes("8001")){
+    result.rom = 128;          // 🔥 FIX
+    result.storage = "UFS 2.1"; // 🔥 FIX
+  }
+  else if(main.includes("7001")){
+    result.rom = 64;           // 🔥 FIX
+    result.storage = "UFS 2.1";
+  }
+  else if(main.includes("6001")){
+    result.rom = 32;
+    result.storage = "eMMC 5.1";
+  }
+
+  result.version = result.storage;
+  result.vip = calculateVip(result.ram, result.rom);
+  return result;
+}
+
 
   // =====================================================
   // 2️⃣ KM5 / KM2
