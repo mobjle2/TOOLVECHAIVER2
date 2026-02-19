@@ -186,20 +186,24 @@ body{
 /* ================= CARD STYLE ================= */
 
 .result-card{
-  background: linear-gradient(145deg,#0b1220,#0e1628);
+  background:linear-gradient(145deg,#0b1220,#0e1628);
   border:1px solid rgba(0,212,255,0.15);
+  border-radius:16px;
+  padding:20px;
+  transition:0.3s ease;
   box-shadow:
-    0 0 0 rgba(0,0,0,0),
-    0 0 40px rgba(0,212,255,0.08);
-  transition: all 0.3s ease;
+    0 10px 30px rgba(0,0,0,0.6),
+    0 0 40px rgba(0,212,255,0.05);
 }
 
 .result-card:hover{
+  transform:translateY(-4px);
+  border-color:rgba(0,212,255,0.35);
   box-shadow:
-    0 0 40px rgba(0,212,255,0.25),
-    0 0 80px rgba(59,130,246,0.2);
-  transform: translateY(-4px);
+    0 15px 40px rgba(0,0,0,0.8),
+    0 0 60px rgba(0,212,255,0.2);
 }
+
 
 /* ===== CHIP LINE ===== */
 .chip-line{
@@ -314,48 +318,48 @@ font-weight:500;
 
 .vip-5{
   color:#00e5ff;
-  text-shadow:0 0 6px rgba(0,229,255,0.6);
+  text-shadow:0 0 8px rgba(0,229,255,0.7);
 }
 
 .vip-6{
   color:#00ff9d;
-  text-shadow:0 0 6px rgba(0,255,157,0.6);
+  text-shadow:0 0 8px rgba(0,255,157,0.7);
 }
 
 .vip-7{
   color:#ff9f1c;
-  text-shadow:0 0 6px rgba(255,159,28,0.6);
+  text-shadow:0 0 8px rgba(255,159,28,0.7);
 }
 
 .vip-8{
   color:#8b5cf6;
-  text-shadow:0 0 6px rgba(139,92,246,0.6);
+  text-shadow:0 0 8px rgba(139,92,246,0.7);
 }
 
 .vip-9{
   color:#ff4ecd;
-  text-shadow:0 0 8px rgba(255,78,205,0.7);
+  text-shadow:0 0 10px rgba(255,78,205,0.8);
 }
 
 .vip-10{
   color:#facc15;
   text-shadow:
-    0 0 8px rgba(250,204,21,0.8),
-    0 0 16px rgba(250,204,21,0.6);
+    0 0 10px rgba(250,204,21,0.9),
+    0 0 20px rgba(250,204,21,0.7);
 }
 
 .vip-11{
   color:#38bdf8;
   text-shadow:
-    0 0 8px rgba(56,189,248,0.8),
-    0 0 18px rgba(56,189,248,0.6);
+    0 0 10px rgba(56,189,248,0.9),
+    0 0 20px rgba(56,189,248,0.7);
 }
 
 .vip-12{
   color:#ffffff;
   text-shadow:
-    0 0 8px rgba(255,255,255,0.9),
-    0 0 18px rgba(59,130,246,0.8);
+    0 0 10px rgba(255,255,255,1),
+    0 0 20px rgba(59,130,246,0.9);
 }
 
 
@@ -1118,6 +1122,12 @@ font-weight:500;
   text-align:right;
 }
 
+.code-main{
+  color:#e2e8f0;           /* sáng hơn */
+  font-weight:600;
+  letter-spacing:0.5px;
+  font-size:15px;
+}
 
 </style>
 
@@ -1953,20 +1963,55 @@ async function check(){
       const chip = detectChip(x.code);
       const decoded = autoDecodeChip(x.code, x);
 
-      html += `
-        <div class="result-card">
+html += `
+  <div class="result-card">
 
-          <div class="code-main">${x.code}</div>
+    <div class="code-main">${x.code}</div>
 
-          <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
+    <div class="card-top">
 
-            ${
-              decoded?.vip != null
-              ? `<div class="vip-badge vip-${Math.floor(decoded.vip)}">
-                   VIP ${decoded.vip === 4.5 ? "4+" : decoded.vip}
-                 </div>`
-              : ""
-            }
+      ${
+        decoded?.vip != null
+        ? `<div class="vip-badge vip-${Math.floor(decoded.vip)}">
+             VIP ${decoded.vip === 4.5 ? "4+" : decoded.vip}
+           </div>`
+        : ""
+      }
+
+      ${
+        decoded?.ram && decoded?.rom
+        ? `<div class="ram-badge">
+             ${decoded.ram}/${decoded.rom}
+           </div>`
+        : ""
+      }
+
+    </div>
+
+    <div class="card-bottom">
+
+      <span class="brand-name">
+        ${chip.name}
+      </span>
+
+      ${
+${
+  decoded?.storage
+    ? `<span class="storage-badge ${
+          decoded.storage?.includes("UFS")
+            ? "storage-ufs"
+            : "storage-emmc"
+        }">
+          ${decoded.storage}
+       </span>`
+    : ""
+}
+
+
+    </div>
+
+  </div>
+`;
 
             <div style="
               padding:6px 16px;
