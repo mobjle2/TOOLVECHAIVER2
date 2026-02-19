@@ -1635,16 +1635,17 @@ function decodeSamsung(code){
       }
     }
 
-    else if(block === "7001"){
+else if(block === "7001"){
 
-      if(family === "KM8"){
-        result.rom = 64;
-      }
+  if(family === "KM8"){
+    result.rom = (tier === "L") ? 64 : 128;
+  }
 
-      if(family === "KM9"){
-        result.rom = 128;
-      }
-    }
+  if(family === "KM9"){
+    result.rom = 128;
+  }
+}
+
 
     // ===== STORAGE =====
     if(family === "KM8"){
