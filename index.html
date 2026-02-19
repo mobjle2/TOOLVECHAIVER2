@@ -1995,23 +1995,22 @@ html += `
       </span>
 
       ${
-${
-  decoded?.storage
-    ? `<span class="storage-badge ${
-          decoded.storage?.includes("UFS")
-            ? "storage-ufs"
-            : "storage-emmc"
-        }">
-          ${decoded.storage}
-       </span>`
-    : ""
-}
-
+        decoded?.storage
+          ? `<span class="storage-badge ${
+                decoded.storage?.includes("UFS")
+                  ? "storage-ufs"
+                  : "storage-emmc"
+              }">
+                ${decoded.storage}
+             </span>`
+          : ""
+      }
 
     </div>
 
   </div>
 `;
+
 
             <div style="
               padding:6px 16px;
