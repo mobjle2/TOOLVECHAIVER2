@@ -1577,38 +1577,43 @@ function decodeSamsung(code){
     return result;
   }
 
-  // =====================================================
-  // 🔹 3. KM5 / KM2 (UFS 2.1 MID)
-  // =====================================================
-  if(main.startsWith("KM5") || main.startsWith("KM2")){
+// =====================================================
+// 🔹 KM5 / KM2 (UFS 2.1 MID)
+// =====================================================
+if(main.startsWith("KM5") || main.startsWith("KM2")){
 
-    result.type = "uMCP";
+  result.type = "uMCP";
 
-    if(main.includes("8001"))
-      result.rom = main.startsWith("KM2B") ? 256 : 64;
-    else if(main.includes("7001"))
-      result.rom = 64;
-    else if(main.includes("6001"))
-      result.rom = 32;
+  const family = main.substring(0,3);  // KM5 / KM2
 
-    result.storage = "UFS 2.1";
-    result.version = "UFS 2.1";
-
-    const ramChar = main[main.length - 2];
-
-    const ramMapMid = {
-      "8":3,
-      "C":6,
-      "D":4,
-      "M":8
-    };
-
-    if(ramMapMid[ramChar])
-      result.ram = ramMapMid[ramChar];
-
-    result.vip = calculateVip(result.ram, result.rom);
-    return result;
+  if(main.includes("8001")){
+    result.rom = (family === "KM2") ? 256 : 64;
   }
+  else if(main.includes("7001")){
+    result.rom = (family === "KM2") ? 128 : 64;
+  }
+  else if(main.includes("6001")){
+    result.rom = 32;
+  }
+
+  result.storage = "UFS 2.1";
+  result.version = "UFS 2.1";
+
+  const ramToken = main.slice(-2);
+
+  const ramMapMid = {
+    "CM":6,
+    "DM":4,
+    "JM":8
+  };
+
+  if(ramMapMid[ramToken]){
+    result.ram = ramMapMid[ramToken];
+  }
+
+  result.vip = calculateVip(result.ram, result.rom);
+  return result;
+}
 
   // =====================================================
   // 🔹 4. KM8 / KM9 (HIGH-END)
