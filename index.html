@@ -1725,7 +1725,7 @@ const ramMap={
 };
 
 let ram=null;
-const ramMatch=code.match(/A[0-9A-Z]/);
+const ramMatch = code.match(/A[0-9A-Z]{2}/);
 if(ramMatch) ram=ramMap[ramMatch[0]] ?? null;
 
 
