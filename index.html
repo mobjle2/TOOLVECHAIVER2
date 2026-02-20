@@ -1999,170 +1999,137 @@ async function check(){
   const btn = document.querySelector(".check-btn");
 
   if(!q){
-    out.innerHTML = "";
+    out.innerHTML="";
     return;
   }
 
-  // Disable nút khi đang load
   btn.disabled = true;
-  btn.style.opacity = "0.6";
+  btn.style.opacity="0.6";
 
-  // ===== PROGRESS LOADING =====
-  out.innerHTML = `
+  // ===== LOADING UI =====
+  out.innerHTML=`
     <div style="max-width:600px;margin:40px auto;">
       <div style="margin-bottom:8px;font-size:14px;opacity:0.8;">
         🔍 Đang phân tích dữ liệu...
       </div>
-      <div style="
-        width:100%;
-        height:10px;
-        background:#1e293b;
-        border-radius:20px;
-        overflow:hidden;
-      ">
-        <div id="progressFill" style="
-          height:100%;
-          width:0%;
-          background:linear-gradient(90deg,#22c55e,#06b6d4);
-          transition:width 0.25s ease;
-        "></div>
+
+      <div style="width:100%;height:10px;background:#1e293b;border-radius:20px;overflow:hidden;">
+        <div id="progressFill"
+             style="height:100%;width:0%;
+             background:linear-gradient(90deg,#22c55e,#06b6d4);
+             transition:width .25s"></div>
       </div>
+
       <div id="progressText"
-           style="text-align:right;font-size:13px;margin-top:6px;opacity:0.7;">
+           style="text-align:right;font-size:13px;margin-top:6px;opacity:.7">
         0%
       </div>
     </div>
   `;
 
-  let percent = 0;
-  const fill = document.getElementById("progressFill");
-  const text = document.getElementById("progressText");
+  const fill=document.getElementById("progressFill");
+  const text=document.getElementById("progressText");
 
-  const fakeLoading = setInterval(()=>{
-    percent += Math.floor(Math.random()*12)+5;
-    if(percent > 95) percent = 95;
-    fill.style.width = percent + "%";
-    text.innerText = percent + "%";
+  let percent=0;
+
+  const fakeLoading=setInterval(()=>{
+    percent+=Math.floor(Math.random()*10)+5;
+    if(percent>95) percent=95;
+    fill.style.width=percent+"%";
+    text.innerText=percent+"%";
   },120);
-
-  await new Promise(resolve => setTimeout(resolve, 500));
 
   try{
 
-    let html = `<div class="result-grid">`;
+    await new Promise(r=>setTimeout(r,500));
 
-    const snap = await db.collection("codes").get();
+    let html=`<div class="result-grid">`;
+
+    const snap=await db.collection("codes").get();
 
     snap.forEach(doc=>{
 
-      const x = doc.data();
+      const x=doc.data();
 
       if(
         !x.code?.toUpperCase().includes(q) &&
         !(Array.isArray(x.models) &&
-          x.models.some(m => m.toUpperCase().includes(q)))
-      ){
-        return;
-      }
+        x.models.some(m=>m.toUpperCase().includes(q)))
+      ) return;
 
-      const chip = detectChip(x.code);
-      const decoded = autoDecodeChip(x.code, x);
+      const chip=detectChip(x.code);
+      const decoded=autoDecodeChip(x.code,x);
 
-      html += `
+      html+=`
         <div class="result-card">
 
           <div class="code-main">${x.code}</div>
 
           <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
-
             ${
-              decoded?.vip != null
+              decoded?.vip!=null
               ? `<div class="vip-badge vip-${Math.floor(decoded.vip)}">
-                   VIP ${decoded.vip === 4.5 ? "4+" : decoded.vip}
-                 </div>`
-              : ""
+                  VIP ${decoded.vip===4.5?"4+":decoded.vip}
+                </div>`
+              :""
             }
 
-            <div style="
-              padding:6px 16px;
-              border-radius:20px;
-              font-weight:600;
-              font-size:14px;
-              background:rgba(139,92,246,0.18);
-              color:#c084fc;
-            ">
-${
-  decoded?.rom
-  ? (decoded.ram ? decoded.ram + "/" : "") + decoded.rom + "GB"
-  : ""
-}
+            <div style="padding:6px 16px;border-radius:20px;font-weight:600;
+                        background:rgba(139,92,246,0.18);color:#c084fc;">
+              ${decoded?.rom
+                ? (decoded.ram?decoded.ram+"/":"")+decoded.rom+"GB"
+                :""}
             </div>
-
           </div>
 
-          <div style="
-            margin-top:14px;
-            display:flex;
-            gap:10px;
-            font-size:15px;
-          ">
+          <div style="margin-top:14px;display:flex;gap:10px;font-size:15px;">
             <span style="color:#4ade80;font-weight:600;">
               ${chip.name}
             </span>
             <span style="color:#e2e8f0;font-weight:600;">
-              ${decoded?.storage || ""}
+              ${decoded?.storage||""}
             </span>
           </div>
 
-        </div>
-      `;
+        </div>`;
     });
 
-    html += `</div>`;
+    html+=`</div>`;
 
-// Hoàn tất progress
-clearInterval(fakeLoading);
+    // ===== FINISH LOADING =====
+    clearInterval(fakeLoading);
 
-// ép thanh chạy tới 100%
-fill.style.width = "100%";
-text.innerText = "100%";
+    fill.style.width="100%";
+    text.innerText="100%";
 
-// Hoàn tất progress
-clearInterval(fakeLoading);
+    setTimeout(()=>{
+      out.style.opacity="0";
 
-fill.style.width = "100%";
-text.innerText = "100%";
+      setTimeout(()=>{
+        out.innerHTML=html;
+        out.style.opacity="1";
 
-// ===== PRO LOADING FINISH =====
-setTimeout(() => {
+        btn.disabled=false;
+        btn.style.opacity="1";
 
-  out.style.opacity = "0";
+      },120);
 
-  setTimeout(() => {
-    out.innerHTML = html;
-    out.style.opacity = "1";
+    },450);
 
-    btn.disabled = false;
-    btn.style.opacity = "1";
+  }catch(err){
 
-  }, 120);
+    clearInterval(fakeLoading);
+    console.error(err);
 
-}, 450);
+    out.innerHTML=`
+      <div style="color:#ef4444;margin-top:20px;text-align:center;">
+        ⚠️ Lỗi hệ thống
+      </div>
+    `;
 
-}catch(err){
-
-  clearInterval(fakeLoading);
-
-  console.error(err);
-
-  out.innerHTML = `
-    <div style="color:#ef4444;margin-top:20px;text-align:center;">
-      ⚠️ Lỗi hệ thống
-    </div>
-  `;
-
-  btn.disabled = false;
-  btn.style.opacity = "1";
+    btn.disabled=false;
+    btn.style.opacity="1";
+  }
 }
 
 
