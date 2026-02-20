@@ -2077,7 +2077,7 @@ async function check(){
             <div style="padding:6px 16px;border-radius:20px;font-weight:600;
                         background:rgba(139,92,246,0.18);color:#c084fc;">
               ${decoded?.rom
-                ? (decoded.ram?decoded.ram+"/":"")+decoded.rom
+                (decoded.ram ? decoded.ram : "?") + "/" + decoded.rom
                 :""}
             </div>
           </div>
