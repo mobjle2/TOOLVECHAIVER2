@@ -2120,16 +2120,26 @@ ${
 
     html += `</div>`;
 
-    // Hoàn tất progress
-    clearInterval(fakeLoading);
-    fill.style.width = "100%";
-    text.innerText = "100%";
+// Hoàn tất progress
+clearInterval(fakeLoading);
 
+// ép thanh chạy tới 100%
+fill.style.width = "100%";
+text.innerText = "100%";
+
+// ===== PRO LOADING FINISH =====
+// đảm bảo người dùng thấy 100% rồi mới render
+setTimeout(() => {
+
+  // fade nhẹ trước khi hiện kết quả
+  out.style.opacity = "0";
+
+  setTimeout(() => {
     out.innerHTML = html;
+    out.style.opacity = "1";
+  }, 120);
 
-  }catch(err){
-
-    clearInterval(fakeLoading);
+}, 450);
 
     console.error(err);
 
