@@ -1686,7 +1686,7 @@ if(main.startsWith("KM5") || main.startsWith("KM2")){
 }
 
 // =====================================================
-// ===== SK HYNIX FINAL ENGINE =========================
+// ================= SK HYNIX FULL ENGINE ==============
 // =====================================================
 function decodeHynix(code){
 
@@ -1695,151 +1695,161 @@ function decodeHynix(code){
   let ram = null;
   let rom = null;
   let storage = "Unknown";
-  let vip = null;
+
 
   // =====================================================
-  // ========== 1️⃣ H9TQ — eMCP (RAM + eMMC) ==============
+  // ================= RAM TABLE =========================
+  // =====================================================
+  const ramMap = {
+    "A4":0.5,
+    "A8":1,
+    "AA":1.5,
+    "AB":2,
+    "AC":3,
+    "AD":4,
+    "AE":6,
+    "AF":8,
+    "AG":12,
+    "AH":16
+  };
+
+
+  // =====================================================
+  // ================ H9TQ (eMCP) ========================
   // =====================================================
   if(code.startsWith("H9TQ")){
 
     storage = "eMMC 5.1";
 
-    // NAND density (Gb → GB)
-    const nandGb = parseInt(code.substring(4,6));
-    if(!isNaN(nandGb)){
-      rom = nandGb / 8;
-    }
+    const id = code.substring(4,6);
 
-    // RAM density (Gb → GB)
-    const ramToken = code.substring(6,8);
-    const ramGb = parseInt(ramToken.replace("A",""));
-
-    if(!isNaN(ramGb)){
-      ram = ramGb / 8;
-    }
-  }
-
-
-  // =====================================================
-  // ========== 2️⃣ H9HP / H9HQ — UFS =====================
-  // =====================================================
-  else if(
-    code.startsWith("H9HP") ||
-    code.startsWith("H9HQ")
-  ){
-
-    const romMap = {
-      "16":128,
+    // PRODUCT FAMILY
+    const tqRomMap = {
       "17":16,
       "18":16,
       "19":16,
       "20":32,
-      "25":64,
       "26":32,
       "27":32,
       "52":64,
-      "53":64,
-      "21":256,
-      "22":256
+      "53":64
     };
 
-    const romKey = code.substring(4,6);
-    rom = romMap[romKey] ?? null;
+    if(tqRomMap[id]){
+      rom = tqRomMap[id];
+    }
+    else{
+      // REAL DENSITY TYPE
+      const density = parseInt(id);
+      if(!isNaN(density)){
+        rom = density / 8;
+      }
+    }
 
-    if(code.startsWith("H9HP16"))
-      storage = "UFS 2.1";
-    else if(code.startsWith("H9HQ21"))
-      storage = "UFS 3.0";
-    else if(code.startsWith("H9HQ22"))
-      storage = "UFS 3.1";
-
-    // RAM token
-    const ramMap = {
-      "A4":0.5,
-      "A8":1,
-      "AA":1.5,
-      "AB":2,
-      "AC":3,
-      "AD":4,
-      "AE":6,
-      "AF":8,
-      "AG":12,
-      "AH":16
-    };
-
-    const ramMatch = code.match(/A[0-9A-Z]/);
-    if(ramMatch){
-      ram = ramMap[ramMatch[0]] ?? null;
+    const ramToken = code.match(/A[0-9A-Z]/);
+    if(ramToken){
+      ram = ramMap[ramToken[0]] ?? null;
     }
   }
 
 
   // =====================================================
-  // ========== 3️⃣ H9HR / H9RT — FLAGSHIP ===============
+  // ================= H9HP (UFS 2.1) ====================
+  // =====================================================
+  else if(code.startsWith("H9HP")){
+
+    storage = "UFS 2.1";
+
+    const romMap = {
+      "16":128,
+      "17":16,
+      "20":32,
+      "25":64,
+      "26":32,
+      "52":64,
+      "53":64
+    };
+
+    const key = code.substring(4,6);
+    rom = romMap[key] ?? null;
+
+    const ramToken = code.match(/A[0-9A-Z]/);
+    if(ramToken){
+      ram = ramMap[ramToken[0]] ?? null;
+    }
+  }
+
+
+  // =====================================================
+  // ================= H9HQ (UFS 3.x) ====================
+  // =====================================================
+  else if(code.startsWith("H9HQ")){
+
+    const romMap = {
+      "21":256,
+      "22":256,
+      "52":64,
+      "53":64
+    };
+
+    const key = code.substring(4,6);
+    rom = romMap[key] ?? null;
+
+    if(code.startsWith("H9HQ21"))
+      storage = "UFS 3.0";
+    else if(code.startsWith("H9HQ22"))
+      storage = "UFS 3.1";
+    else
+      storage = "UFS 2.2";
+
+    const ramToken = code.match(/A[0-9A-Z]/);
+    if(ramToken){
+      ram = ramMap[ramToken[0]] ?? null;
+    }
+  }
+
+
+  // =====================================================
+  // ================= H9HR (HIGH END) ===================
   // =====================================================
   else if(code.startsWith("H9HR")){
 
     storage = "UFS 3.1";
 
-    const ramMatch = code.match(/A[0-9A-Z]/);
-    const ramMap = {
-      "AE":6,
-      "AF":8,
-      "AG":12,
-      "AH":16
-    };
-
-    if(ramMatch){
-      ram = ramMap[ramMatch[0]] ?? null;
+    const ramToken = code.match(/A[0-9A-Z]/);
+    if(ramToken){
+      ram = ramMap[ramToken[0]] ?? null;
     }
 
-    rom = 256; // typical baseline
+    rom = 256;
   }
 
+
+  // =====================================================
+  // ================= H9RT (FLAGSHIP) ===================
+  // =====================================================
   else if(code.startsWith("H9RT") || code.includes("2G7")){
+
     storage = "UFS 4.0";
-    ram = 12;
+
+    const ramToken = code.match(/A[0-9A-Z]/);
+    if(ramToken){
+      ram = ramMap[ramToken[0]] ?? null;
+    }
+
     rom = 512;
   }
 
 
   // =====================================================
-  // ================= VIP SYSTEM ========================
+  // ================= RETURN ============================
   // =====================================================
-  if(storage === "eMMC 5.1"){
-
-    if(rom === 8 && ram === 1) vip = 1;
-    else if(rom === 16) vip = 4;
-    else if(rom === 32) vip = 5;
-    else if(rom === 64) vip = 6;
-    else if(rom >= 128) vip = 8;
-  }
-
-  else if(storage === "UFS 2.1"){
-    vip = 8;
-  }
-
-  else if(storage === "UFS 3.0"){
-    vip = 9;
-  }
-
-  else if(storage === "UFS 3.1"){
-    vip = (ram >= 12) ? 12 : 10;
-  }
-
-  else if(storage === "UFS 4.0"){
-    vip = 13;
-  }
-
-
   return {
     ram,
     rom,
-    storage,
-    vip
+    storage
   };
 }
-
   
 // ===== MAIN DECODER =====
 function autoDecodeChip(code, dbData){
