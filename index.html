@@ -2091,11 +2091,11 @@ async function check(){
               background:rgba(139,92,246,0.18);
               color:#c084fc;
             ">
-              ${
-                decoded?.ram && decoded?.rom
-                ? decoded.ram + "/" + decoded.rom
-                : ""
-              }
+${
+  decoded?.rom
+  ? (decoded.ram ? decoded.ram + "/" : "") + decoded.rom + "GB"
+  : ""
+}
             </div>
 
           </div>
