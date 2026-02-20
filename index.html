@@ -2127,28 +2127,39 @@ clearInterval(fakeLoading);
 fill.style.width = "100%";
 text.innerText = "100%";
 
+// Hoàn tất progress
+clearInterval(fakeLoading);
+
+fill.style.width = "100%";
+text.innerText = "100%";
+
 // ===== PRO LOADING FINISH =====
-// đảm bảo người dùng thấy 100% rồi mới render
 setTimeout(() => {
 
-  // fade nhẹ trước khi hiện kết quả
   out.style.opacity = "0";
 
   setTimeout(() => {
     out.innerHTML = html;
     out.style.opacity = "1";
+
+    btn.disabled = false;
+    btn.style.opacity = "1";
+
   }, 120);
 
 }, 450);
 
-    console.error(err);
+}catch(err){
 
-    out.innerHTML = `
-      <div style="color:#ef4444;margin-top:20px;text-align:center;">
-        ⚠️ Lỗi hệ thống
-      </div>
-    `;
-  }
+  clearInterval(fakeLoading);
+
+  console.error(err);
+
+  out.innerHTML = `
+    <div style="color:#ef4444;margin-top:20px;text-align:center;">
+      ⚠️ Lỗi hệ thống
+    </div>
+  `;
 
   btn.disabled = false;
   btn.style.opacity = "1";
