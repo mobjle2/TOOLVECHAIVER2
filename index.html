@@ -1844,11 +1844,14 @@ function decodeHynix(code){
   // =====================================================
   // ================= RETURN ============================
   // =====================================================
-  return {
-    ram,
-    rom,
-    storage
-  };
+const vip = calculateVip(ram, rom);
+
+return {
+  ram,
+  rom,
+  storage,
+  vip
+};
 }
   
 // ===== MAIN DECODER =====
