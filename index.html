@@ -1382,62 +1382,81 @@ function detectChip(code){
 // ===== VIP RULE (ỔN ĐỊNH & CHUẨN HÓA KIỂU DỮ LIỆU) =====
 function calculateVip(ram, rom){
 
-function calculateVip(ram, rom){
-
+  // ÉP KIỂU AN TOÀN
   ram = Number(ram);
   rom = Number(rom);
 
-  if(!ram || !rom) return 0;
+  // Nếu không hợp lệ
+  if (isNaN(ram) || isNaN(rom) || ram <= 0 || rom <= 0)
+    return 0;
 
-  // VIP 12
-  if(ram >= 16 && rom >= 512) return 12;
+  // =========================
+  // VIP 11 (cực cao)
+  // =========================
+  if (ram >= 16 && rom >= 512)
+    return 11;
 
-  // VIP 11
-  if(ram === 12 && rom === 512) return 11;
-
+  // =========================
   // VIP 10
-  if(ram === 12 && rom === 256) return 10;
-  if(ram === 8 && rom === 512) return 10;
+  // =========================
+  if ((ram === 10 || ram === 12) && rom === 512)
+    return 10;
 
+  if (ram === 12 && rom === 256)
+    return 10;
+
+  // =========================
   // VIP 9
-  if(ram === 6 && rom === 256) return 9;
-  if(ram === 12 && rom === 128) return 9;
-  if(ram === 8 && rom === 256) return 9;
-  if(ram === 10 && rom === 256) return 9;
+  // =========================
+  if ([6, 8, 10, 12].includes(ram) && rom === 256)
+    return 9;
 
+  // =========================
   // VIP 8
-  if(ram === 8 && rom === 128) return 8;
-  if(ram === 10 && rom === 128) return 8;
+  // =========================
+  if ([8, 10].includes(ram) && rom === 128)
+    return 8;
 
+  // =========================
   // VIP 7
-  if(ram === 4 && rom === 128) return 7;
-  if(ram === 6 && rom === 128) return 7;
+  // =========================
+  if ([4, 6].includes(ram) && rom === 128)
+    return 7;
 
+  // =========================
   // VIP 6
-  if(ram === 4 && rom === 64) return 6;
-  if(ram === 6 && rom === 64) return 6;
+  // =========================
+  if ([4, 6].includes(ram) && rom === 64)
+    return 6;
 
+  // =========================
   // VIP 5
-  if(ram === 3 && rom === 32) return 5;
-  if(ram === 4 && rom === 32) return 5;
-  if(ram === 3 && rom === 64) return 5;
+  // =========================
+  if ([2, 3, 4].includes(ram) && rom === 32)
+    return 5;
 
-  // VIP 4+
-  if(ram === 2 && rom === 32) return 4.5;
+  if (ram === 3 && rom === 64)
+    return 5;
 
+  // =========================
   // VIP 4
-  if(ram === 2 && rom === 16) return 4;
+  // =========================
+  if (ram === 3 && rom === 16)
+    return 4;
 
+  // =========================
   // VIP 3
-  if(ram === 1 && rom === 16) return 3;
+  // =========================
+  if (
+    (ram === 1 && (rom === 16 || rom === 32)) ||
+    (ram === 2 && rom === 16)
+  )
+    return 3;
 
-  // VIP 2
-  if(ram === 2 && rom === 8) return 2;
-
-  // VIP 1
-  if(ram === 1 && rom === 8) return 1;
-
-  return 0;
+  // =========================
+  // FALLBACK
+  // =========================
+  return 3;
 }
 
 function decodeSamsung(code){
