@@ -1694,12 +1694,9 @@ if(!/^H9/.test(code)) return null;
 let ram=null;
 let rom=null;
 let storage="Unknown";
-let lpddr="Unknown";
-let node="Unknown";
-let type="uMCP";
 
 
-// ================= RAM TABLE =================
+// ===== RAM TABLE =====
 const ramMap={
 "A4":0.5,
 "A8":1,
@@ -1710,8 +1707,7 @@ const ramMap={
 "AE":6,
 "AF":8,
 "AG":12,
-"AH":16,
-"AJ":24
+"AH":16
 };
 
 const ramToken=code.match(/A[0-9A-Z]/);
@@ -1719,15 +1715,13 @@ if(ramToken) ram=ramMap[ramToken[0]] ?? null;
 
 
 // =================================================
-// H9TQ — eMCP (eMMC)
+// H9TQ (eMMC)
 // =================================================
 if(code.startsWith("H9TQ")){
 
-type="eMCP";
 storage="eMMC 5.1";
-lpddr="LPDDR3/4";
 
-const romMap={
+const map={
 "17":16,
 "18":16,
 "19":16,
@@ -1738,22 +1732,18 @@ const romMap={
 "53":64
 };
 
-const key=code.substring(4,6);
-rom=romMap[key] ?? null;
-
-node="48L / 64L";
+rom=map[code.substring(4,6)] ?? null;
 }
 
 
 // =================================================
-// H9HP — UFS 2.1 ERA
+// H9HP (UFS 2.1)
 // =================================================
 else if(code.startsWith("H9HP")){
 
 storage="UFS 2.1";
-lpddr="LPDDR4";
 
-const romMap={
+const map={
 "16":128,
 "17":32,
 "20":64,
@@ -1763,94 +1753,58 @@ const romMap={
 "53":64
 };
 
-rom=romMap[code.substring(4,6)] ?? null;
-node="72L / 96L";
+rom=map[code.substring(4,6)] ?? null;
 }
 
 
 // =================================================
-// H9HQ — UFS 3.x ERA
+// H9HQ (UFS 3.x)
 // =================================================
 else if(code.startsWith("H9HQ")){
 
-lpddr="LPDDR4X / LPDDR5";
-
-const romMap={
+const map={
 "15":128,
 "17":128,
 "21":256,
 "22":256,
 "28":512,
-"52":64,
-"53":64,
 "64":512
 };
 
-rom=romMap[code.substring(4,6)] ?? null;
+rom=map[code.substring(4,6)] ?? null;
 
-if(code.startsWith("H9HQ21")) storage="UFS 3.0";
-else if(code.startsWith("H9HQ22")) storage="UFS 3.1";
-else storage="UFS 2.2";
-
-node="128L";
+storage=
+code.startsWith("H9HQ21")?"UFS 3.0":
+code.startsWith("H9HQ22")?"UFS 3.1":
+"UFS 2.2";
 }
 
 
 // =================================================
-// H9HR — HIGH END
+// H9HR
 // =================================================
 else if(code.startsWith("H9HR")){
-
 storage="UFS 3.1";
-lpddr="LPDDR5";
 rom=256;
-node="176L";
 }
 
 
 // =================================================
-// H9RT — FLAGSHIP (UFS 4.0)
+// H9RT
 // =================================================
 else if(code.startsWith("H9RT")){
-
 storage="UFS 4.0";
-lpddr="LPDDR5X";
 rom=512;
-node="238L";
 }
 
 
-// =================================================
-// FLAGSHIP DETECTOR
-// =================================================
-let flagship=false;
-
-if(
-storage==="UFS 4.0" ||
-(ram>=12 && rom>=256) ||
-(ram>=16)
-){
-flagship=true;
-}
-
-
-// =================================================
-// VIP
-// =================================================
+// ===== VIP =====
 const vip=calculateVip(ram,rom);
 
-
-// =================================================
-// RETURN
-// =================================================
 return{
-type,
 ram,
 rom,
 storage,
-lpddr,
-node,
-flagship,
 vip
 };
 }
