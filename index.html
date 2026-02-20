@@ -1685,36 +1685,69 @@ if(main.startsWith("KM5") || main.startsWith("KM2")){
   return result;
 }
 
-// ===== SK HYNIX FULL ENGINE (STABLE VIP VERSION) =====
+// ================= SK HYNIX FULL ENGINE =================
 function decodeHynix(code){
 
 code = code.toUpperCase().trim();
 
-let storage="Unknown";
+let arch="UNKNOWN";
+let storage=null;
+let ram=null;
+let rom=null;
 
 
-// ================= STORAGE DETECT =================
-if(code.startsWith("H9TQ")){
-  storage="eMMC 5.1";
-}
-else if(code.startsWith("H9HP")){
-  storage="UFS 2.1";
-}
-else if(code.startsWith("H9HQ21")){
-  storage="UFS 3.0";
-}
-else if(code.startsWith("H9HQ22") || code.startsWith("H9HR")){
-  storage="UFS 3.1";
-}
-else if(code.startsWith("H9RT")){
-  storage="UFS 4.0";
-}
+// =================================================
+// ARCH DETECT
+// =================================================
+if(code.startsWith("H9TQ")) arch="eMCP";
+else if(code.startsWith("H9HQ")) arch="UFS";
+else if(code.startsWith("H9HP")) arch="DRAM";
+else if(code.startsWith("H9RT")) arch="UFS4";
 
 
-// ================= RAM MAP =================
+// =================================================
+// ROM MAP
+// =================================================
+const romMap={
+
+// eMCP
+"32":4,
+"64":8,
+"17":16,
+"18":16,
+"19":16,
+"26":32,
+"27":32,
+"52":64,
+"53":64,
+
+// UFS
+"08":64,
+"16":128,
+"21":256,
+"22":256,
+"32":256,
+"64":512
+};
+
+
+// =================================================
+// RAM MAP (OFFICIAL STRUCTURE)
+// =================================================
 const ramMap={
-"A4":0.5,
+
+// eMCP LPDDR3
 "A8":1,
+"AAE":1,
+"ABJ":2,
+"ADF":2,
+"ACL":3,
+"ADJ":4,
+"AEJ":6,
+"AFJ":8,
+
+// LPDDR4/5
+"A4":0.5,
 "AB":2,
 "AC":3,
 "AD":4,
@@ -1724,112 +1757,85 @@ const ramMap={
 "AH":16
 };
 
-let ram=null;
 
-const keys = Object.keys(ramMap)
-    .sort((a,b)=>b.length-a.length); // ưu tiên AAE trước A8
+// =================================================
+// eMCP PARSE
+// =================================================
+if(arch==="eMCP"){
 
-for(const key of keys){
-    if(code.includes(key)){
-        ram = ramMap[key];
-        break;
-    }
-}
+    const romCode = code.substring(4,6);
+    rom = romMap[romCode] ?? null;
 
-// ================= ROM MAP =================
-const romMap={
-// eMMC
-"17":16,
-"18":16,
-"19":16,
-"20":32,
-"26":32,
-"27":32,
-"52":64,
-"53":64,
+    const ramCode3 = code.substring(6,9);
+    const ramCode2 = code.substring(6,8);
 
-// UFS
-"16":128,
-"21":256,
-"22":256,
-"25":128,
-"64":512
-};
+    ram =
+        ramMap[ramCode3] ??
+        ramMap[ramCode2] ??
+        null;
 
-let rom=null;
-
-if(code.length>=6){
-  const key=code.substring(4,6);
-  rom=romMap[key] ?? null;
+    storage="eMMC 5.1";
 }
 
 
-// ================= VIP LOGIC =================
+// =================================================
+// UFS PARSE
+// =================================================
+if(arch==="UFS"){
+
+    const romCode = code.substring(4,6);
+    rom = romMap[romCode] ?? null;
+
+    storage = rom>=256 ? "UFS 3.x" : "UFS 2.1";
+}
+
+
+// =================================================
+// DRAM PARSE
+// =================================================
+if(arch==="DRAM"){
+
+    const ramCode = code.substring(6,8);
+    ram = ramMap[ramCode] ?? null;
+
+    storage="LPDDR RAM";
+}
+
+
+// =================================================
+// VIP SCORE (OPTIONAL)
+// =================================================
 let vip=0;
 
-
-// ===== eMMC =====
-if(storage==="eMMC 5.1"){
-
-if(rom===16){
-  vip=code.includes("ADF")?4.5:4;
+if(arch==="eMCP"){
+    if(rom===8) vip=3;
+    else if(rom===16) vip=4;
+    else if(rom===32) vip=5;
+    else if(rom===64) vip=6;
 }
-else if(rom===32){
-  vip=5;
+else if(arch==="UFS"){
+    if(rom>=512) vip=12;
+    else if(rom>=256) vip=11;
+    else if(rom>=128) vip=10;
 }
-else if(rom===64){
-  vip=6;
-}
-else if(rom>=128){
-  vip=8;
-}
-
+else if(arch==="DRAM"){
+    if(ram>=12) vip=10;
+    else if(ram>=8) vip=9;
+    else vip=7;
 }
 
 
-// ===== UFS 2.1 =====
-else if(storage==="UFS 2.1"){
-
-if(ram>=8 && rom>=128) vip=9;
-else vip=8;
-
-}
-
-
-// ===== UFS 3.0 =====
-else if(storage==="UFS 3.0"){
-
-if(ram>=8 && rom>=256) vip=10;
-else vip=9;
-
-}
-
-
-// ===== UFS 3.1 =====
-else if(storage==="UFS 3.1"){
-
-if(ram>=12) vip=12;
-else if(ram>=8) vip=11;
-else vip=10;
-
-}
-
-
-// ===== UFS 4.0 =====
-else if(storage==="UFS 4.0"){
-vip=13;
-}
-
-
-// ================= RETURN =================
+// =================================================
 return{
-ram,
-rom,
-storage,
-vip
+    arch,
+    storage,
+    ram,
+    rom,
+    vip
 };
-
 }
+  
+  
   
 // ===== MAIN DECODER =====
 function autoDecodeChip(code, dbData){
