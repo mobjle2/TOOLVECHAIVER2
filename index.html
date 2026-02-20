@@ -1685,155 +1685,148 @@ if(main.startsWith("KM5") || main.startsWith("KM2")){
   return result;
 }
 
-
-// ===== SK HYNIX FULL ENGINE =====
+// =====================================================
+// ===== SK HYNIX FINAL ENGINE =========================
+// =====================================================
 function decodeHynix(code){
 
   code = code.toUpperCase().trim();
 
-  // ================= STORAGE DETECT =================
-  let storage = "Unknown";
-
-  if(
-    code.startsWith("H9HQ16") ||
-    code.startsWith("H26") ||
-    code.startsWith("H9TQ")
-  ){
-    storage = "eMMC 5.1";
-  }
-  else if(code.startsWith("H9HP16")){
-    storage = "UFS 2.1";
-  }
-  else if(code.startsWith("H9HQ21")){
-    storage = "UFS 3.0";
-  }
-  else if(code.startsWith("H9HQ22")){
-    storage = "UFS 3.1";
-  }
-  else if(code.startsWith("H9HR")){
-    storage = "UFS 3.1";
-  }
-  else if(code.startsWith("H9RT") || code.includes("2G7")){
-    storage = "UFS 4.0";
-  }
-
-
-  // ================= RAM MAP =================
-  const ramMap = {
-    "A4":0.5,
-    "A8":1,
-    "AA":1.5,
-    "AB":2,
-    "AC":3,
-    "AD":4,
-    "AE":6,
-    "AF":8,
-    "AG":12,
-    "AH":16
-  };
-
-
-  // ================= ROM MAP =================
-  const romMap = {
-    "16":128,
-    "17":16,
-    "18":16,
-    "19":16,
-    "20":32,
-    "25":64,
-    "26":32,
-    "27":32,
-    "52":64,
-    "53":64,
-    "64":64,
-    "21":256,
-    "22":256
-  };
-
-
-  // ================= EXTRACT RAM =================
   let ram = null;
-
-  // 🔹 H9TQ legacy group (ADF / AEF / ABJ ...)
-  const group3 = code.match(/A[0-9A-Z]{2}/);
-
-  if(group3){
-    const key = group3[0].substring(0,2);
-    if(ramMap[key]){
-      ram = ramMap[key];
-    }
-  }
-
-  // 🔹 fallback layout mới
-  if(ram === null){
-    const group2 = code.match(/A[0-9A-Z]/);
-    if(group2){
-      ram = ramMap[group2[0]] || null;
-    }
-  }
-
-
-  // ================= EXTRACT ROM =================
   let rom = null;
-
-  const romKey = code.substring(4,6);
-  if(romMap[romKey]){
-    rom = romMap[romKey];
-  }
-
-
-  // ================= VIP LOGIC =================
+  let storage = "Unknown";
   let vip = null;
 
-  // ===== eMMC =====
+  // =====================================================
+  // ========== 1️⃣ H9TQ — eMCP (RAM + eMMC) ==============
+  // =====================================================
+  if(code.startsWith("H9TQ")){
+
+    storage = "eMMC 5.1";
+
+    // NAND density (Gb → GB)
+    const nandGb = parseInt(code.substring(4,6));
+    if(!isNaN(nandGb)){
+      rom = nandGb / 8;
+    }
+
+    // RAM density (Gb → GB)
+    const ramToken = code.substring(6,8);
+    const ramGb = parseInt(ramToken.replace("A",""));
+
+    if(!isNaN(ramGb)){
+      ram = ramGb / 8;
+    }
+  }
+
+
+  // =====================================================
+  // ========== 2️⃣ H9HP / H9HQ — UFS =====================
+  // =====================================================
+  else if(
+    code.startsWith("H9HP") ||
+    code.startsWith("H9HQ")
+  ){
+
+    const romMap = {
+      "16":128,
+      "17":16,
+      "18":16,
+      "19":16,
+      "20":32,
+      "25":64,
+      "26":32,
+      "27":32,
+      "52":64,
+      "53":64,
+      "21":256,
+      "22":256
+    };
+
+    const romKey = code.substring(4,6);
+    rom = romMap[romKey] ?? null;
+
+    if(code.startsWith("H9HP16"))
+      storage = "UFS 2.1";
+    else if(code.startsWith("H9HQ21"))
+      storage = "UFS 3.0";
+    else if(code.startsWith("H9HQ22"))
+      storage = "UFS 3.1";
+
+    // RAM token
+    const ramMap = {
+      "A4":0.5,
+      "A8":1,
+      "AA":1.5,
+      "AB":2,
+      "AC":3,
+      "AD":4,
+      "AE":6,
+      "AF":8,
+      "AG":12,
+      "AH":16
+    };
+
+    const ramMatch = code.match(/A[0-9A-Z]/);
+    if(ramMatch){
+      ram = ramMap[ramMatch[0]] ?? null;
+    }
+  }
+
+
+  // =====================================================
+  // ========== 3️⃣ H9HR / H9RT — FLAGSHIP ===============
+  // =====================================================
+  else if(code.startsWith("H9HR")){
+
+    storage = "UFS 3.1";
+
+    const ramMatch = code.match(/A[0-9A-Z]/);
+    const ramMap = {
+      "AE":6,
+      "AF":8,
+      "AG":12,
+      "AH":16
+    };
+
+    if(ramMatch){
+      ram = ramMap[ramMatch[0]] ?? null;
+    }
+
+    rom = 256; // typical baseline
+  }
+
+  else if(code.startsWith("H9RT") || code.includes("2G7")){
+    storage = "UFS 4.0";
+    ram = 12;
+    rom = 512;
+  }
+
+
+  // =====================================================
+  // ================= VIP SYSTEM ========================
+  // =====================================================
   if(storage === "eMMC 5.1"){
 
-    if(rom === 16){
-      vip = code.includes("ADF") ? 4.5 : 4;
-    }
-    else if(ram === 6 && rom === 128){
-      vip = 7;
-    }
-    else if(ram === 8 && rom === 128){
-      vip = 8;
-    }
-    else if(rom === 256){
-      vip = 8;
-    }
-    else if(rom === 64){
-      vip = 6;
-    }
-    else if(rom === 32){
-      vip = 5;
-    }
-    else{
-      vip = 5;
-    }
+    if(rom === 8 && ram === 1) vip = 1;
+    else if(rom === 16) vip = 4;
+    else if(rom === 32) vip = 5;
+    else if(rom === 64) vip = 6;
+    else if(rom >= 128) vip = 8;
   }
 
-  // ===== UFS 2.1 =====
   else if(storage === "UFS 2.1"){
-
-    if(ram === 8 && rom === 128) vip = 9;
-    else if(ram === 6 && rom === 256) vip = 9;
-    else if(ram === 8 && rom === 256) vip = 9;
-    else vip = 8;
+    vip = 8;
   }
 
-  // ===== UFS 3.0 =====
   else if(storage === "UFS 3.0"){
-    vip = (ram === 8 && rom === 256) ? 10 : 9;
+    vip = 9;
   }
 
-  // ===== UFS 3.1 =====
   else if(storage === "UFS 3.1"){
-
-    if(ram >= 12) vip = 12;
-    else if(ram === 8 && rom === 256) vip = 11;
-    else vip = 10;
+    vip = (ram >= 12) ? 12 : 10;
   }
 
-  // ===== UFS 4.0 =====
   else if(storage === "UFS 4.0"){
     vip = 13;
   }
@@ -1846,6 +1839,8 @@ function decodeHynix(code){
     vip
   };
 }
+
+  
 // ===== MAIN DECODER =====
 function autoDecodeChip(code, dbData){
 
