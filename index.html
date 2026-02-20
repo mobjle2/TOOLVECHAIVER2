@@ -1691,17 +1691,16 @@ function decodeHynix(code){
 
   code = code.toUpperCase().trim();
 
-  // ===== STORAGE DETECT CHUẨN THEO GENERATION =====
+  // ================= STORAGE DETECT =================
   let storage = "Unknown";
 
-if(
-  code.startsWith("H9HQ16") ||
-  code.startsWith("H26") ||
-  code.startsWith("H9TQ")
-){
-  storage = "eMMC 5.1";
-}
-
+  if(
+    code.startsWith("H9HQ16") ||
+    code.startsWith("H26") ||
+    code.startsWith("H9TQ")
+  ){
+    storage = "eMMC 5.1";
+  }
   else if(code.startsWith("H9HP16")){
     storage = "UFS 2.1";
   }
@@ -1718,7 +1717,8 @@ if(
     storage = "UFS 4.0";
   }
 
-  // ===== RAM MAP FULL =====
+
+  // ================= RAM MAP =================
   const ramMap = {
     "A4":0.5,
     "A8":1,
@@ -1732,163 +1732,120 @@ if(
     "AH":16
   };
 
-  // ===== ROM MAP FULL =====
-const romMap = {
-  "16":128,
-  "17":16,
-  "18":16,
-  "19":16,
-  "20":32,
-  "25":64,
-  "26":32,
-  "27":32,
-  "52":64,
-  "53":64,
-  "64":64,
-  "21":256,
-  "22":256
-};
-;
 
-// ===== EXTRACT RAM =====
-let ram = null;
-
-// 🔹 H9TQ SPECIAL RULE (KHÔNG PHÁ ENGINE)
-if(code.startsWith("H9TQ")){
-
-  const hynixGroup = code.substring(6,9); // ADF / ABJ / AAE...
-
-  const hynixRamMap = {
-    "AAF":1,
-    "AAE":1.5,
-    "AAE":1.5,
-    "ABJ":2,
-    "ADF":3,
-    "AEF":4,
-    "AFF":6,
-    "AGF":8
+  // ================= ROM MAP =================
+  const romMap = {
+    "16":128,
+    "17":16,
+    "18":16,
+    "19":16,
+    "20":32,
+    "25":64,
+    "26":32,
+    "27":32,
+    "52":64,
+    "53":64,
+    "64":64,
+    "21":256,
+    "22":256
   };
 
-  if(hynixRamMap[hynixGroup]){
-    ram = hynixRamMap[hynixGroup];
-  }
-}
 
-// 🔹 FALLBACK ENGINE CŨ
-if(ram === null){
-  const ramMatch = code.match(/A[0-9A-Z]/);
-  if(ramMatch){
-    ram = ramMap[ramMatch[0]] || null;
-  }
-}
+  // ================= EXTRACT RAM =================
+  let ram = null;
 
+  // 🔹 H9TQ legacy group (ADF / AEF / ABJ ...)
+  const group3 = code.match(/A[0-9A-Z]{2}/);
 
-// ===== EXTRACT ROM =====
-let rom = null;
-
-// ổn định hơn regex cũ
-const romKey = code.substring(4,6);
-
-if(romMap[romKey]){
-  rom = romMap[romKey];
-}
-
-
-// ===== VIP LOGIC KHÓA THEO BẢNG =====
-let vip = null;
-
-
-// ================= eMMC =================
-if(storage === "eMMC 5.1"){
-
-  // 16GB
-  if(rom === 16){
-
-    if(code.includes("ADF"))
-      vip = 4.5;   // 3/16
-    else
-      vip = 4;     // 2/16 / 1/16
-
+  if(group3){
+    const key = group3[0].substring(0,2);
+    if(ramMap[key]){
+      ram = ramMap[key];
+    }
   }
 
-  // 128GB
-  else if(ram === 6 && rom === 128)
-    vip = 7;
+  // 🔹 fallback layout mới
+  if(ram === null){
+    const group2 = code.match(/A[0-9A-Z]/);
+    if(group2){
+      ram = ramMap[group2[0]] || null;
+    }
+  }
 
-  else if(ram === 8 && rom === 128)
-    vip = 8;
 
-  // 256GB trần 8
-  else if(rom === 256)
-    vip = 8;
+  // ================= EXTRACT ROM =================
+  let rom = null;
 
-  // 64GB
-  else if(rom === 64)
-    vip = 6;
+  const romKey = code.substring(4,6);
+  if(romMap[romKey]){
+    rom = romMap[romKey];
+  }
 
-  // 32GB
-  else if(rom === 32)
-    vip = 5;
 
-  else
-    vip = 5;
+  // ================= VIP LOGIC =================
+  let vip = null;
+
+  // ===== eMMC =====
+  if(storage === "eMMC 5.1"){
+
+    if(rom === 16){
+      vip = code.includes("ADF") ? 4.5 : 4;
+    }
+    else if(ram === 6 && rom === 128){
+      vip = 7;
+    }
+    else if(ram === 8 && rom === 128){
+      vip = 8;
+    }
+    else if(rom === 256){
+      vip = 8;
+    }
+    else if(rom === 64){
+      vip = 6;
+    }
+    else if(rom === 32){
+      vip = 5;
+    }
+    else{
+      vip = 5;
+    }
+  }
+
+  // ===== UFS 2.1 =====
+  else if(storage === "UFS 2.1"){
+
+    if(ram === 8 && rom === 128) vip = 9;
+    else if(ram === 6 && rom === 256) vip = 9;
+    else if(ram === 8 && rom === 256) vip = 9;
+    else vip = 8;
+  }
+
+  // ===== UFS 3.0 =====
+  else if(storage === "UFS 3.0"){
+    vip = (ram === 8 && rom === 256) ? 10 : 9;
+  }
+
+  // ===== UFS 3.1 =====
+  else if(storage === "UFS 3.1"){
+
+    if(ram >= 12) vip = 12;
+    else if(ram === 8 && rom === 256) vip = 11;
+    else vip = 10;
+  }
+
+  // ===== UFS 4.0 =====
+  else if(storage === "UFS 4.0"){
+    vip = 13;
+  }
+
+
+  return {
+    ram,
+    rom,
+    storage,
+    vip
+  };
 }
-
-
-// ================= UFS 2.1 =================
-else if(storage === "UFS 2.1"){
-
-  if(ram === 8 && rom === 128)
-    vip = 9;
-
-  else if(ram === 6 && rom === 256)
-    vip = 9;
-
-  else if(ram === 8 && rom === 256)
-    vip = 9;
-
-  else
-    vip = 8;
-}
-
-
-// ================= UFS 3.0 =================
-else if(storage === "UFS 3.0"){
-
-  if(ram === 8 && rom === 256)
-    vip = 10;
-  else
-    vip = 9;
-}
-
-
-// ================= UFS 3.1 =================
-else if(storage === "UFS 3.1"){
-
-  if(ram >= 12)
-    vip = 12;
-
-  else if(ram === 8 && rom === 256)
-    vip = 11;
-
-  else
-    vip = 10;
-}
-
-
-// ================= UFS 4.0 =================
-else if(storage === "UFS 4.0"){
-  vip = 13;
-}
-
-return {
-  ram,
-  rom,
-  storage,
-  vip
-};
-
-} 
 // ===== MAIN DECODER =====
 function autoDecodeChip(code, dbData){
 
