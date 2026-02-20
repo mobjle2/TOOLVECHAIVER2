@@ -1940,18 +1940,35 @@ function autoDecodeChip(code, dbData){
 
   // ===== SK hynix =====
   if(/^H/.test(code)){
-    return decodeHynix(code);
-  }
 
-  // ===== Other brands → fallback database =====
-  return {
-    ram: null,
-    rom: dbData?.rom || null,
-    storage: dbData?.type || "Unknown",
-    vip: dbData?.vip
-      ? parseInt(dbData.vip.replace(/\D/g,""))
-      : null
-  };
+  const h = decodeHynix(code);
+
+  if(!h) return h;
+
+  // ===== VIP RULE =====
+
+  if(h.storage?.includes("eMMC") && h.ram<=1)
+      h.vip = 1;
+
+  else if(h.storage?.includes("eMMC") && h.ram===2 && h.rom<=8)
+      h.vip = 2;
+
+  else if(h.storage?.includes("eMMC") && h.ram<=1 && h.rom===16)
+      h.vip = 3;
+
+  else if(h.storage?.includes("eMMC") && h.ram===2 && h.rom===16)
+      h.vip = 4;
+
+  else if(h.storage?.includes("eMMC") && h.ram>=2 && h.rom===32)
+      h.vip = 4.5;
+
+  else if(h.storage?.includes("eMMC") && h.ram>=3 && h.rom===32)
+      h.vip = 5;
+
+  else if(h.rom===64 && h.ram>=4)
+      h.vip = 6;
+
+  return h;
 }
 
 async function check(){
