@@ -1746,31 +1746,13 @@ function decodeHynix(code){
       }
     }
 
-// ================= RAM EXTRACT =================
-
-// ⭐ legacy H9TQ17 groups
-const legacyMap = {
-  "A8F":1,
-  "AAE":1.5,
-  "ABJ":2,
-  "ADF":2,
-  "AEF":3,
-  "AFF":4
-};
-
-const g3 = code.match(/A[0-9A-Z]{2}/);
-
-if(g3 && legacyMap[g3[0]]){
-  ram = legacyMap[g3[0]];
-}
-
-// ⭐ fallback rule
-if(ram === null){
-  const ramToken = code.match(/A[0-9A-Z]/);
-  if(ramToken && ramMap[ramToken[0]]){
-    ram = ramMap[ramToken[0]];
+    const ramToken = code.match(/A[0-9A-Z]/);
+    if(ramToken){
+      ram = ramMap[ramToken[0]] ?? null;
+    }
   }
-}
+
+
   // =====================================================
   // ================= H9HP (UFS 2.1) ====================
   // =====================================================
