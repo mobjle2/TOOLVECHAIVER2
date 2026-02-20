@@ -1685,172 +1685,173 @@ if(main.startsWith("KM5") || main.startsWith("KM2")){
   return result;
 }
 
-// =====================================================
-// ================= SK HYNIX FULL ENGINE ==============
-// =====================================================
 function decodeHynix(code){
 
-  code = code.toUpperCase().trim();
+code = code.toUpperCase().trim();
 
-  let ram = null;
-  let rom = null;
-  let storage = "Unknown";
+if(!/^H9/.test(code)) return null;
 
-
-  // =====================================================
-  // ================= RAM TABLE =========================
-  // =====================================================
-  const ramMap = {
-    "A4":0.5,
-    "A8":1,
-    "AA":1.5,
-    "AB":2,
-    "AC":3,
-    "AD":4,
-    "AE":6,
-    "AF":8,
-    "AG":12,
-    "AH":16
-  };
+let ram=null;
+let rom=null;
+let storage="Unknown";
+let lpddr="Unknown";
+let node="Unknown";
+let type="uMCP";
 
 
-  // =====================================================
-  // ================ H9TQ (eMCP) ========================
-  // =====================================================
-  if(code.startsWith("H9TQ")){
+// ================= RAM TABLE =================
+const ramMap={
+"A4":0.5,
+"A8":1,
+"AA":1.5,
+"AB":2,
+"AC":3,
+"AD":4,
+"AE":6,
+"AF":8,
+"AG":12,
+"AH":16,
+"AJ":24
+};
 
-    storage = "eMMC 5.1";
-
-    const id = code.substring(4,6);
-
-    // PRODUCT FAMILY
-    const tqRomMap = {
-      "17":16,
-      "18":16,
-      "19":16,
-      "20":32,
-      "26":32,
-      "27":32,
-      "52":64,
-      "53":64
-    };
-
-    if(tqRomMap[id]){
-      rom = tqRomMap[id];
-    }
-    else{
-      // REAL DENSITY TYPE
-      const density = parseInt(id);
-      if(!isNaN(density)){
-        rom = density / 8;
-      }
-    }
-
-    const ramToken = code.match(/A[0-9A-Z]/);
-    if(ramToken){
-      ram = ramMap[ramToken[0]] ?? null;
-    }
-  }
+const ramToken=code.match(/A[0-9A-Z]/);
+if(ramToken) ram=ramMap[ramToken[0]] ?? null;
 
 
-  // =====================================================
-  // ================= H9HP (UFS 2.1) ====================
-  // =====================================================
-  else if(code.startsWith("H9HP")){
+// =================================================
+// H9TQ — eMCP (eMMC)
+// =================================================
+if(code.startsWith("H9TQ")){
 
-    storage = "UFS 2.1";
+type="eMCP";
+storage="eMMC 5.1";
+lpddr="LPDDR3/4";
 
-    const romMap = {
-      "16":128,
-      "17":16,
-      "20":32,
-      "25":64,
-      "26":32,
-      "52":64,
-      "53":64
-    };
+const romMap={
+"17":16,
+"18":16,
+"19":16,
+"20":32,
+"26":32,
+"27":32,
+"52":64,
+"53":64
+};
 
-    const key = code.substring(4,6);
-    rom = romMap[key] ?? null;
+const key=code.substring(4,6);
+rom=romMap[key] ?? null;
 
-    const ramToken = code.match(/A[0-9A-Z]/);
-    if(ramToken){
-      ram = ramMap[ramToken[0]] ?? null;
-    }
-  }
-
-
-  // =====================================================
-  // ================= H9HQ (UFS 3.x) ====================
-  // =====================================================
-  else if(code.startsWith("H9HQ")){
-
-    const romMap = {
-      "21":256,
-      "22":256,
-      "52":64,
-      "53":64
-    };
-
-    const key = code.substring(4,6);
-    rom = romMap[key] ?? null;
-
-    if(code.startsWith("H9HQ21"))
-      storage = "UFS 3.0";
-    else if(code.startsWith("H9HQ22"))
-      storage = "UFS 3.1";
-    else
-      storage = "UFS 2.2";
-
-    const ramToken = code.match(/A[0-9A-Z]/);
-    if(ramToken){
-      ram = ramMap[ramToken[0]] ?? null;
-    }
-  }
+node="48L / 64L";
+}
 
 
-  // =====================================================
-  // ================= H9HR (HIGH END) ===================
-  // =====================================================
-  else if(code.startsWith("H9HR")){
+// =================================================
+// H9HP — UFS 2.1 ERA
+// =================================================
+else if(code.startsWith("H9HP")){
 
-    storage = "UFS 3.1";
+storage="UFS 2.1";
+lpddr="LPDDR4";
 
-    const ramToken = code.match(/A[0-9A-Z]/);
-    if(ramToken){
-      ram = ramMap[ramToken[0]] ?? null;
-    }
+const romMap={
+"16":128,
+"17":32,
+"20":64,
+"25":128,
+"26":64,
+"52":64,
+"53":64
+};
 
-    rom = 256;
-  }
-
-
-  // =====================================================
-  // ================= H9RT (FLAGSHIP) ===================
-  // =====================================================
-  else if(code.startsWith("H9RT") || code.includes("2G7")){
-
-    storage = "UFS 4.0";
-
-    const ramToken = code.match(/A[0-9A-Z]/);
-    if(ramToken){
-      ram = ramMap[ramToken[0]] ?? null;
-    }
-
-    rom = 512;
-  }
+rom=romMap[code.substring(4,6)] ?? null;
+node="72L / 96L";
+}
 
 
-  // =====================================================
-  // ================= RETURN ============================
-  // =====================================================
-const vip = calculateVip(ram, rom);
+// =================================================
+// H9HQ — UFS 3.x ERA
+// =================================================
+else if(code.startsWith("H9HQ")){
 
-return {
-  ram,
-  rom,
-  storage,
-  vip
+lpddr="LPDDR4X / LPDDR5";
+
+const romMap={
+"15":128,
+"17":128,
+"21":256,
+"22":256,
+"28":512,
+"52":64,
+"53":64,
+"64":512
+};
+
+rom=romMap[code.substring(4,6)] ?? null;
+
+if(code.startsWith("H9HQ21")) storage="UFS 3.0";
+else if(code.startsWith("H9HQ22")) storage="UFS 3.1";
+else storage="UFS 2.2";
+
+node="128L";
+}
+
+
+// =================================================
+// H9HR — HIGH END
+// =================================================
+else if(code.startsWith("H9HR")){
+
+storage="UFS 3.1";
+lpddr="LPDDR5";
+rom=256;
+node="176L";
+}
+
+
+// =================================================
+// H9RT — FLAGSHIP (UFS 4.0)
+// =================================================
+else if(code.startsWith("H9RT")){
+
+storage="UFS 4.0";
+lpddr="LPDDR5X";
+rom=512;
+node="238L";
+}
+
+
+// =================================================
+// FLAGSHIP DETECTOR
+// =================================================
+let flagship=false;
+
+if(
+storage==="UFS 4.0" ||
+(ram>=12 && rom>=256) ||
+(ram>=16)
+){
+flagship=true;
+}
+
+
+// =================================================
+// VIP
+// =================================================
+const vip=calculateVip(ram,rom);
+
+
+// =================================================
+// RETURN
+// =================================================
+return{
+type,
+ram,
+rom,
+storage,
+lpddr,
+node,
+flagship,
+vip
 };
 }
   
