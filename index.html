@@ -1713,6 +1713,8 @@ else if(code.startsWith("H9RT")){
 
 // ================= RAM MAP =================
 const ramMap={
+
+// ===== uMCP / UFS =====
 "A4":0.5,
 "A8":1,
 "AB":2,
@@ -1721,7 +1723,17 @@ const ramMap={
 "AE":6,
 "AF":8,
 "AG":12,
-"AH":16
+"AH":16,
+
+// ===== H9TQ eMCP (QUAN TRỌNG) =====
+"AAE":2,
+"ABJ":2,
+"ADF":2,
+"ACL":3,
+"ADJ":4,
+"AEJ":6,
+"AFJ":8
+
 };
 
 let ram=null;
