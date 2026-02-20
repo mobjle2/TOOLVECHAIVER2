@@ -1899,22 +1899,58 @@ function autoDecodeChip(code, dbData){
 
   code = code.toUpperCase().trim();
 
-  // Samsung
+  // ================= MICRON OEM VIP ENGINE =================
+  function decodeMicronOEM(code){
+
+    code = code.toUpperCase().trim();
+
+    // ===== JY SERIES =====
+    if(code.startsWith("JY")){
+      return {
+        ram:null,
+        rom:null,
+        storage:"eMMC",
+        vip:1
+      };
+    }
+
+    // ===== JZ SERIES =====
+    if(code.startsWith("JZ")){
+
+      const n = parseInt(code.substring(2));
+
+      if(n<=12)  return {ram:null,rom:null,storage:"eMMC",vip:3};
+      if(n<=48)  return {ram:null,rom:null,storage:"eMMC",vip:4.5};
+      if(n<=99)  return {ram:null,rom:null,storage:"eMMC",vip:"S"};
+      if(n<=299) return {ram:null,rom:null,storage:"eMMC",vip:6};
+    }
+
+    return null;
+  }
+
+  // ===== MICRON CHECK FIRST =====
+  const micron = decodeMicronOEM(code);
+  if(micron) return micron;
+
+
+  // ===== Samsung =====
   if(/^K/.test(code)){
     return decodeSamsung(code);
   }
 
-  // SK hynix
+  // ===== SK hynix =====
   if(/^H/.test(code)){
     return decodeHynix(code);
   }
 
-  // Other brands → fallback database
+  // ===== Other brands → fallback database =====
   return {
     ram: null,
     rom: dbData?.rom || null,
     storage: dbData?.type || "Unknown",
-    vip: dbData?.vip ? parseInt(dbData.vip.replace(/\D/g,"")) : null
+    vip: dbData?.vip
+      ? parseInt(dbData.vip.replace(/\D/g,""))
+      : null
   };
 }
 
