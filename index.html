@@ -1712,33 +1712,20 @@ else if(code.startsWith("H9RT")){
 
 
 // ================= RAM MAP =================
-const ramMap = {
-
-  // ===== uMCP / UFS (LPDDR4 / LPDDR5) =====
-  "A4":0.5,   // 4Gb
-  "A8":1,     // 8Gb
-  "AB":2,     // 16Gb
-  "AC":3,     // 24Gb
-  "AD":4,     // 32Gb
-  "AE":6,     // 48Gb
-  "AF":8,     // 64Gb
-  "AG":12,    // 96Gb
-  "AH":16,    // 128Gb
-
-
-  // ===== H9TQ eMCP (LPDDR3 generation) =====
-  "A8":1,
-  "AAE":1,
-  "ABJ":2,
-  "ADF":2,
-  "ACL":3,
-  "ADJ":4,
-  "AEJ":6,
-  "AFJ":8
+const ramMap={
+"A4":0.5,
+"A8":1,
+"AB":2,
+"AC":3,
+"AD":4,
+"AE":6,
+"AF":8,
+"AG":12,
+"AH":16
 };
 
 let ram=null;
-const ramMatch = code.match(/A[0-9A-Z]{2}/);
+const ramMatch=code.match(/A[0-9A-Z]/);
 if(ramMatch) ram=ramMap[ramMatch[0]] ?? null;
 
 
