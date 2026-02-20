@@ -1725,9 +1725,16 @@ const ramMap={
 };
 
 let ram=null;
-const ramMatch=code.match(/A[0-9A-Z]/);
-if(ramMatch) ram=ramMap[ramMatch[0]] ?? null;
 
+const keys = Object.keys(ramMap)
+    .sort((a,b)=>b.length-a.length); // ưu tiên AAE trước A8
+
+for(const key of keys){
+    if(code.includes(key)){
+        ram = ramMap[key];
+        break;
+    }
+}
 
 // ================= ROM MAP =================
 const romMap={
