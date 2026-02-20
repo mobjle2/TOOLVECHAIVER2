@@ -1382,81 +1382,106 @@ function detectChip(code){
 // ===== VIP RULE (ỔN ĐỊNH & CHUẨN HÓA KIỂU DỮ LIỆU) =====
 function calculateVip(ram, rom){
 
-  // ÉP KIỂU AN TOÀN
+  // =========================
+  // SAFE TYPE
+  // =========================
   ram = Number(ram);
   rom = Number(rom);
 
-  // Nếu không hợp lệ
   if (isNaN(ram) || isNaN(rom) || ram <= 0 || rom <= 0)
     return 0;
 
   // =========================
-  // VIP 11 (cực cao)
+  // VIP 12 — FLAGSHIP MAX
   // =========================
   if (ram >= 16 && rom >= 512)
+    return 12;
+
+  // =========================
+  // VIP 11 — UFS 3.x HIGH
+  // =========================
+  if (ram === 12 && rom === 512)
     return 11;
 
   // =========================
-  // VIP 10
+  // VIP 10 — UFS 2.2
   // =========================
-  if ((ram === 10 || ram === 12) && rom === 512)
-    return 10;
-
   if (ram === 12 && rom === 256)
     return 10;
 
+  if (ram === 8 && rom === 512)
+    return 10;
+
   // =========================
-  // VIP 9
+  // VIP 9 — UFS 2.1 HIGH
   // =========================
-  if ([6, 8, 10, 12].includes(ram) && rom === 256)
+  if ([6,8,10,12].includes(ram) && rom === 256)
+    return 9;
+
+  if (ram === 12 && rom === 128)
     return 9;
 
   // =========================
-  // VIP 8
+  // VIP 8 — UFS 2.1 MID+
   // =========================
-  if ([8, 10].includes(ram) && rom === 128)
+  if ([8,10].includes(ram) && rom === 128)
     return 8;
 
   // =========================
-  // VIP 7
+  // VIP 7 — UFS MID
   // =========================
-  if ([4, 6].includes(ram) && rom === 128)
+  if ([4,6].includes(ram) && rom === 128)
     return 7;
 
   // =========================
-  // VIP 6
+  // VIP 6 — eMMC MID
   // =========================
-  if ([4, 6].includes(ram) && rom === 64)
+  if ([4,6].includes(ram) && rom === 64)
     return 6;
 
   // =========================
-  // VIP 5
+  // VIP 5 — UFS ENTRY
   // =========================
-  if ([2, 3, 4].includes(ram) && rom === 32)
+  if ([3,4].includes(ram) && rom === 32)
     return 5;
 
   if (ram === 3 && rom === 64)
     return 5;
 
   // =========================
-  // VIP 4
+  // VIP 4+ — eMMC 5.1 EXTENDED
   // =========================
-  if (ram === 3 && rom === 16)
+  if (ram === 2 && rom === 32)
+    return 4.5;
+
+  // =========================
+  // VIP 4 — eMMC BASIC
+  // =========================
+  if (ram === 2 && rom === 16)
     return 4;
 
   // =========================
-  // VIP 3
+  // VIP 3 — eMCP BASIC
   // =========================
-  if (
-    (ram === 1 && (rom === 16 || rom === 32)) ||
-    (ram === 2 && rom === 16)
-  )
+  if (ram === 1 && rom === 16)
     return 3;
+
+  // =========================
+  // VIP 2 — eMCP ENTRY
+  // =========================
+  if (ram === 2 && rom === 8)
+    return 2;
+
+  // =========================
+  // VIP 1 — LEGACY
+  // =========================
+  if (ram === 1 && rom === 8)
+    return 1;
 
   // =========================
   // FALLBACK
   // =========================
-  return 3;
+  return 0;
 }
 
 function decodeSamsung(code){
