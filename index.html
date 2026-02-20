@@ -1685,32 +1685,46 @@ if(main.startsWith("KM5") || main.startsWith("KM2")){
   return result;
 }
 
-// ================= SK HYNIX FULL ENGINE =================
+// ======================================================
+// SK HYNIX FULL ENGINE (FINAL - USER VIP STANDARD)
+// ======================================================
+
 function decodeHynix(code){
 
 code = code.toUpperCase().trim();
 
 let arch="UNKNOWN";
-let storage=null;
+let storage="Unknown";
 let ram=null;
 let rom=null;
+let vip=0;
 
 
-// =================================================
+// ======================================================
 // ARCH DETECT
-// =================================================
-if(code.startsWith("H9TQ")) arch="eMCP";
-else if(code.startsWith("H9HQ")) arch="UFS";
-else if(code.startsWith("H9HP")) arch="DRAM";
-else if(code.startsWith("H9RT")) arch="UFS4";
+// ======================================================
+if(code.startsWith("H9TQ")){
+    arch="eMCP";
+    storage="eMMC 5.1";
+}
+else if(code.startsWith("H9HQ")){
+    arch="UFS";
+    storage="UFS 2.1";
+}
+else if(code.startsWith("H9HP")){
+    arch="DRAM";
+    storage="LPDDR RAM";
+}
+else if(code.startsWith("H9RT")){
+    arch="UFS4";
+    storage="UFS 4.0";
+}
 
 
-// =================================================
+// ======================================================
 // ROM MAP
-// =================================================
+// ======================================================
 const romMap={
-
-// eMCP
 "32":4,
 "64":8,
 "17":16,
@@ -1720,23 +1734,17 @@ const romMap={
 "27":32,
 "52":64,
 "53":64,
-
-// UFS
-"08":64,
 "16":128,
 "21":256,
 "22":256,
-"32":256,
 "64":512
 };
 
 
-// =================================================
-// RAM MAP (OFFICIAL STRUCTURE)
-// =================================================
-const ramMap={
-
-// eMCP LPDDR3
+// ======================================================
+// RAM MAP (eMCP)
+// ======================================================
+const emcpRamMap={
 "A8":1,
 "AAE":1,
 "ABJ":2,
@@ -1744,10 +1752,16 @@ const ramMap={
 "ACL":3,
 "ADJ":4,
 "AEJ":6,
-"AFJ":8,
+"AFJ":8
+};
 
-// LPDDR4/5
+
+// ======================================================
+// DRAM RAM MAP
+// ======================================================
+const dramRamMap={
 "A4":0.5,
+"A8":1,
 "AB":2,
 "AC":3,
 "AD":4,
@@ -1758,81 +1772,124 @@ const ramMap={
 };
 
 
-// =================================================
-// eMCP PARSE
-// =================================================
+// ======================================================
+// PARSE eMCP
+// ======================================================
 if(arch==="eMCP"){
 
-    const romCode = code.substring(4,6);
-    rom = romMap[romCode] ?? null;
+    rom = romMap[code.substring(4,6)] ?? null;
 
-    const ramCode3 = code.substring(6,9);
-    const ramCode2 = code.substring(6,8);
-
-    ram =
-        ramMap[ramCode3] ??
-        ramMap[ramCode2] ??
-        null;
-
-    storage="eMMC 5.1";
+    const ramCode = code.substring(6,9);
+    ram = emcpRamMap[ramCode] ?? null;
 }
 
 
-// =================================================
-// UFS PARSE
-// =================================================
+// ======================================================
+// PARSE UFS
+// ======================================================
 if(arch==="UFS"){
 
-    const romCode = code.substring(4,6);
-    rom = romMap[romCode] ?? null;
+    rom = romMap[code.substring(4,6)] ?? null;
 
-    storage = rom>=256 ? "UFS 3.x" : "UFS 2.1";
+    if(rom>=256) storage="UFS 2.1 HIGH";
 }
 
 
-// =================================================
-// DRAM PARSE
-// =================================================
+// ======================================================
+// PARSE DRAM
+// ======================================================
 if(arch==="DRAM"){
 
     const ramCode = code.substring(6,8);
-    ram = ramMap[ramCode] ?? null;
-
-    storage="LPDDR RAM";
+    ram = dramRamMap[ramCode] ?? null;
 }
 
 
-// =================================================
-// VIP SCORE (OPTIONAL)
-// =================================================
-let vip=0;
 
-if(arch==="eMCP"){
-    if(rom===8) vip=3;
-    else if(rom===16) vip=4;
-    else if(rom===32) vip=5;
-    else if(rom===64) vip=6;
-}
-else if(arch==="UFS"){
-    if(rom>=512) vip=12;
-    else if(rom>=256) vip=11;
-    else if(rom>=128) vip=10;
-}
-else if(arch==="DRAM"){
-    if(ram>=12) vip=10;
-    else if(ram>=8) vip=9;
-    else vip=7;
-}
+// ======================================================
+// VIP SYSTEM (YOUR STANDARD)
+// ======================================================
+
+// VIP 1
+if(ram===1 && rom===8)
+vip=1;
+
+// VIP 2
+else if(ram===2 && rom===8)
+vip=2;
+
+// VIP 3
+else if(ram===1 && rom===16)
+vip=3;
+
+// VIP 4
+else if(ram===2 && rom===16)
+vip=4;
+
+// VIP 4+
+else if(ram===2 && rom===32)
+vip=4.5;
+
+// VIP 5
+else if(storage.includes("UFS") &&
+(
+(ram===3 && rom===32) ||
+(ram===4 && rom===32) ||
+(ram===3 && rom===64)
+))
+vip=5;
+
+// VIP 6
+else if(storage.includes("eMMC") &&
+(ram===4 || ram===6) && rom===64)
+vip=6;
+
+// VIP 7
+else if(storage.includes("UFS") &&
+(ram===4 || ram===6) && rom===128)
+vip=7;
+
+// VIP 8
+else if(storage.includes("UFS") &&
+(ram===8 || ram===10) && rom===128)
+vip=8;
+
+// VIP 9
+else if(storage.includes("UFS") &&
+(
+(ram===6 && rom===256) ||
+(ram===8 && rom===256) ||
+(ram===10 && rom===256) ||
+(ram===12 && rom===128)
+))
+vip=9;
+
+// VIP 10
+else if(
+(ram===12 && rom===256) ||
+(ram===8 && rom===512)
+)
+vip=10;
+
+// VIP 11
+else if(ram===12 && rom===512)
+vip=11;
+
+// VIP 12
+else if(ram>=16 && rom>=512)
+vip=12;
 
 
-// =================================================
+
+// ======================================================
 return{
-    arch,
-    storage,
-    ram,
-    rom,
-    vip
+arch,
+storage,
+ram,
+rom,
+vip
 };
+
 }
   
   
