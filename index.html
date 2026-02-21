@@ -1808,31 +1808,30 @@ const romMapKM2 = {
   "6001":32
 };
 
-/* ===== KM5 (LPDDR4X uMCP LEGACY) ===== */
-const romMapKM5 = {
-  "9001":128,
-  "8001":64,
-  "7001":32,
-  "6001":16
-};
-  if(density){
+/* ===== SAMSUNG KM5 REAL DECODER ===== */
 
-    const key = density[1];
+if(family === "KM5"){
 
-    if(family==="KM2")
-      result.rom = romMapKM2[key] || null;
-    else
-      result.rom = romMapKM5[key] || null;
-  }
+  const model = main.substring(0,4); // KM5C / KM5H / KM5P / KM5V
+
+  const storageMap = {
+    "KM5C":64,
+    "KM5H":64,
+    "KM5P":64,
+    "KM5V":128
+  };
+
+  result.rom = storageMap[model] || null;
+}
 
   /* ================= RAM ================= */
 
-  const ramMap = {
-    "8M":3,
-    "DM":4,
-    "CM":6,
-    "JM":8
-  };
+const ramMap = {
+  "8M":3,
+  "DM":4,
+  "CM":6,
+  "JM":8
+};;
 
   result.ram = ramMap[ramToken] || null;
 
