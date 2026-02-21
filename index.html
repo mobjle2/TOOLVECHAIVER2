@@ -1797,22 +1797,24 @@ if(/^KM[25]/.test(main)){
   const density = main.match(/(\d{4})/);
   const ramToken = main.slice(-2);
 
-  /* ================= ROM ================= */
+/* ================= ROM ================= */
+/* SAMSUNG uMCP REAL DENSITY MAP */
 
-  const romMapKM2 = {
-    "9001":512,
-    "8001":128,
-    "7001":128,
-    "6001":32
-  };
+/* ===== KM2 (NEWER uMCP) ===== */
+const romMapKM2 = {
+  "9001":512,
+  "8001":128,
+  "7001":64,
+  "6001":32
+};
 
-  const romMapKM5 = {
-    "9001":256,
-    "8001":128,
-    "7001":64,
-    "6001":32
-  };
-
+/* ===== KM5 (LPDDR4X uMCP LEGACY) ===== */
+const romMapKM5 = {
+  "9001":128,
+  "8001":64,
+  "7001":32,
+  "6001":16
+};
   if(density){
 
     const key = density[1];
