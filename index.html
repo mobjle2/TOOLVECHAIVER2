@@ -2283,6 +2283,20 @@ snap.forEach(doc=>{
   const decoded = autoDecodeChip(x.code,x);
 
   html += `
+snap.forEach(doc=>{
+
+  const x = doc.data();
+
+  if(
+    !x.code?.toUpperCase().includes(q) &&
+    !(Array.isArray(x.models) &&
+      x.models.some(m=>m.toUpperCase().includes(q)))
+  ) return;
+
+  const chip = detectChip(x.code);
+  const decoded = autoDecodeChip(x.code,x);
+
+  html += `
   <div class="result-card">
 
     <div class="code-main">${x.code}</div>
@@ -2317,7 +2331,6 @@ snap.forEach(doc=>{
 
   </div>`;
 });
-      
     html+=`</div>`;
 
     // ===== FINISH LOADING =====
