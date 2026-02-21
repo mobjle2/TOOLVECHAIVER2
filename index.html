@@ -2172,78 +2172,35 @@ if(code.startsWith("YMEC")){
     return decodeSamsung(code);
   }
 
-// ===== SK hynix =====
-if(/^H/.test(code)){
+  // ===== SK hynix =====
+  if(/^H/.test(code)){
 
   const h = decodeHynix(code);
 
-  /* ===== SAFE GUARD ===== */
-  if(!h){
-    return {
-      type:"SK hynix",
-      ram:null,
-      rom:null,
-      storage:"Unknown",
-      vip:0
-    };
-  }
+  if(!h) return h;
 
-  /* ===== NORMALIZE DATA ===== */
-  h.ram = Number(h.ram) || null;
-  h.rom = Number(h.rom) || null;
-  h.storage = h.storage || "Unknown";
+  // ===== VIP RULE =====
 
-  /* ===== VIP RULE FIX ===== */
-
-  if(h.storage.includes("eMMC") && h.ram<=1)
+  if(h.storage?.includes("eMMC") && h.ram<=1)
       h.vip = 1;
 
-  else if(h.storage.includes("eMMC") && h.ram===2 && h.rom<=8)
+  else if(h.storage?.includes("eMMC") && h.ram===2 && h.rom<=8)
       h.vip = 2;
 
-  else if(h.storage.includes("eMMC") && h.ram<=1 && h.rom===16)
+  else if(h.storage?.includes("eMMC") && h.ram<=1 && h.rom===16)
       h.vip = 3;
 
-  else if(h.storage.includes("eMMC") && h.ram===2 && h.rom===16)
+  else if(h.storage?.includes("eMMC") && h.ram===2 && h.rom===16)
       h.vip = 4;
 
-  else if(h.storage.includes("eMMC") && h.ram>=2 && h.rom===32)
+  else if(h.storage?.includes("eMMC") && h.ram>=2 && h.rom===32)
       h.vip = 4.5;
 
-  else if(h.storage.includes("UFS") &&
-         ((h.ram===3 && h.rom===32) ||
-          (h.ram===4 && h.rom===32) ||
-          (h.ram===3 && h.rom===64)))
+  else if(h.storage?.includes("eMMC") && h.ram>=3 && h.rom===32)
       h.vip = 5;
 
-  else if(h.storage.includes("eMMC") &&
-         (h.ram===4 || h.ram===6) && h.rom===64)
+  else if(h.rom===64 && h.ram>=4)
       h.vip = 6;
-
-  else if(h.storage.includes("UFS") &&
-         (h.ram===4 || h.ram===6) && h.rom===128)
-      h.vip = 7;
-
-  else if(h.storage.includes("UFS") &&
-         (h.ram===8 || h.ram===10) && h.rom===128)
-      h.vip = 8;
-
-  else if(h.storage.includes("UFS") &&
-         ((h.ram===6 && h.rom===256) ||
-          (h.ram===8 && h.rom===256) ||
-          (h.ram===10 && h.rom===256) ||
-          (h.ram===12 && h.rom===128)))
-      h.vip = 9;
-
-  else if((h.ram===12 && h.rom===256) ||
-          (h.ram===8 && h.rom===512))
-      h.vip = 10;
-
-  else if(h.ram===12 && h.rom===512)
-      h.vip = 11;
-
-  else if(h.ram>=16 && h.rom>=512)
-      h.vip = 12;
 
   return h;
 }
@@ -2252,193 +2209,79 @@ if(/^H/.test(code)){
    VIP AUTO BALANCE ENGINE
 ================================ */
 
-function VIP_ENGINE(hw){
+function VIP_AUTO_BALANCE(hw){
+
+  if(!hw) return hw;
 
   const ram = Number(hw.ram)||0;
   const rom = Number(hw.rom)||0;
   const storage=(hw.storage||"").toUpperCase();
 
-  let vip=0;
+  let storageScore=0;
 
-  /* =====================
-     VIP 12 — FLAGSHIP
-  ===================== */
-  if(ram>=16 && rom>=512)
-    vip=12;
+  if(storage.includes("UFS 4")) storageScore=6;
+  else if(storage.includes("UFS 3")) storageScore=5;
+  else if(storage.includes("UFS 2.2")) storageScore=4;
+  else if(storage.includes("UFS 2.1")) storageScore=3;
+  else if(storage.includes("EMMC 5.1")) storageScore=2;
+  else if(storage.includes("EMMC")) storageScore=1;
 
-  /* =====================
-     VIP 11 — UFS 3.x
-  ===================== */
-  else if(ram===12 && rom===512 &&
-          storage.includes("UFS"))
-    vip=11;
+  const ramScore = ram * 1.6;
+  const romScore = Math.log2(rom||1) * 1.3;
 
-  /* =====================
-     VIP 10 — UFS 2.2
-  ===================== */
-  else if(
-      (ram===12 && rom===256) ||
-      (ram===8 && rom===512)
-  )
-    vip=10;
+  const total = ramScore + romScore + storageScore*3;
 
-  /* =====================
-     VIP 9 — UFS HIGH
-  ===================== */
-  else if(
-      (ram===6 && rom===256) ||
-      (ram===12 && rom===128) ||
-      (ram===8 && rom===256) ||
-      (ram===10 && rom===256)
-  )
-    vip=9;
+  hw.performanceScore = Number(total.toFixed(2));
 
-  /* =====================
-     VIP 8
-  ===================== */
-  else if(
-      (ram===8 && rom===128) ||
-      (ram===10 && rom===128)
-  )
-    vip=8;
+  if(total>=40) hw.vip=12;
+  else if(total>=36) hw.vip=11;
+  else if(total>=32) hw.vip=10;
+  else if(total>=28) hw.vip=9;
+  else if(total>=24) hw.vip=8;
+  else if(total>=20) hw.vip=7;
+  else if(total>=16) hw.vip=6;
+  else if(total>=12) hw.vip=5;
+  else if(total>=9) hw.vip=4.5;
+  else if(total>=7) hw.vip=4;
+  else if(total>=5) hw.vip=3;
+  else if(total>=3) hw.vip=2;
+  else hw.vip=1;
 
-  /* =====================
-     VIP 7
-  ===================== */
-  else if(
-      (ram===4 && rom===128) ||
-      (ram===6 && rom===128)
-  )
-    vip=7;
-
-  /* =====================
-     VIP 6 — eMMC 5.1
-  ===================== */
-  else if(
-      storage.includes("EMMC") &&
-      (
-        (ram===4 && rom===64) ||
-        (ram===6 && rom===64)
-      )
-  )
-    vip=6;
-
-  /* =====================
-     VIP 5 — UFS ENTRY
-  ===================== */
-  else if(
-      (ram===3 && rom===32) ||
-      (ram===4 && rom===32) ||
-      (ram===3 && rom===64)
-  )
-    vip=5;
-
-  /* =====================
-     VIP 4+
-  ===================== */
-  else if(ram===2 && rom===32)
-    vip=4.5;
-
-  /* =====================
-     VIP 4
-  ===================== */
-  else if(ram===2 && rom===16)
-    vip=4;
-
-  /* =====================
-     VIP 3
-  ===================== */
-  else if(ram===1 && rom===16)
-    vip=3;
-
-  /* =====================
-     VIP 2
-  ===================== */
-  else if(ram===2 && rom===8)
-    vip=2;
-
-  /* =====================
-     VIP 1
-  ===================== */
-  else if(ram===1 && rom===8)
-    vip=1;
-
-  hw.vip = vip;
+  hw.mmc = storageScore;
 
   return hw;
 }
 
+
 /* ===============================
-/* ======================================================
-   AI VIP SYSTEM — FAST CACHE VERSION
-====================================================== */
+   AI VIP PREDICT
+================================ */
 
-let VIP_AI_CACHE = null;
-
-
-/* ===== LOAD AI DATABASE 1 LẦN ===== */
-async function LOAD_AI_CACHE(){
-
-  if(VIP_AI_CACHE) return VIP_AI_CACHE;
+async function AI_VIP_PREDICT(hw){
 
   try{
 
     const snap = await db.collection("vip_learning")
-      .limit(500)
+      .where("ram","==",hw.ram)
+      .where("rom","==",hw.rom)
+      .limit(20)
       .get();
 
-    VIP_AI_CACHE = [];
+    if(snap.empty) return null;
 
-    snap.forEach(doc=>{
-      VIP_AI_CACHE.push(doc.data());
+    let total=0,count=0;
+
+    snap.forEach(d=>{
+      total+=d.data().vip;
+      count++;
     });
 
-    console.log("AI cache loaded:", VIP_AI_CACHE.length);
-
-    return VIP_AI_CACHE;
+    return Number((total/count).toFixed(1));
 
   }catch(e){
-    console.warn("AI cache load fail", e);
-    return [];
+    console.warn("AI predict fail",e);
+    return null;
   }
-}
-
-
-/* ===== FAST AI VIP PREDICT (LOCAL CALCULATION) ===== */
-/* ===== FAST AI VIP PREDICT (FINAL SAFE VERSION) ===== */
-function AI_VIP_PREDICT(hw, cache){
-
-  // không có dữ liệu AI
-  if(!Array.isArray(cache) || cache.length === 0)
-    return null;
-
-  const ram = Number(hw.ram);
-  const rom = Number(hw.rom);
-
-  if(!ram || !rom)
-    return null;
-
-  let total = 0;
-  let count = 0;
-
-  for(const item of cache){
-
-    if(
-      Number(item.ram) === ram &&
-      Number(item.rom) === rom &&
-      item.vip != null
-    ){
-      total += Number(item.vip);
-      count++;
-    }
-  }
-
-  if(count === 0)
-    return null;
-
-  const avg = total / count;
-
-  return Number(avg.toFixed(1));
 }
 
 
@@ -2459,25 +2302,6 @@ function learnFromRealData(hw){
     createdAt:firebase.firestore.FieldValue.serverTimestamp()
   });
 }  
-let VIP_AI_CACHE = null;
-
-async function loadVIPLearning(){
-
-  if(VIP_AI_CACHE) return VIP_AI_CACHE;
-
-  const snap = await db.collection("vip_learning")
-    .limit(500)
-    .get();
-
-  VIP_AI_CACHE = [];
-
-  snap.forEach(d=>{
-    VIP_AI_CACHE.push(d.data());
-  });
-
-  return VIP_AI_CACHE;
-}
-  
 async function check(){
 
   const q=document.getElementById("q")?.value?.trim()?.toUpperCase();
@@ -2528,7 +2352,6 @@ async function check(){
     await new Promise(r=>setTimeout(r,300));
 
     const snap=await db.collection("codes").get();
-    const aiCache = await LOAD_AI_CACHE();
 
     let html=`<div class="result-grid">`;
 
@@ -2546,11 +2369,15 @@ async function check(){
 
       let decoded=autoDecodeChip(x.code,x);
 
- /* ===== VIP ENGINE (RULE BASED) ===== */
-decoded = VIP_ENGINE(decoded);
+      /* ===== VIP AUTO BALANCE ===== */
+      decoded=VIP_AUTO_BALANCE(decoded);
 
-/* ===== OPTIONAL: AI LEARNING ONLY (KHÔNG ĐƯỢC SỬA VIP) ===== */
-learnFromRealData(decoded);
+      /* ===== AI VIP ===== */
+      const aiVip=await AI_VIP_PREDICT(decoded);
+      if(aiVip) decoded.vip=aiVip;
+
+      learnFromRealData(decoded);
+
       html+=`
       <div class="result-card">
 
