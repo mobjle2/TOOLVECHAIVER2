@@ -2708,31 +2708,38 @@ if(!decoded){
 }
       learnFromRealData(decoded);
 
-html += `
+html+=`
 <div class="result-card">
 
   <div class="code-main">${x.code}</div>
 
-  <div class="chip-vip-line">
+  <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
     <div class="vip-badge vip-${Math.floor(decoded.vip)}">
-      VIP ${decoded.vip === 4.5 ? "4+" : decoded.vip}
+      VIP ${decoded.vip===4.5?"4+":decoded.vip}
     </div>
+
+    ${decoded.rom
+      ? `<div class="ram-badge">
+           ${decoded.ram ?? "?"}/${decoded.rom}
+         </div>`
+      : ""}
   </div>
 
-  <div class="brand" style="margin-top:12px;text-align:center;">
-    ${chip.name}
+  <div style="margin-top:14px;text-align:center;font-size:15px;">
+    <span class="brand">${chip.name}</span>
   </div>
 
-  <div class="model-line" style="margin-top:10px;text-align:center;">
-    ${
-      Array.isArray(x.models) && x.models.length
-        ? "📱 " + x.models.join(", ")
-        : "📱 Chưa có model"
-    }
-  </div>
+  ${
+    Array.isArray(x.models) && x.models.length
+      ? `<div class="model-line">
+           📱 ${x.models.join(", ")}
+         </div>`
+      : `<div class="model-placeholder">
+           📱 Chưa có model
+         </div>`
+  }
 
 </div>`;
-
     html+=`</div>`;
 
     clearInterval(fakeLoading);
