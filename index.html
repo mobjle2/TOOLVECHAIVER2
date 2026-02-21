@@ -2269,41 +2269,55 @@ async function check(){
       const chip=detectChip(x.code);
       const decoded=autoDecodeChip(x.code,x);
 
-html+=`
-<div class="result-card">
+snap.forEach(doc=>{
 
-  <div class="code-main">${x.code}</div>
+  const x = doc.data();
 
-  <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
+  if(
+    !x.code?.toUpperCase().includes(q) &&
+    !(Array.isArray(x.models) &&
+      x.models.some(m=>m.toUpperCase().includes(q)))
+  ) return;
 
-    ${
-      decoded?.vip != null
-      ? `<div class="vip-badge vip-${Math.floor(decoded.vip)}">
-           VIP ${decoded.vip === 4.5 ? "4+" : decoded.vip}
-         </div>`
-      : ""
-    }
+  const chip = detectChip(x.code);
+  const decoded = autoDecodeChip(x.code,x);
 
-    ${
-      decoded?.rom
-      ? `<div class="ram-badge">
-           ${decoded.ram ?? "?"}/${decoded.rom}
-         </div>`
-      : ""
-    }
+  html += `
+  <div class="result-card">
 
-  </div>
+    <div class="code-main">${x.code}</div>
 
-  <div style="margin-top:14px;display:flex;gap:10px;font-size:15px;">
-    <span style="color:#38bdf8;font-weight:600;">
-      ${chip.name}
-    </span>
-    <span style="color:#e2e8f0;font-weight:600;">
-      ${decoded?.storage || ""}
-    </span>
-  </div>
+    <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
 
-</div>`;
+      ${decoded?.vip != null
+        ? `<div class="vip-badge vip-${Math.floor(decoded.vip)}">
+             VIP ${decoded.vip===4.5?"4+":decoded.vip}
+           </div>`
+        : ""
+      }
+
+      ${decoded?.rom
+        ? `<div class="ram-badge">
+             ${decoded.ram ?? "?"}/${decoded.rom}
+           </div>`
+        : ""
+      }
+
+    </div>
+
+    <div style="margin-top:14px;display:flex;gap:10px;font-size:15px;">
+      <span style="color:#38bdf8;font-weight:600;">
+        ${chip.name}
+      </span>
+
+      <span style="color:#e2e8f0;font-weight:600;">
+        ${decoded?.storage || ""}
+      </span>
+    </div>
+
+  </div>`;
+});
+      
     html+=`</div>`;
 
     // ===== FINISH LOADING =====
