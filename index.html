@@ -2326,34 +2326,76 @@ function VIP_ENGINE(hw){
 }
 
 /* ===============================
-   AI VIP PREDICT
-================================ */
+/* ======================================================
+   AI VIP SYSTEM — FAST CACHE VERSION
+====================================================== */
 
-async function AI_VIP_PREDICT(hw){
+let VIP_AI_CACHE = null;
+
+
+/* ===== LOAD AI DATABASE 1 LẦN ===== */
+async function LOAD_AI_CACHE(){
+
+  if(VIP_AI_CACHE) return VIP_AI_CACHE;
 
   try{
 
     const snap = await db.collection("vip_learning")
-      .where("ram","==",hw.ram)
-      .where("rom","==",hw.rom)
-      .limit(20)
+      .limit(500)
       .get();
 
-    if(snap.empty) return null;
+    VIP_AI_CACHE = [];
 
-    let total=0,count=0;
-
-    snap.forEach(d=>{
-      total+=d.data().vip;
-      count++;
+    snap.forEach(doc=>{
+      VIP_AI_CACHE.push(doc.data());
     });
 
-    return Number((total/count).toFixed(1));
+    console.log("AI cache loaded:", VIP_AI_CACHE.length);
+
+    return VIP_AI_CACHE;
 
   }catch(e){
-    console.warn("AI predict fail",e);
-    return null;
+    console.warn("AI cache load fail", e);
+    return [];
   }
+}
+
+
+/* ===== FAST AI VIP PREDICT (LOCAL CALCULATION) ===== */
+/* ===== FAST AI VIP PREDICT (FINAL SAFE VERSION) ===== */
+function AI_VIP_PREDICT(hw, cache){
+
+  // không có dữ liệu AI
+  if(!Array.isArray(cache) || cache.length === 0)
+    return null;
+
+  const ram = Number(hw.ram);
+  const rom = Number(hw.rom);
+
+  if(!ram || !rom)
+    return null;
+
+  let total = 0;
+  let count = 0;
+
+  for(const item of cache){
+
+    if(
+      Number(item.ram) === ram &&
+      Number(item.rom) === rom &&
+      item.vip != null
+    ){
+      total += Number(item.vip);
+      count++;
+    }
+  }
+
+  if(count === 0)
+    return null;
+
+  const avg = total / count;
+
+  return Number(avg.toFixed(1));
 }
 
 
@@ -2374,6 +2416,25 @@ function learnFromRealData(hw){
     createdAt:firebase.firestore.FieldValue.serverTimestamp()
   });
 }  
+let VIP_AI_CACHE = null;
+
+async function loadVIPLearning(){
+
+  if(VIP_AI_CACHE) return VIP_AI_CACHE;
+
+  const snap = await db.collection("vip_learning")
+    .limit(500)
+    .get();
+
+  VIP_AI_CACHE = [];
+
+  snap.forEach(d=>{
+    VIP_AI_CACHE.push(d.data());
+  });
+
+  return VIP_AI_CACHE;
+}
+  
 async function check(){
 
   const q=document.getElementById("q")?.value?.trim()?.toUpperCase();
@@ -2424,6 +2485,7 @@ async function check(){
     await new Promise(r=>setTimeout(r,300));
 
     const snap=await db.collection("codes").get();
+    const aiCache = await LOAD_AI_CACHE();
 
     let html=`<div class="result-grid">`;
 
