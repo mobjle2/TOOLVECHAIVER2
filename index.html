@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -1785,79 +1784,46 @@ function decodeSamsung(code){
     return result;
   }
 
-// 🔹 KM5 / KM2 Samsung uMCP Decoder (FULL FIX)
 // =====================================================
-if(/^KM[25]/.test(main)){
+// 🔹 KM5 / KM2 (UFS 2.1 MID)
+// =====================================================
+if(main.startsWith("KM5") || main.startsWith("KM2")){
 
   result.type = "uMCP";
+
+  const family = main.substring(0,3);  // KM5 / KM2
+  const ramToken = main.slice(-2);     // 8M / CM / DM / JM
+
+  // ===== ROM =====
+  if(main.includes("8001")){
+    result.rom = (family === "KM2") ? 256 : 64;
+  }
+  else if(main.includes("7001")){
+    result.rom = (family === "KM2") ? 128 : 64;
+  }
+  else if(main.includes("6001")){
+    result.rom = 32;
+  }
+
   result.storage = "UFS 2.1";
   result.version = "UFS 2.1";
 
-  const family = main.slice(0,3);     // KM2 / KM5
-  const density = main.match(/(\d{4})/);
-  const ramToken = main.slice(-2);
-
-/* ================= ROM ================= */
-
-const density = main.match(/(\d{4})/);
-const generation = main[3];   // ⭐ C / D / H / V
-
-if(density){
-
-  const key = density[1];
-
-  if(family==="KM2"){
-
-    const romMapKM2={
-      "9001":512,
-      "8001":128,
-      "7001":128,
-      "6001":32
-    };
-
-    result.rom = romMapKM2[key] || null;
-  }
-
-  if(family==="KM5"){
-
-    /* ⭐ generation aware map */
-    if(generation==="H"){
-      const mapH={
-        "9001":256,
-        "8001":64,
-        "7001":64,
-        "6001":32
-      };
-      result.rom = mapH[key] || null;
-    }
-    else{
-      const mapNormal={
-        "9001":256,
-        "8001":128,
-        "7001":64,
-        "6001":32
-      };
-      result.rom = mapNormal[key] || null;
-    }
-  }
-}
-  /* ================= RAM ================= */
-
-  const ramMap = {
+  // ===== RAM =====
+  const ramMapMid = {
     "8M":3,
-    "DM":4,
     "CM":6,
+    "DM":4,
     "JM":8
   };
 
-  result.ram = ramMap[ramToken] || null;
+  if(ramMapMid[ramToken]){
+    result.ram = ramMapMid[ramToken];
+  }
 
-  /* ================= VIP ================= */
-
-  result.vip = calculateVip(result.ram,result.rom);
-
+  result.vip = calculateVip(result.ram, result.rom);
   return result;
 }
+
   // =====================================================
   // 🔹 4. KM8 / KM9 (HIGH-END)
   // =====================================================
@@ -2281,7 +2247,7 @@ if(/^H/.test(code)){
 
   return h;
 }
-}
+} 
 /* ===============================
    VIP AUTO BALANCE ENGINE
 ================================ */
@@ -2290,88 +2256,130 @@ function VIP_ENGINE(hw){
 
   const ram = Number(hw.ram)||0;
   const rom = Number(hw.rom)||0;
+  const storage=(hw.storage||"").toUpperCase();
 
-  let vip = 0;
+  let vip=0;
 
-  /* ===== VIP 12 ===== */
-  if(ram===16 && rom===512) vip=12;
+  /* =====================
+     VIP 12 — FLAGSHIP
+  ===================== */
+  if(ram>=16 && rom>=512)
+    vip=12;
 
-  /* ===== VIP 11 ===== */
-  else if(ram===12 && rom===512) vip=11;
+  /* =====================
+     VIP 11 — UFS 3.x
+  ===================== */
+  else if(ram===12 && rom===512 &&
+          storage.includes("UFS"))
+    vip=11;
 
-  /* ===== VIP 10 ===== */
+  /* =====================
+     VIP 10 — UFS 2.2
+  ===================== */
   else if(
       (ram===12 && rom===256) ||
       (ram===8 && rom===512)
-  ) vip=10;
+  )
+    vip=10;
 
-  /* ===== VIP 9 ===== */
+  /* =====================
+     VIP 9 — UFS HIGH
+  ===================== */
   else if(
       (ram===6 && rom===256) ||
       (ram===12 && rom===128) ||
       (ram===8 && rom===256) ||
       (ram===10 && rom===256)
-  ) vip=9;
+  )
+    vip=9;
 
-  /* ===== VIP 8 ===== */
+  /* =====================
+     VIP 8
+  ===================== */
   else if(
       (ram===8 && rom===128) ||
       (ram===10 && rom===128)
-  ) vip=8;
+  )
+    vip=8;
 
-  /* ===== VIP 7 ===== */
+  /* =====================
+     VIP 7
+  ===================== */
   else if(
       (ram===4 && rom===128) ||
       (ram===6 && rom===128)
-  ) vip=7;
+  )
+    vip=7;
 
-  /* ===== VIP 6 ===== */
+  /* =====================
+     VIP 6 — eMMC 5.1
+  ===================== */
   else if(
-      (ram===4 && rom===64) ||
-      (ram===6 && rom===64)
-  ) vip=6;
+      storage.includes("EMMC") &&
+      (
+        (ram===4 && rom===64) ||
+        (ram===6 && rom===64)
+      )
+  )
+    vip=6;
 
-  /* ===== VIP 5 ===== */
+  /* =====================
+     VIP 5 — UFS ENTRY
+  ===================== */
   else if(
       (ram===3 && rom===32) ||
       (ram===4 && rom===32) ||
       (ram===3 && rom===64)
-  ) vip=5;
+  )
+    vip=5;
 
-  /* ===== VIP 4+ ===== */
-  else if(ram===2 && rom===32) vip=4.5;
+  /* =====================
+     VIP 4+
+  ===================== */
+  else if(ram===2 && rom===32)
+    vip=4.5;
 
-  /* ===== VIP 4 ===== */
-  else if(ram===2 && rom===16) vip=4;
+  /* =====================
+     VIP 4
+  ===================== */
+  else if(ram===2 && rom===16)
+    vip=4;
 
-  /* ===== VIP 3 ===== */
-  else if(ram===1 && rom===16) vip=3;
+  /* =====================
+     VIP 3
+  ===================== */
+  else if(ram===1 && rom===16)
+    vip=3;
 
-  /* ===== VIP 2 ===== */
-  else if(ram===2 && rom===8) vip=2;
+  /* =====================
+     VIP 2
+  ===================== */
+  else if(ram===2 && rom===8)
+    vip=2;
 
-  /* ===== VIP 1 ===== */
-  else if(ram===1 && rom===8) vip=1;
+  /* =====================
+     VIP 1
+  ===================== */
+  else if(ram===1 && rom===8)
+    vip=1;
 
   hw.vip = vip;
 
   return hw;
 }
+
 /* ===============================
 /* ======================================================
- /* ======================================================
-   AI VIP SYSTEM — FINAL STABLE VERSION
+   AI VIP SYSTEM — FAST CACHE VERSION
 ====================================================== */
 
-/* ===== GLOBAL CACHE (KHÔNG DECLARE LẠI) ===== */
-window.VIP_AI_CACHE = window.VIP_AI_CACHE || null;
+let VIP_AI_CACHE = null;
 
 
-/* ===== LOAD AI DATABASE (LOAD 1 LẦN DUY NHẤT) ===== */
+/* ===== LOAD AI DATABASE 1 LẦN ===== */
 async function LOAD_AI_CACHE(){
 
-  if(window.VIP_AI_CACHE)
-    return window.VIP_AI_CACHE;
+  if(VIP_AI_CACHE) return VIP_AI_CACHE;
 
   try{
 
@@ -2379,34 +2387,33 @@ async function LOAD_AI_CACHE(){
       .limit(500)
       .get();
 
-    window.VIP_AI_CACHE = snap.docs.map(d=>d.data());
+    VIP_AI_CACHE = [];
 
-    console.log(
-      "AI cache loaded:",
-      window.VIP_AI_CACHE.length
-    );
+    snap.forEach(doc=>{
+      VIP_AI_CACHE.push(doc.data());
+    });
 
-    return window.VIP_AI_CACHE;
+    console.log("AI cache loaded:", VIP_AI_CACHE.length);
+
+    return VIP_AI_CACHE;
 
   }catch(e){
-
     console.warn("AI cache load fail", e);
-
-    window.VIP_AI_CACHE = [];
-
-    return window.VIP_AI_CACHE;
+    return [];
   }
 }
 
 
-/* ===== FAST AI VIP PREDICT ===== */
+/* ===== FAST AI VIP PREDICT (LOCAL CALCULATION) ===== */
+/* ===== FAST AI VIP PREDICT (FINAL SAFE VERSION) ===== */
 function AI_VIP_PREDICT(hw, cache){
 
+  // không có dữ liệu AI
   if(!Array.isArray(cache) || cache.length === 0)
     return null;
 
-  const ram = Number(hw?.ram);
-  const rom = Number(hw?.rom);
+  const ram = Number(hw.ram);
+  const rom = Number(hw.rom);
 
   if(!ram || !rom)
     return null;
@@ -2429,8 +2436,11 @@ function AI_VIP_PREDICT(hw, cache){
   if(count === 0)
     return null;
 
-  return Number((total / count).toFixed(1));
+  const avg = total / count;
+
+  return Number(avg.toFixed(1));
 }
+
 
 /* ===============================
    SAVE EXPERIENCE
@@ -2637,42 +2647,36 @@ function togglePassword(){
 // ===== CHECK ROLE =====
 auth.onAuthStateChanged(async (user) => {
 
-  const hasShareLink = window.location.search.includes("u=");
-
-  /* ===== KHÔNG LOGIN ===== */
-  if(!user){
-
-    // nếu là link share → cho xem bình thường
-    if(hasShareLink) return;
-
-    // nếu vào admin mà chưa login
-    document.getElementById("loginScreen").style.display="block";
-    document.getElementById("adminPanel").style.display="none";
+  // Nếu có ?u= thì bỏ qua hoàn toàn auth
+  if(window.location.search.includes("u=")){
     return;
   }
 
+if(!user){
+  return; // không ép show login nữa
+}
+
+
   try{
+    const snap = await db.collection("users").doc(user.email).get();
 
-    const snap = await db.collection("users")
-      .doc(user.email)
-      .get();
-
-    if(!snap.exists || snap.data().role!=="admin"){
+    if(!snap.exists || snap.data().role !== "admin"){
       await auth.signOut();
       return;
     }
 
-    /* ===== LOGIN SUCCESS ===== */
+document.getElementById("loginScreen").style.display = "none";
+document.getElementById("adminPanel").style.display = "block";
 
-    document.getElementById("loginScreen").style.display="none";
-    document.getElementById("adminPanel").style.display="block";
+loadLinks();
 
-    loadLinks();
+/* ===== MỞ ADMIN CONTENT SAU LOGIN ===== */
+
 
   }catch(err){
     console.error(err);
   }
-});;
+});
 
 
 
