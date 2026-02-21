@@ -1784,46 +1784,79 @@ function decodeSamsung(code){
     return result;
   }
 
+// 🔹 KM5 / KM2 Samsung uMCP Decoder (FULL FIX)
 // =====================================================
-// 🔹 KM5 / KM2 (UFS 2.1 MID)
-// =====================================================
-if(main.startsWith("KM5") || main.startsWith("KM2")){
+if(/^KM[25]/.test(main)){
 
   result.type = "uMCP";
-
-  const family = main.substring(0,3);  // KM5 / KM2
-  const ramToken = main.slice(-2);     // 8M / CM / DM / JM
-
-  // ===== ROM =====
-  if(main.includes("8001")){
-    result.rom = (family === "KM2") ? 256 : 64;
-  }
-  else if(main.includes("7001")){
-    result.rom = (family === "KM2") ? 128 : 64;
-  }
-  else if(main.includes("6001")){
-    result.rom = 32;
-  }
-
   result.storage = "UFS 2.1";
   result.version = "UFS 2.1";
 
-  // ===== RAM =====
-  const ramMapMid = {
+  const family = main.slice(0,3);     // KM2 / KM5
+  const density = main.match(/(\d{4})/);
+  const ramToken = main.slice(-2);
+
+/* ================= ROM ================= */
+
+const density = main.match(/(\d{4})/);
+const generation = main[3];   // ⭐ C / D / H / V
+
+if(density){
+
+  const key = density[1];
+
+  if(family==="KM2"){
+
+    const romMapKM2={
+      "9001":512,
+      "8001":128,
+      "7001":128,
+      "6001":32
+    };
+
+    result.rom = romMapKM2[key] || null;
+  }
+
+  if(family==="KM5"){
+
+    /* ⭐ generation aware map */
+    if(generation==="H"){
+      const mapH={
+        "9001":256,
+        "8001":64,
+        "7001":64,
+        "6001":32
+      };
+      result.rom = mapH[key] || null;
+    }
+    else{
+      const mapNormal={
+        "9001":256,
+        "8001":128,
+        "7001":64,
+        "6001":32
+      };
+      result.rom = mapNormal[key] || null;
+    }
+  }
+}
+  /* ================= RAM ================= */
+
+  const ramMap = {
     "8M":3,
-    "CM":6,
     "DM":4,
+    "CM":6,
     "JM":8
   };
 
-  if(ramMapMid[ramToken]){
-    result.ram = ramMapMid[ramToken];
-  }
+  result.ram = ramMap[ramToken] || null;
 
-  result.vip = calculateVip(result.ram, result.rom);
+  /* ================= VIP ================= */
+
+  result.vip = calculateVip(result.ram,result.rom);
+
   return result;
 }
-
   // =====================================================
   // 🔹 4. KM8 / KM9 (HIGH-END)
   // =====================================================
@@ -2172,118 +2205,231 @@ if(code.startsWith("YMEC")){
     return decodeSamsung(code);
   }
 
-  // ===== SK hynix =====
-  if(/^H/.test(code)){
+// ===== SK hynix =====
+if(/^H/.test(code)){
 
   const h = decodeHynix(code);
 
-  if(!h) return h;
+  /* ===== SAFE GUARD ===== */
+  if(!h){
+    return {
+      type:"SK hynix",
+      ram:null,
+      rom:null,
+      storage:"Unknown",
+      vip:0
+    };
+  }
 
-  // ===== VIP RULE =====
+  /* ===== NORMALIZE DATA ===== */
+  h.ram = Number(h.ram) || null;
+  h.rom = Number(h.rom) || null;
+  h.storage = h.storage || "Unknown";
 
-  if(h.storage?.includes("eMMC") && h.ram<=1)
+  /* ===== VIP RULE FIX ===== */
+
+  if(h.storage.includes("eMMC") && h.ram<=1)
       h.vip = 1;
 
-  else if(h.storage?.includes("eMMC") && h.ram===2 && h.rom<=8)
+  else if(h.storage.includes("eMMC") && h.ram===2 && h.rom<=8)
       h.vip = 2;
 
-  else if(h.storage?.includes("eMMC") && h.ram<=1 && h.rom===16)
+  else if(h.storage.includes("eMMC") && h.ram<=1 && h.rom===16)
       h.vip = 3;
 
-  else if(h.storage?.includes("eMMC") && h.ram===2 && h.rom===16)
+  else if(h.storage.includes("eMMC") && h.ram===2 && h.rom===16)
       h.vip = 4;
 
-  else if(h.storage?.includes("eMMC") && h.ram>=2 && h.rom===32)
+  else if(h.storage.includes("eMMC") && h.ram>=2 && h.rom===32)
       h.vip = 4.5;
 
-  else if(h.storage?.includes("eMMC") && h.ram>=3 && h.rom===32)
+  else if(h.storage.includes("UFS") &&
+         ((h.ram===3 && h.rom===32) ||
+          (h.ram===4 && h.rom===32) ||
+          (h.ram===3 && h.rom===64)))
       h.vip = 5;
 
-  else if(h.rom===64 && h.ram>=4)
+  else if(h.storage.includes("eMMC") &&
+         (h.ram===4 || h.ram===6) && h.rom===64)
       h.vip = 6;
+
+  else if(h.storage.includes("UFS") &&
+         (h.ram===4 || h.ram===6) && h.rom===128)
+      h.vip = 7;
+
+  else if(h.storage.includes("UFS") &&
+         (h.ram===8 || h.ram===10) && h.rom===128)
+      h.vip = 8;
+
+  else if(h.storage.includes("UFS") &&
+         ((h.ram===6 && h.rom===256) ||
+          (h.ram===8 && h.rom===256) ||
+          (h.ram===10 && h.rom===256) ||
+          (h.ram===12 && h.rom===128)))
+      h.vip = 9;
+
+  else if((h.ram===12 && h.rom===256) ||
+          (h.ram===8 && h.rom===512))
+      h.vip = 10;
+
+  else if(h.ram===12 && h.rom===512)
+      h.vip = 11;
+
+  else if(h.ram>=16 && h.rom>=512)
+      h.vip = 12;
 
   return h;
 }
-} 
+}
 /* ===============================
    VIP AUTO BALANCE ENGINE
 ================================ */
 
-function VIP_AUTO_BALANCE(hw){
-
-  if(!hw) return hw;
+function VIP_ENGINE(hw){
 
   const ram = Number(hw.ram)||0;
   const rom = Number(hw.rom)||0;
-  const storage=(hw.storage||"").toUpperCase();
 
-  let storageScore=0;
+  let vip = 0;
 
-  if(storage.includes("UFS 4")) storageScore=6;
-  else if(storage.includes("UFS 3")) storageScore=5;
-  else if(storage.includes("UFS 2.2")) storageScore=4;
-  else if(storage.includes("UFS 2.1")) storageScore=3;
-  else if(storage.includes("EMMC 5.1")) storageScore=2;
-  else if(storage.includes("EMMC")) storageScore=1;
+  /* ===== VIP 12 ===== */
+  if(ram===16 && rom===512) vip=12;
 
-  const ramScore = ram * 1.6;
-  const romScore = Math.log2(rom||1) * 1.3;
+  /* ===== VIP 11 ===== */
+  else if(ram===12 && rom===512) vip=11;
 
-  const total = ramScore + romScore + storageScore*3;
+  /* ===== VIP 10 ===== */
+  else if(
+      (ram===12 && rom===256) ||
+      (ram===8 && rom===512)
+  ) vip=10;
 
-  hw.performanceScore = Number(total.toFixed(2));
+  /* ===== VIP 9 ===== */
+  else if(
+      (ram===6 && rom===256) ||
+      (ram===12 && rom===128) ||
+      (ram===8 && rom===256) ||
+      (ram===10 && rom===256)
+  ) vip=9;
 
-  if(total>=40) hw.vip=12;
-  else if(total>=36) hw.vip=11;
-  else if(total>=32) hw.vip=10;
-  else if(total>=28) hw.vip=9;
-  else if(total>=24) hw.vip=8;
-  else if(total>=20) hw.vip=7;
-  else if(total>=16) hw.vip=6;
-  else if(total>=12) hw.vip=5;
-  else if(total>=9) hw.vip=4.5;
-  else if(total>=7) hw.vip=4;
-  else if(total>=5) hw.vip=3;
-  else if(total>=3) hw.vip=2;
-  else hw.vip=1;
+  /* ===== VIP 8 ===== */
+  else if(
+      (ram===8 && rom===128) ||
+      (ram===10 && rom===128)
+  ) vip=8;
 
-  hw.mmc = storageScore;
+  /* ===== VIP 7 ===== */
+  else if(
+      (ram===4 && rom===128) ||
+      (ram===6 && rom===128)
+  ) vip=7;
+
+  /* ===== VIP 6 ===== */
+  else if(
+      (ram===4 && rom===64) ||
+      (ram===6 && rom===64)
+  ) vip=6;
+
+  /* ===== VIP 5 ===== */
+  else if(
+      (ram===3 && rom===32) ||
+      (ram===4 && rom===32) ||
+      (ram===3 && rom===64)
+  ) vip=5;
+
+  /* ===== VIP 4+ ===== */
+  else if(ram===2 && rom===32) vip=4.5;
+
+  /* ===== VIP 4 ===== */
+  else if(ram===2 && rom===16) vip=4;
+
+  /* ===== VIP 3 ===== */
+  else if(ram===1 && rom===16) vip=3;
+
+  /* ===== VIP 2 ===== */
+  else if(ram===2 && rom===8) vip=2;
+
+  /* ===== VIP 1 ===== */
+  else if(ram===1 && rom===8) vip=1;
+
+  hw.vip = vip;
 
   return hw;
 }
-
-
 /* ===============================
-   AI VIP PREDICT
-================================ */
+/* ======================================================
+ /* ======================================================
+   AI VIP SYSTEM — FINAL STABLE VERSION
+====================================================== */
 
-async function AI_VIP_PREDICT(hw){
+/* ===== GLOBAL CACHE (KHÔNG DECLARE LẠI) ===== */
+window.VIP_AI_CACHE = window.VIP_AI_CACHE || null;
+
+
+/* ===== LOAD AI DATABASE (LOAD 1 LẦN DUY NHẤT) ===== */
+async function LOAD_AI_CACHE(){
+
+  if(window.VIP_AI_CACHE)
+    return window.VIP_AI_CACHE;
 
   try{
 
     const snap = await db.collection("vip_learning")
-      .where("ram","==",hw.ram)
-      .where("rom","==",hw.rom)
-      .limit(20)
+      .limit(500)
       .get();
 
-    if(snap.empty) return null;
+    window.VIP_AI_CACHE = snap.docs.map(d=>d.data());
 
-    let total=0,count=0;
+    console.log(
+      "AI cache loaded:",
+      window.VIP_AI_CACHE.length
+    );
 
-    snap.forEach(d=>{
-      total+=d.data().vip;
-      count++;
-    });
-
-    return Number((total/count).toFixed(1));
+    return window.VIP_AI_CACHE;
 
   }catch(e){
-    console.warn("AI predict fail",e);
-    return null;
+
+    console.warn("AI cache load fail", e);
+
+    window.VIP_AI_CACHE = [];
+
+    return window.VIP_AI_CACHE;
   }
 }
 
+
+/* ===== FAST AI VIP PREDICT ===== */
+function AI_VIP_PREDICT(hw, cache){
+
+  if(!Array.isArray(cache) || cache.length === 0)
+    return null;
+
+  const ram = Number(hw?.ram);
+  const rom = Number(hw?.rom);
+
+  if(!ram || !rom)
+    return null;
+
+  let total = 0;
+  let count = 0;
+
+  for(const item of cache){
+
+    if(
+      Number(item.ram) === ram &&
+      Number(item.rom) === rom &&
+      item.vip != null
+    ){
+      total += Number(item.vip);
+      count++;
+    }
+  }
+
+  if(count === 0)
+    return null;
+
+  return Number((total / count).toFixed(1));
+}
 
 /* ===============================
    SAVE EXPERIENCE
@@ -2302,6 +2448,25 @@ function learnFromRealData(hw){
     createdAt:firebase.firestore.FieldValue.serverTimestamp()
   });
 }  
+let VIP_AI_CACHE = null;
+
+async function loadVIPLearning(){
+
+  if(VIP_AI_CACHE) return VIP_AI_CACHE;
+
+  const snap = await db.collection("vip_learning")
+    .limit(500)
+    .get();
+
+  VIP_AI_CACHE = [];
+
+  snap.forEach(d=>{
+    VIP_AI_CACHE.push(d.data());
+  });
+
+  return VIP_AI_CACHE;
+}
+  
 async function check(){
 
   const q=document.getElementById("q")?.value?.trim()?.toUpperCase();
@@ -2352,6 +2517,7 @@ async function check(){
     await new Promise(r=>setTimeout(r,300));
 
     const snap=await db.collection("codes").get();
+    const aiCache = await LOAD_AI_CACHE();
 
     let html=`<div class="result-grid">`;
 
@@ -2369,15 +2535,11 @@ async function check(){
 
       let decoded=autoDecodeChip(x.code,x);
 
-      /* ===== VIP AUTO BALANCE ===== */
-      decoded=VIP_AUTO_BALANCE(decoded);
+ /* ===== VIP ENGINE (RULE BASED) ===== */
+decoded = VIP_ENGINE(decoded);
 
-      /* ===== AI VIP ===== */
-      const aiVip=await AI_VIP_PREDICT(decoded);
-      if(aiVip) decoded.vip=aiVip;
-
-      learnFromRealData(decoded);
-
+/* ===== OPTIONAL: AI LEARNING ONLY (KHÔNG ĐƯỢC SỬA VIP) ===== */
+learnFromRealData(decoded);
       html+=`
       <div class="result-card">
 
@@ -2474,36 +2636,42 @@ function togglePassword(){
 // ===== CHECK ROLE =====
 auth.onAuthStateChanged(async (user) => {
 
-  // Nếu có ?u= thì bỏ qua hoàn toàn auth
-  if(window.location.search.includes("u=")){
+  const hasShareLink = window.location.search.includes("u=");
+
+  /* ===== KHÔNG LOGIN ===== */
+  if(!user){
+
+    // nếu là link share → cho xem bình thường
+    if(hasShareLink) return;
+
+    // nếu vào admin mà chưa login
+    document.getElementById("loginScreen").style.display="block";
+    document.getElementById("adminPanel").style.display="none";
     return;
   }
 
-if(!user){
-  return; // không ép show login nữa
-}
-
-
   try{
-    const snap = await db.collection("users").doc(user.email).get();
 
-    if(!snap.exists || snap.data().role !== "admin"){
+    const snap = await db.collection("users")
+      .doc(user.email)
+      .get();
+
+    if(!snap.exists || snap.data().role!=="admin"){
       await auth.signOut();
       return;
     }
 
-document.getElementById("loginScreen").style.display = "none";
-document.getElementById("adminPanel").style.display = "block";
+    /* ===== LOGIN SUCCESS ===== */
 
-loadLinks();
+    document.getElementById("loginScreen").style.display="none";
+    document.getElementById("adminPanel").style.display="block";
 
-/* ===== MỞ ADMIN CONTENT SAU LOGIN ===== */
-
+    loadLinks();
 
   }catch(err){
     console.error(err);
   }
-});
+});;
 
 
 
