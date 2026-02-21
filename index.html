@@ -2261,19 +2261,24 @@ if(code.startsWith("YMEC")){
       };
     }
 
-    // ===== JZ SERIES =====
-    if(code.startsWith("JZ")){
+// ===== JZ SERIES =====
+if(code.startsWith("JZ")){
 
-      const n = parseInt(code.substring(2));
+  const match = code.match(/^JZ(\d+)/);
 
-      if(n<=12)  return {ram:null,rom:null,storage:"eMMC",vip:3};
-      if(n<=48)  return {ram:null,rom:null,storage:"eMMC",vip:4.5};
-      if(n<=99)  return {ram:null,rom:null,storage:"eMMC",vip:5};
-      if(n<=299) return {ram:null,rom:null,storage:"eMMC",vip:6};
-    }
-
-    return null;
+  if(!match){
+    return {ram:null,rom:null,storage:"eMMC",vip:3};
   }
+
+  const n = Number(match[1]);
+
+  if(n<=12)  return {ram:null,rom:null,storage:"eMMC",vip:3};
+  if(n<=48)  return {ram:null,rom:null,storage:"eMMC",vip:4.5};
+  if(n<=99)  return {ram:null,rom:null,storage:"eMMC",vip:5};
+  if(n<=299) return {ram:null,rom:null,storage:"eMMC",vip:6};
+
+  return {ram:null,rom:null,storage:"eMMC",vip:6};
+}
 
   // ===== MICRON CHECK FIRST =====
   const micron = decodeMicronOEM(code);
