@@ -2703,7 +2703,9 @@ if(!decoded){
     vip:0
   };
 }
-      decoded = VIP_ENGINE(decoded);
+     if(decoded.ram && decoded.rom){
+  decoded = VIP_ENGINE(decoded);
+}
       learnFromRealData(decoded);
 
       html+=`
