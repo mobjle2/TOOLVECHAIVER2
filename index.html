@@ -2625,41 +2625,24 @@ async function check(){
   /* ===== LOADING ===== */
   out.innerHTML=`
   <div style="max-width:600px;margin:40px auto;">
-
     <div style="margin-bottom:8px;font-size:14px;opacity:.8;">
       🔍 Đang phân tích dữ liệu...
     </div>
 
-    <div style="
-      width:100%;
-      height:10px;
-      background:rgba(255,255,255,0.06);
-      border-radius:999px;
-      overflow:hidden;
-      box-shadow:inset 0 0 8px rgba(0,0,0,.6);
-    ">
+    <div style="width:100%;height:10px;background:rgba(255,255,255,0.06);
+      border-radius:999px;overflow:hidden;">
       <div id="progressFill"
-        style="
-          height:100%;
-          width:0%;
-          background:linear-gradient(90deg,#38bdf8,#06b6d4,#22c55e);
-          border-radius:999px;
-          transition:width .35s cubic-bezier(.4,0,.2,1);
-        ">
+        style="height:100%;width:0%;
+        background:linear-gradient(90deg,#38bdf8,#06b6d4,#22c55e);
+        transition:width .35s;">
       </div>
     </div>
 
     <div id="progressText"
-      style="
-        text-align:right;
-        font-size:13px;
-        margin-top:8px;
-        opacity:.8;
-        letter-spacing:.5px;">
+      style="text-align:right;font-size:13px;margin-top:8px;">
       0%
     </div>
-
-  </div>`;   // ⭐ QUAN TRỌNG
+  </div>`;
 
   const fill=document.getElementById("progressFill");
   const text=document.getElementById("progressText");
@@ -2678,7 +2661,6 @@ async function check(){
     await new Promise(r=>setTimeout(r,300));
 
     const snap=await db.collection("codes").get();
-    await LOAD_AI_CACHE();
 
     let html=`<div class="result-grid">`;
 
@@ -2693,56 +2675,52 @@ async function check(){
       ) continue;
 
       const chip=detectChip(x.code);
-      let decoded=autoDecodeChip(x.code,x);
-      /* ===== SAFE FALLBACK ===== */
-if(!decoded){
-  decoded = {
-    ram:null,
-    rom:null,
-    storage:"Unknown",
-    vip:0
-  };
-}
-     if(decoded.ram && decoded.rom){
-  decoded = VIP_ENGINE(decoded);
-}
-      learnFromRealData(decoded);
 
-html+=`
-<div class="result-card">
+      let decoded=autoDecodeChip(x.code,x) || {
+        ram:null,
+        rom:null,
+        vip:0
+      };
 
-  <div class="code-main">${x.code}</div>
+      if(decoded.ram && decoded.rom){
+        decoded = VIP_ENGINE(decoded);
+      }
 
-  <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
-    <div class="vip-badge vip-${Math.floor(decoded.vip)}">
-      VIP ${decoded.vip===4.5?"4+":decoded.vip}
-    </div>
+      html+=`
+      <div class="result-card">
 
-    ${decoded.rom
-      ? `<div class="ram-badge">
-           ${decoded.ram ?? "?"}/${decoded.rom}
-         </div>`
-      : ""}
-  </div>
+        <div class="code-main">${x.code}</div>
 
-  <div style="margin-top:14px;text-align:center;font-size:15px;">
-    <span class="brand">${chip.name}</span>
-  </div>
+        <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
+          <div class="vip-badge vip-${Math.floor(decoded.vip)}">
+            VIP ${decoded.vip===4.5?"4+":decoded.vip}
+          </div>
 
-  ${
-    Array.isArray(x.models) && x.models.length
-      ? `<div class="model-line">
-           📱 ${x.models.join(", ")}
-         </div>`
-      : `<div class="model-placeholder">
-           📱 Chưa có model
-         </div>`
-  }
+          ${decoded.rom
+            ? `<div class="ram-badge">
+                 ${decoded.ram ?? "?"}/${decoded.rom}
+               </div>`
+            : ""}
+        </div>
 
-</div>`;
+        <div style="margin-top:14px;text-align:center;font-size:15px;">
+          <span class="brand">${chip.name}</span>
+        </div>
 
-      
- 
+        ${
+          Array.isArray(x.models) && x.models.length
+            ? `<div class="model-line">
+                 📱 ${x.models.join(", ")}
+               </div>`
+            : `<div class="model-placeholder">
+                 📱 Chưa có model
+               </div>`
+        }
+
+      </div>`;
+    } // ✅ ĐÓNG FOR LOOP
+
+    html+=`</div>`; // ✅ ĐÓNG GRID
 
     clearInterval(fakeLoading);
 
@@ -2758,7 +2736,6 @@ html+=`
   }catch(err){
 
     clearInterval(fakeLoading);
-
     console.error(err);
 
     out.innerHTML=`<div style="color:#ef4444;text-align:center;">
