@@ -1853,44 +1853,28 @@ function decodeSamsung(code){
     return result;
   }
 
-  /* =====================================================
-     FALLBACK (QUAN TRỌNG — KHÔNG LÀM CHẾT JS)
-  ===================================================== */
-  return result;
+/* ================= RAM ================= */
+
+const ramMap={
+  "8M":3,
+  "DM":4,
+  "CM":6,
+  "JM":8
+};
+
+result.ram = ramMap[ramToken] || null;
+
+/* ================= VIP ================= */
+
+result.vip = calculateVip(result.ram,result.rom);
+
+return result;
 }
 
-  /* ================= RAM ================= */
-
-  const ramMap={
-    "8M":3,
-    "DM":4,
-    "CM":6,
-    "JM":8
-  };
-
-  result.ram = ramMap[ramToken] || null;
-
-  /* ================= VIP ================= */
-
-  result.vip = calculateVip(result.ram,result.rom);
-
-}
-  /* ================= RAM ================= */
-
-  const ramMap = {
-    "8M":3,
-    "DM":4,
-    "CM":6,
-    "JM":8
-  };
-
-  result.ram = ramMap[ramToken] || null;
-
-  /* ================= VIP ================= */
-
-  result.vip = calculateVip(result.ram,result.rom);
-
-  return result;
+/* =====================================================
+   FALLBACK (CUỐI decodeSamsung)
+===================================================== */
+return result;
 }
   // =====================================================
   // 🔹 4. KM8 / KM9 (HIGH-END)
