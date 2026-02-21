@@ -2207,7 +2207,10 @@ if(code.startsWith("YMEC")){
 } 
 async function check(){
 
-  const q = document.getElementById("q").value.trim().toUpperCase();
+  const q = document.getElementById("q")?.value
+      ?.trim()
+      ?.toUpperCase();
+
   const out = document.getElementById("out");
   const btn = document.querySelector(".check-btn");
 
@@ -2216,28 +2219,29 @@ async function check(){
     return;
   }
 
-  btn.disabled = true;
+  btn.disabled=true;
   btn.style.opacity="0.6";
 
-  // ===== LOADING UI =====
+  /* ===== LOADING UI ===== */
+
   out.innerHTML=`
-    <div style="max-width:600px;margin:40px auto;">
-      <div style="margin-bottom:8px;font-size:14px;opacity:0.8;">
-        🔍 Đang phân tích dữ liệu...
-      </div>
-
-      <div style="width:100%;height:10px;background:#1e293b;border-radius:20px;overflow:hidden;">
-        <div id="progressFill"
-             style="height:100%;width:0%;
-             background:linear-gradient(90deg,#22c55e,#06b6d4);
-             transition:width .25s"></div>
-      </div>
-
-      <div id="progressText"
-           style="text-align:right;font-size:13px;margin-top:6px;opacity:.7">
-        0%
-      </div>
+  <div style="max-width:600px;margin:40px auto;">
+    <div style="margin-bottom:8px;font-size:14px;opacity:.8;">
+      🔍 Đang phân tích dữ liệu...
     </div>
+
+    <div style="width:100%;height:10px;background:#1e293b;border-radius:20px;overflow:hidden;">
+      <div id="progressFill"
+        style="height:100%;width:0%;
+        background:linear-gradient(90deg,#22c55e,#06b6d4);
+        transition:width .25s"></div>
+    </div>
+
+    <div id="progressText"
+      style="text-align:right;font-size:13px;margin-top:6px;opacity:.7">
+      0%
+    </div>
+  </div>
   `;
 
   const fill=document.getElementById("progressFill");
@@ -2254,11 +2258,11 @@ async function check(){
 
   try{
 
-    await new Promise(r=>setTimeout(r,500));
-
-    let html=`<div class="result-grid">`;
+    await new Promise(r=>setTimeout(r,400));
 
     const snap=await db.collection("codes").get();
+
+    let html=`<div class="result-grid">`;
 
     snap.forEach(doc=>{
 
@@ -2267,77 +2271,52 @@ async function check(){
       if(
         !x.code?.toUpperCase().includes(q) &&
         !(Array.isArray(x.models) &&
-        x.models.some(m=>m.toUpperCase().includes(q)))
+          x.models.some(m=>m.toUpperCase().includes(q)))
       ) return;
 
       const chip=detectChip(x.code);
       const decoded=autoDecodeChip(x.code,x);
 
-snap.forEach(doc=>{
+      html+=`
+      <div class="result-card">
 
-  const x = doc.data();
+        <div class="code-main">${x.code}</div>
 
-  if(
-    !x.code?.toUpperCase().includes(q) &&
-    !(Array.isArray(x.models) &&
-      x.models.some(m=>m.toUpperCase().includes(q)))
-  ) return;
+        <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
 
-  const chip = detectChip(x.code);
-  const decoded = autoDecodeChip(x.code,x);
+          ${decoded?.vip!=null
+            ? `<div class="vip-badge vip-${Math.floor(decoded.vip)}">
+                VIP ${decoded.vip===4.5?"4+":decoded.vip}
+               </div>`
+            :""
+          }
 
-  html += `
-snap.forEach(doc => {
+          ${decoded?.rom
+            ? `<div class="ram-badge">
+                ${decoded.ram ?? "?"}/${decoded.rom}
+               </div>`
+            :""
+          }
 
-  const x = doc.data();
+        </div>
 
-  if(
-    !x.code?.toUpperCase().includes(q) &&
-    !(Array.isArray(x.models) &&
-      x.models.some(m => m.toUpperCase().includes(q)))
-  ) return;
+        <div style="margin-top:14px;display:flex;gap:10px;font-size:15px;">
+          <span style="color:#38bdf8;font-weight:600;">
+            ${chip.name}
+          </span>
 
-  const chip = detectChip(x.code);
-  const decoded = autoDecodeChip(x.code, x);
+          <span style="color:#e2e8f0;font-weight:600;">
+            ${decoded?.storage || ""}
+          </span>
+        </div>
 
-  html += `
-  <div class="result-card">
+      </div>`;
+    });
 
-    <div class="code-main">${x.code}</div>
-
-    <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
-
-      ${decoded?.vip != null
-        ? `<div class="vip-badge vip-${Math.floor(decoded.vip)}">
-            VIP ${decoded.vip === 4.5 ? "4+" : decoded.vip}
-           </div>`
-        : ""
-      }
-
-      ${decoded?.rom
-        ? `<div class="ram-badge">
-            ${decoded.ram ?? "?"}/${decoded.rom}
-           </div>`
-        : ""
-      }
-
-    </div>
-
-    <div style="margin-top:14px;display:flex;gap:10px;font-size:15px;">
-      <span style="color:#38bdf8;font-weight:600;">
-        ${chip.name}
-      </span>
-
-      <span style="color:#e2e8f0;font-weight:600;">
-        ${decoded?.storage || ""}
-      </span>
-    </div>
-
-  </div>`;
-});
     html+=`</div>`;
 
-    // ===== FINISH LOADING =====
+    /* ===== FINISH LOADING ===== */
+
     clearInterval(fakeLoading);
 
     fill.style.width="100%";
@@ -2352,7 +2331,6 @@ snap.forEach(doc => {
 
         btn.disabled=false;
         btn.style.opacity="1";
-
       },120);
 
     },450);
@@ -2372,7 +2350,6 @@ snap.forEach(doc => {
     btn.style.opacity="1";
   }
 }
-
 
 
 
