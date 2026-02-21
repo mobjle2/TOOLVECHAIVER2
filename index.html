@@ -2283,18 +2283,18 @@ snap.forEach(doc=>{
   const decoded = autoDecodeChip(x.code,x);
 
   html += `
-snap.forEach(doc=>{
+snap.forEach(doc => {
 
   const x = doc.data();
 
   if(
     !x.code?.toUpperCase().includes(q) &&
     !(Array.isArray(x.models) &&
-      x.models.some(m=>m.toUpperCase().includes(q)))
+      x.models.some(m => m.toUpperCase().includes(q)))
   ) return;
 
   const chip = detectChip(x.code);
-  const decoded = autoDecodeChip(x.code,x);
+  const decoded = autoDecodeChip(x.code, x);
 
   html += `
   <div class="result-card">
@@ -2305,14 +2305,14 @@ snap.forEach(doc=>{
 
       ${decoded?.vip != null
         ? `<div class="vip-badge vip-${Math.floor(decoded.vip)}">
-             VIP ${decoded.vip===4.5?"4+":decoded.vip}
+            VIP ${decoded.vip === 4.5 ? "4+" : decoded.vip}
            </div>`
         : ""
       }
 
       ${decoded?.rom
         ? `<div class="ram-badge">
-             ${decoded.ram ?? "?"}/${decoded.rom}
+            ${decoded.ram ?? "?"}/${decoded.rom}
            </div>`
         : ""
       }
