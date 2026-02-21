@@ -2205,14 +2205,108 @@ if(code.startsWith("YMEC")){
   return h;
 }
 } 
+/* ===============================
+   VIP AUTO BALANCE ENGINE
+================================ */
+
+function VIP_AUTO_BALANCE(hw){
+
+  if(!hw) return hw;
+
+  const ram = Number(hw.ram)||0;
+  const rom = Number(hw.rom)||0;
+  const storage=(hw.storage||"").toUpperCase();
+
+  let storageScore=0;
+
+  if(storage.includes("UFS 4")) storageScore=6;
+  else if(storage.includes("UFS 3")) storageScore=5;
+  else if(storage.includes("UFS 2.2")) storageScore=4;
+  else if(storage.includes("UFS 2.1")) storageScore=3;
+  else if(storage.includes("EMMC 5.1")) storageScore=2;
+  else if(storage.includes("EMMC")) storageScore=1;
+
+  const ramScore = ram * 1.6;
+  const romScore = Math.log2(rom||1) * 1.3;
+
+  const total = ramScore + romScore + storageScore*3;
+
+  hw.performanceScore = Number(total.toFixed(2));
+
+  if(total>=40) hw.vip=12;
+  else if(total>=36) hw.vip=11;
+  else if(total>=32) hw.vip=10;
+  else if(total>=28) hw.vip=9;
+  else if(total>=24) hw.vip=8;
+  else if(total>=20) hw.vip=7;
+  else if(total>=16) hw.vip=6;
+  else if(total>=12) hw.vip=5;
+  else if(total>=9) hw.vip=4.5;
+  else if(total>=7) hw.vip=4;
+  else if(total>=5) hw.vip=3;
+  else if(total>=3) hw.vip=2;
+  else hw.vip=1;
+
+  hw.mmc = storageScore;
+
+  return hw;
+}
+
+
+/* ===============================
+   AI VIP PREDICT
+================================ */
+
+async function AI_VIP_PREDICT(hw){
+
+  try{
+
+    const snap = await db.collection("vip_learning")
+      .where("ram","==",hw.ram)
+      .where("rom","==",hw.rom)
+      .limit(20)
+      .get();
+
+    if(snap.empty) return null;
+
+    let total=0,count=0;
+
+    snap.forEach(d=>{
+      total+=d.data().vip;
+      count++;
+    });
+
+    return Number((total/count).toFixed(1));
+
+  }catch(e){
+    console.warn("AI predict fail",e);
+    return null;
+  }
+}
+
+
+/* ===============================
+   SAVE EXPERIENCE
+================================ */
+
+function learnFromRealData(hw){
+
+  if(!hw?.ram || !hw?.rom || !hw?.vip) return;
+
+  db.collection("vip_learning").add({
+    ram:hw.ram,
+    rom:hw.rom,
+    storage:hw.storage,
+    vip:hw.vip,
+    score:hw.performanceScore||0,
+    createdAt:firebase.firestore.FieldValue.serverTimestamp()
+  });
+}  
 async function check(){
 
-  const q = document.getElementById("q")?.value
-      ?.trim()
-      ?.toUpperCase();
-
-  const out = document.getElementById("out");
-  const btn = document.querySelector(".check-btn");
+  const q=document.getElementById("q")?.value?.trim()?.toUpperCase();
+  const out=document.getElementById("out");
+  const btn=document.querySelector(".check-btn");
 
   if(!q){
     out.innerHTML="";
@@ -2221,8 +2315,6 @@ async function check(){
 
   btn.disabled=true;
   btn.style.opacity="0.6";
-
-  /* ===== LOADING UI ===== */
 
   out.innerHTML=`
   <div style="max-width:600px;margin:40px auto;">
@@ -2241,8 +2333,7 @@ async function check(){
       style="text-align:right;font-size:13px;margin-top:6px;opacity:.7">
       0%
     </div>
-  </div>
-  `;
+  </div>`;
 
   const fill=document.getElementById("progressFill");
   const text=document.getElementById("progressText");
@@ -2250,7 +2341,7 @@ async function check(){
   let percent=0;
 
   const fakeLoading=setInterval(()=>{
-    percent+=Math.floor(Math.random()*10)+5;
+    percent+=8;
     if(percent>95) percent=95;
     fill.style.width=percent+"%";
     text.innerText=percent+"%";
@@ -2258,24 +2349,34 @@ async function check(){
 
   try{
 
-    await new Promise(r=>setTimeout(r,400));
+    await new Promise(r=>setTimeout(r,300));
 
     const snap=await db.collection("codes").get();
 
     let html=`<div class="result-grid">`;
 
-    snap.forEach(doc=>{
+    for(const doc of snap.docs){
 
       const x=doc.data();
 
       if(
         !x.code?.toUpperCase().includes(q) &&
-        !(Array.isArray(x.models) &&
+        !(Array.isArray(x.models)&&
           x.models.some(m=>m.toUpperCase().includes(q)))
-      ) return;
+      ) continue;
 
       const chip=detectChip(x.code);
-      const decoded=autoDecodeChip(x.code,x);
+
+      let decoded=autoDecodeChip(x.code,x);
+
+      /* ===== VIP AUTO BALANCE ===== */
+      decoded=VIP_AUTO_BALANCE(decoded);
+
+      /* ===== AI VIP ===== */
+      const aiVip=await AI_VIP_PREDICT(decoded);
+      if(aiVip) decoded.vip=aiVip;
+
+      learnFromRealData(decoded);
 
       html+=`
       <div class="result-card">
@@ -2284,19 +2385,15 @@ async function check(){
 
         <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
 
-          ${decoded?.vip!=null
-            ? `<div class="vip-badge vip-${Math.floor(decoded.vip)}">
-                VIP ${decoded.vip===4.5?"4+":decoded.vip}
-               </div>`
-            :""
-          }
+          <div class="vip-badge vip-${Math.floor(decoded.vip)}">
+            VIP ${decoded.vip===4.5?"4+":decoded.vip}
+          </div>
 
-          ${decoded?.rom
+          ${decoded.rom
             ? `<div class="ram-badge">
                 ${decoded.ram ?? "?"}/${decoded.rom}
                </div>`
-            :""
-          }
+            :""}
 
         </div>
 
@@ -2306,16 +2403,14 @@ async function check(){
           </span>
 
           <span style="color:#e2e8f0;font-weight:600;">
-            ${decoded?.storage || ""}
+            ${decoded.storage||""}
           </span>
         </div>
 
       </div>`;
-    });
+    }
 
     html+=`</div>`;
-
-    /* ===== FINISH LOADING ===== */
 
     clearInterval(fakeLoading);
 
@@ -2323,17 +2418,10 @@ async function check(){
     text.innerText="100%";
 
     setTimeout(()=>{
-      out.style.opacity="0";
-
-      setTimeout(()=>{
-        out.innerHTML=html;
-        out.style.opacity="1";
-
-        btn.disabled=false;
-        btn.style.opacity="1";
-      },120);
-
-    },450);
+      out.innerHTML=html;
+      btn.disabled=false;
+      btn.style.opacity="1";
+    },350);
 
   }catch(err){
 
@@ -2341,17 +2429,14 @@ async function check(){
     console.error(err);
 
     out.innerHTML=`
-      <div style="color:#ef4444;margin-top:20px;text-align:center;">
+      <div style="color:#ef4444;text-align:center;">
         ⚠️ Lỗi hệ thống
-      </div>
-    `;
+      </div>`;
 
     btn.disabled=false;
     btn.style.opacity="1";
   }
 }
-
-
 
 
 // ===== LOGIN =====
