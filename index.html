@@ -1732,9 +1732,17 @@ if(main.startsWith("KMA")){
     "32":4
   };
 
-  const density = main.match(/A(\d{2})/);
-  if(density)
-    result.ram = ramMap[density[1]] || null;
+/* ===== RAM TOKEN ===== */
+
+const ramToken = main.slice(-2);
+
+const ramMap = {
+  "PM":8,
+  "CM":6,
+  "DM":4
+};
+
+result.ram = ramMap[ramToken] || null;
 
   result.vip = calculateVip(result.ram,result.rom);
 
