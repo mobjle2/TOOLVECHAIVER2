@@ -1785,7 +1785,7 @@ function decodeSamsung(code){
     return result;
   }
 
-// 🔹 KM5 / KM2 Samsung uMCP Decoder (FIXED + SAFE)
+// 🔹 KM5 / KM2 Samsung uMCP Decoder (FULL FIX)
 // =====================================================
 if(/^KM[25]/.test(main)){
 
@@ -1793,71 +1793,53 @@ if(/^KM[25]/.test(main)){
   result.storage = "UFS 2.1";
   result.version = "UFS 2.1";
 
-  const family = main.slice(0,3);   // KM2 / KM5
-  const generation = main[3];       // C / D / H / V
-  const ramToken = main.slice(-2);  // CM / DM / JM / 8M
+  const family = main.slice(0,3);     // KM2 / KM5
+  const density = main.match(/(\d{4})/);
+  const ramToken = main.slice(-2);
 
-  /* ================= ROM ================= */
+/* ================= ROM ================= */
 
-  const densityMatch = main.match(/(\d{4})/);
+const density = main.match(/(\d{4})/);
+const generation = main[3];   // ⭐ C / D / H / V
 
-  if(densityMatch){
+if(density){
 
-    const key = densityMatch[1];
+  const key = density[1];
 
-    /* ===== KM2 ===== */
-    if(family==="KM2"){
+  if(family==="KM2"){
 
-      const romMapKM2={
-        "9001":512,
-        "8001":128,
-        "7001":128,
-        "6001":32
-      };
+    const romMapKM2={
+      "9001":512,
+      "8001":128,
+      "7001":128,
+      "6001":32
+    };
 
-      result.rom = romMapKM2[key] || null;
-    }
-
-    /* ===== KM5 ===== */
-    else if(family==="KM5"){
-
-      if(generation==="H"){
-        const mapH={
-          "9001":256,
-          "8001":64,
-          "7001":64,
-          "6001":32
-        };
-        result.rom = mapH[key] || null;
-      }
-      else{
-        const mapNormal={
-          "9001":256,
-          "8001":128,
-          "7001":64,
-          "6001":32
-        };
-        result.rom = mapNormal[key] || null;
-      }
-    }
+    result.rom = romMapKM2[key] || null;
   }
 
-  /* ================= RAM ================= */
+  if(family==="KM5"){
 
-  const ramMap={
-    "8M":3,
-    "DM":4,
-    "CM":6,
-    "JM":8
-  };
-
-  result.ram = ramMap[ramToken] || null;
-
-  /* ================= VIP ================= */
-
-  result.vip = calculateVip(result.ram,result.rom);
-
-  return result;
+    /* ⭐ generation aware map */
+    if(generation==="H"){
+      const mapH={
+        "9001":256,
+        "8001":64,
+        "7001":64,
+        "6001":32
+      };
+      result.rom = mapH[key] || null;
+    }
+    else{
+      const mapNormal={
+        "9001":256,
+        "8001":128,
+        "7001":64,
+        "6001":32
+      };
+      result.rom = mapNormal[key] || null;
+    }
+  }
 }
   /* ================= RAM ================= */
 
