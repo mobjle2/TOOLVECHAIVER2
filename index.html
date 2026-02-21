@@ -2725,19 +2725,23 @@ if(!decoded){
             :""}
         </div>
 
-        <div style="margin-top:14px;display:flex;gap:10px;font-size:15px;">
-          <span class="brand">${chip.name}</span>
-          
-        </div>
+<div style="
+  margin-top:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:15px;
+  opacity:.85;
+">
+  <span class="brand">${chip.name}</span>
+</div>
 
-        ${Array.isArray(x.models)&&x.models.length
-          ? `<div class="model-line">
-               📱 ${x.models.join(", ")}
-             </div>`
-          : ""}
-
-      </div>`;
-    }
+${Array.isArray(x.models) && x.models.length
+  ? `<div class="model-line" style="margin-top:10px;">
+       📱 ${x.models.join(", ")}
+     </div>`
+  : ""}
+</div>`;
 
     html+=`</div>`;
 
