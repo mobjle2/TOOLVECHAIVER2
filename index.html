@@ -2740,11 +2740,12 @@ ${x.type==="MMC"
     </div>`
 }
 
-          ${decoded.rom
-            ? `<div class="ram-badge">
-                 ${decoded.ram ?? "?"}/${decoded.rom}
-               </div>`
-            : ""}
+${decoded.rom
+ ? (x.type === "MMC"
+      ? `<div class="ram-badge">${decoded.rom}GB</div>`
+      : `<div class="ram-badge">${decoded.ram ?? "?"}/${decoded.rom}</div>`
+   )
+ : ""}
         </div>
 
         <div style="margin-top:14px;text-align:center;font-size:15px;">
