@@ -1730,7 +1730,34 @@ function decodeSamsung(code){
   if(!code) return result;
 
 const main = code.toUpperCase().split("-")[0];
+/* =====================================================
+   🔹 KMG SERIES (Samsung eMMC Standalone)
+===================================================== */
 
+if(main.startsWith("KMG")){
+
+  result.type = "eMMC";
+  result.storage = "eMMC 5.1";
+  result.version = "eMMC 5.1";
+
+  /* ===== STORAGE BIN ===== */
+  const romMapKMG={
+    "6001":64,
+    "8001":128,
+    "9001":256
+  };
+
+  const key=main.slice(3,7);
+  result.rom=romMapKMG[key]||64;
+
+  /* ===== NO RAM ===== */
+  result.ram=null;
+
+  /* ===== VIP RULE ===== */
+  result.vip=calculateVip(0,result.rom);
+
+  return result;
+}
 /* =====================================================
    🔹 KMA SERIES (LPDDR5 uMCP NEW GEN)
 ===================================================== */
