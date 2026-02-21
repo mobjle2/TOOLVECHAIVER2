@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -2246,12 +2244,78 @@ if(code.startsWith("YMEC")){
   };
 }
 
-  // ================= MICRON OEM VIP ENGINE =================
 function decodeMicronOEM(code){
 
   code = code.toUpperCase().trim();
 
-  // ===== JY SERIES =====
+  /* ===============================
+     VIP MANUAL TABLE (NO RAM / ROM)
+  =============================== */
+
+  const VIP_TABLE = {
+
+    // ===== VIP 1 =====
+    "JY974":1,
+
+    // ===== VIP 3 =====
+    "JZ008":3,
+    "JZ011":3,
+    "JZ089":3,
+    "PA072":3,
+
+    // ===== VIP 4 =====
+    "JY932":4,
+    "JY950":4,
+
+    // ===== VIP 4+ =====
+    "JZ050":4.5,
+    "JZ013":4.5,
+    "JZ108":4.5,
+    "JZ090":4.5,
+
+    // ===== VIP 5 =====
+    "JZ049":5,
+    "JZ053":5,
+    "JZ109":5,
+    "JZ481":5,
+    "PA093":5,
+    "JZ025":5,
+    "PA073":5,
+
+    // ===== VIP 6 =====
+    "JZ177":6,
+    "JZ186":6,
+    "JZ128":6,
+    "JZ479":6,
+
+    // ===== VIP 7 =====
+    "JZ152":7,
+    "JZ199":7,
+    "JZ187":7,
+    "JZ396":7,
+    "JZ100":7,
+    "JZ266":7,
+    "JZ188":7,
+    "JZ150":7,
+    "JZ151":7,
+    "JZ153":7,
+    "JZ385":7,
+    "JZ386":7,
+    "JZ178":7,
+    "JZ103":7
+  };
+
+  /* ===== MATCH EXACT CODE ===== */
+  if(VIP_TABLE[code] !== undefined){
+    return {
+      ram:null,
+      rom:null,
+      storage:"eMMC",
+      vip:VIP_TABLE[code]
+    };
+  }
+
+  /* ===== DEFAULT JY ===== */
   if(code.startsWith("JY")){
     return {
       ram:null,
@@ -2261,24 +2325,15 @@ function decodeMicronOEM(code){
     };
   }
 
-// ===== JZ SERIES =====
-if(code.startsWith("JZ")){
-
-  const clean = code.replace(/[^0-9]/g,"");
-
-  const n = Number(clean);
-
-  if(!n){
-    return {ram:null,rom:null,storage:"eMMC",vip:3};
+  /* ===== DEFAULT JZ / PA ===== */
+  if(code.startsWith("JZ") || code.startsWith("PA")){
+    return {
+      ram:null,
+      rom:null,
+      storage:"eMMC",
+      vip:3
+    };
   }
-
-  if(n<=12)  return {ram:null,rom:null,storage:"eMMC",vip:3};
-  if(n<=48)  return {ram:null,rom:null,storage:"eMMC",vip:4.5};
-  if(n<=99)  return {ram:null,rom:null,storage:"eMMC",vip:5};
-  if(n<=299) return {ram:null,rom:null,storage:"eMMC",vip:6};
-
-  return {ram:null,rom:null,storage:"eMMC",vip:6};
-}
 
   return null;
 }
