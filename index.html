@@ -2290,16 +2290,15 @@ if(/^H/.test(code)){
 
   const h = decodeHynix(code);
 
-  /* ===== SAFE GUARD ===== */
-  if(!h){
-    return {
-      type:"SK hynix",
-      ram:null,
-      rom:null,
-      storage:"Unknown",
-      vip:0
-    };
-  }
+/* ===== SAFE GUARD ===== */
+if(!h){
+  return {
+    ram: null,
+    rom: null,
+    storage: "Unknown",
+    vip: 0
+  };
+}
 
   /* ===== NORMALIZE DATA ===== */
   h.ram = Number(h.ram) || null;
@@ -2633,7 +2632,15 @@ async function check(){
 
       const chip=detectChip(x.code);
       let decoded=autoDecodeChip(x.code,x);
-
+      /* ===== SAFE FALLBACK ===== */
+if(!decoded){
+  decoded = {
+    ram:null,
+    rom:null,
+    storage:"Unknown",
+    vip:0
+  };
+}
       decoded = VIP_ENGINE(decoded);
       learnFromRealData(decoded);
 
