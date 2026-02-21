@@ -1731,30 +1731,47 @@ function decodeSamsung(code){
 
 const main = code.toUpperCase().split("-")[0];
 /* =====================================================
-   🔹 KMG SERIES (Samsung eMMC Standalone)
+/* =====================================================
+   🔹 KMG SERIES (Samsung eMMC uMCP)
 ===================================================== */
 
 if(main.startsWith("KMG")){
 
-  result.type="eMMC";
-  result.storage="eMMC 5.1";
-  result.version="eMMC 5.1";
+  result.type = "uMCP";
+  result.storage = "eMMC 5.1";
+  result.version = "eMMC 5.1";
 
-  /* ===== CAPACITY FROM PACKAGE TOKEN ===== */
-  const pkg=main.slice(-2); // BA / BM / CM
+  /* ===== ROM FROM PACKAGE TOKEN ===== */
+  const pkg = main.slice(-2); // BA / BM / CM / DM
 
-  const romMap={
+  const romMap = {
     "BA":32,
     "BM":64,
     "CM":128,
     "DM":256
   };
 
-  result.rom=romMap[pkg] || 32;
+  result.rom = romMap[pkg] || 32;
 
-  result.ram=null;
+  /* ===== RAM FROM SERIES LETTER ===== */
+  // KMGX6001...
+  //    ↑ chữ này quyết định RAM
 
-  result.vip=calculateVip(0,result.rom);
+  const ramToken = main[3];
+
+  const ramMap = {
+    "X":3,
+    "P":3,
+    "G":4,
+    "D":2,
+    "E":2,
+    "A":2
+  };
+
+  result.ram = ramMap[ramToken] || null;
+
+  /* ===== VIP ===== */
+  result.vip = calculateVip(result.ram, result.rom);
 
   return result;
 }
