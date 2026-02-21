@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -2220,7 +2221,38 @@ vip
   
   
   
-// ================= MICRON OEM VIP ENGINE =================
+// ===== MAIN DECODER =====
+function autoDecodeChip(code, dbData){
+
+  code = code.toUpperCase().trim();
+
+  // ⭐ MICRON OEM FIRST
+  const micron = decodeMicronOEM(code);
+  if(micron) return micron;
+
+  // ===== YMTC / YMEC ENGINE =====
+  if(code.startsWith("YMEC")){
+    let rom = null;
+
+    if(code.includes("C6")) rom = 32;
+    if(code.includes("C7")) rom = 64;
+    if(code.includes("C8")) rom = 128;
+    if(code.includes("C9")) rom = 256;
+
+    return {
+      type:"UFS",
+      storage:"UFS",
+      ram:null,
+      rom:rom,
+      vip:
+        rom===32?5:
+        rom===64?6:
+        rom===128?7:
+        rom===256?8:null
+    };
+  }
+
+  // ================= MICRON OEM VIP ENGINE =================
 function decodeMicronOEM(code){
 
   code = code.toUpperCase().trim();
@@ -2235,92 +2267,51 @@ function decodeMicronOEM(code){
     };
   }
 
-  // ===== JZ SERIES =====
-  if(code.startsWith("JZ")){
+// ===== JZ SERIES =====
+if(code.startsWith("JZ")){
 
-    const clean = code.replace(/[^0-9]/g,"");
-    const n = Number(clean);
+  const clean = code.replace(/[^0-9]/g,"");
 
-    if(!n) return {ram:null,rom:null,storage:"eMMC",vip:3};
+  const n = Number(clean);
 
-    if(n<=12)  return {ram:null,rom:null,storage:"eMMC",vip:3};
-    if(n<=48)  return {ram:null,rom:null,storage:"eMMC",vip:4.5};
-    if(n<=99)  return {ram:null,rom:null,storage:"eMMC",vip:5};
-    if(n<=299) return {ram:null,rom:null,storage:"eMMC",vip:6};
-
-    return {ram:null,rom:null,storage:"eMMC",vip:6};
+  if(!n){
+    return {ram:null,rom:null,storage:"eMMC",vip:3};
   }
+
+  if(n<=12)  return {ram:null,rom:null,storage:"eMMC",vip:3};
+  if(n<=48)  return {ram:null,rom:null,storage:"eMMC",vip:4.5};
+  if(n<=99)  return {ram:null,rom:null,storage:"eMMC",vip:5};
+  if(n<=299) return {ram:null,rom:null,storage:"eMMC",vip:6};
+
+  return {ram:null,rom:null,storage:"eMMC",vip:6};
+}
 
   return null;
 }
-
-
-// ===== MAIN DECODER =====
-function autoDecodeChip(code, dbData){
-
-  code = code.toUpperCase().trim();
-
-  // ⭐ MICRON OEM FIRST
+  // ===== MICRON CHECK FIRST =====
   const micron = decodeMicronOEM(code);
   if(micron) return micron;
 
 
-  // ===== YMTC / YMEC ENGINE =====
-  if(code.startsWith("YMEC")){
-
-    let rom = null;
-
-    if(code.includes("C6")) rom = 32;
-    else if(code.includes("C7")) rom = 64;
-    else if(code.includes("C8")) rom = 128;
-    else if(code.includes("C9")) rom = 256;
-
-    return {
-      ram:null,
-      rom:rom,
-      storage:"UFS",
-      vip:
-        rom===32?5:
-        rom===64?6:
-        rom===128?7:
-        rom===256?8:0
-    };
-  }
-
-
   // ===== Samsung =====
   if(/^K/.test(code)){
-    const s = decodeSamsung(code);
-    if(s) return s;
+    return decodeSamsung(code);
   }
 
+// ===== SK hynix =====
+if(/^H/.test(code)){
 
-  // ===== SK hynix =====
-  if(/^H/.test(code)){
+  const h = decodeHynix(code);
 
-    const h = decodeHynix(code);
-
-    if(h) return h;
-
-    // SAFE GUARD
-    return {
-      ram:null,
-      rom:null,
-      storage:"Unknown",
-      vip:0
-    };
-  }
-
-
-  // ===== GLOBAL FALLBACK =====
+/* ===== SAFE GUARD ===== */
+if(!h){
   return {
-    ram:null,
-    rom:null,
-    storage:"Unknown",
-    vip:0
+    ram: null,
+    rom: null,
+    storage: "Unknown",
+    vip: 0
   };
 }
-// ⚠ END autoDecodeChip — DO NOT REMOVE THIS BRACKET
 
   /* ===== NORMALIZE DATA ===== */
   h.ram = Number(h.ram) || null;
