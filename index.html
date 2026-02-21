@@ -1712,7 +1712,34 @@ function decodeSamsung(code){
   if(!code) return result;
 
   const main = code.toUpperCase().split("-")[0];
+/* =====================================================
+   🔹 KMA SERIES (LPDDR5 uMCP NEW GEN)
+===================================================== */
 
+if(main.startsWith("KMA")){
+
+  result.type = "uMCP";
+  result.storage = "UFS 3.1";
+  result.version = "UFS 3.1";
+
+  // ===== STORAGE BIN =====
+  result.rom = 256; // theo Samsung spec hiện tại
+
+  // ===== DRAM DENSITY → RAM =====
+  const ramMap = {
+    "64":8,
+    "48":6,
+    "32":4
+  };
+
+  const density = main.match(/A(\d{2})/);
+  if(density)
+    result.ram = ramMap[density[1]] || null;
+
+  result.vip = calculateVip(result.ram,result.rom);
+
+  return result;
+}
   // =====================================================
   // 🔹 1. eMMC LOW SERIES (KMG / KMD / KMQ ...)
   // =====================================================
@@ -1798,15 +1825,20 @@ if(/^KM[25]/.test(main)){
   const ramToken = main.slice(-2);
 
 /* ================= ROM ================= */
-/* SAMSUNG uMCP REAL DENSITY MAP */
+/* ===== SAMSUNG KM2 REAL DECODER ===== */
 
-/* ===== KM2 (NEWER uMCP) ===== */
-const romMapKM2 = {
-  "9001":512,
-  "8001":128,
-  "7001":64,
-  "6001":32
-};
+if(family === "KM2"){
+
+  const model = main.substring(0,4); // KM2B / KM2V / KM2A
+
+  const storageMap = {
+    "KM2B":256,
+    "KM2V":128,
+    "KM2A":256
+  };
+
+  result.rom = storageMap[model] || null;
+}
 
 /* ===== SAMSUNG KM5 REAL DECODER ===== */
 
