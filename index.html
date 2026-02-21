@@ -2370,16 +2370,19 @@ function VIP_ENGINE(hw){
 
 /* ===============================
 /* ======================================================
-   AI VIP SYSTEM — FAST CACHE VERSION
+ /* ======================================================
+   AI VIP SYSTEM — FINAL STABLE VERSION
 ====================================================== */
 
-let VIP_AI_CACHE = null;
+/* ===== GLOBAL CACHE (KHÔNG DECLARE LẠI) ===== */
+window.VIP_AI_CACHE = window.VIP_AI_CACHE || null;
 
 
-/* ===== LOAD AI DATABASE 1 LẦN ===== */
+/* ===== LOAD AI DATABASE (LOAD 1 LẦN DUY NHẤT) ===== */
 async function LOAD_AI_CACHE(){
 
-  if(VIP_AI_CACHE) return VIP_AI_CACHE;
+  if(window.VIP_AI_CACHE)
+    return window.VIP_AI_CACHE;
 
   try{
 
@@ -2387,33 +2390,34 @@ async function LOAD_AI_CACHE(){
       .limit(500)
       .get();
 
-    VIP_AI_CACHE = [];
+    window.VIP_AI_CACHE = snap.docs.map(d=>d.data());
 
-    snap.forEach(doc=>{
-      VIP_AI_CACHE.push(doc.data());
-    });
+    console.log(
+      "AI cache loaded:",
+      window.VIP_AI_CACHE.length
+    );
 
-    console.log("AI cache loaded:", VIP_AI_CACHE.length);
-
-    return VIP_AI_CACHE;
+    return window.VIP_AI_CACHE;
 
   }catch(e){
+
     console.warn("AI cache load fail", e);
-    return [];
+
+    window.VIP_AI_CACHE = [];
+
+    return window.VIP_AI_CACHE;
   }
 }
 
 
-/* ===== FAST AI VIP PREDICT (LOCAL CALCULATION) ===== */
-/* ===== FAST AI VIP PREDICT (FINAL SAFE VERSION) ===== */
+/* ===== FAST AI VIP PREDICT ===== */
 function AI_VIP_PREDICT(hw, cache){
 
-  // không có dữ liệu AI
   if(!Array.isArray(cache) || cache.length === 0)
     return null;
 
-  const ram = Number(hw.ram);
-  const rom = Number(hw.rom);
+  const ram = Number(hw?.ram);
+  const rom = Number(hw?.rom);
 
   if(!ram || !rom)
     return null;
@@ -2436,11 +2440,8 @@ function AI_VIP_PREDICT(hw, cache){
   if(count === 0)
     return null;
 
-  const avg = total / count;
-
-  return Number(avg.toFixed(1));
+  return Number((total / count).toFixed(1));
 }
-
 
 /* ===============================
    SAVE EXPERIENCE
