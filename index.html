@@ -2247,39 +2247,45 @@ if(code.startsWith("YMEC")){
 }
 
   // ================= MICRON OEM VIP ENGINE =================
-  function decodeMicronOEM(code){
+function decodeMicronOEM(code){
 
-    code = code.toUpperCase().trim();
+  code = code.toUpperCase().trim();
 
-    // ===== JY SERIES =====
-    if(code.startsWith("JY")){
+  // ===== JY SERIES =====
+  if(code.startsWith("JY")){
+    return {
+      ram:null,
+      rom:null,
+      storage:"eMMC",
+      vip:1
+    };
+  }
+
+  // ===== JZ SERIES =====
+  if(code.startsWith("JZ")){
+
+    const match = code.match(/^JZ(\d+)/);
+
+    if(!match)
       return {
         ram:null,
         rom:null,
         storage:"eMMC",
-        vip:1
+        vip:3
       };
-    }
 
-// ===== JZ SERIES =====
-if(code.startsWith("JZ")){
+    const n = Number(match[1]);
 
-  const match = code.match(/^JZ(\d+)/);
+    if(n<=12)  return {ram:null,rom:null,storage:"eMMC",vip:3};
+    if(n<=48)  return {ram:null,rom:null,storage:"eMMC",vip:4.5};
+    if(n<=99)  return {ram:null,rom:null,storage:"eMMC",vip:5};
+    if(n<=299) return {ram:null,rom:null,storage:"eMMC",vip:6};
 
-  if(!match){
-    return {ram:null,rom:null,storage:"eMMC",vip:3};
+    return {ram:null,rom:null,storage:"eMMC",vip:6};
   }
 
-  const n = Number(match[1]);
-
-  if(n<=12)  return {ram:null,rom:null,storage:"eMMC",vip:3};
-  if(n<=48)  return {ram:null,rom:null,storage:"eMMC",vip:4.5};
-  if(n<=99)  return {ram:null,rom:null,storage:"eMMC",vip:5};
-  if(n<=299) return {ram:null,rom:null,storage:"eMMC",vip:6};
-
-  return {ram:null,rom:null,storage:"eMMC",vip:6};
+  return null;
 }
-
   // ===== MICRON CHECK FIRST =====
   const micron = decodeMicronOEM(code);
   if(micron) return micron;
