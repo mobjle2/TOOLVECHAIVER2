@@ -2694,12 +2694,21 @@ let decoded = null;
 /* ===== MMC SYSTEM ===== */
 if(x.type === "MMC"){
 
-decoded = {
-  mmc: x.value,
-  vip: null,
-  ram: x.ram || null,
-  rom: x.rom || extractMMCSize(x.code)
-};
+  const MMC_SIZE = {
+    "MMC1":16,
+    "MMC2":32,
+    "MMC3":64,
+    "MMC4":128,
+    "MMC5":256,
+    "MMC6":512
+  };
+
+  decoded = {
+    mmc: x.value,
+    vip: null,
+    ram: null,
+    rom: MMC_SIZE[x.value] || null
+  };
 
 }else{
 
