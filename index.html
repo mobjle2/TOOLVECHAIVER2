@@ -1791,24 +1791,29 @@ if(main.startsWith("KM5") || main.startsWith("KM2")){
 
   result.type = "uMCP";
 
-  const family = main.substring(0,3);  // KM5 / KM2
-  const ramToken = main.slice(-2);     // 8M / CM / DM / JM
+  const ramToken = main.slice(-2);   // CM / DM / JM / 8M
 
-  // ===== ROM =====
-  if(main.includes("8001")){
-    result.rom = (family === "KM2") ? 256 : 64;
+  /* ===== ROM (FIX CHUẨN SAMSUNG) ===== */
+  if(main.includes("9001")){
+    result.rom = 512;
+  }
+  else if(main.includes("8001")){
+    result.rom = 128;   // ⭐ FIX CHÍNH
   }
   else if(main.includes("7001")){
-    result.rom = (family === "KM2") ? 128 : 64;
+    result.rom = 128;
   }
   else if(main.includes("6001")){
     result.rom = 32;
+  }
+  else{
+    result.rom = null;
   }
 
   result.storage = "UFS 2.1";
   result.version = "UFS 2.1";
 
-  // ===== RAM =====
+  /* ===== RAM ===== */
   const ramMapMid = {
     "8M":3,
     "CM":6,
@@ -1816,11 +1821,11 @@ if(main.startsWith("KM5") || main.startsWith("KM2")){
     "JM":8
   };
 
-  if(ramMapMid[ramToken]){
-    result.ram = ramMapMid[ramToken];
-  }
+  result.ram = ramMapMid[ramToken] || null;
 
+  /* ===== VIP ===== */
   result.vip = calculateVip(result.ram, result.rom);
+
   return result;
 }
 
