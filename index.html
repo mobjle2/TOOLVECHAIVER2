@@ -2675,16 +2675,32 @@ async function check(){
       ) continue;
 
       const chip=detectChip(x.code);
+let decoded = null;
 
-      let decoded=autoDecodeChip(x.code,x) || {
-        ram:null,
-        rom:null,
-        vip:0
-      };
+/* ===== MMC SYSTEM ===== */
+if(x.type === "MMC"){
 
-      if(decoded.ram && decoded.rom){
-        decoded = VIP_ENGINE(decoded);
-      }
+  decoded = {
+    mmc: x.value,
+    vip: null,
+    ram: null,
+    rom: null
+  };
+
+}else{
+
+/* ===== VIP SYSTEM ===== */
+  decoded = autoDecodeChip(x.code,x) || {
+    ram:null,
+    rom:null,
+    vip:0
+  };
+
+  if(decoded.ram && decoded.rom){
+    decoded = VIP_ENGINE(decoded);
+  }
+}
+
 
       html+=`
       <div class="result-card">
@@ -2692,9 +2708,14 @@ async function check(){
         <div class="code-main">${x.code}</div>
 
         <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
-          <div class="vip-badge vip-${Math.floor(decoded.vip)}">
-            VIP ${decoded.vip===4.5?"4+":decoded.vip}
-          </div>
+${x.type==="MMC"
+ ? `<div class="vip-badge mmc-${x.value.replace("MMC","")}">
+      ${x.value}
+    </div>`
+ : `<div class="vip-badge vip-${Math.floor(decoded.vip)}">
+      VIP ${decoded.vip===4.5?"4+":decoded.vip}
+    </div>`
+}
 
           ${decoded.rom
             ? `<div class="ram-badge">
