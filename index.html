@@ -1711,40 +1711,34 @@ function decodeSamsung(code){
 
   if(!code) return result;
 
-  const main = code.toUpperCase().split("-")[0];
+const main = code.toUpperCase().split("-")[0];
+
 /* =====================================================
    🔹 KMA SERIES (LPDDR5 uMCP NEW GEN)
 ===================================================== */
 
-if(main.startsWith("KMA")){
+if (main.startsWith("KMA")) {
 
   result.type = "uMCP";
   result.storage = "UFS 3.1";
   result.version = "UFS 3.1";
 
-  // ===== STORAGE BIN =====
-  result.rom = 256; // theo Samsung spec hiện tại
+  // ===== STORAGE =====
+  result.rom = 256;
 
-  // ===== DRAM DENSITY → RAM =====
+  // ===== RAM TOKEN =====
+  const ramToken = main.slice(-2);
+
   const ramMap = {
-    "64":8,
-    "48":6,
-    "32":4
+    "PM": 8,
+    "CM": 6,
+    "DM": 4
   };
 
-/* ===== RAM TOKEN ===== */
+  result.ram = ramMap[ramToken] || null;
 
-const ramToken = main.slice(-2);
-
-const ramMap = {
-  "PM":8,
-  "CM":6,
-  "DM":4
-};
-
-result.ram = ramMap[ramToken] || null;
-
-  result.vip = calculateVip(result.ram,result.rom);
+  // ===== VIP =====
+  result.vip = calculateVip(result.ram, result.rom);
 
   return result;
 }
