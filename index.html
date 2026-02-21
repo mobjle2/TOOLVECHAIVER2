@@ -2647,36 +2647,42 @@ function togglePassword(){
 // ===== CHECK ROLE =====
 auth.onAuthStateChanged(async (user) => {
 
-  // Nếu có ?u= thì bỏ qua hoàn toàn auth
-  if(window.location.search.includes("u=")){
+  const hasShareLink = window.location.search.includes("u=");
+
+  /* ===== KHÔNG LOGIN ===== */
+  if(!user){
+
+    // nếu là link share → cho xem bình thường
+    if(hasShareLink) return;
+
+    // nếu vào admin mà chưa login
+    document.getElementById("loginScreen").style.display="block";
+    document.getElementById("adminPanel").style.display="none";
     return;
   }
 
-if(!user){
-  return; // không ép show login nữa
-}
-
-
   try{
-    const snap = await db.collection("users").doc(user.email).get();
 
-    if(!snap.exists || snap.data().role !== "admin"){
+    const snap = await db.collection("users")
+      .doc(user.email)
+      .get();
+
+    if(!snap.exists || snap.data().role!=="admin"){
       await auth.signOut();
       return;
     }
 
-document.getElementById("loginScreen").style.display = "none";
-document.getElementById("adminPanel").style.display = "block";
+    /* ===== LOGIN SUCCESS ===== */
 
-loadLinks();
+    document.getElementById("loginScreen").style.display="none";
+    document.getElementById("adminPanel").style.display="block";
 
-/* ===== MỞ ADMIN CONTENT SAU LOGIN ===== */
-
+    loadLinks();
 
   }catch(err){
     console.error(err);
   }
-});
+});;
 
 
 
