@@ -1276,6 +1276,27 @@ body::before{
   opacity:.7;
   filter:blur(18px);
 }
+
+/* ===== SAMSUNG IC RAM BADGE ===== */
+
+.ram-badge{
+  padding:6px 16px;
+  border-radius:999px;
+  font-weight:600;
+  font-size:14px;
+
+  background:rgba(56,189,248,.12);
+  color:#38bdf8;
+
+  border:1px solid rgba(56,189,248,.35);
+
+  box-shadow:
+    inset 0 0 10px rgba(56,189,248,.15),
+    0 0 15px rgba(56,189,248,.25);
+
+  backdrop-filter:blur(6px);
+}
+  
 </style>
 
 
@@ -2248,41 +2269,41 @@ async function check(){
       const chip=detectChip(x.code);
       const decoded=autoDecodeChip(x.code,x);
 
-      html+=`
-        <div class="result-card">
+html+=`
+<div class="result-card">
 
-          <div class="code-main">${x.code}</div>
+  <div class="code-main">${x.code}</div>
 
-          <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
-            ${
-              decoded?.vip!=null
-              ? `<div class="vip-badge vip-${Math.floor(decoded.vip)}">
-                  VIP ${decoded.vip===4.5?"4+":decoded.vip}
-                </div>`
-              :""
-            }
+  <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
 
-            <div style="padding:6px 16px;border-radius:20px;font-weight:600;
-                        background:rgba(139,92,246,0.18);color:#c084fc;">
-            ${decoded?.rom
-             ? `${decoded.ram ?? "?"}/${decoded.rom}`
-           : ""
-             }
-            </div>
-          </div>
+    ${
+      decoded?.vip != null
+      ? `<div class="vip-badge vip-${Math.floor(decoded.vip)}">
+           VIP ${decoded.vip === 4.5 ? "4+" : decoded.vip}
+         </div>`
+      : ""
+    }
 
-          <div style="margin-top:14px;display:flex;gap:10px;font-size:15px;">
-            <span style="color:#4ade80;font-weight:600;">
-              ${chip.name}
-            </span>
-            <span style="color:#e2e8f0;font-weight:600;">
-              ${decoded?.storage||""}
-            </span>
-          </div>
+    ${
+      decoded?.rom
+      ? `<div class="ram-badge">
+           ${decoded.ram ?? "?"}/${decoded.rom}
+         </div>`
+      : ""
+    }
 
-        </div>`;
-    });
+  </div>
 
+  <div style="margin-top:14px;display:flex;gap:10px;font-size:15px;">
+    <span style="color:#38bdf8;font-weight:600;">
+      ${chip.name}
+    </span>
+    <span style="color:#e2e8f0;font-weight:600;">
+      ${decoded?.storage || ""}
+    </span>
+  </div>
+
+</div>`;
     html+=`</div>`;
 
     // ===== FINISH LOADING =====
