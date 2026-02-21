@@ -1700,51 +1700,51 @@ function calculateVip(ram, rom){
 function decodeSamsung(code){
 
   const result = {
-    type: "Unknown",
-    ram: null,
-    rom: null,
-    storage: "Unknown",
-    version: null,
-    vip: null
+    type:"Unknown",
+    ram:null,
+    rom:null,
+    storage:"Unknown",
+    version:null,
+    vip:null
   };
 
   if(!code) return result;
 
   const main = code.toUpperCase().split("-")[0];
 
-  // =====================================================
-  // 🔹 1. eMMC LOW SERIES (KMG / KMD / KMQ ...)
-  // =====================================================
-  const emmcPrefixes = ["KMG","KMO","KMJ","KMI","KMQ","KMD","KMR"];
+  /* =====================================================
+     1️⃣ eMMC LOW SERIES
+  ===================================================== */
+  const emmcPrefixes=["KMG","KMO","KMJ","KMI","KMQ","KMD","KMR"];
 
-  if(emmcPrefixes.some(p => main.startsWith(p))){
+  if(emmcPrefixes.some(p=>main.startsWith(p))){
 
-    result.type = "eMMC";
+    result.type="eMMC";
 
     if(main.includes("1001")){
-      result.rom = 16;
-      result.storage = "eMMC 5.0";
+      result.rom=16;
+      result.storage="eMMC 5.0";
     }
     else if(main.includes("6001")){
-      result.storage = "eMMC 5.1";
+      result.storage="eMMC 5.1";
 
-      if(main.startsWith("KMQE") || main.startsWith("KMQ3"))
-        result.rom = 16;
+      if(main.startsWith("KMQE")||main.startsWith("KMQ3"))
+        result.rom=16;
       else if(main.startsWith("KMDX"))
-        result.rom = 32;
+        result.rom=32;
       else
-        result.rom = 64;
+        result.rom=64;
     }
     else if(main.includes("0001")){
-      result.rom = 32;
-      result.storage = "eMMC 5.1";
+      result.rom=32;
+      result.storage="eMMC 5.1";
     }
 
-    result.version = result.storage;
+    result.version=result.storage;
 
-    const ramChar = main[main.length - 2];
+    const ramChar=main[main.length-2];
 
-    const ramMapLow = {
+    const ramMapLow={
       "3":2,
       "4":4,
       "8":3,
@@ -1754,92 +1754,110 @@ function decodeSamsung(code){
       "E":4
     };
 
-    if(ramMapLow[ramChar])
-      result.ram = ramMapLow[ramChar];
+    result.ram=ramMapLow[ramChar]||null;
+    result.vip=calculateVip(result.ram,result.rom);
 
-    result.vip = calculateVip(result.ram, result.rom);
     return result;
   }
 
-  // =====================================================
-  // 🔹 2. KM3H / KM3V / KM4X (eMMC FIXED SKU)
-  // =====================================================
-  if(main.startsWith("KM3H") || main.startsWith("KM3V")){
-    result.type = "eMMC";
-    result.rom = 64;
-    result.ram = 6;
-    result.storage = "eMMC 5.1";
-    result.version = "eMMC 5.1";
-    result.vip = calculateVip(result.ram, result.rom);
+  /* =====================================================
+     2️⃣ FIXED eMMC SKU
+  ===================================================== */
+  if(main.startsWith("KM3H")||main.startsWith("KM3V")){
+    result.type="eMMC";
+    result.rom=64;
+    result.ram=6;
+    result.storage="eMMC 5.1";
+    result.version="eMMC 5.1";
+    result.vip=calculateVip(result.ram,result.rom);
     return result;
   }
 
   if(main.startsWith("KM4X")){
-    result.type = "eMMC";
-    result.rom = 32;
-    result.ram = 3;
-    result.storage = "eMMC 5.1";
-    result.version = "eMMC 5.1";
-    result.vip = calculateVip(result.ram, result.rom);
+    result.type="eMMC";
+    result.rom=32;
+    result.ram=3;
+    result.storage="eMMC 5.1";
+    result.version="eMMC 5.1";
+    result.vip=calculateVip(result.ram,result.rom);
     return result;
   }
 
-// 🔹 KM5 / KM2 Samsung uMCP Decoder (FIXED + SAFE)
-// =====================================================
-if(/^KM[25]/.test(main)){
+  /* =====================================================
+     3️⃣ KM2 / KM5 uMCP (UFS 2.1)
+  ===================================================== */
+  if(/^KM[25]/.test(main)){
 
-  result.type = "uMCP";
-  result.storage = "UFS 2.1";
-  result.version = "UFS 2.1";
+    result.type="uMCP";
+    result.storage="UFS 2.1";
+    result.version="UFS 2.1";
 
-  const family = main.slice(0,3);   // KM2 / KM5
-  const generation = main[3];       // C / D / H / V
-  const ramToken = main.slice(-2);  // CM / DM / JM / 8M
+    const family=main.slice(0,3);   // KM2 / KM5
+    const generation=main[3];       // C D H V
+    const ramToken=main.slice(-2);  // CM DM JM 8M
 
-  /* ================= ROM ================= */
+    /* ===== ROM ===== */
+    const densityMatch=main.match(/(\d{4})/);
 
-  const densityMatch = main.match(/(\d{4})/);
+    if(densityMatch){
 
-  if(densityMatch){
+      const key=densityMatch[1];
 
-    const key = densityMatch[1];
+      if(family==="KM2"){
 
-    /* ===== KM2 ===== */
-    if(family==="KM2"){
-
-      const romMapKM2={
-        "9001":512,
-        "8001":128,
-        "7001":128,
-        "6001":32
-      };
-
-      result.rom = romMapKM2[key] || null;
-    }
-
-    /* ===== KM5 ===== */
-    else if(family==="KM5"){
-
-      if(generation==="H"){
-        const mapH={
-          "9001":256,
-          "8001":64,
-          "7001":64,
-          "6001":32
-        };
-        result.rom = mapH[key] || null;
-      }
-      else{
-        const mapNormal={
-          "9001":256,
+        const romMapKM2={
+          "9001":512,
           "8001":128,
-          "7001":64,
+          "7001":128,
           "6001":32
         };
-        result.rom = mapNormal[key] || null;
+
+        result.rom=romMapKM2[key]||null;
+      }
+
+      else if(family==="KM5"){
+
+        if(generation==="H"){
+          const mapH={
+            "9001":256,
+            "8001":64,
+            "7001":64,
+            "6001":32
+          };
+          result.rom=mapH[key]||null;
+        }
+        else{
+          const mapNormal={
+            "9001":256,
+            "8001":128,
+            "7001":64,
+            "6001":32
+          };
+          result.rom=mapNormal[key]||null;
+        }
       }
     }
+
+    /* ===== RAM ===== */
+    const ramMap={
+      "8M":3,
+      "DM":4,
+      "CM":6,
+      "JM":8
+    };
+
+    result.ram=ramMap[ramToken]||null;
+
+    result.vip=calculateVip(result.ram,result.rom);
+
+    return result;
   }
+
+  /* =====================================================
+     FALLBACK (QUAN TRỌNG — KHÔNG LÀM CHẾT JS)
+  ===================================================== */
+  return result;
+}
 
   /* ================= RAM ================= */
 
