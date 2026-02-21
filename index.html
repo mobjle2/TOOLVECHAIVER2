@@ -1784,51 +1784,61 @@ function decodeSamsung(code){
     return result;
   }
 
+// 🔹 KM5 / KM2 Samsung uMCP Decoder (FULL FIX)
 // =====================================================
-// 🔹 KM5 / KM2 (UFS 2.1 MID)
-// =====================================================
-if(main.startsWith("KM5") || main.startsWith("KM2")){
+if(/^KM[25]/.test(main)){
 
   result.type = "uMCP";
-
-  const ramToken = main.slice(-2);   // CM / DM / JM / 8M
-
-  /* ===== ROM (FIX CHUẨN SAMSUNG) ===== */
-  if(main.includes("9001")){
-    result.rom = 512;
-  }
-  else if(main.includes("8001")){
-    result.rom = 128;   // ⭐ FIX CHÍNH
-  }
-  else if(main.includes("7001")){
-    result.rom = 128;
-  }
-  else if(main.includes("6001")){
-    result.rom = 32;
-  }
-  else{
-    result.rom = null;
-  }
-
   result.storage = "UFS 2.1";
   result.version = "UFS 2.1";
 
-  /* ===== RAM ===== */
-  const ramMapMid = {
+  const family = main.slice(0,3);     // KM2 / KM5
+  const density = main.match(/(\d{4})/);
+  const ramToken = main.slice(-2);
+
+  /* ================= ROM ================= */
+
+  const romMapKM2 = {
+    "9001":512,
+    "8001":128,
+    "7001":128,
+    "6001":32
+  };
+
+  const romMapKM5 = {
+    "9001":256,
+    "8001":128,
+    "7001":64,
+    "6001":32
+  };
+
+  if(density){
+
+    const key = density[1];
+
+    if(family==="KM2")
+      result.rom = romMapKM2[key] || null;
+    else
+      result.rom = romMapKM5[key] || null;
+  }
+
+  /* ================= RAM ================= */
+
+  const ramMap = {
     "8M":3,
-    "CM":6,
     "DM":4,
+    "CM":6,
     "JM":8
   };
 
-  result.ram = ramMapMid[ramToken] || null;
+  result.ram = ramMap[ramToken] || null;
 
-  /* ===== VIP ===== */
-  result.vip = calculateVip(result.ram, result.rom);
+  /* ================= VIP ================= */
+
+  result.vip = calculateVip(result.ram,result.rom);
 
   return result;
 }
-
   // =====================================================
   // 🔹 4. KM8 / KM9 (HIGH-END)
   // =====================================================
