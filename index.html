@@ -1380,6 +1380,7 @@ body::before{
 <div id="out" style="margin-top:20px;"></div>
 
 
+/* ===== SAFE FIREBASE INIT ===== */
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyClXx0V66GQHKGO0EwQc0nYNguFLc705A0",
@@ -1390,55 +1391,51 @@ const firebaseConfig = {
   appId: "1:855001765940:web:0a562c54618377aaae5261"
 };
 
-
 firebase.initializeApp(firebaseConfig);
 
 const auth = firebase.auth();
-const db = firebase.firestore();
+const db   = firebase.firestore();
 
-// ===== AUTH PERSISTENCE (PHẢI ĐẶT TRƯỚC) =====
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
-// ===== FORCE LOGOUT ADMIN ON REFRESH =====
+
+/* ===== SAFE USER MODE DETECT ===== */
+
 const urlParams = new URLSearchParams(window.location.search);
 const isUserMode = urlParams.has("u");
 
-if(!isUserMode){
-  auth.signOut();
-}
+/* ❗ KHÔNG logout ngay nữa */
+/* auth listener phía dưới sẽ xử lý */
 
 
+/* ===== USER MODE (?u=) ===== */
 
-
-// ===== USER MODE (?u=) =====
 const params = new URLSearchParams(window.location.search);
 const userParam = params.get("u");
 
 if(userParam){
-  document.getElementById("loginScreen").style.display = "none";
- 
 
-  // QUAN TRỌNG: không cho auth listener chạy
-  setTimeout(() => {
+  window.addEventListener("DOMContentLoaded",()=>{
+
+    const login=document.getElementById("loginScreen");
+    if(login) login.style.display="none";
+
     runUserMode(userParam);
-  }, 0);
+
+  });
 }
+
+
+/* ===== USER MODE ENGINE ===== */
+
 async function runUserMode(id){
 
-  // ===== ẨN LOGIN + CHỨC NĂNG ADMIN (GIỮ Ô CHECK) =====
-  const login = document.getElementById("loginScreen");
-  if(login) login.style.display = "none";
-
-  const adminToggle = document.getElementById("adminToggle");
-  if(adminToggle) adminToggle.style.display = "none";
-
-  const createBtn = document.querySelector(".create-link-btn");
-  if(createBtn) createBtn.style.display = "none";
-
-  const adminContent = document.getElementById("adminContent");
-  if(adminContent) adminContent.style.display = "none";
-
   try{
+
+    document.getElementById("loginScreen")?.remove();
+    document.getElementById("adminToggle")?.remove();
+    document.querySelector(".create-link-btn")?.remove();
+    document.getElementById("adminContent")?.remove();
 
     const doc = await db.collection("shareLinks").doc(id).get();
 
@@ -1454,7 +1451,6 @@ async function runUserMode(id){
       return;
     }
 
-    // ===== HẾT HẠN =====
     if(data.expiresAt && data.expiresAt.toDate() < new Date()){
 
       await db.collection("shareLinks").doc(id).update({
@@ -1465,53 +1461,55 @@ async function runUserMode(id){
       return;
     }
 
-    // ===== TĂNG LƯỢT XEM =====
     await db.collection("shareLinks").doc(id).update({
       views: firebase.firestore.FieldValue.increment(1)
     });
 
-    // ===== COUNTDOWN =====
     if(data.expiresAt){
 
-      let box = document.getElementById("countdownBox");
+      let box=document.getElementById("countdownBox");
 
       if(!box){
-        box = document.createElement("div");
-        box.id = "countdownBox";
-        box.style.position = "fixed";
-        box.style.top = "12px";
-        box.style.right = "16px";
-        box.style.background = "rgba(15,23,42,0.9)";
-        box.style.border = "1px solid #334155";
-        box.style.borderRadius = "10px";
-        box.style.padding = "8px 14px";
-        box.style.fontSize = "14px";
-        box.style.fontWeight = "600";
-        box.style.color = "#facc15";
-        box.style.zIndex = "9999";
-        box.style.boxShadow = "0 8px 25px rgba(0,0,0,0.4)";
+        box=document.createElement("div");
+        box.id="countdownBox";
+
+        Object.assign(box.style,{
+          position:"fixed",
+          top:"12px",
+          right:"16px",
+          background:"rgba(15,23,42,0.9)",
+          border:"1px solid #334155",
+          borderRadius:"10px",
+          padding:"8px 14px",
+          fontSize:"14px",
+          fontWeight:"600",
+          color:"#facc15",
+          zIndex:"9999"
+        });
+
         document.body.appendChild(box);
       }
 
-      const end = data.expiresAt.toDate();
+      const end=data.expiresAt.toDate();
 
-      setInterval(async ()=>{
-        const now = new Date();
-        const diff = end - now;
+      setInterval(async()=>{
 
-        if(diff <= 0){
+        const diff=end-new Date();
+
+        if(diff<=0){
           await db.collection("shareLinks").doc(id).update({
             active:false
           });
-          box.innerText = "⛔ Link đã hết hạn!";
+          box.innerText="⛔ Link đã hết hạn!";
           return;
         }
 
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-        const minutes = Math.floor((diff / (1000 * 60)) % 60);
+        const d=Math.floor(diff/86400000);
+        const h=Math.floor((diff/3600000)%24);
+        const m=Math.floor((diff/60000)%60);
 
-        box.innerText = `⏳ Còn ${days} ngày ${hours} giờ ${minutes} phút`;
+        box.innerText=`⏳ Còn ${d} ngày ${h} giờ ${m} phút`;
+
       },1000);
     }
 
@@ -1521,6 +1519,12 @@ async function runUserMode(id){
   }
 }
 
+
+/* ===== GLOBAL ERROR SHIELD ===== */
+
+window.addEventListener("error",e=>{
+  console.error("GLOBAL ERROR:",e.error);
+});
 
 // ===== THÊM HÀM NÀY NẾU CHƯA CÓ =====
 function showUserMessage(text){
