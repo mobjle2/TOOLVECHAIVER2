@@ -2523,18 +2523,41 @@ async function check(){
       🔍 Đang phân tích dữ liệu...
     </div>
 
-    <div style="width:100%;height:10px;background:#1e293b;border-radius:20px;overflow:hidden;">
-      <div id="progressFill"
-        style="height:100%;width:0%;
-        background:linear-gradient(90deg,#22c55e,#06b6d4);
-        transition:width .25s"></div>
-    </div>
+<div style="
+  width:100%;
+  height:10px;
+  background:rgba(255,255,255,0.06);
+  border-radius:999px;
+  overflow:hidden;
+  box-shadow:inset 0 0 8px rgba(0,0,0,.6);
+">
 
-    <div id="progressText"
-      style="text-align:right;font-size:13px;margin-top:6px;opacity:.7">
-      0%
-    </div>
-  </div>`;
+  <div id="progressFill"
+    style="
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg,#38bdf8,#06b6d4,#22c55e);
+      border-radius:999px;
+      box-shadow:
+        0 0 12px rgba(56,189,248,.5),
+        0 0 25px rgba(34,197,94,.35);
+      transition:width .35s cubic-bezier(.4,0,.2,1);
+    ">
+  </div>
+
+</div>
+
+<div id="progressText"
+  style="
+    text-align:right;
+    font-size:13px;
+    margin-top:8px;
+    opacity:.8;
+    letter-spacing:.5px;
+  ">
+  0%
+</div>
+</div>;
 
   const fill=document.getElementById("progressFill");
   const text=document.getElementById("progressText");
