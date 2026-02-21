@@ -1087,7 +1087,195 @@ font-weight:500;
   text-align:right;
 }
 
+/* =====================================================
+   🔬 ULTRA LAB MODE — SAMSUNG INTERNAL TOOL UI
+   SAFE VERSION (NO BLACK TEXT)
+===================================================== */
 
+/* ===== LAB BACKGROUND ===== */
+body{
+  background:
+    radial-gradient(circle at 85% 20%, rgba(37,99,235,.35), transparent 45%),
+    radial-gradient(circle at 10% 90%, rgba(59,130,246,.25), transparent 50%),
+    linear-gradient(160deg,#020617,#020617,#010409);
+
+  color:#e5e7eb;
+}
+
+/* PCB GRID EFFECT */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 120px,
+      rgba(56,189,248,.04) 121px,
+      transparent 122px
+    );
+}
+
+/* ===== RESULT CARD HARDWARE STYLE ===== */
+.result-card{
+  background:linear-gradient(145deg,#0b1220,#020617);
+  border-radius:22px;
+  border:1px solid rgba(255,255,255,.06);
+
+  box-shadow:
+    0 15px 50px rgba(0,0,0,.9),
+    inset 0 0 25px rgba(255,255,255,.02);
+
+  transition:.4s cubic-bezier(.4,0,.2,1);
+  position:relative;
+  overflow:hidden;
+}
+
+/* CHIP SCAN LIGHT */
+.result-card::after{
+  content:"";
+  position:absolute;
+  top:0;
+  left:-120%;
+  width:120%;
+  height:100%;
+  background:linear-gradient(
+    120deg,
+    transparent,
+    rgba(56,189,248,.35),
+    transparent
+  );
+  transition:1s;
+}
+
+.result-card:hover::after{
+  left:120%;
+}
+
+/* HOVER FEEL */
+.result-card:hover{
+  transform:translateY(-6px) scale(1.015);
+  border-color:#38bdf8;
+}
+
+/* ===== CARD APPEAR ANIMATION ===== */
+.result-card{
+  animation:labCardIn .5s ease forwards;
+  opacity:0;
+}
+
+@keyframes labCardIn{
+  from{
+    transform:translateY(20px);
+    opacity:0;
+  }
+  to{
+    transform:translateY(0);
+    opacity:1;
+  }
+}
+
+/* ===== SAMSUNG VIP GLASS ===== */
+.vip-badge{
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.12);
+  backdrop-filter:blur(12px);
+
+  color:#e2e8f0;
+
+  box-shadow:
+    inset 0 0 10px rgba(255,255,255,.05),
+    0 8px 25px rgba(0,0,0,.5);
+}
+
+/* ===== BRAND COLOR ===== */
+.brand{
+  color:#38bdf8;
+  font-weight:600;
+}
+
+/* ===== SEARCH AI GLOW ===== */
+.clean-check input:focus{
+  border-color:#38bdf8;
+  box-shadow:
+    0 0 0 3px rgba(56,189,248,.25),
+    0 0 30px rgba(56,189,248,.35);
+}
+
+/* FORCE LIGHT TEXT */
+.result-card,
+.result-card *{
+  color:#e2e8f0;
+}
+/* =====================================================
+   ⭐ VIP GLOW SYSTEM (5 → 10 ONLY)
+===================================================== */
+
+/* base glow */
+.vip-5,
+.vip-6,
+.vip-7,
+.vip-8,
+.vip-9,
+.vip-10{
+  position:relative;
+  transition:.35s;
+}
+
+/* glow layer */
+.vip-5::after,
+.vip-6::after,
+.vip-7::after,
+.vip-8::after,
+.vip-9::after,
+.vip-10::after{
+  content:"";
+  position:absolute;
+  inset:-6px;
+  border-radius:999px;
+  filter:blur(12px);
+  opacity:.35;
+  z-index:-1;
+}
+
+/* ===== COLORS ===== */
+
+.vip-5::after{
+  background:#00e5ff;
+}
+
+.vip-6::after{
+  background:#00ff88;
+}
+
+.vip-7::after{
+  background:#ff9f1c;
+}
+
+.vip-8::after{
+  background:#8b5cf6;
+}
+
+.vip-9::after{
+  background:#ff4ecd;
+}
+
+.vip-10::after{
+  background:#facc15;
+}
+
+/* hover boost */
+.result-card:hover .vip-5::after,
+.result-card:hover .vip-6::after,
+.result-card:hover .vip-7::after,
+.result-card:hover .vip-8::after,
+.result-card:hover .vip-9::after,
+.result-card:hover .vip-10::after{
+  opacity:.7;
+  filter:blur(18px);
+}
 </style>
 
 
