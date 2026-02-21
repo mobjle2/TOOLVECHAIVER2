@@ -2708,42 +2708,43 @@ if(!decoded){
 }
       learnFromRealData(decoded);
 
-      html+=`
-      <div class="result-card">
+html += `
+<div class="result-card">
 
-        <div class="code-main">${x.code}</div>
+  <div class="code-main">${x.code}</div>
 
-        <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
-          <div class="vip-badge vip-${Math.floor(decoded.vip)}">
-            VIP ${decoded.vip===4.5?"4+":decoded.vip}
-          </div>
+  <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
+    <div class="vip-badge vip-${Math.floor(decoded.vip)}">
+      VIP ${decoded.vip===4.5?"4+":decoded.vip}
+    </div>
 
-          ${decoded.rom
-            ? `<div class="ram-badge">
-                ${decoded.ram ?? "?"}/${decoded.rom}
-               </div>`
-            :""}
-        </div>
+    ${decoded.rom
+      ? `<div class="ram-badge">
+           ${decoded.ram ?? "?"}/${decoded.rom}
+         </div>`
+      : ""}
+  </div>
 
-<div style="
-  margin-top:14px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:15px;
-  opacity:.85;
-">
-  <span class="brand">${chip.name}</span>
-</div>
+  <div style="
+      margin-top:14px;
+      display:flex;
+      justify-content:center;
+      font-size:15px;
+      opacity:.85;">
+      <span class="brand">${chip.name}</span>
+  </div>
 
-${Array.isArray(x.models) && x.models.length
-  ? `<div class="model-line">
-       📱 ${x.models.join(", ")}
-     </div>`
-  : `<div class="model-placeholder">
-       📱 Chưa có model
-     </div>`
+  ${
+    Array.isArray(x.models) && x.models.length
+      ? `<div class="model-line">
+           📱 ${x.models.join(", ")}
+         </div>`
+      : `<div class="model-placeholder">
+           📱 Chưa có model
+         </div>`
+  }
 
+</div>`;
 
     html+=`</div>`;
 
