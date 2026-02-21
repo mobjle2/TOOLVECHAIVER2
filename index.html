@@ -2737,11 +2737,13 @@ if(!decoded){
 </div>
 
 ${Array.isArray(x.models) && x.models.length
-  ? `<div class="model-line" style="margin-top:10px;">
+  ? `<div class="model-line">
        📱 ${x.models.join(", ")}
      </div>`
-  : ""}
-</div>`;
+  : `<div class="model-placeholder">
+       📱 Chưa có model
+     </div>`
+}
 
     html+=`</div>`;
 
