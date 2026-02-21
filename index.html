@@ -1796,32 +1796,50 @@ if(/^KM[25]/.test(main)){
   const density = main.match(/(\d{4})/);
   const ramToken = main.slice(-2);
 
-  /* ================= ROM ================= */
+/* ================= ROM ================= */
 
-  const romMapKM2 = {
-    "9001":512,
-    "8001":128,
-    "7001":128,
-    "6001":32
-  };
+const density = main.match(/(\d{4})/);
+const generation = main[3];   // ⭐ C / D / H / V
 
-  const romMapKM5 = {
-    "9001":256,
-    "8001":128,
-    "7001":64,
-    "6001":32
-  };
+if(density){
 
-  if(density){
+  const key = density[1];
 
-    const key = density[1];
+  if(family==="KM2"){
 
-    if(family==="KM2")
-      result.rom = romMapKM2[key] || null;
-    else
-      result.rom = romMapKM5[key] || null;
+    const romMapKM2={
+      "9001":512,
+      "8001":128,
+      "7001":128,
+      "6001":32
+    };
+
+    result.rom = romMapKM2[key] || null;
   }
 
+  if(family==="KM5"){
+
+    /* ⭐ generation aware map */
+    if(generation==="H"){
+      const mapH={
+        "9001":256,
+        "8001":64,
+        "7001":64,
+        "6001":32
+      };
+      result.rom = mapH[key] || null;
+    }
+    else{
+      const mapNormal={
+        "9001":256,
+        "8001":128,
+        "7001":64,
+        "6001":32
+      };
+      result.rom = mapNormal[key] || null;
+    }
+  }
+}
   /* ================= RAM ================= */
 
   const ramMap = {
