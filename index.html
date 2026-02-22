@@ -2730,6 +2730,24 @@ async function loadVIPLearning(){
   return VIP_AI_CACHE;
 }
 function extractMMCSize(code){
+/* ===== FORMAT SAMSUNG MODEL ===== */
+/* ===== FORMAT SAMSUNG MODEL ===== */
+function formatSamsungModels(text){
+
+  if(!text) return "";
+
+  const models = text
+    .replace(/SAMSUNG/gi,"")
+    .replace(/32GB|64GB|128GB|256GB/gi,"")
+    .split(",")
+    .map(m=>m.trim())
+    .filter(Boolean);
+
+  return "Samsung: " + models.join(" / ");
+}
+
+/* ===== MMC SIZE ===== */
+function extractMMCSize(code){
 
   code = code.toUpperCase();
 
@@ -2742,7 +2760,7 @@ function extractMMCSize(code){
   if(code.includes("256")) return 256;
 
   return null;
-}  
+}
 async function check(){
 
   const q=document.getElementById("q")?.value?.trim()?.toUpperCase();
