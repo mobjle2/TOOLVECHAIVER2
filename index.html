@@ -2690,22 +2690,21 @@ async function check(){
 
       const chip=detectChip(x.code);
 
-      /* ===== VIP SYSTEM ===== */
-      let decoded = autoDecodeChip(x.code,x);
+ /* ===== VIP SYSTEM ===== */
+decoded = autoDecodeChip(x.code,x);
 
-      if(!decoded){
-        decoded = {
-          ram:null,
-          rom:null,
-          vip:0,
-          storage:"Unknown"
-        };
-      }
+if(!decoded || typeof decoded !== "object"){
+  decoded = {};
+}
 
-      if(decoded && decoded.ram && decoded.rom){
-        decoded = VIP_ENGINE(decoded);
-      }
+decoded.ram ??= null;
+decoded.rom ??= null;
+decoded.vip ??= 0;
+decoded.storage ??= "Unknown";
 
+if(decoded.ram && decoded.rom){
+  decoded = VIP_ENGINE(decoded);
+}
       html+=`
       <div class="result-card">
 
