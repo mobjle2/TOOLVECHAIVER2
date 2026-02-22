@@ -1812,11 +1812,11 @@ if (main.startsWith("KMA")) {
 
     result.type = "eMMC";
 
-    if(main.includes("1001")){
+    if(main.includes("1001") || main.includes("1000")){
       result.rom = 16;
       result.storage = "eMMC 5.0";
     }
-    else if(main.includes("6001")){
+    else if(main.includes("6001") || main.includes("6000")){
       result.storage = "eMMC 5.1";
 
       if(main.startsWith("KMQE") || main.startsWith("KMQ3"))
