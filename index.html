@@ -2108,10 +2108,26 @@ if(arch==="eMCP"){
 
     rom = romMap[code.substring(4,6)] ?? null;
 
-    const ramCode = code.substring(6,9);
-    ram = emcpRamMap[ramCode] ?? null;
-}
+    // ===== FIX H9TQ RAM READ =====
+    if(code.startsWith("H9TQ")){
+        const ramToken = code.substring(6,8);
 
+        const hynixTqRamMap={
+            "A8":1,
+            "AB":2,
+            "AC":2,
+            "AD":3,   // H9TQ52ADFTAC
+            "AE":4,
+            "AF":6
+        };
+
+        ram = hynixTqRamMap[ramToken] ?? null;
+    }
+    else{
+        const ramCode = code.substring(6,9);
+        ram = emcpRamMap[ramCode] ?? null;
+    }
+}
 
 // ======================================================
 // PARSE UFS (H9HQ + H9AG)
