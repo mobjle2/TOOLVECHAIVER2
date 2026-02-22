@@ -2916,20 +2916,15 @@ html += `
 
   <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
 
-   ${
-  (decoded.type || x.type) === "MMC"
-    ? '<div class="vip-badge">MMC' + (x.value ? x.value.replace("MMC","") : "") + '</div>'
-    : '<div class="vip-badge vip-' + Math.floor(decoded.vip || 0) + '">VIP ' + (decoded.vip === 4.5 ? "4+" : Math.floor(decoded.vip || 0)) + '</div>'
-}
-
 ${
-  (decoded.type || x.type) === "MMC"
-    ? '<div class="vip-badge">MMC' +
-        (x.value ? x.value.replace("MMC","") : "") +
-      '</div>'
-    : '<div class="vip-badge vip-' + Math.floor(decoded.vip || 0) + '">' +
-        'VIP ' + (decoded.vip === 4.5 ? "4+" : Math.floor(decoded.vip || 0)) +
-      '</div>'
+((x.type??decoded.type)==="MMC")
+?'<div class="vip-badge">MMC</div>'
+:'<div class="vip-badge vip-'+Math.floor((x.vip??decoded.vip)||0)+'">VIP '+Math.floor((x.vip??decoded.vip)||0)+'</div>'
+}
+${
+((x.type??decoded.type)!=="MMC"&&(x.rom??decoded.rom))
+?'<div class="ram-badge">'+(x.ram??decoded.ram)+'/'+(x.rom??decoded.rom)+'</div>'
+:''
 }
 
 <div style="margin-top:14px;text-align:center;font-size:15px;">
