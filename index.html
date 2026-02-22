@@ -2870,43 +2870,9 @@ async function check(){
   btn.disabled=true;
   btn.style.opacity="0.6";
 
-  /* ===== LOADING ===== */
-  out.innerHTML=`
-  <div style="max-width:600px;margin:40px auto;">
-    <div style="margin-bottom:8px;font-size:14px;opacity:.8;">
-      🔍 Đang phân tích dữ liệu...
-    </div>
-
-    <div style="width:100%;height:10px;background:rgba(255,255,255,0.06);
-      border-radius:999px;overflow:hidden;">
-      <div id="progressFill"
-        style="height:100%;width:0%;
-        background:linear-gradient(90deg,#38bdf8,#06b6d4,#22c55e);
-        transition:width .35s;">
-      </div>
-    </div>
-
-    <div id="progressText"
-      style="text-align:right;font-size:13px;margin-top:8px;">
-      0%
-    </div>
-  </div>`;
-
-  const fill=document.getElementById("progressFill");
-  const text=document.getElementById("progressText");
-
-  let percent=0;
-
-  const fakeLoading=setInterval(()=>{
-    percent+=8;
-    if(percent>95) percent=95;
-    fill.style.width=percent+"%";
-    text.innerText=percent+"%";
-  },120);
+  out.innerHTML=`<div style="text-align:center;margin-top:40px;">🔍 Đang phân tích...</div>`;
 
   try{
-
-    await new Promise(r=>setTimeout(r,300));
 
     const snap=await db.collection("codes").get();
 
@@ -2915,161 +2881,130 @@ async function check(){
     for(const doc of snap.docs){
 
       const x=doc.data();
-      /* 🔥 FIX WRONG MMC TYPE FROM FIREBASE */
-if(x.type === "MMC"){
-  x.type = null;
-}
 
-if(
-  !(
-    typeof x.code === "string" &&
-    x.code.toUpperCase().includes(q)
-  ) &&
-  !(
-    Array.isArray(x.models) &&
-    x.models.some(m =>
-      typeof m === "string" &&
-      m.toUpperCase().includes(q)
-    )
-  )
-) continue;
+      /* ===== FILTER SEARCH ===== */
+      if(
+        !(
+          typeof x.code==="string" &&
+          x.code.toUpperCase().includes(q)
+        ) &&
+        !(
+          Array.isArray(x.models) &&
+          x.models.some(m=>m?.toUpperCase().includes(q))
+        )
+      ) continue;
 
-const chip=detectChip(x.code);
+      const chip=detectChip(x.code);
 
-/* ===== VIP SYSTEM ===== */
+      /* ===== PRIORITY MMC FROM FIREBASE ===== */
+      const forceMMC = x.type==="MMC";
 
-let decoded;
+      /* ===== VIP SYSTEM ===== */
 
-/* 🔥 PRIORITY FIREBASE */
-if(
-  x &&
-  (
-    x.vip != null ||
-    x.ram != null ||
-    x.rom != null
-  )
-){
+      let decoded;
 
-  decoded = {
-    ram: x.ram ?? null,
-    rom: x.rom ?? null,
-    vip: x.vip ?? null,
+      if(
+        x &&
+        (
+          x.vip!=null ||
+          x.ram!=null ||
+          x.rom!=null
+        )
+      ){
 
-    // ⭐ nếu firebase không có storage
-    // vẫn để decoder xử lý phía dưới
-    storage: x.storage ?? null,
+        decoded={
+          ram:x.ram??null,
+          rom:x.rom??null,
+          vip:x.vip??null,
+          storage:x.storage??null,
+          source:"firebase"
+        };
 
-    type: "Manual",
-    source: "firebase"
-  };
+      }else{
 
-}else{
+        decoded=autoDecodeChip(x.code,x)||{};
+        decoded.source="decoder";
+      }
 
-  decoded = autoDecodeChip(x.code, x);
-  decoded.source = "decoder";
+      /* ===== STORAGE FALLBACK ===== */
+      if(!decoded.storage){
+        const hw=autoDecodeChip(x.code,x);
+        decoded.storage=hw?.storage||null;
+      }
 
-}
+      /* ===== APPLY MMC PRIORITY ===== */
+      if(forceMMC){
+        decoded.storage="eMMC";
+        decoded.type="MMC";
+      }
 
+      /* ===== REMOVE FAKE MMC WHEN UFS ===== */
+      if(!forceMMC && decoded.storage?.includes("UFS")){
+        x.mmcLevel=null;
+        x.mmc=false;
+      }
 
-/* ===== STORAGE FALLBACK ===== */
-if(!decoded.storage){
-  const hw = autoDecodeChip(x.code, x);
-  decoded.storage = hw?.storage || null;
-}
+      /* ===== SAFE GUARD ===== */
+      if(typeof decoded!=="object") decoded={};
 
-
-/* ===== SYNC STORAGE ===== */
-if(decoded.storage){
-  x.storage = decoded.storage;
-}
-
-
-/* ===== 🔥 FIX MMC BUG (QUAN TRỌNG) ===== */
-if(decoded.storage && decoded.storage.includes("UFS")){
-  x.mmcLevel = null;
-  x.mmc = false;
-}
-
-
-/* ===== SAFE GUARD ===== */
-if(!decoded || typeof decoded !== "object"){
-  decoded = {};
-}
-      
-html += `
+      html+=`
 <div class="result-card">
 
-  <div class="code-main">${x.code}</div>
+<div class="code-main">${x.code}</div>
 
-  <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
+<div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
 
-   ${
-  x.type === "MMC"
-    ? '<div class="vip-badge">MMC' + (x.value ? x.value.replace("MMC","") : "") + '</div>'
-    : '<div class="vip-badge vip-' + Math.floor(decoded.vip || 0) + '">VIP ' + (decoded.vip === 4.5 ? "4+" : Math.floor(decoded.vip || 0)) + '</div>'
+${
+forceMMC
+? `<div class="vip-badge">MMC</div>`
+: `<div class="vip-badge vip-${Math.floor(decoded.vip||0)}">
+     VIP ${decoded.vip===4.5?"4+":Math.floor(decoded.vip||0)}
+   </div>`
 }
 
 ${
-  x.type === "MMC"
-    ? '<div class="ram-badge">' + (extractMMCSize(x.code) || "") + 'GB</div>'
-    : decoded.rom
-      ? '<div class="ram-badge">' + (decoded.ram || "?") + '/' + decoded.rom + '</div>'
-      : ''
+forceMMC
+? `<div class="ram-badge">${extractMMCSize(x.code)||""}GB</div>`
+: decoded.rom
+? `<div class="ram-badge">${decoded.ram||"?"}/${decoded.rom}</div>`
+: ""
 }
 
 </div>
 
 <div style="margin-top:14px;text-align:center;font-size:15px;">
-  <span class="brand brand-${chip.name.replace(/\s/g,'').toLowerCase()}">
-    ${chip.name}
-  </span>
+<span class="brand brand-${chip.name.replace(/\s/g,"").toLowerCase()}">
+${chip.name}
+</span>
 </div>
 
-  ${
-    Array.isArray(x.models) && x.models.length
-      ? `<div class="model-line">
-           📱 ${formatSamsungModels(x.models.join(", "))}
-         </div>`
-      : `<div class="model-placeholder">
-           📱 Chưa có model
-         </div>`
-  }
+${
+Array.isArray(x.models)&&x.models.length
+? `<div class="model-line">📱 ${formatSamsungModels(x.models.join(", "))}</div>`
+: `<div class="model-placeholder">📱 Chưa có model</div>`
+}
 
-</div>`
+</div>`;
     }
 
-    html+=`</div>`; // ✅ CLOSE GRID
+    html+=`</div>`;
 
-    if(html === `<div class="result-grid"></div>`){
-      html=`
-        <div style="
-          margin-top:40px;
-          text-align:center;
-          font-size:18px;
-          font-weight:600;
-          color:#facc15;">
-          🔄 Mã đang cập nhật hoặc chưa có trong hệ thống
-        </div>`;
+    if(html===`<div class="result-grid"></div>`){
+      html=`<div style="text-align:center;margin-top:40px;color:#facc15;">
+      🔄 Mã đang cập nhật hoặc chưa có trong hệ thống
+      </div>`;
     }
 
-    clearInterval(fakeLoading);
-
-    fill.style.width="100%";
-    text.innerText="100%";
-
-    setTimeout(()=>{
-      out.innerHTML=html;
-      btn.disabled=false;
-      btn.style.opacity="1";
-    },300);
+    out.innerHTML=html;
+    btn.disabled=false;
+    btn.style.opacity="1";
 
   }catch(err){
 
-    clearInterval(fakeLoading);
     console.error(err);
 
     out.innerHTML=`<div style="color:#ef4444;text-align:center;">
-      ⚠️ Lỗi hệ thống
+    ⚠️ Lỗi hệ thống
     </div>`;
 
     btn.disabled=false;
