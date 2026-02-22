@@ -2863,13 +2863,13 @@ if(decoded.ram && decoded.rom){
 }
 
 html+=`
-      <div class="result-card">
+<div class="result-card">
 
-        <div class="code-main">${x.code ?? ""}</div>
+  <div class="code-main">${x.code ?? ""}</div>
 
-        <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
-        ${
-decoded?.storage?.toUpperCase().includes("EMMC")
+  <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
+  ${
+(decoded?.storage || "").toUpperCase().includes("EMMC")
 ? `<div class="vip-badge mmc-${Math.floor(Number(decoded?.vip)||0)}">
       MMC${Math.floor(Number(decoded?.vip)||0)}
       ${decoded?.rom ? " • "+decoded.rom+"GB" : ""}
@@ -2877,30 +2877,30 @@ decoded?.storage?.toUpperCase().includes("EMMC")
 : `<div class="vip-badge vip-${Math.floor(Number(decoded?.vip)||0)}">
       VIP ${(Number(decoded?.vip)||0)===4.5?"4+":(Number(decoded?.vip)||0)}
    </div>`
-        }
+  }
 
-        ${
-          decoded?.rom && !decoded?.storage?.toUpperCase().includes("EMMC")
-          ? `<div class="ram-badge">${decoded.ram ?? "?"}/${decoded.rom}</div>`
-          : ""
-        }
-        </div>
+  ${
+    decoded?.rom && !(decoded?.storage || "").toUpperCase().includes("EMMC")
+    ? `<div class="ram-badge">${decoded.ram ?? "?"}/${decoded.rom}</div>`
+    : ""
+  }
+  </div>
 
-        <div style="margin-top:14px;text-align:center;font-size:15px;">
-          <span class="brand">${chip.name}</span>
-        </div>
+  <div style="margin-top:14px;text-align:center;font-size:15px;">
+    <span class="brand">${chip.name}</span>
+  </div>
 
-        ${
-          Array.isArray(x.models) && x.models.length
-            ? `<div class="model-line">
-                 📱 ${formatSamsungModels(x.models.join(", "))}
-               </div>`
-            : `<div class="model-placeholder">
-                 📱 Chưa có model
-               </div>`
-        }
+  ${
+    Array.isArray(x.models) && x.models.length
+      ? `<div class="model-line">
+           📱 ${formatSamsungModels(x.models.join(", "))}
+         </div>`
+      : `<div class="model-placeholder">
+           📱 Chưa có model
+         </div>`
+  }
 
-      </div>`;
+</div>`;
 
       
 // ===== LOGIN =====
