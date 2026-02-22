@@ -2108,6 +2108,10 @@ const dramRamMap={
 if(arch==="eMCP"){
 
     rom = romMap[code.substring(4,6)] ?? null;
+  // ===== H9TQ SPECIAL ROM FIX =====
+if(code.startsWith("H9TQ") && rom === 512){
+    rom = 8;
+}
 
     // ===== FIX H9TQ RAM READ =====
     if(code.startsWith("H9TQ")){
