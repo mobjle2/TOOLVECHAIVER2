@@ -2862,31 +2862,29 @@ if(decoded.ram && decoded.rom){
   decoded = VIP_ENGINE(decoded);
 }
 html+=`
-      <div class="result-card">
+<div class="result-card">
 
-        <div class="code-main">${x.code ?? ""}</div>
+  <div class="code-main">${x.code ?? ""}</div>
 
-        <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
-        ${
-          x.type==="MMC"
-          ? `<div class="vip-badge mmc-${String(x.value ?? "").replace("MMC","")}">
-                ${x.value ?? ""}
-             </div>`
-          : `<div class="vip-badge vip-${Math.floor(Number(decoded?.vip)||0)}">
-                VIP ${(Number(decoded?.vip)||0)===4.5?"4+":(Number(decoded?.vip)||0)}
-             </div>`
-        }
+  <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
+  ${
+    x?.type === "MMC"
+      ? `<div class="vip-badge mmc-${String(x?.value ?? "").replace("MMC","")}">
+            ${x?.value ?? "MMC"}
+            ${decoded?.rom ? " • "+decoded.rom+"GB" : ""}
+         </div>`
+      : `<div class="vip-badge vip-${Math.floor(Number(decoded?.vip)||0)}">
+            VIP ${(Number(decoded?.vip)||0)===4.5?"4+":(Number(decoded?.vip)||0)}
+         </div>`
+  }
 
-        ${
-          decoded?.rom
-          ? (x.type==="MMC"
-              ? `<div class="ram-badge">${decoded.rom}GB</div>`
-              : `<div class="ram-badge">${decoded.ram ?? "?"}/${decoded.rom}</div>`
-            )
-          : ""
-        }
-        </div>
-
+  ${
+    decoded?.rom && x?.type !== "MMC"
+      ? `<div class="ram-badge">${decoded?.ram ?? "?"}/${decoded?.rom}</div>`
+      : ""
+  }
+  </div>
+`;
         <div style="margin-top:14px;text-align:center;font-size:15px;">
           <span class="brand">${chip.name}</span>
         </div>
