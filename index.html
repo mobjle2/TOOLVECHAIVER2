@@ -2123,7 +2123,7 @@ if(code.startsWith("H9TQ")){
 
     ram = hynixRamMap[ramToken] ?? null;
 
-    // ===== ROM (NAND SIZE LETTER) =====
+    // ===== ROM =====
     const nandToken = code.substring(8,9);
 
     const hynixRomMap={
@@ -2135,6 +2135,8 @@ if(code.startsWith("H9TQ")){
     };
 
     rom = hynixRomMap[nandToken] ?? null;
+
+    return { arch, storage, ram, rom, vip };
 }
 // ======================================================
 // PARSE UFS (H9HQ + H9AG)
