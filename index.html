@@ -2915,6 +2915,10 @@ async function check(){
     for(const doc of snap.docs){
 
       const x=doc.data();
+      /* 🔥 FIX WRONG MMC TYPE FROM FIREBASE */
+if(x.type === "MMC"){
+  x.type = null;
+}
 
 if(
   !(
