@@ -2124,9 +2124,25 @@ if(arch==="eMCP"){
         ram = hynixTqRamMap[ramToken] ?? null;
     }
     else{
-        const ramCode = code.substring(6,9);
-        ram = emcpRamMap[ramCode] ?? null;
-    }
+// ===== H9TQ FIX =====
+if(code.startsWith("H9TQ")){
+    const ramToken = code.substring(6,8);
+
+    const hynixTqRamMap={
+        "A8":1,
+        "AB":2,
+        "AC":2,
+        "AD":3,
+        "AE":4,
+        "AF":6
+    };
+
+    ram = hynixTqRamMap[ramToken] ?? null;
+}
+else{
+    const ramCode = code.substring(6,9);
+    ram = emcpRamMap[ramCode] ?? null;
+}
 }
 
 // ======================================================
