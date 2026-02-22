@@ -1416,7 +1416,26 @@ const auth = firebase.auth();
 const db   = firebase.firestore();
 
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+auth.onAuthStateChanged(user=>{
 
+  const params = new URLSearchParams(window.location.search);
+  const userParam = params.get("u");
+
+  // ===== SHARE LINK =====
+  if(userParam && userParam.length > 10){
+      document.getElementById("loginScreen")?.remove();
+      runUserMode(userParam);
+      return;
+  }
+
+  // ===== ADMIN =====
+  if(user){
+      document.getElementById("loginScreen").style.display="none";
+  }else{
+      document.getElementById("loginScreen").style.display="flex";
+  }
+
+});
 
 /* ===== SAFE USER MODE DETECT ===== */
 
@@ -1440,16 +1459,6 @@ const isUserMode =
   typeof userParam === "string" &&
   userParam.length > 10;
 
-if(isUserMode){
-
-  window.addEventListener("DOMContentLoaded",()=>{
-
-    document.getElementById("loginScreen")?.remove();
-
-    runUserMode(userParam);
-
-  });
-}
 
 
 /* ===== USER MODE ENGINE ===== */
