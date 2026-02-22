@@ -2781,8 +2781,22 @@ ${decoded.rom
 
       </div>`;
     } // ✅ ĐÓNG FOR LOOP
-
     html+=`</div>`; // ✅ ĐÓNG GRID
+
+    /* ===== KHÔNG TÌM THẤY MÃ ===== */
+    if(html === `<div class="result-grid"></div>`){
+      html = `
+        <div style="
+          margin-top:40px;
+          text-align:center;
+          font-size:18px;
+          font-weight:600;
+          color:#facc15;
+        ">
+          🔄 Mã đang cập nhật hoặc chưa có trong hệ thống
+        </div>
+      `;
+    }
 
     clearInterval(fakeLoading);
 
