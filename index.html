@@ -2870,9 +2870,43 @@ async function check(){
   btn.disabled=true;
   btn.style.opacity="0.6";
 
-  out.innerHTML=`<div style="text-align:center;margin-top:40px;">🔍 Đang phân tích...</div>`;
+  /* ===== LOADING ===== */
+  out.innerHTML=`
+  <div style="max-width:600px;margin:40px auto;">
+    <div style="margin-bottom:8px;font-size:14px;opacity:.8;">
+      🔍 Đang phân tích dữ liệu...
+    </div>
+
+    <div style="width:100%;height:10px;background:rgba(255,255,255,0.06);
+      border-radius:999px;overflow:hidden;">
+      <div id="progressFill"
+        style="height:100%;width:0%;
+        background:linear-gradient(90deg,#38bdf8,#06b6d4,#22c55e);
+        transition:width .35s;">
+      </div>
+    </div>
+
+    <div id="progressText"
+      style="text-align:right;font-size:13px;margin-top:8px;">
+      0%
+    </div>
+  </div>`;
+
+  const fill=document.getElementById("progressFill");
+  const text=document.getElementById("progressText");
+
+  let percent=0;
+
+  const fakeLoading=setInterval(()=>{
+    percent+=8;
+    if(percent>95) percent=95;
+    fill.style.width=percent+"%";
+    text.innerText=percent+"%";
+  },120);
 
   try{
+
+    await new Promise(r=>setTimeout(r,300));
 
     const snap=await db.collection("codes").get();
 
@@ -2882,7 +2916,7 @@ async function check(){
 
       const x=doc.data();
 
-      /* ===== FILTER SEARCH ===== */
+      /* ===== SEARCH FILTER ===== */
       if(
         !(
           typeof x.code==="string" &&
@@ -2890,7 +2924,7 @@ async function check(){
         ) &&
         !(
           Array.isArray(x.models) &&
-          x.models.some(m=>m?.toUpperCase().includes(q))
+          x.models.some(m=>typeof m==="string" && m.toUpperCase().includes(q))
         )
       ) continue;
 
@@ -2900,7 +2934,6 @@ async function check(){
       const forceMMC = x.type==="MMC";
 
       /* ===== VIP SYSTEM ===== */
-
       let decoded;
 
       if(
@@ -2926,62 +2959,63 @@ async function check(){
         decoded.source="decoder";
       }
 
-      /* ===== STORAGE FALLBACK ===== */
+      /* STORAGE FALLBACK */
       if(!decoded.storage){
         const hw=autoDecodeChip(x.code,x);
         decoded.storage=hw?.storage||null;
       }
 
-      /* ===== APPLY MMC PRIORITY ===== */
+      /* APPLY MMC PRIORITY */
       if(forceMMC){
         decoded.storage="eMMC";
         decoded.type="MMC";
       }
 
-      /* ===== REMOVE FAKE MMC WHEN UFS ===== */
+      /* REMOVE FAKE MMC WHEN UFS */
       if(!forceMMC && decoded.storage?.includes("UFS")){
         x.mmcLevel=null;
         x.mmc=false;
       }
 
-      /* ===== SAFE GUARD ===== */
       if(typeof decoded!=="object") decoded={};
 
       html+=`
 <div class="result-card">
 
-<div class="code-main">${x.code}</div>
+  <div class="code-main">${x.code}</div>
 
-<div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
+  <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
 
-${
-forceMMC
-? `<div class="vip-badge">MMC</div>`
-: `<div class="vip-badge vip-${Math.floor(decoded.vip||0)}">
-     VIP ${decoded.vip===4.5?"4+":Math.floor(decoded.vip||0)}
-   </div>`
+   ${
+  forceMMC
+    ? '<div class="vip-badge">MMC</div>'
+    : '<div class="vip-badge vip-'+Math.floor(decoded.vip||0)+'">VIP '+(decoded.vip===4.5?"4+":Math.floor(decoded.vip||0))+'</div>'
 }
 
 ${
-forceMMC
-? `<div class="ram-badge">${extractMMCSize(x.code)||""}GB</div>`
-: decoded.rom
-? `<div class="ram-badge">${decoded.ram||"?"}/${decoded.rom}</div>`
-: ""
+  forceMMC
+    ? '<div class="ram-badge">'+(extractMMCSize(x.code)||"")+'GB</div>'
+    : decoded.rom
+      ? '<div class="ram-badge">'+(decoded.ram||"?")+'/'+decoded.rom+'</div>'
+      : ''
 }
 
 </div>
 
 <div style="margin-top:14px;text-align:center;font-size:15px;">
-<span class="brand brand-${chip.name.replace(/\s/g,"").toLowerCase()}">
-${chip.name}
-</span>
+  <span class="brand brand-${chip.name.replace(/\s/g,'').toLowerCase()}">
+    ${chip.name}
+  </span>
 </div>
 
 ${
 Array.isArray(x.models)&&x.models.length
-? `<div class="model-line">📱 ${formatSamsungModels(x.models.join(", "))}</div>`
-: `<div class="model-placeholder">📱 Chưa có model</div>`
+? `<div class="model-line">
+     📱 ${formatSamsungModels(x.models.join(", "))}
+   </div>`
+: `<div class="model-placeholder">
+     📱 Chưa có model
+   </div>`
 }
 
 </div>`;
@@ -2990,21 +3024,35 @@ Array.isArray(x.models)&&x.models.length
     html+=`</div>`;
 
     if(html===`<div class="result-grid"></div>`){
-      html=`<div style="text-align:center;margin-top:40px;color:#facc15;">
-      🔄 Mã đang cập nhật hoặc chưa có trong hệ thống
-      </div>`;
+      html=`
+        <div style="
+          margin-top:40px;
+          text-align:center;
+          font-size:18px;
+          font-weight:600;
+          color:#facc15;">
+          🔄 Mã đang cập nhật hoặc chưa có trong hệ thống
+        </div>`;
     }
 
-    out.innerHTML=html;
-    btn.disabled=false;
-    btn.style.opacity="1";
+    clearInterval(fakeLoading);
+
+    fill.style.width="100%";
+    text.innerText="100%";
+
+    setTimeout(()=>{
+      out.innerHTML=html;
+      btn.disabled=false;
+      btn.style.opacity="1";
+    },300);
 
   }catch(err){
 
+    clearInterval(fakeLoading);
     console.error(err);
 
     out.innerHTML=`<div style="color:#ef4444;text-align:center;">
-    ⚠️ Lỗi hệ thống
+      ⚠️ Lỗi hệ thống
     </div>`;
 
     btn.disabled=false;
@@ -3012,6 +3060,7 @@ Array.isArray(x.models)&&x.models.length
   }
 }
 
+  
 // ===== LOGIN =====
 async function secureLogin(){
   const email = document.getElementById("loginEmail").value.trim();
