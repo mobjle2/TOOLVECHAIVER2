@@ -2512,9 +2512,23 @@ function decodeMicronOEM(code){
 
 
   // ===== Samsung =====
-  if(/^K/.test(code)){
-    return decodeSamsung(code);
+if(/^K/.test(code)){
+
+  // ⭐ ƯU TIÊN FIRESTORE
+  if(x && (x.vip!=null || x.ram!=null || x.rom!=null)){
+    return {
+      type: x.type || "uMCP",
+      ram: x.ram,
+      rom: x.rom,
+      vip: x.vip,
+      storage: x.storage || "",
+      version: x.version || ""
+    };
   }
+
+  // ⭐ FALLBACK DECODER
+  return decodeSamsung(code);
+}
 
 // ===== SK hynix =====
 if(/^H/.test(code)){
