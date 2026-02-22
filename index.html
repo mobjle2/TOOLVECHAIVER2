@@ -2871,10 +2871,9 @@ html += `
   <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
 
     ${
-      (decoded.storage || "").toUpperCase().includes("EMMC")
+      x && x.type === "MMC"
         ? '<div class="vip-badge">' +
-            'MMC' +
-            (decoded && decoded.rom ? " • " + decoded.rom + "GB" : "") +
+            (x.value || "MMC") +
           '</div>'
         : '<div class="vip-badge vip-' + Math.floor(Number(decoded && decoded.vip || 0)) + '">' +
             'VIP ' +
@@ -2885,15 +2884,19 @@ html += `
     }
 
     ${
-      decoded && decoded.rom &&
-      !(decoded.storage || "").toUpperCase().includes("EMMC")
+      x && x.type === "MMC" && decoded && decoded.rom
         ? '<div class="ram-badge">' +
-            (decoded.ram || "?") + '/' + decoded.rom +
+            decoded.rom + 'GB' +
           '</div>'
-        : ''
+        : decoded && decoded.rom
+          ? '<div class="ram-badge">' +
+              (decoded.ram || "?") + '/' + decoded.rom +
+            '</div>'
+          : ''
     }
 
   </div>
+`
   
   <div style="margin-top:14px;text-align:center;font-size:15px;">
     <span class="brand">${chip.name}</span>
