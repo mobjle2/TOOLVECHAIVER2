@@ -2760,13 +2760,12 @@ function extractMMCSize(code){
 
   code = (code || "").toUpperCase();
 
-  if(code.includes("04")) return 4;
-  if(code.includes("08")) return 8;
-  if(code.includes("16")) return 16;
-  if(code.includes("32")) return 32;
-  if(code.includes("64")) return 64;
-  if(code.includes("128")) return 128;
-  if(code.includes("256")) return 256;
+  // ===== Samsung KLMB / KLMG REAL SIZE =====
+  if(code.includes("G1")) return 16;
+  if(code.includes("G2")) return 32;
+  if(code.includes("G3")) return 64;
+  if(code.includes("G4")) return 128;
+  if(code.includes("G5")) return 256;
 
   return null;
 }
