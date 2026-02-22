@@ -2713,7 +2713,7 @@ decoded.storage ??= "Unknown";
 if(decoded.ram && decoded.rom){
   decoded = VIP_ENGINE(decoded);
 }
-      html+=`
+html+=`
       <div class="result-card">
 
         <div class="code-main">${x.code ?? ""}</div>
@@ -2727,7 +2727,7 @@ if(decoded.ram && decoded.rom){
           : `<div class="vip-badge vip-${Math.floor(Number(decoded?.vip)||0)}">
                 VIP ${(Number(decoded?.vip)||0)===4.5?"4+":(Number(decoded?.vip)||0)}
              </div>`
-        }`
+        }
 
         ${
           decoded?.rom
@@ -2745,12 +2745,12 @@ if(decoded.ram && decoded.rom){
 
         ${
           Array.isArray(x.models) && x.models.length
-          ? `<div class="model-line">
-               📱 ${x.models.join(", ")}
-             </div>`
-          : `<div class="model-placeholder">
-               📱 Chưa có model
-             </div>`
+            ? `<div class="model-line">
+                 📱 ${x.models.join(", ")}
+               </div>`
+            : `<div class="model-placeholder">
+                 📱 Chưa có model
+               </div>`
         }
 
       </div>`;
