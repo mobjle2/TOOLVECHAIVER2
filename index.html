@@ -2660,7 +2660,6 @@ async function LOAD_AI_CACHE(){
   }
 }
 
-
 /* ===== FAST AI VIP PREDICT ===== */
 function AI_VIP_PREDICT(hw, cache){
 
@@ -2670,8 +2669,7 @@ function AI_VIP_PREDICT(hw, cache){
   const ram = Number(hw?.ram);
   const rom = Number(hw?.rom);
 
-  if(!ram || !rom)
-    return null;
+  if(!ram || !rom) return null;
 
   let total = 0;
   let count = 0;
@@ -2688,31 +2686,36 @@ function AI_VIP_PREDICT(hw, cache){
     }
   }
 
-  if(count === 0)
-    return null;
+  if(count === 0) return null;
 
   return Number((total / count).toFixed(1));
 }
 
+
 /* ===============================
    SAVE EXPERIENCE
 ================================ */
-
 function learnFromRealData(hw){
 
   if(!hw?.ram || !hw?.rom || !hw?.vip) return;
 
   db.collection("vip_learning").add({
-    ram:hw.ram,
-    rom:hw.rom,
-    storage:hw.storage,
-    vip:hw.vip,
-    score:hw.performanceScore||0,
-    createdAt:firebase.firestore.FieldValue.serverTimestamp()
+    ram: hw.ram,
+    rom: hw.rom,
+    storage: hw.storage,
+    vip: hw.vip,
+    score: hw.performanceScore || 0,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
   });
-}  
+}
+
+
 let VIP_AI_CACHE = null;
 
+
+/* ===============================
+   LOAD AI LEARNING
+================================ */
 async function loadVIPLearning(){
 
   if(VIP_AI_CACHE) return VIP_AI_CACHE;
@@ -2729,9 +2732,11 @@ async function loadVIPLearning(){
 
   return VIP_AI_CACHE;
 }
-function extractMMCSize(code){
-/* ===== FORMAT SAMSUNG MODEL ===== */
-/* ===== FORMAT SAMSUNG MODEL ===== */
+
+
+/* ===============================
+   FORMAT SAMSUNG MODEL
+================================ */
 function formatSamsungModels(text){
 
   if(!text) return "";
@@ -2746,10 +2751,13 @@ function formatSamsungModels(text){
   return "Samsung: " + models.join(" / ");
 }
 
-/* ===== MMC SIZE ===== */
+
+/* ===============================
+   MMC SIZE DETECT
+================================ */
 function extractMMCSize(code){
 
-  code = code.toUpperCase();
+  code = (code || "").toUpperCase();
 
   if(code.includes("04")) return 4;
   if(code.includes("08")) return 8;
@@ -2761,6 +2769,7 @@ function extractMMCSize(code){
 
   return null;
 }
+
 async function check(){
 
   const q=document.getElementById("q")?.value?.trim()?.toUpperCase();
@@ -2885,7 +2894,7 @@ html+=`
         ${
           Array.isArray(x.models) && x.models.length
             ? `<div class="model-line">
-                 📱 ${x.models.join(", ")}
+                 📱 ${formatSamsungModels(x.models.join(", "))}
                </div>`
             : `<div class="model-placeholder">
                  📱 Chưa có model
