@@ -2710,9 +2710,36 @@ function AI_VIP_PREDICT(hw, cache){
   if(count === 0)
     return null;
 
-  return Number((total / count).toFixed(1));
+return Number((total / count).toFixed(1));
 }
 
+/* =====================================================
+   VIP GLOBAL FILTER ENGINE
+===================================================== */
+
+async function showAll(filterFn){
+
+  const snap = await db.collection("chips").get();
+
+  const list = [];
+
+  snap.forEach(doc=>{
+
+    const data = doc.data();
+
+    const hw = autoDecodeChip(data.code || "");
+
+    if(filterFn(hw)){
+      list.push({
+        ...data,
+        ...hw
+      });
+    }
+
+  });
+
+  renderResults(list);
+}
 /* ===============================
    SAVE EXPERIENCE
 ================================ */
@@ -2763,7 +2790,24 @@ function extractMMCSize(code){
   return null;
 }  
 async function check(){
+const q = document.getElementById("q").value
+  .toLowerCase()
+  .trim();
 
+/* =========================
+   VIP QUICK SEARCH
+========================= */
+
+const vipMatch = q.match(/^vip\s*(\d+)/);
+
+if(vipMatch){
+
+  const vipTarget = Number(vipMatch[1]);
+
+  showAll(item => Number(item.vip) === vipTarget);
+
+  return;
+}
   const q=document.getElementById("q")?.value?.trim()?.toUpperCase();
   const out=document.getElementById("out");
   const btn=document.querySelector(".check-btn");
