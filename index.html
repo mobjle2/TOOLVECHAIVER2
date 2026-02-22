@@ -2724,11 +2724,9 @@ if(!decoded){
   };
 }
 
-  if(decoded && decoded.ram && decoded.rom){
-    decoded = VIP_ENGINE(decoded);
-  }
+if(decoded && decoded.ram && decoded.rom){
+  decoded = VIP_ENGINE(decoded);
 }
-
 
 html+=`
       <div class="result-card">
@@ -2744,22 +2742,8 @@ ${x.type==="MMC"
       VIP ${(Number(decoded?.vip)||0)===4.5 ? "4+" : (Number(decoded?.vip)||0)}
     </div>`
 }
-        </div>
-`;
 
-      const vip = Number(decoded?.vip) || 0;
-      const vipClass = Math.floor(vip);
-
-      return `
-        <div class="vip-badge vip-${vipClass}">
-          VIP ${vip===4.5 ? "4+" : vip}
-        </div>
-      `;
-   })()
-}
-`
-
-${decoded.rom
+${decoded?.rom
  ? (x.type === "MMC"
       ? `<div class="ram-badge">${decoded.rom}GB</div>`
       : `<div class="ram-badge">${decoded.ram ?? "?"}/${decoded.rom}</div>`
@@ -2783,6 +2767,7 @@ ${decoded.rom
 
       </div>`;
     } // ✅ ĐÓNG FOR LOOP
+
     html+=`</div>`; // ✅ ĐÓNG GRID
 
     /* ===== KHÔNG TÌM THẤY MÃ ===== */
