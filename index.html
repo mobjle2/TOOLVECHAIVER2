@@ -1962,6 +1962,37 @@ const ramMap = {
 
   return result;
 }
+/* =====================================================
+   🔹 KMJ SERIES (Samsung UFS 2.2)  ⭐ FIX MMC BUG
+===================================================== */
+if(main.startsWith("KMJ")){
+
+  result.type = "uMCP";
+  result.storage = "UFS 2.2";
+  result.version = "UFS 2.2";
+
+  // ===== ROM =====
+  if(main.includes("A001")) result.rom = 256;
+  else if(main.includes("A002")) result.rom = 512;
+  else result.rom = 128;
+
+  // ===== RAM =====
+  const ramToken = main.slice(-2);
+
+  const ramMap = {
+    "RM":12,
+    "JM":8,
+    "CM":6,
+    "DM":4
+  };
+
+  result.ram = ramMap[ramToken] || null;
+
+  // ===== VIP =====
+  result.vip = calculateVip(result.ram,result.rom);
+
+  return result;
+}
   // =====================================================
   // 🔹 4. KM8 / KM9 (HIGH-END)
   // =====================================================
