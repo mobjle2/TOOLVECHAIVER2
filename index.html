@@ -2963,18 +2963,18 @@ auth.onAuthStateChanged(async (user) => {
       return;
     }
 
-    /* ===== LOGIN SUCCESS ===== */
+/* ===== LOGIN SUCCESS ===== */
 
-    document.getElementById("loginScreen").style.display="none";
-    document.getElementById("adminPanel").style.display="block";
+document.getElementById("loginScreen").style.display="none";
+document.getElementById("adminPanel").style.display="block";
 
-    loadLinks();
+loadLinks();
 
-  }catch(err){
-    console.error(err);
-  }
-});;
+}catch(err){
+  console.error(err);
+}
 
+}  // ← THÊM DẤU NÀY (đóng secureLogin)
 
 
 
