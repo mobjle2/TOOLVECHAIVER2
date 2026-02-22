@@ -2866,32 +2866,25 @@ if(decoded.ram && decoded.rom){
 html += `
 <div class="result-card">
 
-  <div class="code-main">${x ? x.code : ""}</div>
+  <div class="code-main">${x.code}</div>
 
   <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
 
     ${
-      x && x.type === "MMC"
+      x.type === "MMC"
         ? '<div class="vip-badge">' +
-            (x.value || "MMC") +
+            'MMC' + (x.value ? x.value.replace("MMC","") : "") +
           '</div>'
-        : '<div class="vip-badge vip-' + Math.floor(Number(decoded && decoded.vip || 0)) + '">' +
-            'VIP ' +
-            ((Number(decoded && decoded.vip || 0)===4.5)
-              ? "4+"
-              : Math.floor(Number(decoded && decoded.vip || 0))) +
+        : '<div class="vip-badge vip-' + Math.floor(decoded.vip || 0) + '">' +
+            'VIP ' + (decoded.vip === 4.5 ? "4+" : Math.floor(decoded.vip || 0)) +
           '</div>'
     }
 
     ${
-      x && x.type === "MMC" && decoded && decoded.rom
-        ? '<div class="ram-badge">' +
-            decoded.rom + 'GB' +
-          '</div>'
-        : decoded && decoded.rom
-          ? '<div class="ram-badge">' +
-              (decoded.ram || "?") + '/' + decoded.rom +
-            '</div>'
+      x.type === "MMC" && x.rom
+        ? '<div class="ram-badge">' + x.rom + 'GB</div>'
+        : decoded.rom
+          ? '<div class="ram-badge">' + (decoded.ram || "?") + '/' + decoded.rom + '</div>'
           : ''
     }
 
