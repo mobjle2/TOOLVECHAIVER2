@@ -2731,16 +2731,19 @@ if(!decoded){
 
 
 html+=`
-<div class="result-card">
+      <div class="result-card">
 
-  <div class="code-main">${x.code}</div>
+        <div class="code-main">${x.code}</div>
 
-  <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
+        <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
 ${x.type==="MMC"
  ? `<div class="vip-badge mmc-${x.value.replace("MMC","")}">
       ${x.value}
     </div>`
- : (()=>{
+ : `<div class="vip-badge vip-${Math.floor(Number(decoded?.vip)||0)}">
+      VIP ${(Number(decoded?.vip)||0)===4.5 ? "4+" : (Number(decoded?.vip)||0)}
+    </div>`
+}
 
       const vip = Number(decoded?.vip) || 0;
       const vipClass = Math.floor(vip);
