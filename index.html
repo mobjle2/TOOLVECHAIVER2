@@ -1421,7 +1421,11 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 /* ===== SAFE USER MODE DETECT ===== */
 
 const urlParams = new URLSearchParams(window.location.search);
-const isUserMode = urlParams.has("u");
+const userParam = new URLSearchParams(window.location.search).get("u");
+
+const isUserMode =
+  typeof userParam === "string" &&
+  userParam.length > 10; // id firebase thường dài
 
 /* ❗ KHÔNG logout ngay nữa */
 /* auth listener phía dưới sẽ xử lý */
@@ -1432,12 +1436,15 @@ const isUserMode = urlParams.has("u");
 const params = new URLSearchParams(window.location.search);
 const userParam = params.get("u");
 
-if(userParam){
+const isUserMode =
+  typeof userParam === "string" &&
+  userParam.length > 10;
+
+if(isUserMode){
 
   window.addEventListener("DOMContentLoaded",()=>{
 
-    const login=document.getElementById("loginScreen");
-    if(login) login.style.display="none";
+    document.getElementById("loginScreen")?.remove();
 
     runUserMode(userParam);
 
