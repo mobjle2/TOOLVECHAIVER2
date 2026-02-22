@@ -2688,10 +2688,10 @@ async function check(){
           x.models.some(m=>m.toUpperCase().includes(q)))
       ) continue;
 
-      const chip=detectChip(x.code);
+const chip=detectChip(x.code);
 
- /* ===== VIP SYSTEM ===== */
-decoded = autoDecodeChip(x.code,x);
+/* ===== VIP SYSTEM ===== */
+let decoded = autoDecodeChip(x.code,x);
 
 if(!decoded || typeof decoded !== "object"){
   decoded = {};
