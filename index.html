@@ -2423,6 +2423,40 @@ if(code.startsWith("YMEC")){
   };
 }
 
+/* =====================================================
+   🔥 FIREBASE PRIORITY ENGINE
+===================================================== */
+
+function buildHardware(code, data){
+
+  /* ===== PRIORITY FIREBASE ===== */
+  if(
+    data &&
+    (
+      data.vip != null ||
+      data.ram != null ||
+      data.rom != null
+    )
+  ){
+    return {
+      ram: data.ram ?? null,
+      rom: data.rom ?? null,
+      vip: data.vip ?? null,
+      storage: data.storage ?? "Manual",
+      type: "Manual",
+      source: "firebase"
+    };
+  }
+
+  /* ===== FALLBACK DECODER ===== */
+  const hw = autoDecodeChip(code);
+
+  hw.source = "decoder";
+
+  return hw;
+}
+
+  
 function decodeMicronOEM(code){
 
   code = code.toUpperCase().trim();
