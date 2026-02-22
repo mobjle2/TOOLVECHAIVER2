@@ -2917,20 +2917,20 @@ html += `
   <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
 
    ${
-  x.type === "MMC"
+  (decoded.type || x.type) === "MMC"
     ? '<div class="vip-badge">MMC' + (x.value ? x.value.replace("MMC","") : "") + '</div>'
     : '<div class="vip-badge vip-' + Math.floor(decoded.vip || 0) + '">VIP ' + (decoded.vip === 4.5 ? "4+" : Math.floor(decoded.vip || 0)) + '</div>'
 }
 
 ${
-  x.type === "MMC"
-    ? '<div class="ram-badge">' + (extractMMCSize(x.code) || "") + 'GB</div>'
-    : decoded.rom
-      ? '<div class="ram-badge">' + (decoded.ram || "?") + '/' + decoded.rom + '</div>'
-      : ''
+  (decoded.type || x.type) === "MMC"
+    ? '<div class="vip-badge">MMC' +
+        (x.value ? x.value.replace("MMC","") : "") +
+      '</div>'
+    : '<div class="vip-badge vip-' + Math.floor(decoded.vip || 0) + '">' +
+        'VIP ' + (decoded.vip === 4.5 ? "4+" : Math.floor(decoded.vip || 0)) +
+      '</div>'
 }
-
-</div>
 
 <div style="margin-top:14px;text-align:center;font-size:15px;">
   <span class="brand brand-${chip.name.replace(/\s/g,'').toLowerCase()}">
