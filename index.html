@@ -2950,7 +2950,11 @@ if(
     ram: x.ram ?? null,
     rom: x.rom ?? null,
     vip: x.vip ?? null,
+
+    // ⭐ nếu firebase không có storage
+    // vẫn để decoder xử lý phía dưới
     storage: x.storage ?? null,
+
     type: "Manual",
     source: "firebase"
   };
@@ -2962,16 +2966,31 @@ if(
 
 }
 
-/* ===== SYNC STORAGE (FIX MMC BUG) ===== */
-if(decoded?.storage){
+
+/* ===== STORAGE FALLBACK ===== */
+if(!decoded.storage){
+  const hw = autoDecodeChip(x.code, x);
+  decoded.storage = hw?.storage || null;
+}
+
+
+/* ===== SYNC STORAGE ===== */
+if(decoded.storage){
   x.storage = decoded.storage;
 }
+
+
+/* ===== 🔥 FIX MMC BUG (QUAN TRỌNG) ===== */
+if(decoded.storage && decoded.storage.includes("UFS")){
+  x.mmcLevel = null;
+  x.mmc = false;
+}
+
 
 /* ===== SAFE GUARD ===== */
 if(!decoded || typeof decoded !== "object"){
   decoded = {};
 }
-
       
 html += `
 <div class="result-card">
