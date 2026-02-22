@@ -2037,8 +2037,8 @@ else if(code.startsWith("H9HQ")){
     storage="UFS 2.1";
 }
 else if(code.startsWith("H9AG")){
-    arch="UFS";
-    storage="UFS 2.1";
+    arch="eMCP";
+    storage="eMMC 5.1";
 }
 else if(code.startsWith("H9HP")){
     arch="uMCP";
@@ -2152,19 +2152,30 @@ const raw = code.split("-")[0];
 
 
 /* =========================
-   H9AG NEW SERIES
+/* =========================
+   H9AG REAL DECODER
 ========================= */
-if(raw.startsWith("H9AG") && !rom){
+if(raw.startsWith("H9AG")){
 
-    storage="UFS 2.1";
+    arch="eMCP";
+    storage="eMMC 5.1";
 
-    if(raw.includes("8G")) rom=64;
-    else if(raw.includes("BG")) rom=128;
-    else if(raw.includes("CG")) rom=256;
+    // ===== ROM =====
+    if(raw.includes("6G")) rom=16;
+    else if(raw.includes("8G")) rom=32;
+    else if(raw.includes("9G")) rom=64;
 
-    if(raw.includes("DM")) ram=4;
-    else if(raw.includes("EM")) ram=6;
-    else if(raw.includes("FM")) ram=8;
+    // ===== RAM OLD STYLE =====
+    if(raw.includes("CM")) ram=2;
+    else if(raw.includes("DM")) ram=3;
+    else if(raw.includes("EM")) ram=4;
+    else if(raw.includes("FM")) ram=6;
+
+    // ===== RAM DENSITY STYLE =====
+    else if(raw.includes("3A")) ram=2;
+    else if(raw.includes("4A")) ram=3;
+    else if(raw.includes("5A")) ram=4;
+    else if(raw.includes("6A")) ram=6;
 }
 
 
