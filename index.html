@@ -3489,7 +3489,34 @@ function toggleAdmin(){
 
 }
 
+function renderResults(list){
 
+  const out=document.getElementById("out");
+
+  if(!list.length){
+    out.innerHTML="❌ Không có VIP phù hợp";
+    return;
+  }
+
+  let html=`<div class="result-grid">`;
+
+  list.forEach(x=>{
+
+    html+=`
+      <div class="result-card">
+        <div class="code-main">${x.code ?? ""}</div>
+
+        <div class="vip-badge vip-${Math.floor(x.vip||0)}">
+          VIP ${x.vip}
+        </div>
+      </div>
+    `;
+  });
+
+  html+=`</div>`;
+
+  out.innerHTML=html;
+}
 </script>
 </body>
 </html>
