@@ -2016,7 +2016,7 @@ const ramMap = {
 
 function decodeHynix(code){
 
-code = code.toUpperCase().trim();
+code = (code || "").toUpperCase().trim();
 
 let arch="UNKNOWN";
 let storage="Unknown";
@@ -2028,7 +2028,7 @@ let vip=0;
 // ======================================================
 // ARCH DETECT
 // ======================================================
-if(code.startsWith("H9TQ")){
+if(code.startsWith("H9TQ") || code.startsWith("H9T")){
     arch="eMCP";
     storage="eMMC 5.1";
 }
@@ -2036,9 +2036,13 @@ else if(code.startsWith("H9HQ")){
     arch="UFS";
     storage="UFS 2.1";
 }
+else if(code.startsWith("H9AG")){
+    arch="UFS";
+    storage="UFS 2.1";
+}
 else if(code.startsWith("H9HP")){
     arch="DRAM";
-    storage="LPDDR RAM";
+    storage="LPDDR4X";
 }
 else if(code.startsWith("H9RT")){
     arch="UFS4";
@@ -2047,21 +2051,20 @@ else if(code.startsWith("H9RT")){
 
 
 // ======================================================
-// ROM MAP
+// ROM MAP  (FIX DUPLICATE + MISSING)
 // ======================================================
 const romMap={
-"32":4,
-"64":8,
+"16":128,
 "17":16,
 "18":16,
 "19":16,
-"26":32,
-"27":32,
-"52":64,
-"53":64,
-"16":128,
 "21":256,
 "22":256,
+"26":32,
+"27":32,
+"32":4,
+"52":64,
+"53":64,
 "64":512
 };
 
@@ -2110,18 +2113,23 @@ if(arch==="eMCP"){
 
 
 // ======================================================
-// PARSE UFS
+// PARSE UFS (H9HQ + H9AG)
 // ======================================================
 if(arch==="UFS"){
 
     rom = romMap[code.substring(4,6)] ?? null;
+
+    // NEW H9AG RAM detect
+    if(code.includes("DM")) ram=4;
+    else if(code.includes("EM")) ram=6;
+    else if(code.includes("FM")) ram=8;
 
     if(rom>=256) storage="UFS 2.1 HIGH";
 }
 
 
 // ======================================================
-// PARSE DRAM
+// PARSE DRAM (H9HP)
 // ======================================================
 if(arch==="DRAM"){
 
@@ -2132,30 +2140,24 @@ if(arch==="DRAM"){
 
 
 // ======================================================
-// VIP SYSTEM (YOUR STANDARD)
+// VIP SYSTEM
 // ======================================================
 
-// VIP 1
 if(ram===1 && rom===8)
 vip=1;
 
-// VIP 2
 else if(ram===2 && rom===8)
 vip=2;
 
-// VIP 3
 else if(ram===1 && rom===16)
 vip=3;
 
-// VIP 4
 else if(ram===2 && rom===16)
 vip=4;
 
-// VIP 4+
 else if(ram===2 && rom===32)
 vip=4.5;
 
-// VIP 5
 else if(storage.includes("UFS") &&
 (
 (ram===3 && rom===32) ||
@@ -2164,22 +2166,18 @@ else if(storage.includes("UFS") &&
 ))
 vip=5;
 
-// VIP 6
 else if(storage.includes("eMMC") &&
 (ram===4 || ram===6) && rom===64)
 vip=6;
 
-// VIP 7
 else if(storage.includes("UFS") &&
 (ram===4 || ram===6) && rom===128)
 vip=7;
 
-// VIP 8
 else if(storage.includes("UFS") &&
 (ram===8 || ram===10) && rom===128)
 vip=8;
 
-// VIP 9
 else if(storage.includes("UFS") &&
 (
 (ram===6 && rom===256) ||
@@ -2189,21 +2187,17 @@ else if(storage.includes("UFS") &&
 ))
 vip=9;
 
-// VIP 10
 else if(
 (ram===12 && rom===256) ||
 (ram===8 && rom===512)
 )
 vip=10;
 
-// VIP 11
 else if(ram===12 && rom===512)
 vip=11;
 
-// VIP 12
 else if(ram>=16 && rom>=512)
 vip=12;
-
 
 
 // ======================================================
