@@ -2123,34 +2123,18 @@ if(code.startsWith("H9TQ")){
 
     ram = hynixRamMap[ramToken] ?? null;
 
-    const series = code.substring(4,6);
+    // ===== ROM (NAND SIZE LETTER) =====
+    const nandToken = code.substring(8,9);
 
-    // ===== ROM =====
-    // H9TQ52 / 53 / 26 / 17 dùng series number
-    if(series==="52" || series==="53"){
-        rom = 64;
-    }
-    else if(series==="26" || series==="27"){
-        rom = 32;
-    }
-    else if(series==="17" || series==="18"){
-        rom = 16;
-    }
+    const hynixRomMap={
+        "F":4,
+        "G":8,
+        "H":16,
+        "J":32,
+        "K":64
+    };
 
-    // H9TQ64 dùng NAND letter
-    else if(series==="64"){
-
-        const nandToken = code.substring(8,9);
-
-        const hynixRomMap={
-            "F":4,
-            "G":8,
-            "H":16,
-            "J":32
-        };
-
-        rom = hynixRomMap[nandToken] ?? null;
-    }
+    rom = hynixRomMap[nandToken] ?? null;
 }
 // ======================================================
 // PARSE UFS (H9HQ + H9AG)
