@@ -2864,7 +2864,6 @@ if(decoded.ram && decoded.rom){
 
       
 html += `
-html += `
 <div class="result-card">
 
   <div class="code-main">${x.code}</div>
@@ -2879,32 +2878,13 @@ html += `
 
     ${
       x.type === "MMC"
-        ? '<div class="ram-badge">' + (x.rom || (x.value ? (x.value.match(/\\d+/)||[""])[0] : "")) + 'GB</div>'
+        ? '<div class="ram-badge">' + (x.rom || (x.value ? (x.value.match(/\d+/)||[""])[0] : "")) + 'GB</div>'
         : decoded.rom
           ? '<div class="ram-badge">' + (decoded.ram || "?") + '/' + decoded.rom + '</div>'
           : ''
     }
 
   </div>
-`
-    }
-
-    ${
-      x.type === "MMC"
-        ? '<div class="ram-badge">' +
-            (
-              x.rom
-                ? x.rom
-                : (x.value ? (x.value.match(/\d+/) || [""])[0] : "")
-            ) +
-          'GB</div>'
-        : decoded.rom
-          ? '<div class="ram-badge">' + (decoded.ram || "?") + '/' + decoded.rom + '</div>'
-          : ''
-    }
-
-  </div>
-`
 
   <div style="margin-top:14px;text-align:center;font-size:15px;">
     <span class="brand">${chip.name}</span>
