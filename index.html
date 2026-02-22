@@ -2861,6 +2861,7 @@ decoded.storage ??= "Unknown";
 if(decoded.ram && decoded.rom){
   decoded = VIP_ENGINE(decoded);
 }
+
 html+=`
       <div class="result-card">
 
@@ -2868,7 +2869,7 @@ html+=`
 
         <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
         ${
-decoded.storage?.toUpperCase().includes("EMMC")
+decoded?.storage?.toUpperCase().includes("EMMC")
 ? `<div class="vip-badge mmc-${Math.floor(Number(decoded?.vip)||0)}">
       MMC${Math.floor(Number(decoded?.vip)||0)}
       ${decoded?.rom ? " • "+decoded.rom+"GB" : ""}
@@ -2879,7 +2880,7 @@ decoded.storage?.toUpperCase().includes("EMMC")
         }
 
         ${
-          decoded?.rom && !decoded.storage?.toUpperCase().includes("EMMC")
+          decoded?.rom && !decoded?.storage?.toUpperCase().includes("EMMC")
           ? `<div class="ram-badge">${decoded.ram ?? "?"}/${decoded.rom}</div>`
           : ""
         }
@@ -2900,46 +2901,8 @@ decoded.storage?.toUpperCase().includes("EMMC")
         }
 
       </div>`;
-    }
 
-    html+=`</div>`;
-
-    if(html === `<div class="result-grid"></div>`){
-      html=`
-        <div style="
-          margin-top:40px;
-          text-align:center;
-          font-size:18px;
-          font-weight:600;
-          color:#facc15;">
-          🔄 Mã đang cập nhật hoặc chưa có trong hệ thống
-        </div>`;
-    }
-
-    clearInterval(fakeLoading);
-
-    fill.style.width="100%";
-    text.innerText="100%";
-
-    setTimeout(()=>{
-      out.innerHTML=html;
-      btn.disabled=false;
-      btn.style.opacity="1";
-    },300);
-
-  }catch(err){
-
-    clearInterval(fakeLoading);
-    console.error(err);
-
-    out.innerHTML=\`<div style="color:#ef4444;text-align:center;">
-      ⚠️ Lỗi hệ thống
-    </div>\`;
-
-    btn.disabled=false;
-    btn.style.opacity="1";
-  }
-}
+      
 // ===== LOGIN =====
 async function secureLogin(){
   const email = document.getElementById("loginEmail").value.trim();
