@@ -2810,7 +2810,24 @@ const q = document.getElementById("q").value
    VIP QUICK SEARCH
 ========================= */
 
+/* =========================
+   VIP QUICK SEARCH
+========================= */
+
+// gõ: vip  → show toàn bộ VIP
+if(q === "vip"){
+  showAll(item => Number(item.vip) > 0);
+  return;
+}
+
+// gõ: vip8 / vip 8
 const vipMatch = q.match(/^vip\s*(\d+)/);
+
+if(vipMatch){
+  const vipTarget = Number(vipMatch[1]);
+  showAll(item => Number(item.vip) === vipTarget);
+  return;
+}
 
 if(vipMatch){
 
