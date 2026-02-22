@@ -2719,7 +2719,11 @@ return Number((total / count).toFixed(1));
 
 async function showAll(filterFn){
 
-  const snap = await db.collection("chips").get();
+  const out = document.getElementById("out");
+
+  out.innerHTML = "⏳ Loading VIP...";
+
+  const snap = await db.collection("shareLinks").get();
 
   const list = [];
 
@@ -2727,7 +2731,13 @@ async function showAll(filterFn){
 
     const data = doc.data();
 
-    const hw = autoDecodeChip(data.code || "");
+    const code =
+      data.code ||
+      data.id ||
+      data.chip ||
+      "";
+
+    const hw = autoDecodeChip(code);
 
     if(filterFn(hw)){
       list.push({
@@ -3076,7 +3086,7 @@ async function createLink(){
 
 
 async function loadLinks(){
-  const snap = await db.collection("shareLinks").get();
+  const snap = await db.collection("codes").get();
   let html = "";
 
   // clear countdown cũ (tránh chạy chồng)
