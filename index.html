@@ -2106,24 +2106,40 @@ const dramRamMap={
 // ======================================================
 if(arch==="eMCP"){
 
-    /* ===== H9TQ SPECIAL DECODER ===== */
-    if(code.startsWith("H9TQ")){
+/* ===== H9TQ SPECIAL DECODER ===== */
+if(code.startsWith("H9TQ")){
 
-        // RAM (2 ký tự)
-        const ramToken = code.substring(6,8);
+    // ===== RAM =====
+    const ramToken = code.substring(6,8);
 
-        const hynixRamMap={
-            "A8":1,
-            "AB":2,
-            "AC":3,
-            "AD":4,
-            "AE":6,
-            "AF":8
-        };
+    const hynixRamMap={
+        "A8":1,
+        "AB":2,
+        "AC":3,
+        "AD":4,
+        "AE":6,
+        "AF":8
+    };
 
-        ram = hynixRamMap[ramToken] ?? null;
+    ram = hynixRamMap[ramToken] ?? null;
 
-        // ROM nằm ở NAND letter
+    const series = code.substring(4,6);
+
+    // ===== ROM =====
+    // H9TQ52 / 53 / 26 / 17 dùng series number
+    if(series==="52" || series==="53"){
+        rom = 64;
+    }
+    else if(series==="26" || series==="27"){
+        rom = 32;
+    }
+    else if(series==="17" || series==="18"){
+        rom = 16;
+    }
+
+    // H9TQ64 dùng NAND letter
+    else if(series==="64"){
+
         const nandToken = code.substring(8,9);
 
         const hynixRomMap={
@@ -2135,17 +2151,7 @@ if(arch==="eMCP"){
 
         rom = hynixRomMap[nandToken] ?? null;
     }
-
-    /* ===== OTHER eMCP ===== */
-    else{
-
-        rom = romMap[code.substring(4,6)] ?? null;
-
-        const ramCode = code.substring(6,8);
-        ram = emcpRamMap[ramCode] ?? null;
-    }
 }
-
 // ======================================================
 // PARSE UFS (H9HQ + H9AG)
 // ======================================================
