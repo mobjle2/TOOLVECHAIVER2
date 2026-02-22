@@ -2937,8 +2937,36 @@ if(
 const chip=detectChip(x.code);
 
 /* ===== VIP SYSTEM ===== */
-let decoded = autoDecodeChip(x.code,x);
 
+let decoded;
+
+/* 🔥 PRIORITY FIREBASE */
+if(
+  x &&
+  (
+    x.vip != null ||
+    x.ram != null ||
+    x.rom != null
+  )
+){
+
+  decoded = {
+    ram: x.ram ?? null,
+    rom: x.rom ?? null,
+    vip: x.vip ?? null,
+    storage: x.storage ?? "Manual",
+    type: "Manual",
+    source: "firebase"
+  };
+
+}else{
+
+  decoded = autoDecodeChip(x.code, x);
+  decoded.source = "decoder";
+
+}
+
+/* ===== SAFE GUARD ===== */
 if(!decoded || typeof decoded !== "object"){
   decoded = {};
 }
