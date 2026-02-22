@@ -2730,20 +2730,29 @@ if(!decoded){
 }
 
 
-      html+=`
-      <div class="result-card">
+html+=`
+<div class="result-card">
 
-        <div class="code-main">${x.code}</div>
+  <div class="code-main">${x.code}</div>
 
-        <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
+  <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
 ${x.type==="MMC"
  ? `<div class="vip-badge mmc-${x.value.replace("MMC","")}">
       ${x.value}
     </div>`
- : `<div class="vip-badge vip-${Math.floor(decoded.vip)}">
-      VIP ${decoded.vip===4.5?"4+":decoded.vip}
-    </div>`
+ : (()=>{
+
+      const vip = Number(decoded?.vip) || 0;
+      const vipClass = Math.floor(vip);
+
+      return `
+        <div class="vip-badge vip-${vipClass}">
+          VIP ${vip===4.5 ? "4+" : vip}
+        </div>
+      `;
+   })()
 }
+`
 
 ${decoded.rom
  ? (x.type === "MMC"
