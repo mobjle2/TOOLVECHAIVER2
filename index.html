@@ -1437,14 +1437,7 @@ auth.onAuthStateChanged(user=>{
 
 });
 
-/* ===== SAFE USER MODE DETECT (FINAL FIX) ===== */
 
-const params = new URLSearchParams(window.location.search);
-const userParam = params.get("u");
-
-const isUserMode =
-  typeof userParam === "string" &&
-  userParam.length > 10;
 
 
 /* ===== USER MODE ENGINE ===== */
