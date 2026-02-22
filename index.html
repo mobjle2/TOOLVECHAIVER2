@@ -2870,7 +2870,7 @@ html+=`
         ${
 decoded.storage?.toUpperCase().includes("EMMC")
 ? `<div class="vip-badge mmc-${Math.floor(Number(decoded?.vip)||0)}">
-      MMC
+      MMC${Math.floor(Number(decoded?.vip)||0)}
       ${decoded?.rom ? " • "+decoded.rom+"GB" : ""}
    </div>`
 : `<div class="vip-badge vip-${Math.floor(Number(decoded?.vip)||0)}">
@@ -2879,22 +2879,8 @@ decoded.storage?.toUpperCase().includes("EMMC")
         }
 
         ${
-          decoded?.rom
-          ? (decoded.storage?.toUpperCase().includes("EMMC")
-              ? ``
-              : `<div class="ram-badge">${decoded.ram ?? "?"}/${decoded.rom}</div>`
-            )
-          : ""
-        }
-        </div>
-`;
-
-        ${
-          decoded?.rom
-          ? (x.type==="MMC"
-              ? `<div class="ram-badge">${decoded.rom}GB</div>`
-              : `<div class="ram-badge">${decoded.ram ?? "?"}/${decoded.rom}</div>`
-            )
+          decoded?.rom && !decoded.storage?.toUpperCase().includes("EMMC")
+          ? `<div class="ram-badge">${decoded.ram ?? "?"}/${decoded.rom}</div>`
           : ""
         }
         </div>
@@ -2916,7 +2902,7 @@ decoded.storage?.toUpperCase().includes("EMMC")
       </div>`;
     }
 
-    html+=`</div>`; // ✅ CLOSE GRID
+    html+=`</div>`;
 
     if(html === `<div class="result-grid"></div>`){
       html=`
@@ -2946,15 +2932,14 @@ decoded.storage?.toUpperCase().includes("EMMC")
     clearInterval(fakeLoading);
     console.error(err);
 
-    out.innerHTML=`<div style="color:#ef4444;text-align:center;">
+    out.innerHTML=\`<div style="color:#ef4444;text-align:center;">
       ⚠️ Lỗi hệ thống
-    </div>`;
+    </div>\`;
 
     btn.disabled=false;
     btn.style.opacity="1";
   }
 }
-
 // ===== LOGIN =====
 async function secureLogin(){
   const email = document.getElementById("loginEmail").value.trim();
