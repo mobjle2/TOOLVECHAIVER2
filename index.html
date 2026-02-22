@@ -2507,9 +2507,9 @@ if(!h){
 }
 
   /* ===== NORMALIZE DATA ===== */
-  h.ram = Number(h.ram) || null;
-  h.rom = Number(h.rom) || null;
-  h.storage = h.storage || "Unknown";
+h.ram = h.ram ?? null;
+h.rom = h.rom ?? null;
+h.storage = h.storage ?? "Unknown";
 
   /* ===== VIP RULE FIX ===== */
  else if(h.storage.includes("eMMC") &&
