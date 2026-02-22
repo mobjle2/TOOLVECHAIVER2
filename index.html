@@ -1755,6 +1755,27 @@ function decodeSamsung(code){
 
 const main = code.toUpperCase().split("-")[0];
 /* =====================================================
+   🔹 KMJ SERIES (Samsung LPDDR5 uMCP)
+===================================================== */
+
+if(main.startsWith("KMJ")){
+
+  result.type = "uMCP";
+  result.storage = "UFS 3.1";
+  result.version = "UFS 3.1";
+
+  // Storage detect
+  if(main.includes("001")) result.rom = 256;
+
+  // RAM detect
+  if(main.includes("RM")) result.ram = 12;
+  else if(main.includes("PM")) result.ram = 8;
+  else if(main.includes("CM")) result.ram = 6;
+
+  result.vip = calculateVip(result.ram, result.rom);
+
+  return result;
+}
 /* =====================================================
    🔹 KMG SERIES (Samsung eMMC uMCP)
 ===================================================== */
