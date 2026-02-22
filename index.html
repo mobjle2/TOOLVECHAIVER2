@@ -2108,10 +2108,6 @@ const dramRamMap={
 if(arch==="eMCP"){
 
     rom = romMap[code.substring(4,6)] ?? null;
-  // ===== H9TQ SPECIAL ROM FIX =====
-if(code.startsWith("H9TQ") && rom === 512){
-    rom = 8;
-}
 
     // ===== FIX H9TQ RAM READ =====
     if(code.startsWith("H9TQ")){
@@ -2496,7 +2492,10 @@ function decodeMicronOEM(code){
 if(/^H/.test(code)){
 
   const h = decodeHynix(code);
-
+// ===== SAFE H9TQ ROM NORMALIZE (LOCKIN SAFE)
+if(code.startsWith("H9TQ") && h.rom === 512){
+    h.rom = 8;
+}
 /* ===== SAFE GUARD ===== */
 if(!h){
   return {
