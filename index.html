@@ -1835,15 +1835,16 @@ if (main.startsWith("KMA")) {
 
     const ramChar = main[main.length - 2];
 
-    const ramMapLow = {
-      "3":2,
-      "4":4,
-      "8":3,
-      "C":6,
-      "D":6,
-      "M":8,
-      "E":4
-    };
+const ramMapLow = {
+  "3":2,
+  "4":4,
+  "8":3,
+  "B":2,   // ⭐ FIX KMRX1000BM
+  "C":6,
+  "D":6,
+  "M":8,
+  "E":4
+};
 
     if(ramMapLow[ramChar])
       result.ram = ramMapLow[ramChar];
