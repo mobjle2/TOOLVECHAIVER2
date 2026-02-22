@@ -2041,8 +2041,8 @@ else if(code.startsWith("H9AG")){
     storage="UFS 2.1";
 }
 else if(code.startsWith("H9HP")){
-    arch="DRAM";
-    storage="LPDDR4X";
+    arch="uMCP";
+    storage="UFS 2.1";
 }
 else if(code.startsWith("H9RT")){
     arch="UFS4";
@@ -2114,14 +2114,14 @@ if(arch==="eMCP"){
 
 
 // ======================================================
-// ======================================================
 // PARSE UFS (H9HQ + H9AG)
 // ======================================================
 if(arch==="UFS"){
 
+    // ===== ROM =====
     rom = romMap[code.substring(4,6)] ?? null;
 
-    // ===== H9HQ RAM DETECT =====
+    // ===== RAM TOKEN =====
     const ramCode = code.substring(6,8);
 
     const hynixUfsRamMap={
@@ -2135,25 +2135,51 @@ if(arch==="UFS"){
 
     ram = hynixUfsRamMap[ramCode] ?? ram;
 
-    // ===== NEW H9AG SERIES =====
+    // ===== H9AG SPECIAL SERIES =====
     if(code.includes("DM")) ram=4;
     else if(code.includes("EM")) ram=6;
     else if(code.includes("FM")) ram=8;
 
-    if(rom>=256) storage="UFS 2.1 HIGH";
+    if(rom>=256)
+        storage="UFS 2.1 HIGH";
 }
 
 
 // ======================================================
-// PARSE DRAM (H9HP)
+// PARSE H9HP (uMCP — FIX VIP NOT SHOW)
+// ======================================================
+if(arch==="uMCP"){
+
+    // ===== ROM =====
+    rom = romMap[code.substring(4,6)] ?? null;
+
+    // ===== RAM TOKEN =====
+    const ramCode = code.substring(6,8);
+
+    const hynixUMCPRamMap={
+        "AC":4,
+        "AE":6,
+        "AF":8,
+        "AG":12,
+        "AH":16
+    };
+
+    ram = hynixUMCPRamMap[ramCode] ?? null;
+
+    storage="UFS 2.1";
+}
+
+
+// ======================================================
+// PARSE DRAM ONLY (REAL DRAM CHIP)
 // ======================================================
 if(arch==="DRAM"){
 
     const ramCode = code.substring(6,8);
     ram = dramRamMap[ramCode] ?? null;
+
+    rom = null; // DRAM không có ROM
 }
-
-
 
 // ======================================================
 // VIP SYSTEM
