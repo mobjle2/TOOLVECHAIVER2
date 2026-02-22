@@ -2723,34 +2723,36 @@ async function showAll(filterFn){
 
   out.innerHTML = "⏳ Loading VIP...";
 
-  const snap = await db.collection("shareLinks").get();
+  const snap = await db.collection("codes").get();
 
-  const list = [];
+  let html = "";
 
   snap.forEach(doc=>{
 
-    const data = doc.data();
+    const x = doc.data();
+    if(!x.code) return;
 
-    const code =
-      data.code ||
-      data.id ||
-      data.chip ||
-      "";
+    let hw = autoDecodeChip(x.code,x) || {};
 
-    const hw = autoDecodeChip(code);
+    hw.ram ??= null;
+    hw.rom ??= null;
+    hw.vip ??= 0;
+
+    if(hw.ram && hw.rom){
+      hw = VIP_ENGINE(hw);
+    }
 
     if(filterFn(hw)){
-      list.push({
-        ...data,
-        ...hw
-      });
+      html += `${x.code} → VIP ${hw.vip}<br>`;
     }
 
   });
 
-  renderResults(list);
-}
+  if(!html)
+    html="❌ Không có VIP";
 
+  out.innerHTML=html;
+}
 
 /* ===============================
    SAVE EXPERIENCE
