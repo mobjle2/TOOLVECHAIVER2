@@ -2868,10 +2868,11 @@ html+=`
 
         <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
         ${
-          x.type==="MMC"
-          ? `<div class="vip-badge mmc-${String(x.value ?? "").replace("MMC","")}">
-                ${x.value ?? ""}
-             </div>`
+x.type==="MMC"
+? `<div class="vip-badge mmc-${String(x.value ?? "").replace("MMC","")}">
+      ${x.value ?? ""}
+      ${decoded?.rom ? " • "+decoded.rom+"GB" : ""}
+   </div>`
           : `<div class="vip-badge vip-${Math.floor(Number(decoded?.vip)||0)}">
                 VIP ${(Number(decoded?.vip)||0)===4.5?"4+":(Number(decoded?.vip)||0)}
              </div>`
