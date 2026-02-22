@@ -2692,31 +2692,11 @@ async function check(){
 
       const x=doc.data();
 
-const input = q
-  .toUpperCase()
-  .replace(/[^A-Z0-9]/g,"");
-
-const dbCode = (x.code || "")
-  .toUpperCase()
-  .replace(/[^A-Z0-9]/g,"");
-
-const dbFull = (x.full || "")
-  .toUpperCase()
-  .replace(/[^A-Z0-9]/g,"");
-
 if(
   !(
-    dbCode.includes(input) ||
-    dbFull.includes(input) ||
-    input.includes(dbCode)
+    typeof x.code === "string" &&
+    x.code.toUpperCase().includes(q)
   ) &&
-  !(
-    Array.isArray(x.models) &&
-    x.models.some(m =>
-      m.toUpperCase().includes(input)
-    )
-  )
-) continue;
   !(
     Array.isArray(x.models) &&
     x.models.some(m =>
