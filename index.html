@@ -2113,14 +2113,16 @@ if(arch==="eMCP"){
     if(code.startsWith("H9TQ")){
         const ramToken = code.substring(6,8);
 
-        const hynixTqRamMap={
-            "A8":1,
-            "AB":2,
-            "AC":2,
-            "AD":3,   // H9TQ52ADFTAC
-            "AE":4,
-            "AF":6
-        };
+const hynixTqRamMap = {
+
+    // LPDDR3 / eMCP REAL MAP
+    "A8":1,   // 1GB
+    "AB":2,   // 2GB
+    "AC":3,   // 3GB ⭐
+    "AD":4,   // 4GB ⭐
+    "AE":6,   // 6GB
+    "AF":8    // 8GB
+};
 
         ram = hynixTqRamMap[ramToken] ?? null;
     }
