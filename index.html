@@ -1764,13 +1764,13 @@ if(main.startsWith("KMJ")){
   result.storage = "UFS 3.1";
   result.version = "UFS 3.1";
 
-  // Storage detect
+  // STORAGE
   if(main.includes("001")) result.rom = 256;
 
-  // RAM detect
-  if(main.includes("RM")) result.ram = 12;
-  else if(main.includes("PM")) result.ram = 8;
-  else if(main.includes("CM")) result.ram = 6;
+  /* ===== DRAM DENSITY MAP ===== */
+  if(main.includes("IA")) result.ram = 12;
+  else if(main.includes("HA")) result.ram = 16;
+  else if(main.includes("GA")) result.ram = 8;
 
   result.vip = calculateVip(result.ram, result.rom);
 
