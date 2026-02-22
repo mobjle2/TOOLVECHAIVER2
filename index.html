@@ -2713,29 +2713,7 @@ function AI_VIP_PREDICT(hw, cache){
 return Number((total / count).toFixed(1));
 }
 
-async function showAll(filterFn){
 
-  const snap = await db.collection("linkList").get(); // ⭐ đúng DB của bạn
-
-  const list = [];
-
-  snap.forEach(doc=>{
-
-    const data = doc.data();
-
-    const hw = autoDecodeChip(data.code || "");
-
-    if(filterFn(hw)){
-      list.push({
-        ...data,
-        ...hw
-      });
-    }
-
-  });
-
-  renderResults(list);
-}
 /* ===============================
    SAVE EXPERIENCE
 ================================ */
