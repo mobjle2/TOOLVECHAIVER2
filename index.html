@@ -2689,66 +2689,47 @@ async function check(){
       ) continue;
 
       const chip=detectChip(x.code);
-let decoded = null;
 
-/* ===== MMC SYSTEM ===== */
-if(x.type === "MMC"){
+      /* ===== VIP SYSTEM ===== */
+      let decoded = autoDecodeChip(x.code,x);
 
-  const MMC_SIZE = {
-    "MMC1":16,
-    "MMC2":32,
-    "MMC3":64,
-    "MMC4":128,
-    "MMC5":256,
-    "MMC6":512
-  };
+      if(!decoded){
+        decoded = {
+          ram:null,
+          rom:null,
+          vip:0,
+          storage:"Unknown"
+        };
+      }
 
-  decoded = {
-    mmc: x.value,
-    vip: null,
-    ram: null,
-    rom: MMC_SIZE[x.value] || null
-  };
+      if(decoded && decoded.ram && decoded.rom){
+        decoded = VIP_ENGINE(decoded);
+      }
 
-}else{
-
-/* ===== VIP SYSTEM ===== */
-decoded = autoDecodeChip(x.code,x);
-
-if(!decoded){
-  decoded = {
-    ram:null,
-    rom:null,
-    vip:0,
-    storage:"Unknown"
-  };
-}
-
-if(decoded && decoded.ram && decoded.rom){
-  decoded = VIP_ENGINE(decoded);
-}
-
-html+=`
+      html+=`
       <div class="result-card">
 
         <div class="code-main">${x.code}</div>
 
         <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
-${x.type==="MMC"
- ? `<div class="vip-badge mmc-${x.value.replace("MMC","")}">
-      ${x.value}
-    </div>`
- : `<div class="vip-badge vip-${Math.floor(Number(decoded?.vip)||0)}">
-      VIP ${(Number(decoded?.vip)||0)===4.5 ? "4+" : (Number(decoded?.vip)||0)}
-    </div>`
-}
+        ${
+          x.type==="MMC"
+          ? `<div class="vip-badge mmc-${x.value.replace("MMC","")}">
+                ${x.value}
+             </div>`
+          : `<div class="vip-badge vip-${Math.floor(Number(decoded?.vip)||0)}">
+                VIP ${(Number(decoded?.vip)||0)===4.5?"4+":(Number(decoded?.vip)||0)}
+             </div>`
+        }
 
-${decoded?.rom
- ? (x.type === "MMC"
-      ? `<div class="ram-badge">${decoded.rom}GB</div>`
-      : `<div class="ram-badge">${decoded.ram ?? "?"}/${decoded.rom}</div>`
-   )
- : ""}
+        ${
+          decoded?.rom
+          ? (x.type==="MMC"
+              ? `<div class="ram-badge">${decoded.rom}GB</div>`
+              : `<div class="ram-badge">${decoded.ram ?? "?"}/${decoded.rom}</div>`
+            )
+          : ""
+        }
         </div>
 
         <div style="margin-top:14px;text-align:center;font-size:15px;">
@@ -2757,32 +2738,29 @@ ${decoded?.rom
 
         ${
           Array.isArray(x.models) && x.models.length
-            ? `<div class="model-line">
-                 📱 ${x.models.join(", ")}
-               </div>`
-            : `<div class="model-placeholder">
-                 📱 Chưa có model
-               </div>`
+          ? `<div class="model-line">
+               📱 ${x.models.join(", ")}
+             </div>`
+          : `<div class="model-placeholder">
+               📱 Chưa có model
+             </div>`
         }
 
       </div>`;
-    } // ✅ ĐÓNG FOR LOOP
+    }
 
-    html+=`</div>`; // ✅ ĐÓNG GRID
+    html+=`</div>`; // ✅ CLOSE GRID
 
-    /* ===== KHÔNG TÌM THẤY MÃ ===== */
     if(html === `<div class="result-grid"></div>`){
-      html = `
+      html=`
         <div style="
           margin-top:40px;
           text-align:center;
           font-size:18px;
           font-weight:600;
-          color:#facc15;
-        ">
+          color:#facc15;">
           🔄 Mã đang cập nhật hoặc chưa có trong hệ thống
-        </div>
-      `;
+        </div>`;
     }
 
     clearInterval(fakeLoading);
@@ -2809,7 +2787,6 @@ ${decoded?.rom
     btn.style.opacity="1";
   }
 }
-
 
 // ===== LOGIN =====
 async function secureLogin(){
