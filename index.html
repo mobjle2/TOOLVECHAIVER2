@@ -2710,11 +2710,7 @@ function VIP_ENGINE(hw){
 
   return hw;
 }
-/* ===============================
-/* ======================================================
- /* ======================================================
-   AI VIP SYSTEM — FINAL STABLE VERSION
-====================================================== */
+
 
 /* ===== GLOBAL CACHE (KHÔNG DECLARE LẠI) ===== */
 window.VIP_AI_CACHE = window.VIP_AI_CACHE || null;
@@ -2954,7 +2950,7 @@ if(
     ram: x.ram ?? null,
     rom: x.rom ?? null,
     vip: x.vip ?? null,
-    storage: x.storage ?? "Manual",
+    storage: x.storage ?? null,
     type: "Manual",
     source: "firebase"
   };
@@ -2966,18 +2962,14 @@ if(
 
 }
 
+/* ===== SYNC STORAGE (FIX MMC BUG) ===== */
+if(decoded?.storage){
+  x.storage = decoded.storage;
+}
+
 /* ===== SAFE GUARD ===== */
 if(!decoded || typeof decoded !== "object"){
   decoded = {};
-}
-
-decoded.ram ??= null;
-decoded.rom ??= null;
-decoded.vip ??= 0;
-decoded.storage ??= "Unknown";
-
-if(decoded.ram && decoded.rom){
-  decoded = VIP_ENGINE(decoded);
 }
 
       
