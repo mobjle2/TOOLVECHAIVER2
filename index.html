@@ -1416,19 +1416,26 @@ const auth = firebase.auth();
 const db   = firebase.firestore();
 
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+let APP_MODE = "admin";
+
 auth.onAuthStateChanged(user=>{
 
   const params = new URLSearchParams(window.location.search);
   const userParam = params.get("u");
 
-  // ===== SHARE LINK =====
+  // ===== SHARE LINK MODE =====
   if(userParam && userParam.length > 10){
+
+      APP_MODE = "user";
+
       document.getElementById("loginScreen")?.remove();
       runUserMode(userParam);
       return;
   }
 
   // ===== ADMIN =====
+  APP_MODE = "admin";
+
   if(user){
       document.getElementById("loginScreen").style.display="none";
   }else{
@@ -2713,6 +2720,8 @@ return Number((total / count).toFixed(1));
 ===================================================== */
 
 async function showAll(filterFn){
+
+  if(APP_MODE === "user") return;
 
   const out = document.getElementById("out");
 
