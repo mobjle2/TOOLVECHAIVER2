@@ -2713,13 +2713,18 @@ if(x.type === "MMC"){
 }else{
 
 /* ===== VIP SYSTEM ===== */
-  decoded = autoDecodeChip(x.code,x) || {
+decoded = autoDecodeChip(x.code,x);
+
+if(!decoded){
+  decoded = {
     ram:null,
     rom:null,
-    vip:0
+    vip:0,
+    storage:"Unknown"
   };
+}
 
-  if(decoded.ram && decoded.rom){
+  if(decoded && decoded.ram && decoded.rom){
     decoded = VIP_ENGINE(decoded);
   }
 }
