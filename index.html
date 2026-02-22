@@ -2509,7 +2509,9 @@ if(!h){
   h.storage = h.storage || "Unknown";
 
   /* ===== VIP RULE FIX ===== */
-
+ else if(h.storage.includes("eMMC") &&
+        h.ram===4 && h.rom===16)
+    h.vip = 4;
   if(h.storage.includes("eMMC") && h.ram<=1)
       h.vip = 1;
 
@@ -2524,7 +2526,9 @@ if(!h){
 
   else if(h.storage.includes("eMMC") && h.ram>=2 && h.rom===32)
       h.vip = 4.5;
-
+else if(h.storage.includes("eMMC") &&
+        h.ram===1 && h.rom===512)
+    h.vip = 3;
   else if(h.storage.includes("UFS") &&
          ((h.ram===3 && h.rom===32) ||
           (h.ram===4 && h.rom===32) ||
