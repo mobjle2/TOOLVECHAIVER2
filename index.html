@@ -2143,7 +2143,81 @@ if(arch==="UFS"){
     if(rom>=256)
         storage="UFS 2.1 HIGH";
 }
+/* ======================================================
+   🔥 NEW HYNIX GEN SUPPORT (H9AG / H9QT / H9RT)
+====================================================== */
 
+// chuẩn hóa code (bỏ suffix)
+const raw = code.split("-")[0];
+
+
+/* =========================
+   H9AG NEW SERIES
+========================= */
+if(raw.startsWith("H9AG") && !rom){
+
+    storage="UFS 2.1";
+
+    if(raw.includes("8G")) rom=64;
+    else if(raw.includes("BG")) rom=128;
+    else if(raw.includes("CG")) rom=256;
+
+    if(raw.includes("DM")) ram=4;
+    else if(raw.includes("EM")) ram=6;
+    else if(raw.includes("FM")) ram=8;
+}
+
+
+/* =========================
+   H9QT SERIES (LPDDR5 uMCP)
+========================= */
+if(raw.startsWith("H9QT")){
+
+    storage="UFS 3.1";
+
+    if(raw.includes("0G6")) rom=128;
+    if(raw.includes("1G6")) rom=256;
+
+    if(raw.includes("CN")) ram=6;
+    else if(raw.includes("DN")) ram=8;
+    else if(raw.includes("EN")) ram=12;
+}
+
+
+/* =========================
+   H9RT SERIES (UFS 4.0)
+========================= */
+if(raw.startsWith("H9RT")){
+
+    storage="UFS 4.0";
+
+    if(raw.includes("1GG")) rom=256;
+    if(raw.includes("2GG")) rom=512;
+
+    if(raw.includes("M6")) ram=12;
+    if(raw.includes("N6")) ram=16;
+}
+
+
+/* =========================
+   AUTO VIP APPLY
+========================= */
+if(ram && rom){
+
+    if(ram===1 && rom===8) vip=1;
+    else if(ram===2 && rom===8) vip=2;
+    else if(ram===1 && rom===16) vip=3;
+    else if(ram===2 && rom===16) vip=4;
+    else if(ram===2 && rom===32) vip=4.5;
+    else if((ram===3||ram===4)&&rom===32) vip=5;
+    else if((ram===4||ram===6)&&rom===64) vip=6;
+    else if((ram===4||ram===6)&&rom===128) vip=7;
+    else if((ram===8||ram===10)&&rom===128) vip=8;
+    else if((ram>=6)&&rom===256) vip=9;
+    else if((ram===12&&rom===256)||(ram===8&&rom===512)) vip=10;
+    else if(ram===12&&rom===512) vip=11;
+    else if(ram>=16&&rom>=512) vip=12;
+}
 
 // ======================================================
 // PARSE H9HP (uMCP — FIX VIP NOT SHOW)
