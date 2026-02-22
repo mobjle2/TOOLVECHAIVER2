@@ -2861,48 +2861,88 @@ decoded.storage ??= "Unknown";
 if(decoded.ram && decoded.rom){
   decoded = VIP_ENGINE(decoded);
 }
-
 html+=`
-<div class="result-card">
+      <div class="result-card">
 
-  <div class="code-main">${x.code ?? ""}</div>
+        <div class="code-main">${x.code ?? ""}</div>
 
-  <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
-  ${
-(decoded?.storage || "").toUpperCase().includes("EMMC")
-? `<div class="vip-badge mmc-${Math.floor(Number(decoded?.vip)||0)}">
-      MMC${Math.floor(Number(decoded?.vip)||0)}
-      ${decoded?.rom ? " • "+decoded.rom+"GB" : ""}
-   </div>`
-: `<div class="vip-badge vip-${Math.floor(Number(decoded?.vip)||0)}">
-      VIP ${(Number(decoded?.vip)||0)===4.5?"4+":(Number(decoded?.vip)||0)}
-   </div>`
+        <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
+        ${
+          x.type==="MMC"
+          ? `<div class="vip-badge mmc-${String(x.value ?? "").replace("MMC","")}">
+                ${x.value ?? ""}
+             </div>`
+          : `<div class="vip-badge vip-${Math.floor(Number(decoded?.vip)||0)}">
+                VIP ${(Number(decoded?.vip)||0)===4.5?"4+":(Number(decoded?.vip)||0)}
+             </div>`
+        }
+
+        ${
+          decoded?.rom
+          ? (x.type==="MMC"
+              ? `<div class="ram-badge">${decoded.rom}GB</div>`
+              : `<div class="ram-badge">${decoded.ram ?? "?"}/${decoded.rom}</div>`
+            )
+          : ""
+        }
+        </div>
+
+        <div style="margin-top:14px;text-align:center;font-size:15px;">
+          <span class="brand">${chip.name}</span>
+        </div>
+
+        ${
+          Array.isArray(x.models) && x.models.length
+            ? `<div class="model-line">
+                 📱 ${formatSamsungModels(x.models.join(", "))}
+               </div>`
+            : `<div class="model-placeholder">
+                 📱 Chưa có model
+               </div>`
+        }
+
+      </div>`;
+    }
+
+    html+=`</div>`; // ✅ CLOSE GRID
+
+    if(html === `<div class="result-grid"></div>`){
+      html=`
+        <div style="
+          margin-top:40px;
+          text-align:center;
+          font-size:18px;
+          font-weight:600;
+          color:#facc15;">
+          🔄 Mã đang cập nhật hoặc chưa có trong hệ thống
+        </div>`;
+    }
+
+    clearInterval(fakeLoading);
+
+    fill.style.width="100%";
+    text.innerText="100%";
+
+    setTimeout(()=>{
+      out.innerHTML=html;
+      btn.disabled=false;
+      btn.style.opacity="1";
+    },300);
+
+  }catch(err){
+
+    clearInterval(fakeLoading);
+    console.error(err);
+
+    out.innerHTML=`<div style="color:#ef4444;text-align:center;">
+      ⚠️ Lỗi hệ thống
+    </div>`;
+
+    btn.disabled=false;
+    btn.style.opacity="1";
   }
+}
 
-  ${
-    decoded?.rom && !(decoded?.storage || "").toUpperCase().includes("EMMC")
-    ? `<div class="ram-badge">${decoded.ram ?? "?"}/${decoded.rom}</div>`
-    : ""
-  }
-  </div>
-
-  <div style="margin-top:14px;text-align:center;font-size:15px;">
-    <span class="brand">${chip.name}</span>
-  </div>
-
-  ${
-    Array.isArray(x.models) && x.models.length
-      ? `<div class="model-line">
-           📱 ${formatSamsungModels(x.models.join(", "))}
-         </div>`
-      : `<div class="model-placeholder">
-           📱 Chưa có model
-         </div>`
-  }
-
-</div>`;
-
-      
 // ===== LOGIN =====
 async function secureLogin(){
   const email = document.getElementById("loginEmail").value.trim();
@@ -2963,18 +3003,18 @@ auth.onAuthStateChanged(async (user) => {
       return;
     }
 
-/* ===== LOGIN SUCCESS ===== */
+    /* ===== LOGIN SUCCESS ===== */
 
-document.getElementById("loginScreen").style.display="none";
-document.getElementById("adminPanel").style.display="block";
+    document.getElementById("loginScreen").style.display="none";
+    document.getElementById("adminPanel").style.display="block";
 
-loadLinks();
+    loadLinks();
 
-}catch(err){
-  console.error(err);
-}
+  }catch(err){
+    console.error(err);
+  }
+});;
 
-}  // ← THÊM DẤU NÀY (đóng secureLogin)
 
 
 
