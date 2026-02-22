@@ -1437,20 +1437,7 @@ auth.onAuthStateChanged(user=>{
 
 });
 
-/* ===== SAFE USER MODE DETECT ===== */
-
-const urlParams = new URLSearchParams(window.location.search);
-const userParam = new URLSearchParams(window.location.search).get("u");
-
-const isUserMode =
-  typeof userParam === "string" &&
-  userParam.length > 10; // id firebase thường dài
-
-/* ❗ KHÔNG logout ngay nữa */
-/* auth listener phía dưới sẽ xử lý */
-
-
-/* ===== USER MODE (?u=) ===== */
+/* ===== SAFE USER MODE DETECT (FINAL FIX) ===== */
 
 const params = new URLSearchParams(window.location.search);
 const userParam = params.get("u");
@@ -1458,7 +1445,6 @@ const userParam = params.get("u");
 const isUserMode =
   typeof userParam === "string" &&
   userParam.length > 10;
-
 
 
 /* ===== USER MODE ENGINE ===== */
