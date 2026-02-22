@@ -2113,13 +2113,28 @@ if(arch==="eMCP"){
 
 
 // ======================================================
+// ======================================================
 // PARSE UFS (H9HQ + H9AG)
 // ======================================================
 if(arch==="UFS"){
 
     rom = romMap[code.substring(4,6)] ?? null;
 
-    // NEW H9AG RAM detect
+    // ===== H9HQ RAM DETECT =====
+    const ramCode = code.substring(6,8);
+
+    const hynixUfsRamMap={
+        "AC":3,
+        "AD":4,
+        "AE":6,
+        "AF":8,
+        "AG":12,
+        "AH":16
+    };
+
+    ram = hynixUfsRamMap[ramCode] ?? ram;
+
+    // ===== NEW H9AG SERIES =====
     if(code.includes("DM")) ram=4;
     else if(code.includes("EM")) ram=6;
     else if(code.includes("FM")) ram=8;
