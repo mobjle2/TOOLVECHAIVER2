@@ -3291,7 +3291,7 @@ return levelBadge + specBadge;
 </div>
 
 ${
-Array.isArray(x.models) && x.models.length
+Array.isArray(x.models) && x.models.filter(m=>m && m.trim()).length
 ? `<div class="model-line">
      📱 ${formatSamsungModels(x.models.join(", "))}
    </div>`
