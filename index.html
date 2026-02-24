@@ -2993,7 +2993,7 @@ async function loadVIPLearning(){
 
 
 /* ===============================
-   FORMAT PHONE MODELS (GROUP BRAND)
+   FORMAT PHONE MODELS CLEAN
 ================================ */
 function formatSamsungModels(text){
 
@@ -3006,16 +3006,12 @@ function formatSamsungModels(text){
     .filter(Boolean);
 
   const detectBrand = (m)=>{
-    if(/samsung|galaxy/i.test(m)) return "Samsung";
+    if(/samsung|galaxy|a\d|m\d|j\d|s\d/i.test(m)) return "Samsung";
     if(/oppo/i.test(m)) return "OPPO";
     if(/vivo/i.test(m)) return "VIVO";
     if(/xiaomi|redmi|poco/i.test(m)) return "Xiaomi";
     if(/realme/i.test(m)) return "Realme";
-    if(/oneplus/i.test(m)) return "OnePlus";
-    if(/nokia/i.test(m)) return "Nokia";
-    if(/tecno/i.test(m)) return "TECNO";
-    if(/infinix/i.test(m)) return "Infinix";
-    return "Other";
+    return null; // ⭐ QUAN TRỌNG
   };
 
   const grouped = {};
@@ -3024,13 +3020,16 @@ function formatSamsungModels(text){
 
     const brand = detectBrand(m);
 
+    if(!brand) return; // ⭐ KHÔNG ADD UNKNOWN
+
     const cleanModel = m
-      .replace(/samsung|galaxy|oppo|vivo|xiaomi|redmi|poco|realme|oneplus|nokia|tecno|infinix/gi,"")
+      .replace(/samsung|galaxy|oppo|vivo|xiaomi|redmi|poco|realme/gi,"")
       .trim();
 
     if(!grouped[brand]) grouped[brand] = [];
 
-    grouped[brand].push(cleanModel);
+    if(!grouped[brand].includes(cleanModel))
+      grouped[brand].push(cleanModel);
   });
 
   return Object.entries(grouped)
