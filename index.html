@@ -3107,9 +3107,15 @@ async function check(){
 ${
   forceMMC
     ? '<div class="ram-badge">'+(extractMMCSize(x.code)||"")+'GB</div>'
-    : decoded.rom
-      ? '<div class="ram-badge">'+(decoded.ram||"?")+'/'+decoded.rom+'</div>'
-      : ''
+    : (
+        decoded.ram && decoded.rom
+          ? '<div class="ram-badge">'+decoded.ram+'/'+decoded.rom+'</div>'
+        : decoded.rom
+          ? '<div class="ram-badge">'+decoded.rom+'GB</div>'
+        : decoded.ram
+          ? '<div class="ram-badge">'+decoded.ram+'GB RAM</div>'
+        : ''
+      )
 }
 
 </div>
