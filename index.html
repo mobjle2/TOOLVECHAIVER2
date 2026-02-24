@@ -3219,18 +3219,17 @@ ${(() => {
 
   const hasVIP = decoded.vip !== null && decoded.vip !== undefined && decoded.vip > 0;
 
-  // ===== BADGE LEVEL =====
-  const levelBadge = hasVIP
-    ? '<div class="vip-badge vip-' + Math.floor(decoded.vip) + '">' +
+const levelBadge = hasVIP
+  ? '<div class="vip-badge vip-' + Math.floor(decoded.vip) + '">' +
       'VIP ' + (
-  decoded.vip === 4.5 ? "4+" :
-  decoded.vip === 6.5 ? "6+" :
-  Math.floor(decoded.vip)
-)
-      '</div>'
-    : (mmc
-        ? '<div class="vip-badge">' + mmc + '</div>'
-        : '');
+        decoded.vip === 4.5 ? "4+" :
+        decoded.vip === 6.5 ? "6+" :
+        Math.floor(decoded.vip)
+      ) +
+    '</div>'
+  : (mmc
+      ? '<div class="vip-badge">' + mmc + '</div>'
+      : '');
 
   // ===== RAM / ROM BADGE =====
   const specBadge =
