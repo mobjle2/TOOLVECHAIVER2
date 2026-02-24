@@ -3189,9 +3189,26 @@ auth.onAuthStateChanged(async (user) => {
     // nếu là link share → cho xem bình thường
     if(hasShareLink) return;
 
-    // nếu vào admin mà chưa login
-    document.getElementById("loginScreen").style.display="block";
-    document.getElementById("adminPanel").style.display="none";
+    // ❌ KHÔNG hiện login nữa
+    document.getElementById("loginScreen")?.remove();
+    document.getElementById("adminPanel")?.remove();
+
+    // ✅ Chỉ hiện cảnh báo
+    document.body.innerHTML = `
+      <div style="
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        height:100vh;
+        font-size:20px;
+        font-weight:600;
+        color:#f87171;
+        background:#020617;
+      ">
+        ⚠️ Khu vực quản trị – Không được phép truy cập
+      </div>
+    `;
+
     return;
   }
 
