@@ -1596,6 +1596,8 @@ function disableCheckUI(){
 
   const input = document.getElementById("q");
   const btn   = document.querySelector(".check-btn");
+  const mainContainer = document.querySelector(".main-container");
+  const adminPanel = document.getElementById("adminPanel");
 
   if(input){
     input.disabled = true;
@@ -1605,6 +1607,15 @@ function disableCheckUI(){
   if(btn){
     btn.disabled = true;
     btn.style.opacity = "0.6";
+  }
+
+  // ===== ẨN TOÀN BỘ GIAO DIỆN =====
+  if(mainContainer){
+    mainContainer.style.display = "none";
+  }
+
+  if(adminPanel){
+    adminPanel.style.display = "none";
   }
 }
 
@@ -1624,6 +1635,12 @@ function enableCheckUI(){
   if(btn){
     btn.disabled = false;
     btn.style.opacity = "1";
+  }
+
+  // ===== HIỆN LẠI THANH SEARCH =====
+  const searchBox = document.querySelector(".clean-check");
+  if(searchBox){
+    searchBox.style.display = "flex";
   }
 }
 
