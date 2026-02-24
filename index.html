@@ -3249,9 +3249,13 @@ ${
 </div>
 
 ${
-Array.isArray(x.models)&&x.models.length
+Array.isArray(x.models) && x.models.length
 ? `<div class="model-line">
-     📱 ${formatSamsungModels(x.models.join(", "))}
+     📱 ${
+        x.models.join(", ").includes(":")
+          ? x.models.join("<br>")   // ⭐ ƯU TIÊN FIREBASE
+          : formatSamsungModels(x.models.join(", "))
+       }
    </div>`
 : `<div class="model-placeholder">
      📱 Chưa có model
@@ -3259,7 +3263,6 @@ Array.isArray(x.models)&&x.models.length
 }
 
 </div>`;
-    }
 
     html+=`</div>`;
 
