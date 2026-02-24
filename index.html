@@ -2903,7 +2903,7 @@ async function loadVIPLearning(){
 
 
 /* ===============================
-   FORMAT PHONE MODELS (AUTO BRAND CLEAN)
+   FORMAT PHONE MODELS (GROUP BRAND)
 ================================ */
 function formatSamsungModels(text){
 
@@ -2916,7 +2916,6 @@ function formatSamsungModels(text){
     .filter(Boolean);
 
   const detectBrand = (m)=>{
-
     if(/samsung|galaxy/i.test(m)) return "Samsung";
     if(/oppo/i.test(m)) return "OPPO";
     if(/vivo/i.test(m)) return "VIVO";
@@ -2926,24 +2925,27 @@ function formatSamsungModels(text){
     if(/nokia/i.test(m)) return "Nokia";
     if(/tecno/i.test(m)) return "TECNO";
     if(/infinix/i.test(m)) return "Infinix";
-
-    return "";
+    return "Other";
   };
 
-  return models.map(m=>{
+  const grouped = {};
+
+  models.forEach(m=>{
 
     const brand = detectBrand(m);
 
-    // ⭐ xoá hãng khỏi tên model
-    let cleanModel = m
+    const cleanModel = m
       .replace(/samsung|galaxy|oppo|vivo|xiaomi|redmi|poco|realme|oneplus|nokia|tecno|infinix/gi,"")
       .trim();
 
-    return brand
-      ? `${brand}: ${cleanModel}`
-      : cleanModel;
+    if(!grouped[brand]) grouped[brand] = [];
 
-  }).join("<br>");
+    grouped[brand].push(cleanModel);
+  });
+
+  return Object.entries(grouped)
+    .map(([brand,list])=>`${brand}: ${list.join(" / ")}`)
+    .join("<br>");
 }
 
 /* ===============================
