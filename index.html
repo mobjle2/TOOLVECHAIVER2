@@ -3289,10 +3289,25 @@ return levelBadge + specBadge;
   </div>
 </div>
 
+/* ===============================
+   MODEL SAFE RENDER (FULL FIX)
+=============================== */
+
+// normalize models
+let models = [];
+
+if(Array.isArray(x.models))
+  models = x.models;
+else if(typeof x.models === "string" && x.models.trim() !== "")
+  models = [x.models];
+
+html += `
+<div class="result-card">
+
 ${
-Array.isArray(x.models)&&x.models.length
+models.length
 ? `<div class="model-line">
-     📱 ${formatSamsungModels(x.models.join(", "))}
+     📱 ${formatSamsungModels(models.join(", "))}
    </div>`
 : `<div class="model-placeholder">
      📱 Chưa có model
@@ -3302,43 +3317,42 @@ Array.isArray(x.models)&&x.models.length
 </div>`;
 }
 
-    html+=`</div>`;
+html+=`</div>`;
 
-    if(html===`<div class="result-grid"></div>`){
-      html=`
-        <div style="
-          margin-top:40px;
-          text-align:center;
-          font-size:18px;
-          font-weight:600;
-          color:#facc15;">
-          🔄 Mã đang cập nhật hoặc chưa có trong hệ thống
-        </div>`;
-    }
-
-    clearInterval(fakeLoading);
-
-    fill.style.width="100%";
-    text.innerText="100%";
-
-    setTimeout(()=>{
-      out.innerHTML=html;
-      btn.disabled=false;
-      btn.style.opacity="1";
-    },300);
-
-  }catch(err){
-
-    clearInterval(fakeLoading);
-    console.error(err);
-
-    out.innerHTML=`<div style="color:#ef4444;text-align:center;">
-      ⚠️ Lỗi hệ thống
+if(html===`<div class="result-grid"></div>`){
+  html=`
+    <div style="
+      margin-top:40px;
+      text-align:center;
+      font-size:18px;
+      font-weight:600;
+      color:#facc15;">
+      🔄 Mã đang cập nhật hoặc chưa có trong hệ thống
     </div>`;
+}
 
-    btn.disabled=false;
-    btn.style.opacity="1";
-  }
+clearInterval(fakeLoading);
+
+fill.style.width="100%";
+text.innerText="100%";
+
+setTimeout(()=>{
+  out.innerHTML=html;
+  btn.disabled=false;
+  btn.style.opacity="1";
+},300);
+
+}catch(err){
+
+  clearInterval(fakeLoading);
+  console.error(err);
+
+  out.innerHTML=`<div style="color:#ef4444;text-align:center;">
+    ⚠️ Lỗi hệ thống
+  </div>`;
+
+  btn.disabled=false;
+  btn.style.opacity="1";
 }
 
   
