@@ -3289,25 +3289,10 @@ return levelBadge + specBadge;
   </div>
 </div>
 
-/* ===============================
-   MODEL SAFE RENDER (FULL FIX)
-=============================== */
-
-// normalize models
-let models = [];
-
-if(Array.isArray(x.models))
-  models = x.models;
-else if(typeof x.models === "string" && x.models.trim() !== "")
-  models = [x.models];
-
-html += `
-<div class="result-card">
-
 ${
-models.length
+Array.isArray(x.models) && x.models.length
 ? `<div class="model-line">
-     📱 ${formatSamsungModels(models.join(", "))}
+     📱 ${formatSamsungModels(x.models.join(", "))}
    </div>`
 : `<div class="model-placeholder">
      📱 Chưa có model
@@ -3347,9 +3332,10 @@ setTimeout(()=>{
   clearInterval(fakeLoading);
   console.error(err);
 
-  out.innerHTML=`<div style="color:#ef4444;text-align:center;">
-    ⚠️ Lỗi hệ thống
-  </div>`;
+  out.innerHTML=`
+    <div style="color:#ef4444;text-align:center;">
+      ⚠️ Lỗi hệ thống
+    </div>`;
 
   btn.disabled=false;
   btn.style.opacity="1";
