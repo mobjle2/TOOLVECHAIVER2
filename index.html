@@ -3244,17 +3244,21 @@ const isMMC =
    x.code.startsWith("KMG") ||
    decoded.storage?.includes("eMMC");
       
-      html+=`
+html+=`
 <div class="result-card ${chip.class}">
 
   <div class="code-main">${x.code}</div>
-  <div class="brand" style="color:${chip.color}">
-  ${getBrandLogo(chip.name)} ${chip.name}
+
+  <div class="chip-line"> ...VIP RAM ROM... </div>
+
+  ${MODEL_LINE}
+
+  <div class="brand ${chip.class}">
+    ${getBrandLogo(chip.name)} ${chip.name}
+  </div>
+
 </div>
-
-  <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
-
-${(() => {
+`;
 
   // ===== PRIORITY LOGIC =====
   const mmc = getMMCLevel(decoded.rom);
