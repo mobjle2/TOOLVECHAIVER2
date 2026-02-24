@@ -2677,6 +2677,31 @@ function decodeMicronOEM(code){
   // ===== MICRON CHECK FIRST =====
   const micron = decodeMicronOEM(code);
   if(micron) return micron;
+  /* ===============================
+   SANDISK / WD eMMC FIX
+================================ */
+if(code.startsWith("SDIN")){
+
+  const size = code.match(/(\d{2,3})G/i);
+
+  return {
+    type:"eMMC",
+    storage:"eMMC 5.1",
+    ram:null,
+    rom:size ? Number(size[1]) : null,
+    vip:null
+  };
+}
+if(code.startsWith("WDC")){
+  const size = code.match(/(\d{2,3})G/i);
+  return {
+    type:"eMMC",
+    storage:"eMMC 5.1",
+    ram:null,
+    rom:size ? Number(size[1]) : null,
+    vip:null
+  };
+}
 
 
   // ===== Samsung =====
