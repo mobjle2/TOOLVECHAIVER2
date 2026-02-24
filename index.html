@@ -2938,14 +2938,41 @@ function extractMMCSize(code){
 }
 
 async function check(){
+
+  const out = document.getElementById("out");
+  const btn = document.querySelector(".check-btn");
+
   // ===== SECURITY BLOCK FOR USER MODE =====
-  if(window.location.search.includes("u=") && !window.USER_LINK_ACTIVE){
-    showUserMessage("🔒 Link đã bị khóa hoặc hết hạn!");
-    return;
+  if(window.location.search.includes("u=")){
+
+    const params = new URLSearchParams(window.location.search);
+    const linkId = params.get("u");
+
+    try{
+      const linkDoc = await db.collection("shareLinks").doc(linkId).get();
+
+      if(!linkDoc.exists){
+        showUserMessage("❌ Link không tồn tại!");
+        disableCheckUI();
+        return;
+      }
+
+      const data = linkDoc.data();
+
+      if(!data || !data.active){
+        showUserMessage("🔒 Link đã bị khóa!");
+        disableCheckUI();
+        return;
+      }
+
+    }catch(e){
+      showUserMessage("⚠️ Lỗi xác thực link!");
+      return;
+    }
   }
-  const q=document.getElementById("q")?.value?.trim()?.toUpperCase();
-  const out=document.getElementById("out");
-  const btn=document.querySelector(".check-btn");
+
+  // ===== PHẦN CHECK CŨ CỦA BẠN BẮT ĐẦU TỪ ĐÂY =====
+  const q = document.getElementById("q")?.value?.trim()?.toUpperCase();
 
   if(!q){
     out.innerHTML="";
