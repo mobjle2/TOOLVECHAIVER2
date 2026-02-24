@@ -1853,6 +1853,31 @@ function decodeSamsung(code){
   if(!code) return result;
 
 const main = code.toUpperCase().split("-")[0];
+
+/* ===============================
+   SAMSUNG KLM eMMC REAL FIX
+================================ */
+if(main.startsWith("KLM")){
+
+  let rom = null;
+
+  // Samsung density mapping thật
+  if(main.includes("8G")) rom = 8;
+  else if(main.includes("1G")) rom = 16;
+  else if(main.includes("2G")) rom = 32;
+  else if(main.includes("4G")) rom = 64;
+  else if(main.includes("8H") || main.includes("8J")) rom = 128;
+  else if(main.includes("AJ")) rom = 256;
+
+  return {
+    type:"eMMC",
+    storage:"eMMC 5.1",
+    ram:null,
+    rom:rom,
+    vip:null
+  };
+}
+
 /* =====================================================
 /* =====================================================
    🔹 KMG SERIES (Samsung eMMC uMCP)
