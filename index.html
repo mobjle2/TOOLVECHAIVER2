@@ -2903,20 +2903,36 @@ async function loadVIPLearning(){
 
 
 /* ===============================
-   FORMAT SAMSUNG MODEL
+   FORMAT PHONE MODELS (AUTO BRAND)
 ================================ */
 function formatSamsungModels(text){
 
   if(!text) return "";
 
   const models = text
-    .replace(/SAMSUNG/gi,"")
-    .replace(/32GB|64GB|128GB|256GB/gi,"")
+    .replace(/32GB|64GB|128GB|256GB|512GB/gi,"")
     .split(",")
     .map(m=>m.trim())
     .filter(Boolean);
 
-  return "Samsung: " + models.join(" / ");
+  const detectBrand = (m)=>{
+
+    if(/samsung|galaxy/i.test(m)) return "Samsung";
+    if(/oppo/i.test(m)) return "OPPO";
+    if(/vivo/i.test(m)) return "VIVO";
+    if(/xiaomi|redmi|poco/i.test(m)) return "Xiaomi";
+    if(/realme/i.test(m)) return "Realme";
+    if(/oneplus/i.test(m)) return "OnePlus";
+    if(/nokia/i.test(m)) return "Nokia";
+    if(/tecno/i.test(m)) return "TECNO";
+    if(/infinix/i.test(m)) return "Infinix";
+
+    return "Unknown";
+  };
+
+  return models
+    .map(m => `${detectBrand(m)}: ${m}`)
+    .join("<br>");
 }
 
 
