@@ -2903,7 +2903,7 @@ async function loadVIPLearning(){
 
 
 /* ===============================
-   FORMAT PHONE MODELS (AUTO BRAND)
+   FORMAT PHONE MODELS (AUTO BRAND CLEAN)
 ================================ */
 function formatSamsungModels(text){
 
@@ -2927,14 +2927,24 @@ function formatSamsungModels(text){
     if(/tecno/i.test(m)) return "TECNO";
     if(/infinix/i.test(m)) return "Infinix";
 
-    return "Unknown";
+    return "";
   };
 
-  return models
-    .map(m => `${detectBrand(m)}: ${m}`)
-    .join("<br>");
-}
+  return models.map(m=>{
 
+    const brand = detectBrand(m);
+
+    // ⭐ xoá hãng khỏi tên model
+    let cleanModel = m
+      .replace(/samsung|galaxy|oppo|vivo|xiaomi|redmi|poco|realme|oneplus|nokia|tecno|infinix/gi,"")
+      .trim();
+
+    return brand
+      ? `${brand}: ${cleanModel}`
+      : cleanModel;
+
+  }).join("<br>");
+}
 
 /* ===============================
    MMC SIZE DETECT
