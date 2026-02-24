@@ -1962,55 +1962,91 @@ if (main.startsWith("KMA")) {
 
   return result;
 }
-  // =====================================================
-  // 🔹 1. eMMC LOW SERIES (KMG / KMD / KMQ ...)
-  // =====================================================
-  const emmcPrefixes = ["KMG","KMO","KMI","KMQ","KMD","KMR"];
+// =====================================================
+// 🔹 1. SAMSUNG eMMC LOW SERIES (FULL FIX)
+// =====================================================
 
-  if(emmcPrefixes.some(p => main.startsWith(p))){
+const emmcPrefixes = [
+  "KMG","KMI","KMQ","KMW","KMH",
+  "KME","KMN","KMF","KMO","KMR","KMD"
+];
 
-    result.type = "eMMC";
+if(emmcPrefixes.some(p => main.startsWith(p))){
 
-    if(main.includes("1001") || main.includes("1000")){
-      result.rom = 16;
+  result.type = "eMMC";
+
+  /* ===============================
+     STORAGE VERSION DETECT
+  =============================== */
+
+  // eMMC 5.0 series
+  if(
+      main.includes("1001") ||
+      main.includes("1000") ||
+      main.includes("0012") ||
+      main.includes("10012")
+  ){
       result.storage = "eMMC 5.0";
-    }
-    else if(main.includes("6001") || main.includes("6000")){
+      result.rom = 16;
+  }
+
+  // eMMC 5.1 main production
+  else if(
+      main.includes("6001") ||
+      main.includes("6000")
+  ){
       result.storage = "eMMC 5.1";
 
       if(main.startsWith("KMQE") || main.startsWith("KMQ3"))
-        result.rom = 16;
+          result.rom = 16;
       else if(main.startsWith("KMDX"))
-        result.rom = 32;
+          result.rom = 32;
       else
-        result.rom = 64;
-    }
-    else if(main.includes("0001")){
-      result.rom = 32;
+          result.rom = 64;
+  }
+
+  // legacy 32GB layout
+  else if(main.includes("0001")){
       result.storage = "eMMC 5.1";
-    }
+      result.rom = 32;
+  }
 
-    result.version = result.storage;
+  // fallback Samsung rule
+  else{
+      result.storage = "eMMC 5.1";
+      result.rom = result.rom || 32;
+  }
 
-    const ramChar = main[main.length - 2];
+  result.version = result.storage;
 
-const ramMapLow = {
-  "3":2,
-  "4":4,
-  "8":3,
-  "B":2,   // ⭐ FIX KMRX1000BM
-  "C":6,
-  "D":6,
-  "M":8,
-  "E":4
-};
+  /* ===============================
+     RAM DETECT
+  =============================== */
 
-    if(ramMapLow[ramChar])
+  const ramChar = main[main.length - 2];
+
+  const ramMapLow = {
+    "3":2,
+    "4":4,
+    "8":3,
+    "B":2,
+    "C":6,
+    "D":6,
+    "M":8,
+    "E":4
+  };
+
+  if(ramMapLow[ramChar])
       result.ram = ramMapLow[ramChar];
 
-    result.vip = calculateVip(result.ram, result.rom);
-    return result;
-  }
+  /* ===============================
+     VIP
+  =============================== */
+
+  result.vip = calculateVip(result.ram, result.rom);
+
+  return result;
+}
 
   // =====================================================
   // 🔹 2. KM3H / KM3V / KM4X (eMMC FIXED SKU)
