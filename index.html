@@ -1450,7 +1450,7 @@ const isUserMode = urlParams.has("u");
 /* ❗ KHÔNG logout ngay nữa */
 /* auth listener phía dưới sẽ xử lý */
 
-
+window.USER_LINK_ACTIVE = true;
 /* ===== USER MODE (?u=) ===== */
 
 const params = new URLSearchParams(window.location.search);
@@ -1590,19 +1590,41 @@ async function runUserMode(id){
   }
 }
 function disableCheckUI(){
+
+  // 🔒 Đánh dấu link không còn hợp lệ
+  window.USER_LINK_ACTIVE = false;
+
   const input = document.getElementById("q");
   const btn   = document.querySelector(".check-btn");
 
-  if(input) input.disabled = true;
-  if(btn)   btn.disabled = true;
+  if(input){
+    input.disabled = true;
+    input.style.opacity = "0.6";
+  }
+
+  if(btn){
+    btn.disabled = true;
+    btn.style.opacity = "0.6";
+  }
 }
 
 function enableCheckUI(){
+
+  // ✅ Đánh dấu link đang hoạt động
+  window.USER_LINK_ACTIVE = true;
+
   const input = document.getElementById("q");
   const btn   = document.querySelector(".check-btn");
 
-  if(input) input.disabled = false;
-  if(btn)   btn.disabled = false;
+  if(input){
+    input.disabled = false;
+    input.style.opacity = "1";
+  }
+
+  if(btn){
+    btn.disabled = false;
+    btn.style.opacity = "1";
+  }
 }
 
 /* ===== GLOBAL ERROR SHIELD ===== */
@@ -2899,7 +2921,11 @@ function extractMMCSize(code){
 }
 
 async function check(){
-
+  // ===== SECURITY BLOCK FOR USER MODE =====
+  if(window.location.search.includes("u=") && !window.USER_LINK_ACTIVE){
+    showUserMessage("🔒 Link đã bị khóa hoặc hết hạn!");
+    return;
+  }
   const q=document.getElementById("q")?.value?.trim()?.toUpperCase();
   const out=document.getElementById("out");
   const btn=document.querySelector(".check-btn");
