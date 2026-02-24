@@ -1469,99 +1469,141 @@ if(userParam){
 }
 
 
-/* ===== USER MODE ENGINE ===== */
+/* ===== USER MODE ENGINE (REALTIME VERSION) ===== */
 
 async function runUserMode(id){
 
   try{
 
+    // ===== ẨN ADMIN UI =====
     document.getElementById("loginScreen")?.remove();
     document.getElementById("adminToggle")?.remove();
     document.querySelector(".create-link-btn")?.remove();
     document.getElementById("adminContent")?.remove();
 
-    const doc = await db.collection("shareLinks").doc(id).get();
+    const ref = db.collection("shareLinks").doc(id);
 
-    if(!doc.exists){
-      showUserMessage("❌ Link không tồn tại!");
-      return;
-    }
+    let countdownInterval = null;
 
-    const data = doc.data();
+    // ===== REALTIME LISTENER =====
+    ref.onSnapshot(async (doc)=>{
 
-    if(!data.active){
-      showUserMessage("🔒 Link đã bị khóa!");
-      return;
-    }
-
-    if(data.expiresAt && data.expiresAt.toDate() < new Date()){
-
-      await db.collection("shareLinks").doc(id).update({
-        active:false
-      });
-
-      showUserMessage("⛔ Link đã hết hạn!");
-      return;
-    }
-
-    await db.collection("shareLinks").doc(id).update({
-      views: firebase.firestore.FieldValue.increment(1)
-    });
-
-    if(data.expiresAt){
-
-      let box=document.getElementById("countdownBox");
-
-      if(!box){
-        box=document.createElement("div");
-        box.id="countdownBox";
-
-        Object.assign(box.style,{
-          position:"fixed",
-          top:"12px",
-          right:"16px",
-          background:"rgba(15,23,42,0.9)",
-          border:"1px solid #334155",
-          borderRadius:"10px",
-          padding:"8px 14px",
-          fontSize:"14px",
-          fontWeight:"600",
-          color:"#facc15",
-          zIndex:"9999"
-        });
-
-        document.body.appendChild(box);
+      // ===== LINK BỊ XÓA =====
+      if(!doc.exists){
+        showUserMessage("❌ Link không tồn tại hoặc đã bị xóa!");
+        disableCheckUI();
+        return;
       }
 
-      const end=data.expiresAt.toDate();
+      const data = doc.data();
 
-      setInterval(async()=>{
+      // ===== LINK BỊ KHÓA =====
+      if(!data.active){
+        showUserMessage("🔒 Link đã bị khóa!");
+        disableCheckUI();
+        return;
+      }
 
-        const diff=end-new Date();
+      // ===== LINK HẾT HẠN =====
+      if(data.expiresAt && data.expiresAt.toDate() < new Date()){
 
-        if(diff<=0){
-          await db.collection("shareLinks").doc(id).update({
-            active:false
+        await ref.update({ active:false });
+
+        showUserMessage("⛔ Link đã hết hạn!");
+        disableCheckUI();
+        return;
+      }
+
+      // ===== LINK HỢP LỆ =====
+      enableCheckUI();
+
+      // ===== TĂNG VIEW (CHỈ TĂNG 1 LẦN) =====
+      if(!window._viewCounted){
+        await ref.update({
+          views: firebase.firestore.FieldValue.increment(1)
+        });
+        window._viewCounted = true;
+      }
+
+      // ===== COUNTDOWN =====
+      if(data.expiresAt){
+
+        let box = document.getElementById("countdownBox");
+
+        if(!box){
+          box = document.createElement("div");
+          box.id = "countdownBox";
+
+          Object.assign(box.style,{
+            position:"fixed",
+            top:"12px",
+            right:"16px",
+            background:"rgba(15,23,42,0.9)",
+            border:"1px solid #334155",
+            borderRadius:"10px",
+            padding:"8px 14px",
+            fontSize:"14px",
+            fontWeight:"600",
+            color:"#facc15",
+            zIndex:"9999"
           });
-          box.innerText="⛔ Link đã hết hạn!";
-          return;
+
+          document.body.appendChild(box);
         }
 
-        const d=Math.floor(diff/86400000);
-        const h=Math.floor((diff/3600000)%24);
-        const m=Math.floor((diff/60000)%60);
+        const end = data.expiresAt.toDate();
 
-        box.innerText=`⏳ Còn ${d} ngày ${h} giờ ${m} phút`;
+        if(countdownInterval){
+          clearInterval(countdownInterval);
+        }
 
-      },1000);
-    }
+        countdownInterval = setInterval(async()=>{
+
+          const diff = end - new Date();
+
+          if(diff <= 0){
+
+            clearInterval(countdownInterval);
+
+            await ref.update({ active:false });
+
+            box.innerText = "⛔ Link đã hết hạn!";
+            disableCheckUI();
+            return;
+          }
+
+          const d = Math.floor(diff/86400000);
+          const h = Math.floor((diff/3600000)%24);
+          const m = Math.floor((diff/60000)%60);
+
+          box.innerText = `⏳ Còn ${d} ngày ${h} giờ ${m} phút`;
+
+        },1000);
+      }
+
+    });
 
   }catch(e){
     console.error(e);
     showUserMessage("⚠️ Lỗi quyền truy cập!");
+    disableCheckUI();
   }
 }
+function disableCheckUI(){
+  const input = document.getElementById("q");
+  const btn   = document.querySelector(".check-btn");
 
+  if(input) input.disabled = true;
+  if(btn)   btn.disabled = true;
+}
+
+function enableCheckUI(){
+  const input = document.getElementById("q");
+  const btn   = document.querySelector(".check-btn");
+
+  if(input) input.disabled = false;
+  if(btn)   btn.disabled = false;
+}
 
 /* ===== GLOBAL ERROR SHIELD ===== */
 
