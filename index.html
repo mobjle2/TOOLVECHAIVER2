@@ -3249,19 +3249,31 @@ ${
 </div>
 
 ${
-Array.isArray(x.models) && x.models.length
-? `<div class="model-line">
-     📱 ${
-        x.models.join(", ").includes(":")
-          ? x.models.join("<br>")   // ⭐ ƯU TIÊN FIREBASE
-          : formatSamsungModels(x.models.join(", "))
-       }
-   </div>`
-: `<div class="model-placeholder">
-     📱 Chưa có model
-   </div>`
-}
+(() => {
 
+  if(!x.models || !Array.isArray(x.models) || !x.models.length){
+    return `<div class="model-placeholder">
+              📱 Chưa có model
+            </div>`;
+  }
+
+  const rawModels = x.models
+    .filter(Boolean)
+    .map(m => String(m).trim());
+
+  const joined = rawModels.join(", ");
+
+  const modelText =
+    joined.includes(":")
+      ? rawModels.join("<br>")   // ⭐ FIREBASE PRIORITY
+      : formatSamsungModels(joined);
+
+  return `<div class="model-line">
+            📱 ${modelText}
+          </div>`;
+
+})()
+}
 </div>`;
 
     html+=`</div>`;
