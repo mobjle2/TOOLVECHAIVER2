@@ -3291,7 +3291,7 @@ return levelBadge + specBadge;
 </div>
 
 ${
-Array.isArray(x.models)&&x.models.length
+Array.isArray(x.models) && x.models.length
 ? `<div class="model-line">
      📱 ${formatSamsungModels(x.models.join(", "))}
    </div>`
@@ -3303,43 +3303,43 @@ Array.isArray(x.models)&&x.models.length
 </div>`;
 }
 
-    html+=`</div>`;
+html+=`</div>`;
 
-    if(html===`<div class="result-grid"></div>`){
-      html=`
-        <div style="
-          margin-top:40px;
-          text-align:center;
-          font-size:18px;
-          font-weight:600;
-          color:#facc15;">
-          🔄 Mã đang cập nhật hoặc chưa có trong hệ thống
-        </div>`;
-    }
+if(html===`<div class="result-grid"></div>`){
+  html=`
+    <div style="
+      margin-top:40px;
+      text-align:center;
+      font-size:18px;
+      font-weight:600;
+      color:#facc15;">
+      🔄 Mã đang cập nhật hoặc chưa có trong hệ thống
+    </div>`;
+}
 
-    clearInterval(fakeLoading);
+clearInterval(fakeLoading);
 
-    fill.style.width="100%";
-    text.innerText="100%";
+fill.style.width="100%";
+text.innerText="100%";
 
-    setTimeout(()=>{
-      out.innerHTML=html;
-      btn.disabled=false;
-      btn.style.opacity="1";
-    },300);
+setTimeout(()=>{
+  out.innerHTML=html;
+  btn.disabled=false;
+  btn.style.opacity="1";
+},300);
 
-  }catch(err){
+}catch(err){
 
-    clearInterval(fakeLoading);
-    console.error(err);
+  clearInterval(fakeLoading);
+  console.error(err);
 
-    out.innerHTML=`<div style="color:#ef4444;text-align:center;">
+  out.innerHTML=`
+    <div style="color:#ef4444;text-align:center;">
       ⚠️ Lỗi hệ thống
     </div>`;
 
-    btn.disabled=false;
-    btn.style.opacity="1";
-  }
+  btn.disabled=false;
+  btn.style.opacity="1";
 }
 
   
