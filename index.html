@@ -1824,19 +1824,37 @@ function calculateVip(ram, rom){
 /* ===============================
    MMC LEVEL ENGINE
 ================================ */
-function getMMCLevel(rom){
+function getMMCLevel(storage, rom){
 
+  // =========================
+  // SAFE CHECK
+  // =========================
+  if(!storage) return null;
+
+  // =========================
+  // CHỈ eMMC MỚI CÓ MMC
+  // =========================
+  const s = storage.toLowerCase();
+
+  if(!s.includes("emmc"))
+    return null;
+
+  // =========================
+  // SAFE ROM
+  // =========================
   rom = Number(rom);
-
   if(!rom) return null;
 
+  // =========================
+  // MMC LEVEL
+  // =========================
   if(rom <= 16) return "MMC1";
   if(rom === 32) return "MMC2";
   if(rom === 64) return "MMC3";
   if(rom === 128) return "MMC4";
   if(rom >= 256) return "MMC5";
 
-  return "MMC";
+  return null;
 }
 
 function decodeSamsung(code){
