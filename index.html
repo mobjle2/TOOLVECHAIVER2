@@ -3206,9 +3206,7 @@ const isMMC =
 <div class="result-card ${chip.class}">
 
   <div class="code-main">${x.code}</div>
-  <div class="brand" style="color:${chip.color}">
-  ${getBrandLogo(chip.name)} ${chip.name}
-</div>
+
 
   <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
 
@@ -3241,11 +3239,26 @@ const levelBadge = hasVIP
           ? '<div class="ram-badge">' + decoded.ram + 'GB RAM</div>'
           : '';
 
-  return levelBadge + specBadge;
+return levelBadge + specBadge;
 
 })()}
 </div>
 
+<div class="card-footer">
+
+  <div class="chip-info" style="color:${chip.color}">
+    <span class="chip-dot" style="background:${chip.color}"></span>
+
+    ${chip.name}
+
+    <span style="opacity:.6;">UFS 2.1</span>
+  </div>
+
+</div>
+
+${
+Array.isArray(x.models)&&x.models.length
+? `<div class="model-line">
 
 
 ${
