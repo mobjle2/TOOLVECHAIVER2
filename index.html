@@ -1673,63 +1673,32 @@ function showUserMessage(text){
 function detectChip(code){
 
   if(!code)
-    return {name:"UNKNOWN",color:"#6b7280"};
+    return {name:"UNKNOWN",color:"#6b7280",class:"brand-unknown"};
 
   code = code.toUpperCase().trim();
 
-  /* ===============================
-     SAMSUNG
-  =============================== */
-  if(/^K/.test(code)){
-    return {name:"Samsung", color:"#22c55e"};
-  }
+  if(/^K/.test(code))
+    return {name:"Samsung",color:"#22c55e",class:"brand-samsung"};
 
-  /* ===============================
-     SK HYNIX
-  =============================== */
-  if(/^(H9|H26|H27)/.test(code)){
-    return {name:"SK hynix", color:"#a855f7"};
-  }
+  if(/^(H9|H26|H27)/.test(code))
+    return {name:"SK hynix",color:"#a855f7",class:"brand-hynix"};
 
-  /* ===============================
-     MICRON (OEM + Official)
-  =============================== */
-  if(/^(MT|NW|JY|JZ|PA)/.test(code)){
-    return {name:"Micron", color:"#0ea5e9"};
-  }
+  if(/^(MT|NW|JY|JZ|PA)/.test(code))
+    return {name:"Micron",color:"#0ea5e9",class:"brand-micron"};
 
-  /* ===============================
-     KIOXIA / TOSHIBA
-  =============================== */
-  if(/^(TH|TC|TY)/.test(code)){
-    return {name:"Kioxia", color:"#f97316"};
-  }
+  if(/^(TH|TC|TY)/.test(code))
+    return {name:"Kioxia",color:"#f97316",class:"brand-kioxia"};
 
-  /* ===============================
-     SANDISK / WESTERN DIGITAL
-  =============================== */
-  if(/^(SD|SDIN|WDC)/.test(code)){
-    return {name:"SanDisk / WD", color:"#ef4444"};
-  }
+  if(/^(SD|SDIN|WDC)/.test(code))
+    return {name:"SanDisk / WD",color:"#ef4444",class:"brand-wd"};
 
-  /* ===============================
-     YMTC
-  =============================== */
-  if(/^(YM|YMTC|YMEC)/.test(code)){
-    return {name:"YMTC", color:"#06b6d4"};
-  }
+  if(/^(YM|YMEC)/.test(code))
+    return {name:"YMTC",color:"#06b6d4",class:"brand-ymtc"};
 
-  /* ===============================
-     FORESEE / LONGSYS
-  =============================== */
-  if(/^(FS)/.test(code)){
-    return {name:"FORESEE", color:"#10b981"};
-  }
+  if(/^FS/.test(code))
+    return {name:"FORESEE",color:"#10b981",class:"brand-foresee"};
 
-  /* ===============================
-     DEFAULT
-  =============================== */
-  return {name:"UNKNOWN", color:"#6b7280"};
+  return {name:"UNKNOWN",color:"#6b7280",class:"brand-unknown"};
 }
 
 // ===== VIP RULE (ỔN ĐỊNH & CHUẨN HÓA KIỂU DỮ LIỆU) =====
@@ -3230,9 +3199,12 @@ const isMMC =
    decoded.storage?.includes("eMMC");
       
       html+=`
-<div class="result-card">
+<div class="result-card ${chip.class}">
 
   <div class="code-main">${x.code}</div>
+  <div class="brand" style="color:${chip.color}">
+  ${getBrandLogo(chip.name)} ${chip.name}
+</div>
 
   <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
 
@@ -3823,7 +3795,21 @@ function toggleAdmin(){
   }
 
 }
+function getBrandLogo(name){
 
+  const logo={
+    "Samsung":"🟢",
+    "SK hynix":"🟣",
+    "Micron":"🔵",
+    "Kioxia":"🟠",
+    "SanDisk / WD":"🔴",
+    "YMTC":"🔷",
+    "FORESEE":"🟩",
+    "UNKNOWN":"⚪"
+  };
+
+  return logo[name]||"⚪";
+}
 
 </script>
 </body>
