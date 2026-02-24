@@ -1821,6 +1821,24 @@ function calculateVip(ram, rom){
   return 0;
 }
 
+/* ===============================
+   MMC LEVEL ENGINE
+================================ */
+function getMMCLevel(rom){
+
+  rom = Number(rom);
+
+  if(!rom) return null;
+
+  if(rom <= 16) return "MMC1";
+  if(rom === 32) return "MMC2";
+  if(rom === 64) return "MMC3";
+  if(rom === 128) return "MMC4";
+  if(rom >= 256) return "MMC5";
+
+  return "MMC";
+}
+
 function decodeSamsung(code){
 
   const result = {
@@ -3119,6 +3137,11 @@ async function check(){
 
       if(typeof decoded!=="object") decoded={};
 
+const isMMC =
+   x.code.startsWith("KLM") ||
+   x.code.startsWith("KMG") ||
+   decoded.storage?.includes("eMMC");
+      
       html+=`
 <div class="result-card">
 
@@ -3126,15 +3149,15 @@ async function check(){
 
   <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
 
-   ${
-  forceMMC
-    ? '<div class="vip-badge">MMC</div>'
+${
+  isMMC
+    ? '<div class="vip-badge">'+getMMCLevel(decoded.rom)+'</div>'
     : '<div class="vip-badge vip-'+Math.floor(decoded.vip||0)+'">VIP '+(decoded.vip===4.5?"4+":Math.floor(decoded.vip||0))+'</div>'
 }
 
 ${
-  forceMMC
-    ? '<div class="ram-badge">'+(extractMMCSize(x.code)||"")+'GB</div>'
+  isMMC
+    ? '<div class="ram-badge">'+decoded.rom+'GB</div>'
     : (
         decoded.ram && decoded.rom
           ? '<div class="ram-badge">'+decoded.ram+'/'+decoded.rom+'</div>'
