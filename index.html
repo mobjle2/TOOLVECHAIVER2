@@ -1755,9 +1755,10 @@ function calculateVip(ram, rom){
   // =========================
   if ([4,6].includes(ram) && rom === 128)
     return 7;
+  // =========================
   // VIP 6+
-if (ram === 6 && rom === 64)
-  return 6.5;
+  if (ram === 6 && rom === 64)
+   return 6.5;
   // =========================
   // VIP 6 — eMMC MID
   // =========================
