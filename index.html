@@ -3245,21 +3245,14 @@ return levelBadge + specBadge;
 </div>
 
 <div class="card-footer">
-
   <div class="chip-info" style="color:${chip.color}">
     <span class="chip-dot" style="background:${chip.color}"></span>
-
     ${chip.name}
-
-    <span style="opacity:.6;">UFS 2.1</span>
+    <span style="opacity:.6;">
+      ${decoded.storage || ""}
+    </span>
   </div>
-
 </div>
-
-${
-Array.isArray(x.models)&&x.models.length
-? `<div class="model-line">
-
 
 ${
 Array.isArray(x.models)&&x.models.length
@@ -3272,7 +3265,6 @@ Array.isArray(x.models)&&x.models.length
 }
 
 </div>`;
-    }
 
     html+=`</div>`;
 
