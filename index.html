@@ -1686,10 +1686,10 @@ function detectChip(code){
     return {name:"SK hynix", color:"#a855f7"};
   }
 
-  // ===== MICRON =====
-  if(/^(MT|JZ|NW)/.test(code)){
-    return {name:"MICRON", color:"#0ea5e9"};
-  }
+// ===== MICRON =====
+if(/^(MT|JZ|JY|PA|NW)/.test(code)){
+  return {name:"MICRON", color:"#0ea5e9"};
+}
 
   // ===== TOSHIBA / KIOXIA =====
   // Toshiba thường bắt đầu bằng:
