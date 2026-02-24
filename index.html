@@ -3220,26 +3220,35 @@ const isMMC =
 
   <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
 
-${
-  isMMC
-    ? '<div class="vip-badge">'+getMMCLevel(decoded.rom)+'</div>'
-    : '<div class="vip-badge vip-'+Math.floor(decoded.vip||0)+'">VIP '+(decoded.vip===4.5?"4+":Math.floor(decoded.vip||0))+'</div>'
-}
+${(() => {
 
-${
-  isMMC
-    ? '<div class="ram-badge">'+decoded.rom+'GB</div>'
-    : (
-        decoded.ram && decoded.rom
-          ? '<div class="ram-badge">'+decoded.ram+'/'+decoded.rom+'</div>'
-        : decoded.rom
-          ? '<div class="ram-badge">'+decoded.rom+'GB</div>'
+  // ===== PRIORITY LOGIC =====
+  const mmc = getMMCLevel(decoded.rom);
+
+  const hasVIP = decoded.vip !== null && decoded.vip !== undefined && decoded.vip > 0;
+
+  // ===== BADGE LEVEL =====
+  const levelBadge = hasVIP
+    ? '<div class="vip-badge vip-' + Math.floor(decoded.vip) + '">' +
+        'VIP ' + (decoded.vip === 4.5 ? "4+" : Math.floor(decoded.vip)) +
+      '</div>'
+    : (mmc
+        ? '<div class="vip-badge">' + mmc + '</div>'
+        : '');
+
+  // ===== RAM / ROM BADGE =====
+  const specBadge =
+    decoded.ram && decoded.rom
+      ? '<div class="ram-badge">' + decoded.ram + '/' + decoded.rom + '</div>'
+      : decoded.rom
+        ? '<div class="ram-badge">' + decoded.rom + 'GB</div>'
         : decoded.ram
-          ? '<div class="ram-badge">'+decoded.ram+'GB RAM</div>'
-        : ''
-      )
-}
+          ? '<div class="ram-badge">' + decoded.ram + 'GB RAM</div>'
+          : '';
 
+  return levelBadge + specBadge;
+
+})()}
 </div>
 
 <div style="margin-top:14px;text-align:center;font-size:15px;">
