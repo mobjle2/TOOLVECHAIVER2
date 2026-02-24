@@ -1340,6 +1340,75 @@ body::before{
 
   backdrop-filter:blur(6px);
 }
+
+/* ===============================
+   CARD ALIGN PRO
+================================ */
+
+/* CARD FLEX COLUMN */
+.result-card{
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  min-height:210px;
+}
+
+/* VIP + RAM CENTER */
+.badge-row{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:12px;
+  margin-top:14px;
+}
+
+/* FOOTER LUÔN NẰM ĐÁY */
+.card-footer{
+  margin-top:auto;
+  padding-top:14px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:15px;
+}
+
+/* CHIP INFO */
+.chip-info{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-weight:600;
+  opacity:.9;
+}
+
+/* DOT HÃNG */
+.chip-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+}
+
+/* MODEL TEXT */
+.model-line,
+.model-placeholder{
+  margin-top:10px;
+  font-size:14px;
+  opacity:.8;
+}
+
+/* RAM BADGE CENTER FIX */
+.ram-badge{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* VIP BADGE CENTER FIX */
+.vip-badge{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
   
 </style>
 
@@ -3208,7 +3277,7 @@ const isMMC =
   <div class="code-main">${x.code}</div>
 
 
-  <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
+<div class="badge-row">
 
 ${(() => {
 
