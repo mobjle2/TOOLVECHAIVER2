@@ -1853,6 +1853,28 @@ function decodeSamsung(code){
   if(!code) return result;
 
 const main = code.toUpperCase().split("-")[0];
+/* ===============================
+   SAMSUNG KLM eMMC ENGINE
+================================ */
+if(main.startsWith("KLM")){
+
+  let rom = null;
+
+  // Samsung density encoding thật
+  if(/G1/.test(main)) rom = 16;
+  else if(/G2/.test(main)) rom = 32;
+  else if(/G4/.test(main)) rom = 64;
+  else if(/G8/.test(main)) rom = 128;
+  else if(/GA/.test(main)) rom = 256;
+
+  return {
+    type:"eMMC",
+    storage:"eMMC 5.1",
+    ram:null,
+    rom:rom,
+    vip:null
+  };
+}
 
 /* ===============================
    SAMSUNG KLM eMMC REAL FIX
