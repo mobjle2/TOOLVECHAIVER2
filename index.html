@@ -3738,25 +3738,43 @@ async function startRename(id){
 
   const name = prompt("Tên hiển thị:");
 
-  if(!name) return;
+  if(name === null) return;
 
   try{
+
+    await db.collection("shareLinks")
+      .doc(id)
+      .set({
+        alias: name.trim()
+      },{merge:true});
+
+    // cập nhật lại danh sách ngay
+    loadLinks();
+
+  }catch(e){
+    console.error(e);
+    alert("Đổi tên thất bại");
+  }
+}
+
+
+// ===== TOGGLE LINK (MỞ / KHÓA) =====
+async function toggleLink(id, current){
+
+  try{
+
     await db.collection("shareLinks")
       .doc(id)
       .update({
-        alias: name.trim()
+        active: !current
       });
+
+    loadLinks();
+
   }catch(e){
-    alert("Đổi tên thất bại");
     console.error(e);
   }
-}
-// ===== TOGGLE LINK (MỞ / KHÓA) =====
-async function toggleLink(id, current){
-  await db.collection("shareLinks").doc(id).update({
-    active: !current
-  });
-  loadLinks();
+
 }
 
 
