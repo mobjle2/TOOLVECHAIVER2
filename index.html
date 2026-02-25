@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <!DOCTYPE html>
 <html lang="vi">
@@ -3469,6 +3467,7 @@ async function loadLinks(){
 
     const d = doc.data();
     const id = doc.id;
+    const displayName = d.alias && d.alias.trim() !== "" ? d.alias : id;
 
     html += `
       <div class="link-card">
@@ -3477,7 +3476,7 @@ async function loadLinks(){
 
           <div class="link-id-row">
             <div class="link-id editable-name" id="name-${id}">
-              ${d.alias ? d.alias : id}
+              ${displayName}
             </div>
             <span class="edit-icon" onclick="startRename('${id}')">✏️</span>
           </div>
@@ -3521,6 +3520,7 @@ async function loadLinks(){
   });
 
   document.getElementById("linkList").innerHTML = html;
+}
 
   // ===== COUNTDOWN REALTIME =====
   snap.forEach(doc=>{
