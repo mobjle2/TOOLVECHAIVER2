@@ -3476,7 +3476,7 @@ html += `
 
 <div class="link-id-row">
   <div class="link-id editable-name" id="name-${id}">
-    ${d.name || id}
+    ${d.alias || id}
   </div>
   <span class="edit-icon" onclick="startRename('${id}')">✏️</span>
 </div>
@@ -3515,7 +3515,8 @@ html += `
 
   </div>
 `;
-  });
+});
+  
   document.getElementById("linkList").innerHTML = html;
 
   // ===== COUNTDOWN REALTIME CHO ADMIN =====
@@ -3708,7 +3709,19 @@ function copyLink(id, btn){
     btn.style.color = "";
   },1500);
 }
+async function startRename(id){
 
+  const name = prompt("Tên hiển thị:");
+
+  if(!name) return;
+
+  await db.collection("shareLinks")
+    .doc(id)
+    .update({
+      alias: name.trim()
+    });
+
+}
 
 // ===== TOGGLE LINK (MỞ / KHÓA) =====
 async function toggleLink(id, current){
