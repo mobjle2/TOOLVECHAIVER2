@@ -1425,6 +1425,8 @@ body::before{
 <div id="out" style="margin-top:20px;"></div>
 
 <script>
+
+
 /* ===== SAFE FIREBASE INIT ===== */
 
 const firebaseConfig = {
@@ -1441,6 +1443,8 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+/* ⭐ BẮT BUỘC */
+firebase.firestore().enableNetwork();
 
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
