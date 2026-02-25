@@ -3589,7 +3589,7 @@ async function loadLinks(){
 /* ===== EDIT LINK ALIAS (ADMIN ONLY) ===== */
 async function editAlias(id, current){
 
-  const name = window.prompt("", current);
+  const name = prompt("Nhập tên để nhớ cho link:", current);
   if(name === null) return;
 
   const ref = db.collection("shareLinks").doc(id);
