@@ -3469,14 +3469,14 @@ async function loadLinks(){
     const d = doc.data();
     const id = doc.id;
 
-   html += `
+html += `
   <div class="link-card">
     
     <div class="link-left">
 
 <div class="link-id-row">
   <div class="link-id editable-name" id="name-${id}">
-    ${localStorage.getItem("alias_" + id) || id}
+    ${d.name || id}
   </div>
   <span class="edit-icon" onclick="startRename('${id}')">✏️</span>
 </div>
@@ -3516,7 +3516,6 @@ async function loadLinks(){
   </div>
 `;
   });
-
   document.getElementById("linkList").innerHTML = html;
 
   // ===== COUNTDOWN REALTIME CHO ADMIN =====
