@@ -3466,11 +3466,6 @@ async function createLink(){
 }
 
 
-
-
-
-
-
 async function loadLinks(){
 
   const snap = await db.collection("shareLinks").get();
@@ -3545,7 +3540,6 @@ async function loadLinks(){
 
     const id = el.dataset.id;
 
-    // ENTER = SAVE
     el.addEventListener("keydown", e=>{
       if(e.key === "Enter"){
         e.preventDefault();
@@ -3553,14 +3547,12 @@ async function loadLinks(){
       }
     });
 
-    // CLICK OUTSIDE = SAVE
     el.addEventListener("blur", async ()=>{
 
       const value = el.innerText.trim();
       const ref = db.collection("shareLinks").doc(id);
 
       try{
-
         if(!value){
           await ref.update({
             alias: firebase.firestore.FieldValue.delete()
@@ -3570,7 +3562,6 @@ async function loadLinks(){
             alias: value
           });
         }
-
       }catch(err){
         console.error("Rename error:",err);
       }
@@ -3579,10 +3570,9 @@ async function loadLinks(){
 
   });
 
-}
-  document.getElementById("linkList").innerHTML = html;
 
-  // ===== COUNTDOWN REALTIME =====
+  /* ===== COUNTDOWN REALTIME ===== */
+
   snap.forEach(doc=>{
 
     const d = doc.data();
@@ -3622,13 +3612,15 @@ async function loadLinks(){
       const minutes = Math.floor((diff/60000)%60);
       const seconds = Math.floor((diff/1000)%60);
 
-      el.innerText = `⏳ ${days}d ${hours}h ${minutes}m ${seconds}s`;
+      el.innerText =
+        `⏳ ${days}d ${hours}h ${minutes}m ${seconds}s`;
 
     },1000);
 
   });
 
 }
+
 
 /* ===== EDIT LINK ALIAS (ADMIN ONLY) ===== */
 async function editAlias(id, current){
