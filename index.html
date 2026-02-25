@@ -1441,10 +1441,9 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 const auth = firebase.auth();
-const db = firebase.firestore();
 
-/* ⭐ BẮT BUỘC */
-firebase.firestore().enableNetwork();
+/* ⭐ QUAN TRỌNG */
+const db = firebase.firestore(firebase.app());
 
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
