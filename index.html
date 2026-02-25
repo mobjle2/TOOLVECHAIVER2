@@ -3536,15 +3536,16 @@ async function loadLinks(){
     `;
   });
 
+  /* ===== RENDER LIST ===== */
   document.getElementById("linkList").innerHTML = html;
 
-  /* ===== INLINE RENAME SAVE ===== */
 
+  /* ===== INLINE RENAME SAVE ===== */
   document.querySelectorAll(".editable-name").forEach(el=>{
 
     const id = el.dataset.id;
 
-    // ENTER → SAVE
+    // ENTER = SAVE
     el.addEventListener("keydown", e=>{
       if(e.key === "Enter"){
         e.preventDefault();
@@ -3552,11 +3553,10 @@ async function loadLinks(){
       }
     });
 
-    // CLICK OUTSIDE → SAVE
+    // CLICK OUTSIDE = SAVE
     el.addEventListener("blur", async ()=>{
 
       const value = el.innerText.trim();
-
       const ref = db.collection("shareLinks").doc(id);
 
       try{
