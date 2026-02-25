@@ -1340,10 +1340,10 @@ body::before{
 
   backdrop-filter:blur(6px);
 }
+  
 .link-name{
-  display:inline-flex;
-  align-items:center;
-  padding:4px 12px;
+  display:inline-block;
+  padding:4px 10px;
   border-radius:999px;
 
   background:rgba(15,23,42,.6);
@@ -1355,10 +1355,10 @@ body::before{
 
   cursor:text;
   transition:.2s;
-
-  width:auto;
-  max-width:max-content;
+  white-space:nowrap;
 }
+
+/* khi đang sửa */
 .link-name:focus{
   outline:none;
   border-color:#22c55e;
