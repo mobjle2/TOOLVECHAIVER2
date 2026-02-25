@@ -1476,29 +1476,32 @@ if(userParam){
 async function runUserMode(id){
 
   try{
+// ===== ẨN ADMIN UI =====
+document.getElementById("loginScreen")?.remove();
+document.getElementById("adminToggle")?.remove();
+document.querySelector(".create-link-btn")?.remove();
+document.getElementById("adminContent")?.remove();
 
-    // ===== ẨN ADMIN UI =====
-    document.getElementById("loginScreen")?.remove();
-    document.getElementById("adminToggle")?.remove();
-    document.querySelector(".create-link-btn")?.remove();
-    document.getElementById("adminContent")?.remove();
+const ref = db.collection("shareLinks").doc(id);
 
-    const ref = db.collection("shareLinks").doc(id);
+let countdownInterval = null;
 
-    let countdownInterval = null;
+// ===== REALTIME LISTENER =====
+ref.onSnapshot(
+  { includeMetadataChanges:true },
+  async (doc)=>{
 
-    // ===== REALTIME LISTENER =====
-    ref.onSnapshot(async (doc)=>{
+    // ❗ CHỈ NHẬN DATA SERVER (ANTI LOCKIN)
+    if(doc.metadata.hasPendingWrites) return;
 
-      // ===== LINK BỊ XÓA =====
-      if(!doc.exists){
-        showUserMessage("❌ Link không tồn tại hoặc đã bị xóa!");
-        disableCheckUI();
-        return;
-      }
+    // ===== LINK BỊ XÓA =====
+    if(!doc.exists){
+      showUserMessage("❌ Link không tồn tại hoặc đã bị xóa!");
+      disableCheckUI();
+      return;
+    }
 
-      const data = doc.data();
-
+    const data = doc.data();
       // ===== LINK BỊ KHÓA =====
       if(!data.active){
         showUserMessage("🔒 Link đã bị khóa!");
