@@ -1476,32 +1476,29 @@ if(userParam){
 async function runUserMode(id){
 
   try{
-// ===== ẨN ADMIN UI =====
-document.getElementById("loginScreen")?.remove();
-document.getElementById("adminToggle")?.remove();
-document.querySelector(".create-link-btn")?.remove();
-document.getElementById("adminContent")?.remove();
 
-const ref = db.collection("shareLinks").doc(id);
+    // ===== ẨN ADMIN UI =====
+    document.getElementById("loginScreen")?.remove();
+    document.getElementById("adminToggle")?.remove();
+    document.querySelector(".create-link-btn")?.remove();
+    document.getElementById("adminContent")?.remove();
 
-let countdownInterval = null;
+    const ref = db.collection("shareLinks").doc(id);
 
-// ===== REALTIME LISTENER =====
-ref.onSnapshot(
-  { includeMetadataChanges:true },
-  async (doc)=>{
+    let countdownInterval = null;
 
-    // ❗ CHỈ NHẬN DATA SERVER (ANTI LOCKIN)
-    if(doc.metadata.hasPendingWrites) return;
+    // ===== REALTIME LISTENER =====
+    ref.onSnapshot(async (doc)=>{
 
-    // ===== LINK BỊ XÓA =====
-    if(!doc.exists){
-      showUserMessage("❌ Link không tồn tại hoặc đã bị xóa!");
-      disableCheckUI();
-      return;
-    }
+      // ===== LINK BỊ XÓA =====
+      if(!doc.exists){
+        showUserMessage("❌ Link không tồn tại hoặc đã bị xóa!");
+        disableCheckUI();
+        return;
+      }
 
-    const data = doc.data();
+      const data = doc.data();
+
       // ===== LINK BỊ KHÓA =====
       if(!data.active){
         showUserMessage("🔒 Link đã bị khóa!");
@@ -3472,14 +3469,14 @@ async function loadLinks(){
     const d = doc.data();
     const id = doc.id;
 
-html += `
+   html += `
   <div class="link-card">
     
     <div class="link-left">
 
 <div class="link-id-row">
   <div class="link-id editable-name" id="name-${id}">
-    ${d.alias || id}
+    ${localStorage.getItem("alias_" + id) || id}
   </div>
   <span class="edit-icon" onclick="startRename('${id}')">✏️</span>
 </div>
@@ -3518,8 +3515,8 @@ html += `
 
   </div>
 `;
-});
-  
+  });
+
   document.getElementById("linkList").innerHTML = html;
 
   // ===== COUNTDOWN REALTIME CHO ADMIN =====
@@ -3712,19 +3709,7 @@ function copyLink(id, btn){
     btn.style.color = "";
   },1500);
 }
-async function startRename(id){
 
-  const name = prompt("Tên hiển thị:");
-
-  if(!name) return;
-
-  await db.collection("shareLinks")
-    .doc(id)
-    .update({
-      alias: name.trim()
-    });
-
-}
 
 // ===== TOGGLE LINK (MỞ / KHÓA) =====
 async function toggleLink(id, current){
