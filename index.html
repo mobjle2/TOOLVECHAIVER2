@@ -3559,22 +3559,30 @@ async function loadLinks(){
 
 /* ===== EDIT LINK ALIAS (ADMIN ONLY) ===== */
 async function editAlias(id, current){
+
   const name = prompt("Nhập tên để nhớ cho link:", current);
   if(name === null) return;
 
   const ref = db.collection("shareLinks").doc(id);
 
-  if(name.trim() === ""){
-    await ref.update({
-      alias: firebase.firestore.FieldValue.delete()
-    });
-  }else{
-    await ref.update({
-      alias: name.trim()
-    });
-  }
+  try{
 
-  loadLinks();
+    if(name.trim() === ""){
+      await ref.set({
+        alias: firebase.firestore.FieldValue.delete()
+      },{merge:true});
+    }else{
+      await ref.set({
+        alias: name.trim()
+      },{merge:true});
+    }
+
+    loadLinks();
+
+  }catch(e){
+    alert("Không lưu được tên");
+    console.error(e);
+  }
 }
 
 // ===== POPUP CÀI THỜI GIAN (ADMIN) =====
