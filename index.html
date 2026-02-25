@@ -1,0 +1,3978 @@
+
+
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title> TOOLVECHAIVER2</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<style>
+body{
+  background:linear-gradient(160deg,#111827,#1e293b);
+  color:#e5e7eb;
+}
+
+
+
+
+
+
+/* ÉP 1 CỘT TRÊN MOBILE */
+@media (max-width:768px){
+  .result-grid{
+    grid-template-columns:1fr!important;
+  }
+}
+
+.result-card:hover{
+  border-color:#facc15;
+  transform:translateY(-4px);
+}
+
+/* ===== BRAND DIVIDER (Samsung Style) ===== */
+.brand{
+  margin-top:14px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+
+  font-size:14px;
+  font-weight:600;
+  letter-spacing:0.4px;
+
+  color:#38bdf8;
+
+  text-shadow:
+    0 0 6px rgba(56,189,248,.6),
+    0 0 14px rgba(56,189,248,.35);
+}
+
+.brand::before,
+.brand::after{
+  content:"";
+  flex:1;
+  height:1px;
+
+  background:linear-gradient(
+    to right,
+    transparent,
+    rgba(56,189,248,.35),
+    transparent
+  );
+}
+
+
+/* VIP 1-4 */
+.vip-1,.vip-2,.vip-3,.vip-4{
+  color:#94a3b8;
+}
+.vip-1 .vip-dot,
+.vip-2 .vip-dot,
+.vip-3 .vip-dot,
+.vip-4 .vip-dot{
+  background:#64748b;
+}
+
+/* VIP 5-9 (SÁNG – KHÔNG TRÙNG CHIP) */
+.vip-5{ color:#00e5ff; }
+.vip-5 .vip-dot{ background:#00e5ff; }
+
+.vip-6{ color:#00ff88; }
+.vip-6 .vip-dot{ background:#00ff88; }
+
+.vip-7{ color:#ff9f1c; }
+.vip-7 .vip-dot{ background:#ff9f1c; }
+
+.vip-8{ color:#8b5cf6; }
+.vip-8 .vip-dot{ background:#8b5cf6; }
+
+.vip-9{ color:#ff4ecd; }
+.vip-9 .vip-dot{ background:#ff4ecd; }
+
+/* VIP 10-13 */
+.vip-10{ color:#facc15; }
+.vip-10 .vip-dot{ background:#facc15; }
+
+.vip-11{ color:#ef4444; }
+.vip-11 .vip-dot{ background:#ef4444; }
+
+.vip-12{
+  color:#dc2626;
+  text-shadow:0 0 6px rgba(220,38,38,0.6);
+}
+.vip-12 .vip-dot{ background:#dc2626; }
+
+.vip-13{
+  color:#ff003c;
+  text-shadow:0 0 8px rgba(255,0,60,0.8);
+}
+.vip-13 .vip-dot{ background:#ff003c; }
+
+  
+
+.link-id{
+  font-weight:600;
+  font-size:14px;
+}
+.chip-brand{
+  font-weight:500;
+  font-size:13.5px;
+  opacity:0.9;
+}
+
+.link-status{
+  margin-top:6px;
+  font-size:12px;
+  padding:4px 10px;
+  border-radius:999px;
+  display:inline-block;
+}
+
+.link-status.open{
+  background:#16a34a22;
+  color:#22c55e;
+}
+
+.link-status.lock{
+  background:#facc1522;
+  color:#facc15;
+}
+
+.link-actions{
+  display:flex;
+  gap:8px;
+}
+
+.icon-btn{
+  border:none;
+  background:#1f1f1f;
+  padding:8px 10px;
+  border-radius:10px;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.icon-btn:hover{
+  background:#2563eb;
+  color:white;
+}
+
+.icon-btn.delete:hover{
+  background:#dc2626;
+}
+
+
+/* ================= GRID CHUẨN ĐẸP ================= */
+
+/* Container ngoài */
+#out{
+  margin-top:50px;
+}
+
+/* Grid kết quả */
+.result-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:40px;
+  max-width:1100px;
+  margin:0 auto;
+}
+
+
+
+/* Tablet */
+@media(max-width:1200px){
+  .result-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+  #linkList{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
+/* Mobile */
+@media(max-width:768px){
+  .result-grid{
+    grid-template-columns:1fr;
+    gap:25px;
+  }
+  #linkList{
+    grid-template-columns:1fr;
+  }
+}
+
+
+/* ================= CARD STYLE ================= */
+
+.result-card{
+  background:linear-gradient(145deg,#1e293b,#111827);
+  border-radius:22px;
+  padding:22px;
+  border:1px solid rgba(255,255,255,0.06);
+  box-shadow:0 12px 30px rgba(0,0,0,0.45);
+  transition:all 0.3s ease;
+  position:relative;
+  overflow:hidden;
+}
+
+
+.result-card:hover{
+  transform:translateY(-8px);
+  border-color:#facc15;
+  box-shadow:0 25px 60px rgba(250,204,21,0.25);
+}
+/* ===== CHIP LINE ===== */
+.chip-line{
+  display:flex;
+  align-items:center;
+  gap:18px;
+  margin-top:10px;
+font-size:14px;
+font-weight:500;
+
+}
+
+.chip-item{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:14px;
+  font-weight:500;
+}
+
+/* ===== MODEL LINE ===== */
+.model-line{
+  margin-top:14px;
+  padding-top:12px;
+  border-top:1px solid rgba(255,255,255,0.06);
+  font-size:13px;
+  line-height:1.6;
+  opacity:0.85;
+}
+
+.model-icon{
+  font-size:12px;
+  opacity:0.6;
+  margin-right:6px;
+}
+
+.model-brand{
+  font-weight:500;
+  opacity:0.75;
+  letter-spacing:0.3px;
+}
+
+.model-sep{
+  margin:0 6px;
+  opacity:0.4;
+}
+
+.model-list{
+  font-weight:500;
+  color:#e2e8f0;
+}
+.admin-panel{
+  max-width:1150px;
+  margin:30px auto 0 auto;
+}
+
+.main-title{
+  text-align:center;
+  margin-top:10px;
+  font-size:34px;
+  font-weight:800;
+  letter-spacing:2px;
+  color:#f1f5f9;
+  text-shadow:0 0 20px rgba(59,130,246,0.25);
+}
+
+
+.sub-title{
+  text-align:center;
+  margin-top:5px;
+  font-size:14px;
+  opacity:0.75;
+  letter-spacing:3px;
+  color:#94a3b8;
+}
+
+
+
+/* ===== VIP BADGE ===== */
+.vip-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  margin:6px 0 8px 0;
+  padding:5px 14px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:0.6px;
+  background:rgba(255,255,255,0.04);
+  box-shadow:0 4px 12px rgba(0,0,0,0.1);
+}
+
+.vip-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:currentColor;
+  box-shadow:0 0 8px currentColor;
+}
+
+/* ===== VIP COLORS ===== */
+
+/* 1-4 */
+.vip-1{ color:#94a3b8; }
+.vip-2{ color:#64748b; }
+.vip-3{ color:#a78bfa; }
+.vip-4{ color:#c084fc; }
+
+/* 5-9 (SÁNG – KHÔNG TRÙNG CHIP) */
+.vip-5{ color:#00e5ff; }
+.vip-6{ color:#00ff88; }
+.vip-7{ color:#ff9f1c; }
+.vip-8{ color:#8b5cf6; }
+.vip-9{ color:#ff4ecd; }
+
+/* 10-13 */
+.vip-10{ color:#facc15; }
+.vip-11{ color:#ef4444; }
+.vip-12{
+  color:#dc2626;
+  text-shadow:0 0 6px rgba(220,38,38,0.6);
+}
+.vip-13{
+  color:#ff003c;
+  text-shadow:0 0 8px rgba(255,0,60,0.8);
+}
+/* ================= CLEAN LOGIN FINAL ================= */
+
+.login-wrapper{
+  position:fixed;
+  inset:0;
+  z-index:9999; /* QUAN TRỌNG: đè toàn bộ dashboard */
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(59,130,246,0.25), transparent 40%),
+    radial-gradient(circle at 85% 80%, rgba(139,92,246,0.25), transparent 40%),
+    linear-gradient(160deg,#020617,#0f172a);
+  overflow:hidden;
+}
+
+
+
+
+.login-box{
+  width:420px;
+  padding:60px 45px;
+  border-radius:24px;
+  background:rgba(15,23,42,0.9);
+  backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,0.05);
+  box-shadow:0 50px 120px rgba(0,0,0,0.8);
+  text-align:center;
+}
+
+.login-title{
+  font-family:'Cinzel', serif;
+
+  font-size:52px;          /* tăng nhẹ để cân khung */
+  font-weight:700;
+  letter-spacing:6px;      /* giãn chữ cho sang */
+  text-align:center;
+  margin-bottom:40px;
+
+  background:linear-gradient(180deg,#ffffff,#cbd5e1);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+
+  text-shadow:0 0 20px rgba(255,255,255,0.2);
+}
+
+
+
+/* INPUT */
+.input-group{
+  position:relative;
+  margin-bottom:25px;
+}
+
+.input-group input{
+  width:100%;
+  height:56px;
+  padding:0 55px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,0.08);
+  background:#0b1220;
+  color:white;
+  font-size:15px;
+  box-sizing:border-box;
+  transition:0.3s ease;
+}
+
+.input-group input::placeholder{
+  color:#64748b;
+}
+
+.input-group input:focus{
+  border-color:#2563eb;
+  box-shadow:0 0 0 3px rgba(37,99,235,0.25);
+  outline:none;
+}
+
+/* ICON LEFT */
+.input-icon{
+  position:absolute;
+  left:18px;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:18px;
+  color:#facc15;
+}
+
+/* ICON RIGHT */
+.toggle-pass{
+  position:absolute;
+  right:18px;
+  top:50%;
+  transform:translateY(-50%);
+  cursor:pointer;
+  font-size:18px;
+  color:#cbd5e1;
+  transition:0.2s ease;
+}
+
+.toggle-pass:hover{
+  color:#facc15;
+  transform:translateY(-50%) scale(1.1);
+}
+
+/* BUTTON */
+.login-box button{
+  width:100%;
+  height:56px;
+  border:none;
+  border-radius:16px;
+  background:linear-gradient(90deg,#2563eb,#3b82f6);
+  font-weight:700;
+  font-size:16px;
+  cursor:pointer;
+  transition:0.3s ease;
+  box-shadow:0 15px 35px rgba(37,99,235,0.4);
+}
+
+.login-box button:hover{
+  transform:translateY(-3px);
+  box-shadow:0 20px 45px rgba(37,99,235,0.6);
+}
+
+/* ERROR */
+.login-error{
+  margin-top:15px;
+  color:#f87171;
+  font-weight:600;
+  display:none;
+}
+
+
+/* ===== CARD FOOTER GỌN ĐẸP ===== */
+
+.card-footer{
+  margin-top:14px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.chip-info{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:14px;
+  font-weight:500;
+  color:#22c55e;
+}
+
+.chip-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+}
+
+/* ===== CODE BADGE (DÒNG TRÊN) ===== */
+.code-title{
+  margin-bottom:12px;
+}
+
+.code-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 14px;
+  border-radius:14px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.08);
+  font-size:15px;
+  font-weight:600;
+}
+
+
+/* ===== VIP BADGE (DÒNG DƯỚI) ===== */
+.vip-badge{
+  margin:6px 0 10px 0;
+  letter-spacing:0.5px;
+  font-size:14px;
+  font-weight:700;
+}
+
+
+
+.chip-vip-line{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+
+
+/* ================= MOBILE OPTIMIZE ================= */
+@media(max-width:640px){
+
+  /* Main container */
+  .main-container{
+    padding:20px 15px !important;
+  }
+/* ===== CENTER HEADER + INPUT ===== */
+
+.title{
+  text-align:center;
+  margin-top:40px;
+}
+
+.clean-check{
+  max-width:1000px;
+  margin:25px auto 0 auto;
+}
+
+  /* Login box */
+  .login-box{
+    width:90%;
+    padding:30px 20px;
+    border-radius:18px;
+  }
+
+  .login-title{
+    font-size:26px;
+    margin-bottom:20px;
+  }
+
+  .login-box input{
+    height:46px;
+    font-size:14px;
+  }
+
+  .login-box button{
+    height:46px;
+    font-size:14px;
+  }
+
+  /* Dashboard cards */
+  .result-grid{
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+  }
+
+  .result-card{
+    padding:14px;
+    border-radius:16px;
+  }
+
+  .code-title{
+    font-size:14px;
+  }
+
+  .chip-vip-line{
+    font-size:13px;
+    gap:10px;
+  }
+
+  .vip-badge{
+    font-size:12px;
+    padding:3px 8px;
+  }
+
+}
+/* Desktop container */
+.main-container{
+  padding:5px 20px 15px;
+  max-width:1100px;
+  margin:0 auto;
+}
+
+
+ /* ===== CREATE LINK BUTTON PRO ===== */
+
+.create-link-btn{
+  display:none;
+  padding:8px 18px;
+  border-radius:999px;
+  border:1px solid rgba(34,197,94,0.4);
+  background:rgba(34,197,94,0.15);
+  color:#22c55e;
+  font-size:14px;
+  font-weight:600;
+  cursor:pointer;
+  transition:0.3s ease;
+}
+
+.create-link-btn.show{
+  display:inline-block;
+}
+
+
+
+.create-link-btn:hover{
+  background:#22c55e;
+  color:black;
+  box-shadow:0 8px 20px rgba(34,197,94,0.4);
+}
+ 
+/* ===== CHECK INPUT INLINE BUTTON ===== */
+
+.check-group{
+  position:relative;
+  margin-top:15px;
+}
+
+.check-group input{
+  width:100%;
+  height:56px;
+  padding:0 120px 0 20px;
+  border-radius:14px;
+  border:1px solid #222;
+  background:#0f0f0f;
+  color:white;
+  font-size:15px;
+  box-sizing:border-box;
+  transition:0.3s;
+}
+
+.check-group input:focus{
+  border-color:#2563eb;
+  box-shadow:0 0 0 3px rgba(37,99,235,0.25);
+  outline:none;
+}
+
+.check-group button{
+  position:absolute;
+  right:6px;
+  top:50%;
+  transform:translateY(-50%);
+  height:44px;
+  padding:0 25px;
+  border:none;
+  border-radius:10px;
+  background:linear-gradient(90deg,#2563eb,#3b82f6);
+  color:white;
+  font-weight:700;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.check-group button:hover{
+  transform:translateY(-50%) scale(1.05);
+  box-shadow:0 8px 20px rgba(37,99,235,0.4);
+}
+
+/* ===== THÊM NGAY DƯỚI ĐÂY (ICON ✏️) ===== */
+
+.link-id-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.edit-icon{
+  cursor:pointer;
+  opacity:0.7;
+  font-size:14px;
+}
+
+.edit-icon:hover{
+  opacity:1;
+}
+/* ===== CLEAN CHECK FINAL ===== */
+.clean-check{
+  position:relative;
+  margin-top:25px;
+}
+.clean-check input{
+  width:100%;
+  height:54px;
+  padding:0 60px 0 20px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,0.08);
+  background:#0b1220;
+  color:white;
+  font-size:15px;
+  transition:all 0.25s ease;
+}
+
+/* Hover nhẹ */
+.clean-check input:hover{
+  border-color:#1d4ed8;
+  box-shadow:0 0 15px rgba(37,99,235,0.2);
+  background:#0e1628;
+}
+
+/* Focus Glow PRO */
+.clean-check input:focus{
+  border-color:#2563eb;
+  box-shadow:
+    0 0 0 3px rgba(37,99,235,0.25),
+    0 0 25px rgba(37,99,235,0.35);
+  outline:none;
+  background:#0f172a;
+}
+
+.clean-check .check-btn{
+  position:absolute;
+  right:8px;
+  top:50%;
+  transform:translateY(-50%);
+  height:42px;
+  width:42px;
+  border:none;
+  border-radius:12px;
+  background:#1f2937;
+  color:#94a3b8;
+  font-size:16px;
+  cursor:pointer;
+  transition:all 0.25s ease;
+}
+
+/* Hover nút search */
+.clean-check .check-btn:hover{
+  background:#2563eb;
+  color:white;
+  box-shadow:0 0 15px rgba(37,99,235,0.4);
+}
+
+/* Khi input focus thì nút cũng sáng */
+.clean-check input:focus + .check-btn{
+  background:#2563eb;
+  color:white;
+}
+
+
+/* ===== ADMIN CARD CLEAN ===== */
+.link-card{
+  background:#0f172a;
+  border:1px solid #1f2937;
+  border-radius:16px;
+  padding:16px;
+  transition:0.25s ease;
+}
+
+.link-card:hover{
+  border-color:#2563eb;
+  box-shadow:0 10px 30px rgba(37,99,235,0.25);
+}
+
+
+/* ===== RESULT GRID FINAL (FIX ĐÈ CARD) ===== */
+
+#out{
+  margin-top:30px;
+}
+
+/* ===== RESULT GRID ===== */
+.result-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:30px;
+  max-width:1100px;
+  margin:0 auto;
+}
+
+/* Tablet */
+@media(max-width:1200px){
+  .result-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
+/* Mobile */
+@media(max-width:768px){
+  .result-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+/* ===== ADMIN GRID (LUÔN 3 CỘT DESKTOP) ===== */
+#linkList{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:25px;
+  max-width:1150px;  /* đổi từ 1050 thành 1100 */
+  margin:0 auto;
+}
+
+
+/* Card full width chuẩn */
+.result-card{
+  width:100%;
+  box-sizing:border-box;
+}
+
+/* ===== MMC COLOR LEVELS ===== */
+.mmc-1{ color:#22d3ee; }
+.mmc-2{ color:#34d399; }
+.mmc-3{ color:#60a5fa; }
+.mmc-4{ color:#f59e0b; }
+.mmc-5{ color:#f97316; }
+.mmc-6{ color:#ef4444; }
+
+
+/* ===== MMC DOT ===== */
+.mmc-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:currentColor;
+  box-shadow:0 0 10px currentColor;
+}
+
+.pro-dot{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:currentColor;
+  box-shadow:0 0 6px currentColor;
+}
+
+
+.model-placeholder{
+  margin-top:14px;
+  font-size:13px;
+  opacity:0.7;
+  font-style:italic;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  letter-spacing:0.3px;
+  color:#cbd5e1;
+}
+.chip-item{
+  font-weight:500;
+  font-size:14px;
+  letter-spacing:0.3px;
+}
+
+.model-line{
+  margin-top:14px;
+  font-size:13px;
+  line-height:1.7;
+}
+
+.model-icon{
+  font-size:12px;
+  opacity:0.6;
+  margin-right:6px;
+}
+
+.model-brand{
+  font-weight:500;
+  opacity:0.75;
+  letter-spacing:0.3px;
+}
+
+.model-sep{
+  margin:0 6px;
+  opacity:0.4;
+}
+
+.model-list{
+  font-weight:500;
+  color:#e2e8f0;
+}
+
+/* ===== ADMIN TOP BAR ===== */
+.admin-top-bar{
+  display:flex;
+  align-items:center;   /* đảm bảo căn giữa theo trục dọc */
+  gap:15px;
+}
+
+
+
+/* ===== ADMIN TOGGLE ULTRA PRO ===== */
+
+.admin-toggle-btn{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 22px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.1);
+  background:rgba(255,255,255,0.04);
+  backdrop-filter:blur(10px);
+  color:#e2e8f0;
+  font-weight:600;
+  letter-spacing:0.5px;
+  cursor:pointer;
+  transition:all 0.35s cubic-bezier(.4,0,.2,1);
+  position:relative;
+  overflow:hidden;
+}
+
+/* Gradient glow nền */
+.admin-toggle-btn::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg,#2563eb,#3b82f6,#06b6d4);
+  opacity:0;
+  transition:0.4s;
+  z-index:0;
+}
+
+.admin-toggle-btn span{
+  position:relative;
+  z-index:1;
+}
+
+/* Hover */
+.admin-toggle-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 30px rgba(37,99,235,0.3);
+}
+
+/* Active state */
+.admin-toggle-btn.active{
+  color:white;
+  border-color:transparent;
+  box-shadow:0 15px 40px rgba(37,99,235,0.5);
+}
+
+.admin-toggle-btn.active::before{
+  opacity:1;
+}
+
+/* Icon xoay */
+.admin-icon{
+  transition:transform 0.4s ease;
+}
+
+.admin-toggle-btn.active .admin-icon{
+  transform:rotate(180deg);
+}
+
+/* Mũi tên dropdown */
+.admin-arrow{
+  margin-left:auto;
+  transition:transform 0.4s ease;
+}
+
+.admin-toggle-btn.active .admin-arrow{
+  transform:rotate(180deg);
+}
+
+/* ===== CREATE LINK BUTTON ===== */
+.create-link-btn.small{
+  padding:8px 18px;
+  font-size:13px;
+  border-radius:999px;
+  border:1px solid rgba(34,197,94,0.4);
+  background:rgba(34,197,94,0.15);
+  color:#22c55e;
+  font-weight:600;
+  transition:all 0.3s ease;
+}
+/* ===== CREATE LINK AUTO HIDE ===== */
+
+.create-link-btn{
+  opacity:0;
+  transform:translateY(-5px);
+  pointer-events:none;
+  transition:all 0.3s ease;
+}
+
+.create-link-btn.show{
+  opacity:1;
+  transform:translateY(0);
+  pointer-events:auto;
+}
+
+.create-link-btn.small:hover{
+  background:#22c55e;
+  color:black;
+  box-shadow:0 8px 20px rgba(34,197,94,0.4);
+}
+
+/* ===== ACCORDION ADMIN CONTENT PRO ===== */
+
+/* ===== ACCORDION ADMIN CONTENT STABLE ===== */
+
+#adminContent{
+  max-height:0;
+  overflow:hidden;
+  opacity:0;
+  transform:translateY(-8px);
+  transition:
+    max-height 0.45s cubic-bezier(.4,0,.2,1),
+    opacity 0.35s ease,
+    transform 0.35s ease;
+}
+
+#adminContent.open{
+  max-height:3000px; /* đủ lớn để không bị cắt */
+  opacity:1;
+  transform:translateY(0);
+}
+@media (max-width: 768px) {
+
+  body {
+    padding-top: 20px;
+  }
+
+  .search-bar,
+  .input-wrapper,
+  .search-container {
+    margin-top: 20px !important;
+  }
+
+}
+/* ===== MODEL GROUP STYLE ===== */
+
+.model-row{
+  margin-top:6px;
+  font-size:14px;
+  line-height:1.6;
+  opacity:0.9;
+}
+
+.model-row .brand{
+  color:#4ade80;
+  font-weight:600;
+  letter-spacing:0.3px;
+}
+
+.model-row .model-list{
+  color:#e2e8f0;
+  font-weight:500;
+}
+/* ===== PREMIUM PROGRESS LOADING ===== */
+.progress-wrapper{
+  margin-top:20px;
+  padding:20px;
+  background:rgba(255,255,255,0.03);
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,0.08);
+}
+
+.progress-title{
+  font-size:14px;
+  margin-bottom:10px;
+  opacity:0.8;
+}
+
+.progress-bar{
+  width:100%;
+  height:10px;
+  background:rgba(255,255,255,0.08);
+  border-radius:10px;
+  overflow:hidden;
+  position:relative;
+}
+
+.progress-fill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#00f5a0,#00d9ff);
+  border-radius:10px;
+  transition:width 0.3s ease;
+}
+
+.progress-percent{
+  margin-top:8px;
+  font-size:13px;
+  opacity:0.7;
+  text-align:right;
+}
+
+/* =====================================================
+   🔬 ULTRA LAB MODE — SAMSUNG INTERNAL TOOL UI
+   SAFE VERSION (NO BLACK TEXT)
+===================================================== */
+
+/* ===== LAB BACKGROUND ===== */
+body{
+  background:
+    radial-gradient(circle at 85% 20%, rgba(37,99,235,.35), transparent 45%),
+    radial-gradient(circle at 10% 90%, rgba(59,130,246,.25), transparent 50%),
+    linear-gradient(160deg,#020617,#020617,#010409);
+
+  color:#e5e7eb;
+}
+
+/* PCB GRID EFFECT */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 120px,
+      rgba(56,189,248,.04) 121px,
+      transparent 122px
+    );
+}
+
+/* ===== RESULT CARD HARDWARE STYLE — PRO FIX ===== */
+.result-card{
+
+  /* nền glass thật */
+  background:
+    linear-gradient(145deg,
+      rgba(11,18,32,.85),
+      rgba(2,6,23,.75)
+    );
+
+  border-radius:22px;
+
+  /* viền mềm hơn */
+  border:1px solid rgba(255,255,255,.08);
+
+  /* ⭐ DÒNG QUAN TRỌNG NHẤT */
+  backdrop-filter:blur(14px);
+
+  /* depth thật */
+  box-shadow:
+    0 20px 60px rgba(0,0,0,.85),
+    inset 0 0 25px rgba(255,255,255,.03);
+
+  transition:.35s cubic-bezier(.4,0,.2,1);
+  position:relative;
+  overflow:hidden;
+}
+
+/* CHIP SCAN LIGHT */
+.result-card::after{
+  content:"";
+  position:absolute;
+  top:0;
+  left:-130%;
+  width:130%;
+  height:100%;
+  background:linear-gradient(
+    120deg,
+    transparent,
+    rgba(56,189,248,.25),
+    transparent
+  );
+  transition:1.1s ease;
+}
+
+.result-card:hover::after{
+  left:130%;
+}
+
+/* ⭐ HOVER PRO FEEL */
+.result-card:hover{
+  transform:translateY(-6px) scale(1.015);
+  border-color:#38bdf8;
+
+  box-shadow:
+    0 35px 90px rgba(0,0,0,.95),
+    0 0 25px rgba(56,189,248,.18);
+}
+
+/* ===== CARD APPEAR ANIMATION ===== */
+.result-card{
+  animation:labCardIn .5s ease forwards;
+  opacity:0;
+}
+
+@keyframes labCardIn{
+  from{
+    transform:translateY(20px);
+    opacity:0;
+  }
+  to{
+    transform:translateY(0);
+    opacity:1;
+  }
+}
+
+/* ===== SAMSUNG VIP GLASS ===== */
+.vip-badge{
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.12);
+  backdrop-filter:blur(12px);
+
+  color:#e2e8f0;
+
+  box-shadow:
+    inset 0 0 10px rgba(255,255,255,.05),
+    0 8px 25px rgba(0,0,0,.5);
+}
+
+/* ===== BRAND COLOR ===== */
+.brand{
+  color:#9fb3c8;
+  font-weight:500;
+}
+
+/* ===== SEARCH AI GLOW ===== */
+.clean-check input:focus{
+  border-color:#38bdf8;
+  box-shadow:
+    0 0 0 3px rgba(56,189,248,.25),
+    0 0 30px rgba(56,189,248,.35);
+}
+
+/* FORCE LIGHT TEXT */
+.result-card,
+.result-card *{
+  color:#e2e8f0;
+}
+/* =====================================================
+   ⭐ VIP GLOW SYSTEM (5 → 10 ONLY)
+===================================================== */
+
+/* base glow */
+.vip-5,
+.vip-6,
+.vip-7,
+.vip-8,
+.vip-9,
+.vip-10{
+  position:relative;
+  transition:.35s;
+}
+
+/* glow layer */
+.vip-5::after,
+.vip-6::after,
+.vip-7::after,
+.vip-8::after,
+.vip-9::after,
+.vip-10::after{
+  content:"";
+  position:absolute;
+  inset:-6px;
+  border-radius:999px;
+  filter:blur(12px);
+  opacity:.35;
+  z-index:-1;
+}
+
+/* ===== COLORS ===== */
+
+.vip-5::after{
+  background:#00e5ff;
+}
+
+.vip-6::after{
+  background:#00ff88;
+}
+
+.vip-7::after{
+  background:#ff9f1c;
+}
+
+.vip-8::after{
+  background:#8b5cf6;
+}
+
+.vip-9::after{
+  background:#ff4ecd;
+}
+
+.vip-10::after{
+  background:#facc15;
+}
+
+/* hover boost */
+.result-card:hover .vip-5::after,
+.result-card:hover .vip-6::after,
+.result-card:hover .vip-7::after,
+.result-card:hover .vip-8::after,
+.result-card:hover .vip-9::after,
+.result-card:hover .vip-10::after{
+  opacity:.7;
+  filter:blur(18px);
+}
+
+/* ===== SAMSUNG IC RAM BADGE ===== */
+
+.ram-badge{
+  padding:6px 16px;
+  border-radius:999px;
+  font-weight:600;
+  font-size:14px;
+
+  background:rgba(56,189,248,.12);
+  color:#38bdf8;
+
+  border:1px solid rgba(56,189,248,.35);
+
+  box-shadow:
+    inset 0 0 10px rgba(56,189,248,.15),
+    0 0 15px rgba(56,189,248,.25);
+
+  backdrop-filter:blur(6px);
+}
+  
+</style>
+
+
+
+</head>
+
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen" class="login-wrapper">
+  <div class="login-box">
+    <h1 class="login-title">TOOLVECHAI</h1>
+
+    <!-- USER -->
+    <div class="input-group">
+      <span class="input-icon">👤</span>
+      <input id="loginEmail" type="email" placeholder="USER">
+    </div>
+
+    <!-- PASS -->
+    <div class="input-group">
+      <span class="input-icon">🔒</span>
+      <input id="loginPass" type="password" placeholder="PASS">
+      <span class="toggle-pass" onclick="togglePassword()">👁</span>
+    </div>
+
+    <button onclick="secureLogin()">ĐĂNG NHẬP</button>
+    <div id="loginError" class="login-error">Sai tài khoản!</div>
+  </div>
+</div>
+
+
+<!-- MAIN -->
+<div class="main-container">
+
+  <h2 class="main-title">TOOLVECHAIVER2</h2>
+
+  <div class="sub-title">
+    VIP • MMC • Model
+  </div>
+
+</div>
+
+
+<!-- ===== ADMIN PANEL ===== -->
+<div id="adminPanel" class="admin-panel">
+
+  <div class="admin-top-bar"
+       style="max-width:1000px;margin:25px auto 0 auto;gap:15px;">
+
+    <!-- BÊN TRÁI: ADMIN -->
+    <button class="admin-toggle-btn" id="adminToggle" onclick="toggleAdmin()">
+      <span class="admin-icon">⚙</span>
+      <span class="admin-text">Admin</span>
+    </button>
+
+    <!-- Ở GIỮA: INPUT -->
+    <div class="check-group clean-check" style="flex:1;margin:0;">
+      <input id="q"
+             placeholder="Nhập mã hoặc model cần kiểm tra"
+             autocomplete="off">
+      <button class="check-btn" onclick="check()">🔍</button>
+    </div>
+
+    <!-- BÊN PHẢI: TẠO LINK -->
+    <button class="create-link-btn small" onclick="createLink()">
+      ＋ Tạo link
+    </button>
+
+  </div>
+
+  <div id="adminContent">
+    <div id="linkList"></div>
+  </div>
+
+</div>
+
+
+
+<!-- ===== KẾT QUẢ ===== -->
+<div id="out" style="margin-top:20px;"></div>
+
+<script>
+
+
+/* ===== SAFE FIREBASE INIT ===== */
+
+const firebaseConfig = {
+  apiKey: "AIzaSyClXx0V66GQHKGO0EwQc0nYNguFLc705A0",
+  authDomain: "toolvechaiver2.firebaseapp.com",
+  projectId: "toolvechaiver2",
+  storageBucket: "toolvechaiver2.firebasestorage.app",
+  messagingSenderId: "855001765940",
+  appId: "1:855001765940:web:0a562c54618377aaae5261"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+
+/* ⭐ QUAN TRỌNG */
+const db = firebase.firestore(firebase.app());
+
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
+
+/* ===== SAFE USER MODE DETECT ===== */
+
+const urlParams = new URLSearchParams(window.location.search);
+const isUserMode = urlParams.has("u");
+
+/* ❗ KHÔNG logout ngay nữa */
+/* auth listener phía dưới sẽ xử lý */
+
+window.USER_LINK_ACTIVE = true;
+/* ===== USER MODE (?u=) ===== */
+
+const params = new URLSearchParams(window.location.search);
+const userParam = params.get("u");
+
+if(userParam){
+
+  window.addEventListener("DOMContentLoaded",()=>{
+
+    const login=document.getElementById("loginScreen");
+    if(login) login.style.display="none";
+
+    runUserMode(userParam);
+
+  });
+}
+
+
+/* ===== USER MODE ENGINE (REALTIME VERSION) ===== */
+
+async function runUserMode(id){
+
+  try{
+
+    // ===== ẨN ADMIN UI =====
+    document.getElementById("loginScreen")?.remove();
+    document.getElementById("adminToggle")?.remove();
+    document.querySelector(".create-link-btn")?.remove();
+    document.getElementById("adminContent")?.remove();
+
+    const ref = db.collection("shareLinks").doc(id);
+
+    let countdownInterval = null;
+
+    // ===== REALTIME LISTENER =====
+    ref.onSnapshot(async (doc)=>{
+
+      // ===== LINK BỊ XÓA =====
+      if(!doc.exists){
+        showUserMessage("❌ Link không tồn tại hoặc đã bị xóa!");
+        disableCheckUI();
+        return;
+      }
+
+      const data = doc.data();
+
+      // ===== LINK BỊ KHÓA =====
+      if(!data.active){
+        showUserMessage("🔒 Link đã bị khóa!");
+        disableCheckUI();
+        return;
+      }
+
+      // ===== LINK HẾT HẠN =====
+      if(data.expiresAt && data.expiresAt.toDate() < new Date()){
+
+        await ref.update({ active:false });
+
+        showUserMessage("⛔ Link đã hết hạn!");
+        disableCheckUI();
+        return;
+      }
+
+      // ===== LINK HỢP LỆ =====
+      enableCheckUI();
+
+      // ===== TĂNG VIEW (CHỈ TĂNG 1 LẦN) =====
+      if(!window._viewCounted){
+        await ref.update({
+          views: firebase.firestore.FieldValue.increment(1)
+        });
+        window._viewCounted = true;
+      }
+
+      // ===== COUNTDOWN =====
+      if(data.expiresAt){
+
+        let box = document.getElementById("countdownBox");
+
+        if(!box){
+          box = document.createElement("div");
+          box.id = "countdownBox";
+
+          Object.assign(box.style,{
+            position:"fixed",
+            top:"12px",
+            right:"16px",
+            background:"rgba(15,23,42,0.9)",
+            border:"1px solid #334155",
+            borderRadius:"10px",
+            padding:"8px 14px",
+            fontSize:"14px",
+            fontWeight:"600",
+            color:"#facc15",
+            zIndex:"9999"
+          });
+
+          document.body.appendChild(box);
+        }
+
+        const end = data.expiresAt.toDate();
+
+        if(countdownInterval){
+          clearInterval(countdownInterval);
+        }
+
+        countdownInterval = setInterval(async()=>{
+
+          const diff = end - new Date();
+
+          if(diff <= 0){
+
+            clearInterval(countdownInterval);
+
+            await ref.update({ active:false });
+
+            box.innerText = "⛔ Link đã hết hạn!";
+            disableCheckUI();
+            return;
+          }
+
+          const d = Math.floor(diff/86400000);
+          const h = Math.floor((diff/3600000)%24);
+          const m = Math.floor((diff/60000)%60);
+
+          box.innerText = `⏳ Còn ${d} ngày ${h} giờ ${m} phút`;
+
+        },1000);
+      }
+
+    });
+
+  }catch(e){
+    console.error(e);
+    showUserMessage("⚠️ Lỗi quyền truy cập!");
+    disableCheckUI();
+  }
+}
+function disableCheckUI(){
+
+  // 🔒 Đánh dấu link không còn hợp lệ
+  window.USER_LINK_ACTIVE = false;
+
+  const input = document.getElementById("q");
+  const btn   = document.querySelector(".check-btn");
+  const mainContainer = document.querySelector(".main-container");
+  const adminPanel = document.getElementById("adminPanel");
+
+  if(input){
+    input.disabled = true;
+    input.style.opacity = "0.6";
+  }
+
+  if(btn){
+    btn.disabled = true;
+    btn.style.opacity = "0.6";
+  }
+
+  // ===== ẨN TOÀN BỘ GIAO DIỆN =====
+  if(mainContainer){
+    mainContainer.style.display = "none";
+  }
+
+  if(adminPanel){
+    adminPanel.style.display = "none";
+  }
+}
+
+function enableCheckUI(){
+
+  // ✅ Đánh dấu link đang hoạt động
+  window.USER_LINK_ACTIVE = true;
+
+  const input = document.getElementById("q");
+  const btn   = document.querySelector(".check-btn");
+
+  if(input){
+    input.disabled = false;
+    input.style.opacity = "1";
+  }
+
+  if(btn){
+    btn.disabled = false;
+    btn.style.opacity = "1";
+  }
+
+  // ===== HIỆN LẠI THANH SEARCH =====
+  const searchBox = document.querySelector(".clean-check");
+  if(searchBox){
+    searchBox.style.display = "flex";
+  }
+}
+
+/* ===== GLOBAL ERROR SHIELD ===== */
+
+window.addEventListener("error",e=>{
+  console.error("GLOBAL ERROR:",e.error);
+});
+
+// ===== THÊM HÀM NÀY NẾU CHƯA CÓ =====
+function showUserMessage(text){
+  const out = document.getElementById("out");
+  if(out){
+    out.innerHTML = `
+      <div style="
+        margin-top:40px;
+        text-align:center;
+        font-size:18px;
+        font-weight:600;
+        color:#f87171;
+      ">
+        ${text}
+      </div>
+    `;
+  }
+}
+async function saveAlias(id,value){
+
+  const ref = db.collection("shareLinks").doc(id);
+
+  if(!value || !value.trim()){
+    await ref.update({
+      alias: firebase.firestore.FieldValue.delete()
+    });
+  }else{
+    await ref.update({
+      alias: value.trim()
+    });
+  }
+}
+
+
+function detectChip(code){
+
+  if(!code)
+    return {name:"UNKNOWN",color:"#6b7280",class:"brand-unknown"};
+
+  code = code.toUpperCase().trim();
+
+  if(/^K/.test(code))
+    return {name:"Samsung",color:"#22c55e",class:"brand-samsung"};
+
+  if(/^(H9|H26|H27)/.test(code))
+    return {name:"SK hynix",color:"#a855f7",class:"brand-hynix"};
+
+  if(/^(MT|NW|JY|JZ|PA)/.test(code))
+    return {name:"Micron",color:"#0ea5e9",class:"brand-micron"};
+
+  if(/^(TH|TC|TY)/.test(code))
+    return {name:"Kioxia",color:"#f97316",class:"brand-kioxia"};
+
+  if(/^(SD|SDIN|WDC)/.test(code))
+    return {name:"SanDisk / WD",color:"#ef4444",class:"brand-wd"};
+
+  if(/^(YM|YMEC)/.test(code))
+    return {name:"YMTC",color:"#06b6d4",class:"brand-ymtc"};
+
+  if(/^FS/.test(code))
+    return {name:"FORESEE",color:"#10b981",class:"brand-foresee"};
+
+  return {name:"UNKNOWN",color:"#6b7280",class:"brand-unknown"};
+}
+
+// ===== VIP RULE (ỔN ĐỊNH & CHUẨN HÓA KIỂU DỮ LIỆU) =====
+function calculateVip(ram, rom){
+
+  // =========================
+  // SAFE TYPE
+  // =========================
+  ram = Number(ram);
+  rom = Number(rom);
+
+  if (isNaN(ram) || isNaN(rom) || ram <= 0 || rom <= 0)
+    return 0;
+
+  // =========================
+  // VIP 12 — FLAGSHIP MAX
+  // =========================
+  if (ram >= 16 && rom >= 512)
+    return 12;
+
+  // =========================
+  // VIP 11 — UFS 3.x HIGH
+  // =========================
+  if (ram === 12 && rom === 512)
+    return 11;
+
+  // =========================
+  // VIP 10 — UFS 2.2
+  // =========================
+  if (ram === 12 && rom === 256)
+    return 10;
+
+  if (ram === 8 && rom === 512)
+    return 10;
+
+  // =========================
+  // VIP 9 — UFS 2.1 HIGH
+  // =========================
+  if ([6,8,10,12].includes(ram) && rom === 256)
+    return 9;
+
+  if (ram === 12 && rom === 128)
+    return 9;
+
+  // =========================
+  // VIP 8 — UFS 2.1 MID+
+  // =========================
+  if ([8,10].includes(ram) && rom === 128)
+    return 8;
+
+  // =========================
+  // VIP 7 — UFS MID
+  // =========================
+  if ([4,6].includes(ram) && rom === 128)
+    return 7;
+  // =========================
+  // VIP 6+
+  if (ram === 6 && rom === 64)
+   return 6.5;
+  // =========================
+  // VIP 6 — eMMC MID
+  // =========================
+  if ([4,6].includes(ram) && rom === 64)
+    return 6;
+
+  // =========================
+  // VIP 5 — UFS ENTRY
+  // =========================
+  if ([3,4].includes(ram) && rom === 32)
+    return 5;
+
+  if (ram === 3 && rom === 64)
+    return 5;
+
+  // =========================
+  // VIP 4+ — eMMC 5.1 EXTENDED
+  // =========================
+  if (ram === 2 && rom === 32)
+    return 4.5;
+
+  // =========================
+  // VIP 4 — eMMC BASIC
+  // =========================
+  if (ram === 2 && rom === 16)
+    return 4;
+
+  // =========================
+  // VIP 3 — eMCP BASIC
+  // =========================
+  if (ram === 1 && rom === 16)
+    return 3;
+
+  // =========================
+  // VIP 2 — eMCP ENTRY
+  // =========================
+  if (ram === 2 && rom === 8)
+    return 2;
+
+  // =========================
+  // VIP 1 — LEGACY
+  // =========================
+  if (ram === 1 && rom === 8)
+    return 1;
+
+  // =========================
+  // FALLBACK
+  // =========================
+  return 0;
+}
+
+/* ===============================
+   MMC LEVEL ENGINE
+================================ */
+function getMMCLevel(rom){
+
+  rom = Number(rom);
+
+  if(!rom) return null;
+
+  if(rom <= 16) return "MMC1";
+  if(rom === 32) return "MMC2";
+  if(rom === 64) return "MMC3";
+  if(rom === 128) return "MMC4";
+  if(rom >= 256) return "MMC5";
+
+  return "MMC";
+}
+
+function decodeSamsung(code){
+
+  const result = {
+    type: "Unknown",
+    ram: null,
+    rom: null,
+    storage: "Unknown",
+    version: null,
+    vip: null
+  };
+
+  if(!code) return result;
+
+const main = code.toUpperCase().split("-")[0];
+/* ===============================
+   SAMSUNG KLM eMMC ENGINE
+================================ */
+if(main.startsWith("KLM")){
+
+  let rom = null;
+
+  // Samsung density encoding thật
+  if(/G1/.test(main)) rom = 16;
+  else if(/G2/.test(main)) rom = 32;
+  else if(/G4/.test(main)) rom = 64;
+  else if(/G8/.test(main)) rom = 128;
+  else if(/GA/.test(main)) rom = 256;
+
+  return {
+    type:"eMMC",
+    storage:"eMMC 5.1",
+    ram:null,
+    rom:rom,
+    vip:null
+  };
+}
+
+/* ===============================
+   SAMSUNG KLM eMMC REAL FIX
+================================ */
+if(main.startsWith("KLM")){
+
+  let rom = null;
+
+  // Samsung density mapping thật
+  if(main.includes("8G")) rom = 8;
+  else if(main.includes("1G")) rom = 16;
+  else if(main.includes("2G")) rom = 32;
+  else if(main.includes("4G")) rom = 64;
+  else if(main.includes("8H") || main.includes("8J")) rom = 128;
+  else if(main.includes("AJ")) rom = 256;
+
+  return {
+    type:"eMMC",
+    storage:"eMMC 5.1",
+    ram:null,
+    rom:rom,
+    vip:null
+  };
+}
+
+/* =====================================================
+/* =====================================================
+   🔹 KMG SERIES (Samsung eMMC uMCP)
+===================================================== */
+
+if(main.startsWith("KMG")){
+
+  result.type = "uMCP";
+  result.storage = "eMMC 5.1";
+  result.version = "eMMC 5.1";
+
+  /* ===== ROM FROM PACKAGE TOKEN ===== */
+  const pkg = main.slice(-2); // BA / BM / CM / DM
+
+  const romMap = {
+    "BA":32,
+    "BM":64,
+    "CM":128,
+    "DM":256
+  };
+
+  result.rom = romMap[pkg] || 32;
+
+  /* ===== RAM FROM SERIES LETTER ===== */
+  // KMGX6001...
+  //    ↑ chữ này quyết định RAM
+
+  const ramToken = main[3];
+
+  const ramMap = {
+    "X":3,
+    "P":3,
+    "G":4,
+    "D":2,
+    "E":2,
+    "A":2
+  };
+
+  result.ram = ramMap[ramToken] || null;
+
+  /* ===== VIP ===== */
+  result.vip = calculateVip(result.ram, result.rom);
+
+  return result;
+}
+/* =====================================================
+   🔹 KMA SERIES (LPDDR5 uMCP NEW GEN)
+===================================================== */
+
+if (main.startsWith("KMA")) {
+
+  result.type = "uMCP";
+  result.storage = "UFS 3.1";
+  result.version = "UFS 3.1";
+
+  // ===== STORAGE =====
+  result.rom = 256;
+
+  // ===== RAM TOKEN =====
+  const ramToken = main.slice(-2);
+
+  const ramMap = {
+    "PM": 8,
+    "CM": 6,
+    "DM": 4
+  };
+
+  result.ram = ramMap[ramToken] || null;
+
+  // ===== VIP =====
+  result.vip = calculateVip(result.ram, result.rom);
+
+  return result;
+}
+// =====================================================
+// 🔹 1. SAMSUNG eMMC LOW SERIES (FULL FIX)
+// =====================================================
+
+const emmcPrefixes = [
+  "KMG","KMI","KMQ","KMW","KMH",
+  "KME","KMN","KMF","KMO","KMR","KMD"
+];
+
+if(emmcPrefixes.some(p => main.startsWith(p))){
+
+  result.type = "eMMC";
+
+  /* ===============================
+     STORAGE VERSION DETECT
+  =============================== */
+
+  // eMMC 5.0 series
+  if(
+      main.includes("1001") ||
+      main.includes("1000") ||
+      main.includes("0012") ||
+      main.includes("10012")
+  ){
+      result.storage = "eMMC 5.0";
+      result.rom = 16;
+  }
+
+  // eMMC 5.1 main production
+  else if(
+      main.includes("6001") ||
+      main.includes("6000")
+  ){
+      result.storage = "eMMC 5.1";
+
+      if(main.startsWith("KMQE") || main.startsWith("KMQ3"))
+          result.rom = 16;
+      else if(main.startsWith("KMDX"))
+          result.rom = 32;
+      else
+          result.rom = 64;
+  }
+
+  // legacy 32GB layout
+  else if(main.includes("0001")){
+      result.storage = "eMMC 5.1";
+      result.rom = 32;
+  }
+
+  // fallback Samsung rule
+  else{
+      result.storage = "eMMC 5.1";
+      result.rom = result.rom || 32;
+  }
+
+  result.version = result.storage;
+
+  /* ===============================
+     RAM DETECT
+  =============================== */
+
+  const ramChar = main[main.length - 2];
+
+  const ramMapLow = {
+    "3":2,
+    "4":4,
+    "8":3,
+    "B":2,
+    "C":6,
+    "D":6,
+    "M":8,
+    "E":4
+  };
+
+  if(ramMapLow[ramChar])
+      result.ram = ramMapLow[ramChar];
+
+  /* ===============================
+     VIP
+  =============================== */
+
+  result.vip = calculateVip(result.ram, result.rom);
+
+  return result;
+}
+
+  // =====================================================
+  // 🔹 2. KM3H / KM3V / KM4X (eMMC FIXED SKU)
+  // =====================================================
+  if(main.startsWith("KM3H") || main.startsWith("KM3V")){
+    result.type = "eMMC";
+    result.rom = 64;
+    result.ram = 6;
+    result.storage = "eMMC 5.1";
+    result.version = "eMMC 5.1";
+    result.vip = calculateVip(result.ram, result.rom);
+    return result;
+  }
+
+  if(main.startsWith("KM4X")){
+    result.type = "eMMC";
+    result.rom = 32;
+    result.ram = 3;
+    result.storage = "eMMC 5.1";
+    result.version = "eMMC 5.1";
+    result.vip = calculateVip(result.ram, result.rom);
+    return result;
+  }
+
+// 🔹 KM5 / KM2 Samsung uMCP Decoder (FULL FIX)
+// =====================================================
+if(/^KM[25]/.test(main)){
+
+  result.type = "uMCP";
+  result.storage = "UFS 2.1";
+  result.version = "UFS 2.1";
+
+  const family = main.slice(0,3);     // KM2 / KM5
+  const density = main.match(/(\d{4})/);
+  const ramToken = main.slice(-2);
+
+/* ================= ROM ================= */
+/* ===== SAMSUNG KM2 REAL DECODER ===== */
+
+if(family === "KM2"){
+
+  const model = main.substring(0,4); // KM2B / KM2V / KM2A
+
+  const storageMap = {
+    "KM2B":256,
+    "KM2V":128,
+    "KM2A":256
+  };
+
+  result.rom = storageMap[model] || null;
+}
+
+/* ===== SAMSUNG KM5 REAL DECODER ===== */
+
+if(family === "KM5"){
+
+  const model = main.substring(0,4); // KM5C / KM5H / KM5P / KM5V
+
+  const storageMap = {
+    "KM5C":64,
+    "KM5H":64,
+    "KM5P":64,
+    "KM5V":128
+  };
+
+  result.rom = storageMap[model] || null;
+}
+
+  /* ================= RAM ================= */
+
+const ramMap = {
+  "8M":3,
+  "DM":4,
+  "CM":6,
+  "JM":8
+};;
+
+  result.ram = ramMap[ramToken] || null;
+
+  /* ================= VIP ================= */
+
+  result.vip = calculateVip(result.ram,result.rom);
+
+  return result;
+}
+/* =====================================================
+   🔹 KMJ SERIES (Samsung UFS 2.2)  ⭐ FIX MMC BUG
+===================================================== */
+if(main.startsWith("KMJ")){
+
+  result.type = "uMCP";
+  result.storage = "UFS 2.2";
+  result.version = "UFS 2.2";
+
+  // ===== ROM =====
+  if(main.includes("A001")) result.rom = 256;
+  else if(main.includes("A002")) result.rom = 512;
+  else result.rom = 128;
+
+  // ===== RAM =====
+  const ramToken = main.slice(-2);
+
+  const ramMap = {
+    "RM":12,
+    "JM":8,
+    "CM":6,
+    "DM":4
+  };
+
+  result.ram = ramMap[ramToken] || null;
+
+  // ===== VIP =====
+  result.vip = calculateVip(result.ram,result.rom);
+
+  return result;
+}
+  // =====================================================
+  // 🔹 4. KM8 / KM9 (HIGH-END)
+  // =====================================================
+  if(main.startsWith("KM8") || main.startsWith("KM9")){
+
+    result.type = "uMCP";
+
+    const family = main.substring(0,3);  // KM8 / KM9
+    const tier   = main[3];              // V / F / G / L / B
+    const ramToken = main.slice(-2);     // JM / MM / JA ...
+
+    let block = null;
+
+    if(main.includes("9001")) block = "9001";
+    else if(main.includes("8001")) block = "8001";
+    else if(main.includes("7001")) block = "7001";
+
+    // ===== ROM LOGIC =====
+    if(family === "KM8"){
+
+      if(block === "9001"){
+        if(tier === "G") result.rom = 512;
+        else if(tier === "L") result.rom = 128;
+        else result.rom = 256;
+      }
+
+      else if(block === "8001"){
+        result.rom = (tier === "B" || tier === "F") ? 256 : 128;
+      }
+
+      else if(block === "7001"){
+        result.rom = (tier === "L") ? 64 : 128;
+      }
+
+      result.storage = (block === "9001") ? "UFS 2.2" : "UFS 2.1";
+    }
+
+    if(family === "KM9"){
+
+      if(block === "9001"){
+        result.rom = (tier === "G") ? 512 : 256;
+      }
+      else if(block === "8001"){
+        result.rom = 256;
+      }
+      else if(block === "7001"){
+        result.rom = 128;
+      }
+
+      result.storage = (block === "9001") ? "UFS 3.x" : "UFS 2.2";
+    }
+
+    result.version = result.storage;
+
+    const ramMapHigh = {
+      "JM":8,
+      "JA":8,
+      "LM":8,
+      "MM":12,
+      "EM":12,
+      "RM":12,
+      "SM":16
+    };
+
+    if(ramMapHigh[ramToken])
+      result.ram = ramMapHigh[ramToken];
+
+    result.vip = calculateVip(result.ram, result.rom);
+    return result;
+  }
+
+  return result;
+}
+
+// ======================================================
+// SK HYNIX FULL ENGINE (FINAL - USER VIP STANDARD)
+// ======================================================
+
+function decodeHynix(code){
+
+code = (code || "").toUpperCase().trim();
+
+let arch="UNKNOWN";
+let storage="Unknown";
+let ram=null;
+let rom=null;
+let vip=0;
+
+
+// ======================================================
+// ARCH DETECT
+// ======================================================
+if(code.startsWith("H9TQ") || code.startsWith("H9T")){
+    arch="eMCP";
+    storage="eMMC 5.1";
+}
+else if(code.startsWith("H9HQ")){
+    arch="UFS";
+    storage="UFS 2.1";
+}
+else if(code.startsWith("H9AG")){
+    arch="eMCP";
+    storage="eMMC 5.1";
+}
+else if(code.startsWith("H9HP")){
+    arch="uMCP";
+    storage="UFS 2.1";
+}
+else if(code.startsWith("H9RT")){
+    arch="UFS4";
+    storage="UFS 4.0";
+}
+
+
+// ======================================================
+// ROM MAP  (FIX DUPLICATE + MISSING)
+// ======================================================
+const romMap={
+"15":128,
+"16":128,
+"17":16,
+"18":16,
+"19":16,
+"21":256,
+"22":256,
+"26":32,
+"27":32,
+"32":4,
+"52":64,
+"53":64,
+"64":512
+};
+
+
+// ======================================================
+// RAM MAP (eMCP)
+// ======================================================
+const emcpRamMap={
+"A8":1,
+"AAE":1,
+"ABJ":2,
+"ADF":2,
+"ACL":3,
+"ADJ":4,
+"AEJ":6,
+"AFJ":8
+};
+
+
+// ======================================================
+// DRAM RAM MAP
+// ======================================================
+const dramRamMap={
+"A4":0.5,
+"A8":1,
+"AB":2,
+"AC":3,
+"AD":4,
+"AE":6,
+"AF":8,
+"AG":12,
+"AH":16
+};
+
+
+// ======================================================
+// PARSE eMCP
+// ======================================================
+if(arch==="eMCP"){
+
+    rom = romMap[code.substring(4,6)] ?? null;
+
+    const ramCode = code.substring(6,9);
+    ram = emcpRamMap[ramCode] ?? null;
+}
+
+
+// ======================================================
+// PARSE UFS (H9HQ + H9AG)
+// ======================================================
+if(arch==="UFS"){
+
+    // ===== ROM =====
+    rom = romMap[code.substring(4,6)] ?? null;
+
+    // ===== RAM TOKEN =====
+    const ramCode = code.substring(6,8);
+
+    const hynixUfsRamMap={
+        "AC":3,
+        "AD":4,
+        "AE":6,
+        "AF":8,
+        "AG":12,
+        "AH":16
+    };
+
+    ram = hynixUfsRamMap[ramCode] ?? ram;
+
+    // ===== H9AG SPECIAL SERIES =====
+    if(code.includes("DM")) ram=4;
+    else if(code.includes("EM")) ram=6;
+    else if(code.includes("FM")) ram=8;
+
+    if(rom>=256)
+        storage="UFS 2.1 HIGH";
+}
+/* ======================================================
+   🔥 NEW HYNIX GEN SUPPORT (H9AG / H9QT / H9RT)
+====================================================== */
+
+// chuẩn hóa code (bỏ suffix)
+const raw = code.split("-")[0];
+
+
+/* =========================
+/* =========================
+   H9AG REAL DECODER
+========================= */
+if(raw.startsWith("H9AG")){
+
+    arch="eMCP";
+    storage="eMMC 5.1";
+
+    // ===== ROM =====
+    if(raw.includes("6G")) rom=16;
+    else if(raw.includes("8G")) rom=32;
+    else if(raw.includes("9G")) rom=64;
+
+    // ===== RAM OLD STYLE =====
+    if(raw.includes("CM")) ram=2;
+    else if(raw.includes("DM")) ram=3;
+    else if(raw.includes("EM")) ram=4;
+    else if(raw.includes("FM")) ram=6;
+
+    // ===== RAM DENSITY STYLE =====
+    else if(raw.includes("3A")) ram=2;
+    else if(raw.includes("4A")) ram=3;
+    else if(raw.includes("5A")) ram=4;
+    else if(raw.includes("6A")) ram=6;
+}
+
+
+/* =========================
+   H9QT SERIES (LPDDR5 uMCP)
+========================= */
+if(raw.startsWith("H9QT")){
+
+    storage="UFS 3.1";
+
+    if(raw.includes("0G6")) rom=128;
+    if(raw.includes("1G6")) rom=256;
+
+    if(raw.includes("CN")) ram=6;
+    else if(raw.includes("DN")) ram=8;
+    else if(raw.includes("EN")) ram=12;
+}
+
+
+/* =========================
+   H9RT SERIES (UFS 4.0)
+========================= */
+if(raw.startsWith("H9RT")){
+
+    storage="UFS 4.0";
+
+    if(raw.includes("1GG")) rom=256;
+    if(raw.includes("2GG")) rom=512;
+
+    if(raw.includes("M6")) ram=12;
+    if(raw.includes("N6")) ram=16;
+}
+
+
+/* =========================
+   AUTO VIP APPLY
+========================= */
+if(ram && rom){
+
+    if(ram===1 && rom===8) vip=1;
+    else if(ram===2 && rom===8) vip=2;
+    else if(ram===1 && rom===16) vip=3;
+    else if(ram===2 && rom===16) vip=4;
+    else if(ram===2 && rom===32) vip=4.5;
+    else if((ram===3||ram===4)&&rom===32) vip=5;
+    else if((ram===4||ram===6)&&rom===64) vip=6;
+    else if((ram===4||ram===6)&&rom===128) vip=7;
+    else if((ram===8||ram===10)&&rom===128) vip=8;
+    else if((ram>=6)&&rom===256) vip=9;
+    else if((ram===12&&rom===256)||(ram===8&&rom===512)) vip=10;
+    else if(ram===12&&rom===512) vip=11;
+    else if(ram>=16&&rom>=512) vip=12;
+}
+
+// ======================================================
+// PARSE H9HP (uMCP — FIX VIP NOT SHOW)
+// ======================================================
+if(arch==="uMCP"){
+
+    // ===== ROM =====
+    rom = romMap[code.substring(4,6)] ?? null;
+
+    // ===== RAM TOKEN =====
+    const ramCode = code.substring(6,8);
+
+    const hynixUMCPRamMap={
+        "AC":4,
+        "AE":6,
+        "AF":8,
+        "AG":12,
+        "AH":16
+    };
+
+    ram = hynixUMCPRamMap[ramCode] ?? null;
+
+    storage="UFS 2.1";
+}
+
+
+// ======================================================
+// PARSE DRAM ONLY (REAL DRAM CHIP)
+// ======================================================
+if(arch==="DRAM"){
+
+    const ramCode = code.substring(6,8);
+    ram = dramRamMap[ramCode] ?? null;
+
+    rom = null; // DRAM không có ROM
+}
+
+// ======================================================
+// VIP SYSTEM
+// ======================================================
+
+if(ram===1 && rom===8)
+vip=1;
+
+else if(ram===2 && rom===8)
+vip=2;
+
+else if(ram===1 && rom===16)
+vip=3;
+
+else if(ram===2 && rom===16)
+vip=4;
+
+else if(ram===2 && rom===32)
+vip=4.5;
+
+else if(storage.includes("UFS") &&
+(
+(ram===3 && rom===32) ||
+(ram===4 && rom===32) ||
+(ram===3 && rom===64)
+))
+vip=5;
+
+else if(storage.includes("eMMC") &&
+(ram===4 || ram===6) && rom===64)
+vip=6;
+
+else if(storage.includes("UFS") &&
+(ram===4 || ram===6) && rom===128)
+vip=7;
+
+else if(storage.includes("UFS") &&
+(ram===8 || ram===10) && rom===128)
+vip=8;
+
+else if(storage.includes("UFS") &&
+(
+(ram===6 && rom===256) ||
+(ram===8 && rom===256) ||
+(ram===10 && rom===256) ||
+(ram===12 && rom===128)
+))
+vip=9;
+
+else if(
+(ram===12 && rom===256) ||
+(ram===8 && rom===512)
+)
+vip=10;
+
+else if(ram===12 && rom===512)
+vip=11;
+
+else if(ram>=16 && rom>=512)
+vip=12;
+
+
+// ======================================================
+return{
+arch,
+storage,
+ram,
+rom,
+vip
+};
+
+}
+  
+  
+  
+// ===== MAIN DECODER =====
+function autoDecodeChip(code, dbData){
+
+  code = code.toUpperCase().trim();
+  // ===== YMTC / YMEC ENGINE =====
+if(code.startsWith("YMEC")){
+
+  let rom = null;
+
+  if(code.includes("C6")) rom = 32;
+  if(code.includes("C7")) rom = 64;
+  if(code.includes("C8")) rom = 128;
+  if(code.includes("C9")) rom = 256;
+
+  return {
+    type: "UFS",
+    storage: "UFS",
+    ram: null,
+    rom: rom,
+    vip: rom === 32 ? 5 :
+         rom === 64 ? 6 :
+         rom === 128 ? 7 :
+         rom === 256 ? 8 : null
+  };
+}
+
+/* =====================================================
+   🔥 FIREBASE PRIORITY ENGINE
+===================================================== */
+
+function buildHardware(code, data){
+
+  /* ===== PRIORITY FIREBASE ===== */
+  if(
+    data &&
+    (
+      data.vip != null ||
+      data.ram != null ||
+      data.rom != null
+    )
+  ){
+    return {
+      ram: data.ram ?? null,
+      rom: data.rom ?? null,
+      vip: data.vip ?? null,
+      storage: data.storage ?? "Manual",
+      type: "Manual",
+      source: "firebase"
+    };
+  }
+
+  /* ===== FALLBACK DECODER ===== */
+  const hw = autoDecodeChip(code);
+
+  hw.source = "decoder";
+
+  return hw;
+}
+
+  
+function decodeMicronOEM(code){
+
+  code = code.toUpperCase().trim();
+
+  /* ===============================
+     VIP MANUAL TABLE (NO RAM / ROM)
+  =============================== */
+
+  const VIP_TABLE = {
+
+    // ===== VIP 1 =====
+    "JY974":1,
+
+    // ===== VIP 3 =====
+    "JZ008":3,
+    "JZ011":3,
+    "JZ089":3,
+    "PA072":3,
+
+    // ===== VIP 4 =====
+    "JY932":4,
+    "JY950":4,
+
+    // ===== VIP 4+ =====
+    "JZ050":4.5,
+    "JZ013":4.5,
+    "JZ108":4.5,
+    "JZ090":4.5,
+
+    // ===== VIP 5 =====
+    "JZ049":5,
+    "JZ053":5,
+    "JZ109":5,
+    "JZ481":5,
+    "PA093":5,
+    "JZ025":5,
+    "PA073":5,
+
+    // ===== VIP 6 =====
+    "JZ177":6,
+    "JZ186":6,
+    "JZ128":6,
+    "JZ479":6,
+
+    // ===== VIP 7 =====
+    "JZ152":7,
+    "JZ199":7,
+    "JZ187":7,
+    "JZ396":7,
+    "JZ100":7,
+    "JZ266":7,
+    "JZ188":7,
+    "JZ150":7,
+    "JZ151":7,
+    "JZ153":7,
+    "JZ385":7,
+    "JZ386":7,
+    "JZ178":7,
+    "JZ103":7
+  };
+
+  /* ===== MATCH EXACT CODE ===== */
+  if(VIP_TABLE[code] !== undefined){
+    return {
+      ram:null,
+      rom:null,
+      storage:"eMMC",
+      vip:VIP_TABLE[code]
+    };
+  }
+
+  /* ===== DEFAULT JY ===== */
+  if(code.startsWith("JY")){
+    return {
+      ram:null,
+      rom:null,
+      storage:"eMMC",
+      vip:1
+    };
+  }
+
+  /* ===== DEFAULT JZ / PA ===== */
+  if(code.startsWith("JZ") || code.startsWith("PA")){
+    return {
+      ram:null,
+      rom:null,
+      storage:"eMMC",
+      vip:3
+    };
+  }
+
+  return null;
+}
+  // ===== MICRON CHECK FIRST =====
+  const micron = decodeMicronOEM(code);
+  if(micron) return micron;
+  /* ===============================
+   SANDISK / WD eMMC FIX
+================================ */
+if(code.startsWith("SDIN")){
+
+  const size = code.match(/(\d{2,3})G/i);
+
+  return {
+    type:"eMMC",
+    storage:"eMMC 5.1",
+    ram:null,
+    rom:size ? Number(size[1]) : null,
+    vip:null
+  };
+}
+if(code.startsWith("WDC")){
+  const size = code.match(/(\d{2,3})G/i);
+  return {
+    type:"eMMC",
+    storage:"eMMC 5.1",
+    ram:null,
+    rom:size ? Number(size[1]) : null,
+    vip:null
+  };
+}
+
+
+  // ===== Samsung =====
+  if(/^K/.test(code)){
+    return decodeSamsung(code);
+  }
+
+// ===== SK hynix =====
+if(/^H/.test(code)){
+
+  const h = decodeHynix(code);
+
+/* ===== SAFE GUARD ===== */
+if(!h){
+  return {
+    ram: null,
+    rom: null,
+    storage: "Unknown",
+    vip: 0
+  };
+}
+
+  /* ===== NORMALIZE DATA ===== */
+  h.ram = Number(h.ram) || null;
+  h.rom = Number(h.rom) || null;
+  h.storage = h.storage || "Unknown";
+
+  /* ===== VIP RULE FIX ===== */
+
+  if(h.storage.includes("eMMC") && h.ram<=1)
+      h.vip = 1;
+
+  else if(h.storage.includes("eMMC") && h.ram===2 && h.rom<=8)
+      h.vip = 2;
+
+  else if(h.storage.includes("eMMC") && h.ram<=1 && h.rom===16)
+      h.vip = 3;
+
+  else if(h.storage.includes("eMMC") && h.ram===2 && h.rom===16)
+      h.vip = 4;
+
+  else if(h.storage.includes("eMMC") && h.ram>=2 && h.rom===32)
+      h.vip = 4.5;
+
+  else if(h.storage.includes("UFS") &&
+         ((h.ram===3 && h.rom===32) ||
+          (h.ram===4 && h.rom===32) ||
+          (h.ram===3 && h.rom===64)))
+      h.vip = 5;
+
+  else if(h.storage.includes("eMMC") &&
+         (h.ram===4 || h.ram===6) && h.rom===64)
+      h.vip = 6;
+
+  else if(h.storage.includes("UFS") &&
+         (h.ram===4 || h.ram===6) && h.rom===128)
+      h.vip = 7;
+
+  else if(h.storage.includes("UFS") &&
+         (h.ram===8 || h.ram===10) && h.rom===128)
+      h.vip = 8;
+
+  else if(h.storage.includes("UFS") &&
+         ((h.ram===6 && h.rom===256) ||
+          (h.ram===8 && h.rom===256) ||
+          (h.ram===10 && h.rom===256) ||
+          (h.ram===12 && h.rom===128)))
+      h.vip = 9;
+
+  else if((h.ram===12 && h.rom===256) ||
+          (h.ram===8 && h.rom===512))
+      h.vip = 10;
+
+  else if(h.ram===12 && h.rom===512)
+      h.vip = 11;
+
+  else if(h.ram>=16 && h.rom>=512)
+      h.vip = 12;
+
+  return h;
+}
+}
+/* ===============================
+   VIP AUTO BALANCE ENGINE
+================================ */
+
+function VIP_ENGINE(hw){
+
+  const ram = Number(hw.ram)||0;
+  const rom = Number(hw.rom)||0;
+
+  let vip = 0;
+
+  /* ===== VIP 12 ===== */
+  if(ram===16 && rom===512) vip=12;
+
+  /* ===== VIP 11 ===== */
+  else if(ram===12 && rom===512) vip=11;
+
+  /* ===== VIP 10 ===== */
+  else if(
+      (ram===12 && rom===256) ||
+      (ram===8 && rom===512)
+  ) vip=10;
+
+  /* ===== VIP 9 ===== */
+  else if(
+      (ram===6 && rom===256) ||
+      (ram===12 && rom===128) ||
+      (ram===8 && rom===256) ||
+      (ram===10 && rom===256)
+  ) vip=9;
+
+  /* ===== VIP 8 ===== */
+  else if(
+      (ram===8 && rom===128) ||
+      (ram===10 && rom===128)
+  ) vip=8;
+
+  /* ===== VIP 7 ===== */
+  else if(
+      (ram===4 && rom===128) ||
+      (ram===6 && rom===128)
+  ) vip=7;
+
+  /* ===== VIP 6 ===== */
+  else if(
+      (ram===4 && rom===64) ||
+      (ram===6 && rom===64)
+  ) vip=6;
+
+  /* ===== VIP 5 ===== */
+  else if(
+      (ram===3 && rom===32) ||
+      (ram===4 && rom===32) ||
+      (ram===3 && rom===64)
+  ) vip=5;
+
+  /* ===== VIP 4+ ===== */
+  else if(ram===2 && rom===32) vip=4.5;
+
+  /* ===== VIP 4 ===== */
+  else if(ram===2 && rom===16) vip=4;
+
+  /* ===== VIP 3 ===== */
+  else if(ram===1 && rom===16) vip=3;
+
+  /* ===== VIP 2 ===== */
+  else if(ram===2 && rom===8) vip=2;
+
+  /* ===== VIP 1 ===== */
+  else if(ram===1 && rom===8) vip=1;
+
+  hw.vip = vip;
+
+  return hw;
+}
+
+
+/* ===== GLOBAL CACHE (KHÔNG DECLARE LẠI) ===== */
+window.VIP_AI_CACHE = window.VIP_AI_CACHE || null;
+
+
+/* ===== LOAD AI DATABASE (LOAD 1 LẦN DUY NHẤT) ===== */
+async function LOAD_AI_CACHE(){
+
+  if(window.VIP_AI_CACHE)
+    return window.VIP_AI_CACHE;
+
+  try{
+
+    const snap = await db.collection("vip_learning")
+      .limit(500)
+      .get();
+
+    window.VIP_AI_CACHE = snap.docs.map(d=>d.data());
+
+    console.log(
+      "AI cache loaded:",
+      window.VIP_AI_CACHE.length
+    );
+
+    return window.VIP_AI_CACHE;
+
+  }catch(e){
+
+    console.warn("AI cache load fail", e);
+
+    window.VIP_AI_CACHE = [];
+
+    return window.VIP_AI_CACHE;
+  }
+}
+
+/* ===== FAST AI VIP PREDICT ===== */
+function AI_VIP_PREDICT(hw, cache){
+
+  if(!Array.isArray(cache) || cache.length === 0)
+    return null;
+
+  const ram = Number(hw?.ram);
+  const rom = Number(hw?.rom);
+
+  if(!ram || !rom) return null;
+
+  let total = 0;
+  let count = 0;
+
+  for(const item of cache){
+
+    if(
+      Number(item.ram) === ram &&
+      Number(item.rom) === rom &&
+      item.vip != null
+    ){
+      total += Number(item.vip);
+      count++;
+    }
+  }
+
+  if(count === 0) return null;
+
+  return Number((total / count).toFixed(1));
+}
+
+
+/* ===============================
+   SAVE EXPERIENCE
+================================ */
+function learnFromRealData(hw){
+
+  if(!hw?.ram || !hw?.rom || !hw?.vip) return;
+
+  db.collection("vip_learning").add({
+    ram: hw.ram,
+    rom: hw.rom,
+    storage: hw.storage,
+    vip: hw.vip,
+    score: hw.performanceScore || 0,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+}
+
+
+let VIP_AI_CACHE = null;
+
+
+/* ===============================
+   LOAD AI LEARNING
+================================ */
+async function loadVIPLearning(){
+
+  if(VIP_AI_CACHE) return VIP_AI_CACHE;
+
+  const snap = await db.collection("vip_learning")
+    .limit(500)
+    .get();
+
+  VIP_AI_CACHE = [];
+
+  snap.forEach(d=>{
+    VIP_AI_CACHE.push(d.data());
+  });
+
+  return VIP_AI_CACHE;
+}
+
+
+/* ===============================
+   FORMAT PHONE MODELS CLEAN
+================================ */
+function formatSamsungModels(text){
+
+  if(!text) return "";
+
+  const models = text
+    .replace(/32GB|64GB|128GB|256GB|512GB/gi,"")
+    .split(",")
+    .map(m=>m.trim())
+    .filter(Boolean);
+
+  const detectBrand = (m)=>{
+    if(/samsung|galaxy|a\d|m\d|j\d|s\d/i.test(m)) return "Samsung";
+    if(/oppo/i.test(m)) return "OPPO";
+    if(/vivo/i.test(m)) return "VIVO";
+    if(/xiaomi|redmi|poco/i.test(m)) return "Xiaomi";
+    if(/realme/i.test(m)) return "Realme";
+    return null; // ⭐ QUAN TRỌNG
+  };
+
+  const grouped = {};
+
+  models.forEach(m=>{
+
+    const brand = detectBrand(m);
+
+    if(!brand) return; // ⭐ KHÔNG ADD UNKNOWN
+
+    const cleanModel = m
+      .replace(/samsung|galaxy|oppo|vivo|xiaomi|redmi|poco|realme/gi,"")
+      .trim();
+
+    if(!grouped[brand]) grouped[brand] = [];
+
+    if(!grouped[brand].includes(cleanModel))
+      grouped[brand].push(cleanModel);
+  });
+
+  return Object.entries(grouped)
+    .map(([brand,list])=>`${brand}: ${list.join(" / ")}`)
+    .join("<br>");
+}
+
+/* ===============================
+   MMC SIZE DETECT
+================================ */
+function extractMMCSize(code){
+
+  code = (code || "").toUpperCase();
+
+  // ===== Samsung KLMB / KLMG REAL SIZE =====
+  if(code.includes("G1")) return 16;
+  if(code.includes("G2")) return 32;
+  if(code.includes("G3")) return 64;
+  if(code.includes("G4")) return 128;
+  if(code.includes("G5")) return 256;
+
+  return null;
+}
+
+async function check(){
+
+  const out = document.getElementById("out");
+  const btn = document.querySelector(".check-btn");
+
+  // ===== SECURITY BLOCK FOR USER MODE =====
+  if(window.location.search.includes("u=")){
+
+    const params = new URLSearchParams(window.location.search);
+    const linkId = params.get("u");
+
+    try{
+      const linkDoc = await db.collection("shareLinks").doc(linkId).get();
+
+      if(!linkDoc.exists){
+        showUserMessage("❌ Link không tồn tại!");
+        disableCheckUI();
+        return;
+      }
+
+      const data = linkDoc.data();
+
+      if(!data || !data.active){
+        showUserMessage("🔒 Link đã bị khóa!");
+        disableCheckUI();
+        return;
+      }
+
+    }catch(e){
+      showUserMessage("⚠️ Lỗi xác thực link!");
+      return;
+    }
+  }
+
+  // ===== PHẦN CHECK CŨ CỦA BẠN BẮT ĐẦU TỪ ĐÂY =====
+  const q = document.getElementById("q")?.value?.trim()?.toUpperCase();
+
+  if(!q){
+    out.innerHTML="";
+    return;
+  }
+
+  btn.disabled=true;
+  btn.style.opacity="0.6";
+
+  /* ===== LOADING ===== */
+  out.innerHTML=`
+  <div style="max-width:600px;margin:40px auto;">
+    <div style="margin-bottom:8px;font-size:14px;opacity:.8;">
+      🔍 Đang phân tích dữ liệu...
+    </div>
+
+    <div style="width:100%;height:10px;background:rgba(255,255,255,0.06);
+      border-radius:999px;overflow:hidden;">
+      <div id="progressFill"
+        style="height:100%;width:0%;
+        background:linear-gradient(90deg,#38bdf8,#06b6d4,#22c55e);
+        transition:width .35s;">
+      </div>
+    </div>
+
+    <div id="progressText"
+      style="text-align:right;font-size:13px;margin-top:8px;">
+      0%
+    </div>
+  </div>`;
+
+  const fill=document.getElementById("progressFill");
+  const text=document.getElementById("progressText");
+
+  let percent=0;
+
+  const fakeLoading=setInterval(()=>{
+    percent+=8;
+    if(percent>95) percent=95;
+    fill.style.width=percent+"%";
+    text.innerText=percent+"%";
+  },120);
+
+  try{
+
+    await new Promise(r=>setTimeout(r,300));
+
+    const snap=await db.collection("codes").get();
+
+    let html=`<div class="result-grid">`;
+
+    for(const doc of snap.docs){
+
+      const x=doc.data();
+
+      /* ===== SEARCH FILTER ===== */
+      if(
+        !(
+          typeof x.code==="string" &&
+          x.code.toUpperCase().includes(q)
+        ) &&
+        !(
+          Array.isArray(x.models) &&
+          x.models.some(m=>typeof m==="string" && m.toUpperCase().includes(q))
+        )
+      ) continue;
+
+      const chip=detectChip(x.code);
+
+      /* ===== PRIORITY MMC FROM FIREBASE ===== */
+      const forceMMC = x.type==="MMC";
+
+      /* ===== VIP SYSTEM ===== */
+      let decoded;
+
+      if(
+        x &&
+        (
+          x.vip!=null ||
+          x.ram!=null ||
+          x.rom!=null
+        )
+      ){
+
+        decoded={
+          ram:x.ram??null,
+          rom:x.rom??null,
+          vip:x.vip??null,
+          storage:x.storage??null,
+          source:"firebase"
+        };
+
+      }else{
+
+        decoded=autoDecodeChip(x.code,x)||{};
+        decoded.source="decoder";
+      }
+
+      /* STORAGE FALLBACK */
+      if(!decoded.storage){
+        const hw=autoDecodeChip(x.code,x);
+        decoded.storage=hw?.storage||null;
+      }
+
+      /* APPLY MMC PRIORITY */
+      if(forceMMC){
+        decoded.storage="eMMC";
+        decoded.type="MMC";
+      }
+
+      /* REMOVE FAKE MMC WHEN UFS */
+      if(!forceMMC && decoded.storage?.includes("UFS")){
+        x.mmcLevel=null;
+        x.mmc=false;
+      }
+
+      if(typeof decoded!=="object") decoded={};
+
+const isMMC =
+   x.code.startsWith("KLM") ||
+   x.code.startsWith("KMG") ||
+   decoded.storage?.includes("eMMC");
+      
+      html+=`
+<div class="result-card ${chip.class}">
+
+  <div class="code-main">${x.code}</div>
+
+
+  <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
+
+${(() => {
+
+  // ===== PRIORITY LOGIC =====
+  const mmc = getMMCLevel(decoded.rom);
+
+  const hasVIP = decoded.vip !== null && decoded.vip !== undefined && decoded.vip > 0;
+
+const levelBadge = hasVIP
+  ? '<div class="vip-badge vip-' + Math.floor(decoded.vip) + '">' +
+      'VIP ' + (
+        decoded.vip === 4.5 ? "4+" :
+        decoded.vip === 6.5 ? "6+" :
+        Math.floor(decoded.vip)
+      ) +
+    '</div>'
+  : (mmc
+      ? '<div class="vip-badge">' + mmc + '</div>'
+      : '');
+
+  // ===== RAM / ROM BADGE =====
+  const specBadge =
+    decoded.ram && decoded.rom
+      ? '<div class="ram-badge">' + decoded.ram + '/' + decoded.rom + '</div>'
+      : decoded.rom
+        ? '<div class="ram-badge">' + decoded.rom + 'GB</div>'
+        : decoded.ram
+          ? '<div class="ram-badge">' + decoded.ram + 'GB RAM</div>'
+          : '';
+
+return levelBadge + specBadge;
+
+})()}
+</div>
+
+<div class="card-footer">
+  <div class="chip-info" style="color:${chip.color}">
+    <span class="chip-dot" style="background:${chip.color}"></span>
+    ${chip.name}
+    <span style="opacity:.6;">
+      ${decoded.storage || ""}
+    </span>
+  </div>
+</div>
+
+${
+Array.isArray(x.models)&&x.models.length
+? `<div class="model-line">
+     📱 ${formatSamsungModels(x.models.join(", "))}
+   </div>`
+: `<div class="model-placeholder">
+     📱 Chưa có model
+   </div>`
+}
+
+</div>`;
+}
+
+    html+=`</div>`;
+
+    if(html===`<div class="result-grid"></div>`){
+      html=`
+        <div style="
+          margin-top:40px;
+          text-align:center;
+          font-size:18px;
+          font-weight:600;
+          color:#facc15;">
+          🔄 Mã đang cập nhật hoặc chưa có trong hệ thống
+        </div>`;
+    }
+
+    clearInterval(fakeLoading);
+
+    fill.style.width="100%";
+    text.innerText="100%";
+
+    setTimeout(()=>{
+      out.innerHTML=html;
+      btn.disabled=false;
+      btn.style.opacity="1";
+    },300);
+
+  }catch(err){
+
+    clearInterval(fakeLoading);
+    console.error(err);
+
+    out.innerHTML=`<div style="color:#ef4444;text-align:center;">
+      ⚠️ Lỗi hệ thống
+    </div>`;
+
+    btn.disabled=false;
+    btn.style.opacity="1";
+  }
+}
+
+  
+// ===== LOGIN =====
+async function secureLogin(){
+  const email = document.getElementById("loginEmail").value.trim();
+  const pass = document.getElementById("loginPass").value.trim();
+  const err = document.getElementById("loginError");
+
+  err.style.display = "none";
+
+  try{
+    await auth.signInWithEmailAndPassword(email, pass);
+    // KHÔNG làm gì thêm
+  }catch(e){
+    err.style.display = "block";
+    err.innerText = "Sai tài khoản hoặc mật khẩu!";
+    return; // QUAN TRỌNG
+  }
+}
+
+
+
+// ===== TOGGLE PASSWORD =====
+function togglePassword(){
+  const passInput = document.getElementById("loginPass");
+
+  if(passInput.type === "password"){
+    passInput.type = "text";
+  }else{
+    passInput.type = "password";
+  }
+}
+
+
+// ===== CHECK ROLE =====
+auth.onAuthStateChanged(async (user) => {
+
+  const hasShareLink = window.location.search.includes("u=");
+
+  /* ===== KHÔNG LOGIN ===== */
+  if(!user){
+
+    // nếu là link share → cho xem bình thường
+    if(hasShareLink) return;
+
+    // ❌ KHÔNG hiện login nữa
+    document.getElementById("loginScreen")?.remove();
+    document.getElementById("adminPanel")?.remove();
+
+    // ✅ Chỉ hiện cảnh báo
+    document.body.innerHTML = `
+      <div style="
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        height:100vh;
+        font-size:20px;
+        font-weight:600;
+        color:#f87171;
+        background:#020617;
+      ">
+        ⚠️ Khu vực quản trị – Không được phép truy cập
+      </div>
+    `;
+
+    return;
+  }
+
+  try{
+
+    const snap = await db.collection("users")
+      .doc(user.email)
+      .get();
+
+    if(!snap.exists || snap.data().role!=="admin"){
+      await auth.signOut();
+      return;
+    }
+
+    /* ===== LOGIN SUCCESS ===== */
+
+    document.getElementById("loginScreen").style.display="none";
+    document.getElementById("adminPanel").style.display="block";
+
+    loadLinks();
+
+  }catch(err){
+    console.error(err);
+  }
+});;
+
+
+
+
+async function createLink(){
+  const id = Date.now().toString(36) + Math.random().toString(36).substring(2,6);
+
+  await db.collection("shareLinks").doc(id).set({
+    active: true,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    expiresAt: null,
+    views: 0
+  });
+
+  loadLinks();
+}
+
+
+async function loadLinks(){
+
+  const snap = await db.collection("shareLinks").get();
+
+  let html = "";
+
+  snap.forEach(doc=>{
+
+    const d = doc.data();
+    const id = doc.id;
+    const displayName =
+      d.alias && d.alias.trim() !== "" ? d.alias : id;
+
+    html += `
+      <div class="link-card">
+        
+        <div class="link-left">
+
+          <div class="link-id-row">
+            <div class="link-id editable-name"
+                 contenteditable="true"
+                 data-id="${id}">
+              ${displayName}
+            </div>
+
+
+          <div class="link-status ${d.active?'open':'lock'}">
+            ${d.active?'🟢 Đang mở':'🟡 Đang khóa'}
+          </div>
+
+          <div id="remain-${id}" style="margin-top:6px;font-size:12px;color:#facc15;">
+            ${d.expiresAt ? '⏳ Đang tính...' : '♾ Không giới hạn'}
+          </div>
+
+          <div style="margin-top:4px;font-size:12px;color:#22c55e;">
+            👁 Lượt truy cập: ${d.views || 0}
+          </div>
+
+        </div>
+
+        <div class="link-actions">
+
+          <button class="icon-btn" onclick="copyLink('${id}',this)">📋</button>
+
+          <button class="icon-btn"
+            style="background:${d.active?'#16a34a':'#f59e0b'};color:white"
+            onclick="toggleLink('${id}',${d.active})">
+            ${d.active?'🔓':'🔒'}
+          </button>
+
+          <button class="icon-btn" onclick="configExpire('${id}')">⏰</button>
+
+          <button class="icon-btn delete"
+            style="background:#dc2626;color:white"
+            onclick="deleteLink('${id}')">
+            🗑
+          </button>
+
+        </div>
+
+      </div>
+    `;
+  });
+
+  /* ===== RENDER LIST ===== */
+  document.getElementById("linkList").innerHTML = html;
+
+
+  /* ===== INLINE RENAME SAVE ===== */
+  document.querySelectorAll(".editable-name").forEach(el=>{
+
+    const id = el.dataset.id;
+
+    el.addEventListener("keydown", e=>{
+      if(e.key === "Enter"){
+        e.preventDefault();
+        el.blur();
+      }
+    });
+
+    el.addEventListener("blur", async ()=>{
+
+      const value = el.innerText.trim();
+      const ref = db.collection("shareLinks").doc(id);
+
+      try{
+        if(!value){
+          await ref.update({
+            alias: firebase.firestore.FieldValue.delete()
+          });
+        }else{
+          await ref.update({
+            alias: value
+          });
+        }
+      }catch(err){
+        console.error("Rename error:",err);
+      }
+
+    });
+
+  });
+
+
+  /* ===== COUNTDOWN REALTIME ===== */
+
+  snap.forEach(doc=>{
+
+    const d = doc.data();
+    const id = doc.id;
+
+    if(!d.expiresAt) return;
+
+    const end = d.expiresAt.toDate();
+    const el = document.getElementById(`remain-${id}`);
+    if(!el) return;
+
+    clearInterval(window.adminTimers?.[id]);
+
+    window.adminTimers = window.adminTimers || {};
+
+    window.adminTimers[id] = setInterval(async ()=>{
+
+      const diff = end - new Date();
+
+      if(diff <= 0){
+
+        clearInterval(window.adminTimers[id]);
+        el.innerText = "⛔ Đã hết hạn";
+
+        if(d.active){
+          await db.collection("shareLinks")
+            .doc(id)
+            .update({active:false});
+          loadLinks();
+        }
+
+        return;
+      }
+
+      const days = Math.floor(diff/86400000);
+      const hours = Math.floor((diff/3600000)%24);
+      const minutes = Math.floor((diff/60000)%60);
+      const seconds = Math.floor((diff/1000)%60);
+
+      el.innerText =
+        `⏳ ${days}d ${hours}h ${minutes}m ${seconds}s`;
+
+    },1000);
+
+  });
+
+}
+
+
+/* ===== EDIT LINK ALIAS (ADMIN ONLY) ===== */
+async function editAlias(id, current){
+
+  const name = prompt("Nhập tên để nhớ cho link:", current);
+  if(name === null) return;
+
+  const ref = db.collection("shareLinks").doc(id);
+
+  try{
+
+    if(name.trim() === ""){
+      await ref.update({
+        alias: firebase.firestore.FieldValue.delete()
+      });
+    }else{
+      await ref.update({
+        alias: name.trim()
+      });
+    }
+
+    loadLinks();
+
+  }catch(e){
+    alert("Không lưu được tên");
+    console.error(e);
+  }
+}
+
+// ===== POPUP CÀI THỜI GIAN (ADMIN) =====
+
+async function configExpire(id){
+
+  closeExpireBox();
+
+  let days = "";
+  let hours = "";
+  let minutes = "";
+
+  try{
+    const doc = await db.collection("shareLinks").doc(id).get();
+    if(doc.exists && doc.data().expiresAt){
+      const now = new Date();
+      const end = doc.data().expiresAt.toDate();
+      let diff = Math.max(0, end - now);
+
+      days = Math.floor(diff / (1000*60*60*24));
+      diff %= (1000*60*60*24);
+      hours = Math.floor(diff / (1000*60*60));
+      diff %= (1000*60*60);
+      minutes = Math.floor(diff / (1000*60));
+    }
+  }catch(e){
+    console.warn("Không đọc được expiresAt", e);
+  }
+
+  const html = `
+  <div id="expireBox" style="
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.6);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:9999;
+  ">
+    <div style="
+      background:#0f172a;
+      padding:25px;
+      border-radius:18px;
+      width:340px;
+      box-shadow:0 20px 50px rgba(0,0,0,0.6);
+    ">
+      <h3 style="margin-bottom:15px;">⏰ Cài thời gian hết hạn</h3>
+
+<div style="margin-bottom:4px;font-size:13px;color:#cbd5e1;">📅 Số ngày</div>
+<input id="expireDays" type="number"
+  value="${days}"
+  style="width:100%;height:42px;margin-bottom:10px;
+  border-radius:10px;border:1px solid #333;
+  background:#020617;color:white;padding:0 12px">
+
+<div style="margin-bottom:4px;font-size:13px;color:#cbd5e1;">⏰ Giờ</div>
+<input id="expireHours" type="number"
+  value="${hours}"
+  style="width:100%;height:42px;margin-bottom:10px;
+  border-radius:10px;border:1px solid #333;
+  background:#020617;color:white;padding:0 12px">
+
+<div style="margin-bottom:4px;font-size:13px;color:#cbd5e1;">⏱ Phút</div>
+<input id="expireMinutes" type="number"
+  value="${minutes}"
+  style="width:100%;height:42px;margin-bottom:15px;
+  border-radius:10px;border:1px solid #333;
+  background:#020617;color:white;padding:0 12px">
+
+
+      <div style="display:flex;justify-content:flex-end;gap:10px;">
+        <button onclick="closeExpireBox()"
+          style="padding:6px 12px;border-radius:8px;
+          border:1px solid #444;background:#1f2937;color:white">
+          Hủy
+        </button>
+
+        <button onclick="saveExpire('${id}')"
+          style="padding:6px 12px;border-radius:8px;
+          background:#2563eb;color:white;border:none">
+          Lưu
+        </button>
+      </div>
+    </div>
+  </div>
+  `;
+
+  document.body.insertAdjacentHTML("beforeend", html);
+}
+
+function closeExpireBox(){
+  const box = document.getElementById("expireBox");
+  if(box) box.remove();
+}
+
+async function saveExpire(id){
+  const d = parseInt(document.getElementById("expireDays").value || 0);
+  const h = parseInt(document.getElementById("expireHours").value || 0);
+  const m = parseInt(document.getElementById("expireMinutes").value || 0);
+
+  if(d === 0 && h === 0 && m === 0){
+    await db.collection("shareLinks").doc(id).update({
+      expiresAt: null
+    });
+  }else{
+    const future = new Date();
+    future.setDate(future.getDate() + d);
+    future.setHours(future.getHours() + h);
+    future.setMinutes(future.getMinutes() + m);
+
+    await db.collection("shareLinks").doc(id).update({
+      expiresAt: firebase.firestore.Timestamp.fromDate(future)
+    });
+  }
+
+  closeExpireBox();
+  loadLinks();
+}
+// ===== COPY LINK =====
+function copyLink(id, btn){
+  const link = window.location.origin + window.location.pathname + "?u=" + id;
+  navigator.clipboard.writeText(link);
+
+  const old = btn.innerText;
+  btn.innerText = "✓";
+  btn.style.background = "#16a34a";
+  btn.style.color = "white";
+
+  setTimeout(()=>{
+    btn.innerText = old;
+    btn.style.background = "";
+    btn.style.color = "";
+  },1500);
+}
+
+// ===== DELETE LINK =====
+function deleteLink(id){
+  if(!confirm("Xóa link này?")) return;
+
+  db.collection("shareLinks")
+    .doc(id)
+    .delete();
+}
+
+// ===== RENAME HIỂN THỊ (FINAL FIX) =====
+async function startRename(id){
+
+  const name = prompt("Tên hiển thị:");
+
+  if(!name || !name.trim()) return;
+
+  try{
+
+    await db.collection("shareLinks")
+      .doc(id)
+      .set({
+        alias: name.trim()
+      },{ merge:true });
+
+    await loadLinks(); // reload lại UI
+
+  }catch(e){
+    console.error(e);
+    alert("Đổi tên lỗi");
+  }
+}
+
+
+// ===== TOGGLE LINK (MỞ / KHÓA) =====
+async function toggleLink(id, current){
+
+  try{
+
+    await db.collection("shareLinks")
+      .doc(id)
+      .update({
+        active: !current
+      });
+
+    loadLinks();
+
+  }catch(e){
+    console.error(e);
+  }
+
+}
+
+
+// ===== DELETE LINK (POPUP ĐẸP) =====
+function deleteLink(id){
+
+  const html = `
+  <div id="deleteBox" style="
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.6);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:9999;
+  ">
+    <div style="
+      background:#0f172a;
+      padding:24px;
+      border-radius:18px;
+      width:320px;
+      box-shadow:0 20px 50px rgba(0,0,0,0.6);
+      text-align:center;
+    ">
+      <div style="font-size:18px;margin-bottom:10px;">🗑 Xóa link</div>
+      <div style="font-size:14px;color:#94a3b8;margin-bottom:20px;">
+        Bạn có chắc muốn xóa link này?
+      </div>
+
+      <div style="display:flex;justify-content:center;gap:12px;">
+        <button onclick="closeDeleteBox()"
+          style="padding:8px 16px;border-radius:10px;
+          border:1px solid #334155;background:#1f2937;color:white">
+          Hủy
+        </button>
+
+        <button onclick="confirmDelete('${id}')"
+          style="padding:8px 16px;border-radius:10px;
+          background:#dc2626;color:white;border:none">
+          Xóa
+        </button>
+      </div>
+    </div>
+  </div>
+  `;
+
+  document.body.insertAdjacentHTML("beforeend", html);
+}
+
+function closeDeleteBox(){
+  const box = document.getElementById("deleteBox");
+  if(box) box.remove();
+}
+
+async function confirmDelete(id){
+  await db.collection("shareLinks").doc(id).delete();
+  closeDeleteBox();
+  loadLinks();
+}
+function startRename(id){
+  const el = document.getElementById("name-" + id);
+  if(!el || el.querySelector("input")) return;
+
+  const oldText = el.innerText;
+  const input = document.createElement("input");
+
+  input.type = "text";
+  input.value = oldText;
+  input.style.width = "100%";
+  input.style.background = "transparent";
+  input.style.color = "inherit";
+  input.style.border = "1px solid rgba(255,255,255,0.3)";
+  input.style.borderRadius = "6px";
+  input.style.padding = "4px 6px";
+  input.style.fontSize = "14px";
+
+  el.innerHTML = "";
+  el.appendChild(input);
+  input.focus();
+  input.select();
+
+  function finish(){
+    const val = input.value.trim();
+    el.innerText = val || oldText;
+
+    if(val){
+      // ✅ GIỮ TÊN KỂ CẢ ĐÓNG TAB
+      localStorage.setItem("alias_" + id, val);
+    }
+  }
+
+  input.addEventListener("blur", finish);
+  input.addEventListener("keydown", e=>{
+    if(e.key === "Enter") input.blur();
+    if(e.key === "Escape") el.innerText = oldText;
+  });
+}
+
+document.getElementById("q").addEventListener("keydown",function(e){
+  if(e.key==="Enter"){
+    check();
+  }
+});
+function toggleAdmin(){
+
+  const content = document.getElementById("adminContent");
+  const toggleBtn = document.getElementById("adminToggle");
+  const createBtn = document.querySelector(".create-link-btn");
+
+  if(!content) return;
+
+  const isOpen = content.classList.contains("open");
+
+  if(isOpen){
+    content.classList.remove("open");
+    toggleBtn?.classList.remove("active");
+    createBtn?.classList.remove("show");
+  } else {
+    content.classList.add("open");
+    toggleBtn?.classList.add("active");
+    createBtn?.classList.add("show");
+  }
+
+}
+function getBrandLogo(name){
+
+  const logo={
+    "Samsung":"🟢",
+    "SK hynix":"🟣",
+    "Micron":"🔵",
+    "Kioxia":"🟠",
+    "SanDisk / WD":"🔴",
+    "YMTC":"🔷",
+    "FORESEE":"🟩",
+    "UNKNOWN":"⚪"
+  };
+
+  return logo[name]||"⚪";
+}
+
+</script>
+</body>
+</html>
