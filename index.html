@@ -794,6 +794,8 @@ font-weight:500;
   justify-content:space-between;
   align-items:flex-start;
   gap:14px;
+
+  transform:translateZ(0); /* ⭐ FIX GPU LAYER */
 }
 
 .link-card:hover{
@@ -1184,8 +1186,8 @@ body::before{
 
 /* ⭐ HOVER PRO FEEL */
 .result-card:hover{
-  transform:translateY(-6px) scale(1.015);
-  border-color:#38bdf8;
+  transform:translateY(-6px);
+}
 
   box-shadow:
     0 35px 90px rgba(0,0,0,.95),
