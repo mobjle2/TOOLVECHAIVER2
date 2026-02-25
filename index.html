@@ -3484,7 +3484,6 @@ html += `
         </div>
         <span class="edit-icon" onclick="startRename('${id}')">✏️</span>
       </div>
-`
 
       <div class="link-status ${d.active?'open':'lock'}">
         ${d.active?'🟢 Đang mở':'🟡 Đang khóa'}
@@ -3494,31 +3493,34 @@ html += `
         ${d.expiresAt ? '⏳ Đang tính...' : '♾ Không giới hạn'}
       </div>
 
-  <div style="margin-top:4px;font-size:12px;color:#22c55e;">
-    👁 Lượt truy cập: ${d.views || 0}
-  </div>
-</div>
+      <div style="margin-top:4px;font-size:12px;color:#22c55e;">
+        👁 Lượt truy cập: ${d.views || 0}
+      </div>
 
-<div class="link-actions">
-  <button class="icon-btn" onclick="copyLink('${id}',this)">📋</button>
-<button class="icon-btn"
-  style="background:${d.active?'#16a34a':'#f59e0b'};color:white"
-  onclick="toggleLink('${id}',${d.active})">
-  ${d.active?'🔓':'🔒'}
-</button>
+    </div>
 
-  <button class="icon-btn" onclick="configExpire('${id}')">⏰</button>
-<button class="icon-btn delete"
-  style="background:#dc2626;color:white"
-  onclick="deleteLink('${id}')">
-  🗑
-</button>
+    <div class="link-actions">
 
-</div>
+      <button class="icon-btn" onclick="copyLink('${id}',this)">📋</button>
+
+      <button class="icon-btn"
+        style="background:${d.active?'#16a34a':'#f59e0b'};color:white"
+        onclick="toggleLink('${id}',${d.active})">
+        ${d.active?'🔓':'🔒'}
+      </button>
+
+      <button class="icon-btn" onclick="configExpire('${id}')">⏰</button>
+
+      <button class="icon-btn delete"
+        style="background:#dc2626;color:white"
+        onclick="deleteLink('${id}')">
+        🗑
+      </button>
+
+    </div>
 
   </div>
 `;
-  });
 
   document.getElementById("linkList").innerHTML = html;
 
