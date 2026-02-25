@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <!DOCTYPE html>
 <html lang="vi">
@@ -785,9 +786,6 @@ font-weight:500;
   border-radius:16px;
   padding:16px;
   transition:0.25s ease;
-
-  width:100%;            /* ⭐ FIX 2 Ô */
-  box-sizing:border-box; /* ⭐ FIX GRID */
 }
 
 .link-card:hover{
@@ -1343,10 +1341,10 @@ body::before{
 
   backdrop-filter:blur(6px);
 }
-  
 .link-name{
-  display:inline-block;
-  padding:4px 10px;
+  display:inline-flex;
+  align-items:center;
+  padding:4px 12px;
   border-radius:999px;
 
   background:rgba(15,23,42,.6);
@@ -1358,23 +1356,15 @@ body::before{
 
   cursor:text;
   transition:.2s;
-  white-space:nowrap;
-}
 
-/* khi đang sửa */
+  width:auto;
+  max-width:max-content;
+}
 .link-name:focus{
   outline:none;
   border-color:#22c55e;
   box-shadow:0 0 0 2px rgba(34,197,94,.25);
 }
-/* ===== FIX ADMIN CARD LAYOUT ===== */
-.link-left{
-  display:flex;
-  align-items:center;
-  gap:14px;
-  flex-wrap:wrap;
-}
-
   
 </style>
 
