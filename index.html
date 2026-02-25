@@ -1439,9 +1439,13 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 const auth = firebase.auth();
-const db   = firebase.firestore();
+const db = firebase.firestore();
 
-auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+db.settings({
+  experimentalForceLongPolling: true
+});
+
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);;
 
 
 /* ===== SAFE USER MODE DETECT ===== */
