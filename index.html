@@ -3522,8 +3522,9 @@ html += `
   </div>
 `;
 
-  document.getElementById("linkList").innerHTML = html;
+}); // ⭐ THIẾU DÒNG NÀY TRONG CODE CỦA BẠN
 
+document.getElementById("linkList").innerHTML = html;
   // ===== COUNTDOWN REALTIME CHO ADMIN =====
   snap.forEach(doc=>{
     const d = doc.data();
