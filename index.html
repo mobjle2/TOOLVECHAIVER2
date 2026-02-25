@@ -1672,22 +1672,7 @@ function showUserMessage(text){
     `;
   }
 }
-// ===== RENAME LINK =====
-async function startRename(id){
 
-  const name = prompt("Tên hiển thị:");
-
-  if(!name || !name.trim()) return;
-
-  await db.collection("shareLinks")
-    .doc(id)
-    .set(
-      { alias: name.trim() },
-      { merge:true }
-    );
-
-  loadLinks();
-}
 
 
 function detectChip(code){
@@ -3494,8 +3479,7 @@ async function loadLinks(){
             <div class="link-id editable-name" id="name-${id}">
               ${displayName}
             </div>
-            <span class="edit-icon"
-      onclick="editAlias('${id}','${displayName}')">✏️</span>
+            <span class="edit-icon" onclick="startRename('${id}')">✏️</span>
           </div>
 
           <div class="link-status ${d.active?'open':'lock'}">
