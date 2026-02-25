@@ -3709,12 +3709,17 @@ function copyLink(id, btn){
     btn.style.color = "";
   },1500);
 }
+
+// ===== DELETE LINK =====
 function deleteLink(id){
-  ...
+  if(!confirm("Xóa link này?")) return;
+
+  db.collection("shareLinks")
+    .doc(id)
+    .delete();
 }
 
-/* ===== DÁN Ở ĐÂY ===== */
-
+// ===== RENAME HIỂN THỊ =====
 async function startRename(id){
 
   const name = prompt("Tên hiển thị:");
@@ -3732,7 +3737,6 @@ async function startRename(id){
     console.error(e);
   }
 }
-
 // ===== TOGGLE LINK (MỞ / KHÓA) =====
 async function toggleLink(id, current){
   await db.collection("shareLinks").doc(id).update({
