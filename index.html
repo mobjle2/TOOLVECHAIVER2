@@ -3754,12 +3754,13 @@ async function startRename(id){
         alias: name.trim()
       },{merge:true});
 
-    // cập nhật lại danh sách ngay
+    alert("Đã đổi tên");
+
     loadLinks();
 
   }catch(e){
     console.error(e);
-    alert("Đổi tên thất bại");
+    alert("Không lưu được tên");
   }
 }
 
