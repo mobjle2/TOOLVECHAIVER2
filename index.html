@@ -1341,29 +1341,6 @@ body::before{
 
   backdrop-filter:blur(6px);
 }
-.link-name{
-  display:inline-block;
-  padding:6px 14px;
-  border-radius:999px;
-  background:#0f172a;
-  border:1px solid #334155;
-  color:#e2e8f0;
-  font-weight:600;
-  font-size:15px;
-  cursor:text;
-  transition:.2s;
-}
-
-.link-name:hover{
-  border-color:#38bdf8;
-}
-
-.link-name:focus{
-  outline:none;
-  border-color:#22c55e;
-  box-shadow:0 0 0 2px rgba(34,197,94,.25);
-}
-
   
 </style>
 
@@ -3509,11 +3486,13 @@ async function loadLinks(){
         <div class="link-left">
 
           <div class="link-id-row">
-<div class="link-name editable-name"
-     contenteditable="true"
-     data-id="${id}">
-  ${displayName}
-</div>
+            <div class="link-id editable-name"
+                 contenteditable="true"
+                 data-id="${id}">
+              ${displayName}
+            </div>
+            <span class="edit-icon">✏️</span>
+          </div>
 
           <div class="link-status ${d.active?'open':'lock'}">
             ${d.active?'🟢 Đang mở':'🟡 Đang khóa'}
