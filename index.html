@@ -3739,12 +3739,12 @@ function deleteLink(id){
     .delete();
 }
 
-// ===== RENAME HIỂN THỊ =====
+// ===== RENAME HIỂN THỊ (FINAL FIX) =====
 async function startRename(id){
 
   const name = prompt("Tên hiển thị:");
 
-  if(name === null) return;
+  if(!name || !name.trim()) return;
 
   try{
 
@@ -3752,15 +3752,13 @@ async function startRename(id){
       .doc(id)
       .set({
         alias: name.trim()
-      },{merge:true});
+      },{ merge:true });
 
-    alert("Đã đổi tên");
-
-    loadLinks();
+    await loadLinks(); // reload lại UI
 
   }catch(e){
     console.error(e);
-    alert("Không lưu được tên");
+    alert("Đổi tên lỗi");
   }
 }
 
