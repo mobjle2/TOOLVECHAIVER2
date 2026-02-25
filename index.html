@@ -3473,18 +3473,18 @@ async function loadLinks(){
     const d = doc.data();
     const id = doc.id;
 
-   html += `
+html += `
   <div class="link-card">
     
     <div class="link-left">
 
-<div class="link-id-row">
-  <div class="link-id editable-name" id="name-${id}">
-    ${d.alias ?? id}
-  </div>
-  <span class="edit-icon" onclick="startRename('${id}')">✏️</span>
-</div>
-
+      <div class="link-id-row">
+        <div class="link-id editable-name" id="name-${id}">
+          ${d.alias && d.alias.trim() !== "" ? d.alias : id}
+        </div>
+        <span class="edit-icon" onclick="startRename('${id}')">✏️</span>
+      </div>
+`;
 
 
       <div class="link-status ${d.active?'open':'lock'}">
