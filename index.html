@@ -3476,7 +3476,7 @@ async function loadLinks(){
 
 <div class="link-id-row">
   <div class="link-id editable-name" id="name-${id}">
-    ${localStorage.getItem("alias_" + id) || id}
+    ${d.alias ?? id}
   </div>
   <span class="edit-icon" onclick="startRename('${id}')">✏️</span>
 </div>
@@ -3709,7 +3709,29 @@ function copyLink(id, btn){
     btn.style.color = "";
   },1500);
 }
+function deleteLink(id){
+  ...
+}
 
+/* ===== DÁN Ở ĐÂY ===== */
+
+async function startRename(id){
+
+  const name = prompt("Tên hiển thị:");
+
+  if(!name) return;
+
+  try{
+    await db.collection("shareLinks")
+      .doc(id)
+      .update({
+        alias: name.trim()
+      });
+  }catch(e){
+    alert("Đổi tên thất bại");
+    console.error(e);
+  }
+}
 
 // ===== TOGGLE LINK (MỞ / KHÓA) =====
 async function toggleLink(id, current){
