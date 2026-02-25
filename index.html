@@ -3568,13 +3568,13 @@ async function editAlias(id, current){
   try{
 
     if(name.trim() === ""){
-      await ref.set({
+      await ref.update({
         alias: firebase.firestore.FieldValue.delete()
-      },{merge:true});
+      });
     }else{
-      await ref.set({
+      await ref.update({
         alias: name.trim()
-      },{merge:true});
+      });
     }
 
     loadLinks();
