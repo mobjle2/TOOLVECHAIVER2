@@ -779,6 +779,7 @@ font-weight:500;
 
 
 /* ===== ADMIN CARD CLEAN ===== */
+/* ===== ADMIN CARD FINAL ===== */
 .link-card{
   background:#0f172a;
   border:1px solid #1f2937;
@@ -786,8 +787,13 @@ font-weight:500;
   padding:16px;
   transition:0.25s ease;
 
-  width:100%;              /* ⭐ QUAN TRỌNG NHẤT */
-  box-sizing:border-box;   /* ⭐ FIX GRID */
+  width:100%;
+  box-sizing:border-box;
+
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:14px;
 }
 
 .link-card:hover{
@@ -1353,12 +1359,7 @@ body::before{
   flex-wrap:wrap;
 }
 /* ===== ADMIN CARD FIX ===== */
-.link-card{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-  gap:14px;
-}
+
 
 .link-left{
   display:flex;
