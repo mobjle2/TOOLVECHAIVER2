@@ -1672,7 +1672,20 @@ function showUserMessage(text){
     `;
   }
 }
+async function saveAlias(id,value){
 
+  const ref = db.collection("shareLinks").doc(id);
+
+  if(!value || !value.trim()){
+    await ref.update({
+      alias: firebase.firestore.FieldValue.delete()
+    });
+  }else{
+    await ref.update({
+      alias: value.trim()
+    });
+  }
+}
 
 
 function detectChip(code){
@@ -3468,7 +3481,8 @@ async function loadLinks(){
 
     const d = doc.data();
     const id = doc.id;
-    const displayName = d.alias && d.alias.trim() !== "" ? d.alias : id;
+    const displayName =
+      d.alias && d.alias.trim() !== "" ? d.alias : id;
 
     html += `
       <div class="link-card">
@@ -3476,10 +3490,12 @@ async function loadLinks(){
         <div class="link-left">
 
           <div class="link-id-row">
-            <div class="link-id editable-name" id="name-${id}">
+            <div class="link-id editable-name"
+                 contenteditable="true"
+                 data-id="${id}">
               ${displayName}
             </div>
-            <span class="edit-icon" onclick="startRename('${id}')">✏️</span>
+            <span class="edit-icon">✏️</span>
           </div>
 
           <div class="link-status ${d.active?'open':'lock'}">
@@ -3520,6 +3536,50 @@ async function loadLinks(){
     `;
   });
 
+  document.getElementById("linkList").innerHTML = html;
+
+  /* ===== INLINE RENAME SAVE ===== */
+
+  document.querySelectorAll(".editable-name").forEach(el=>{
+
+    const id = el.dataset.id;
+
+    // ENTER → SAVE
+    el.addEventListener("keydown", e=>{
+      if(e.key === "Enter"){
+        e.preventDefault();
+        el.blur();
+      }
+    });
+
+    // CLICK OUTSIDE → SAVE
+    el.addEventListener("blur", async ()=>{
+
+      const value = el.innerText.trim();
+
+      const ref = db.collection("shareLinks").doc(id);
+
+      try{
+
+        if(!value){
+          await ref.update({
+            alias: firebase.firestore.FieldValue.delete()
+          });
+        }else{
+          await ref.update({
+            alias: value
+          });
+        }
+
+      }catch(err){
+        console.error("Rename error:",err);
+      }
+
+    });
+
+  });
+
+}
   document.getElementById("linkList").innerHTML = html;
 
   // ===== COUNTDOWN REALTIME =====
