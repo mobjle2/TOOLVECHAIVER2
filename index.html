@@ -1613,45 +1613,45 @@ async function runUserMode(id){
 
     let countdownInterval = null;
 
-    // ===== REALTIME LISTENER =====
-    ref.onSnapshot(async (doc)=>{
+// ===== REALTIME LISTENER =====
+ref.onSnapshot(async (doc)=>{
 
-      // ===== LINK BỊ XÓA =====
-      if(!doc.exists){
-        showUserMessage("❌ Link không tồn tại hoặc đã bị xóa!");
-        disableCheckUI();
-        return;
-      }
+  // ===== LINK BỊ XÓA =====
+  if(!doc.exists){
+    showUserMessage(L("link_not_found"));
+    disableCheckUI();
+    return;
+  }
 
-      const data = doc.data();
+  const data = doc.data();
 
-      // ===== LINK BỊ KHÓA =====
-      if(!data.active){
-        showUserMessage("🔒 Link đã bị khóa!");
-        disableCheckUI();
-        return;
-      }
+  // ===== LINK BỊ KHÓA =====
+  if(!data.active){
+    showUserMessage(L("link_locked"));
+    disableCheckUI();
+    return;
+  }
 
-      // ===== LINK HẾT HẠN =====
-      if(data.expiresAt && data.expiresAt.toDate() < new Date()){
+  // ===== LINK HẾT HẠN =====
+  if(data.expiresAt && data.expiresAt.toDate() < new Date()){
 
-        await ref.update({ active:false });
+    await ref.update({ active:false });
 
-        showUserMessage("⛔ Link đã hết hạn!");
-        disableCheckUI();
-        return;
-      }
+    showUserMessage(L("link_expired"));
+    disableCheckUI();
+    return;
+  }
 
-      // ===== LINK HỢP LỆ =====
-      enableCheckUI();
+  // ===== LINK HỢP LỆ =====
+  enableCheckUI();
 
-      // ===== TĂNG VIEW (CHỈ TĂNG 1 LẦN) =====
-      if(!window._viewCounted){
-        await ref.update({
-          views: firebase.firestore.FieldValue.increment(1)
-        });
-        window._viewCounted = true;
-      }
+  // ===== TĂNG VIEW (CHỈ TĂNG 1 LẦN) =====
+  if(!window._viewCounted){
+    await ref.update({
+      views: firebase.firestore.FieldValue.increment(1)
+    });
+    window._viewCounted = true;
+  }
 
       // ===== COUNTDOWN =====
       if(data.expiresAt){
@@ -4136,19 +4136,34 @@ apply(lang){
 window.addEventListener("DOMContentLoaded",()=>Lang.init());
 
 const MSG = {
+
   vi:{
     analyzing:"🔍 Đang phân tích dữ liệu...",
-    code_not_found:"Mã đang cập nhật hoặc chưa có trong hệ thống"
+    code_not_found:"🔄 Mã đang cập nhật hoặc chưa có trong hệ thống",
+
+    link_not_found:"❌ Link không tồn tại hoặc đã bị xóa!",
+    link_locked:"🔒 Link đã bị khóa!",
+    link_expired:"⛔ Link đã hết hạn!",
+    access_error:"⚠️ Lỗi quyền truy cập!",
+    countdown:"⏳ Còn {d} ngày {h} giờ {m} phút"
   },
+
   en:{
     analyzing:"🔍 Analyzing data...",
-    code_not_found:"Code is updating or not available in the system"
+    code_not_found:"🔄 Code is updating or not available in the system",
+
+    link_not_found:"❌ Link not found or deleted!",
+    link_locked:"🔒 Link locked!",
+    link_expired:"⛔ Link expired!",
+    access_error:"⚠️ Access error!",
+    countdown:"⏳ {d} days {h} hours {m} minutes left"
   }
+
 };
 
 function L(key){
   const lang = localStorage.getItem("lang") || "vi";
-  return MSG[lang][key];
+  return MSG[lang]?.[key] || key;
 }
 
   
