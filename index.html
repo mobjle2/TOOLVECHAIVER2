@@ -1700,14 +1700,16 @@ ref.onSnapshot(async (doc)=>{
             return;
           }
 
-          const d = Math.floor(diff/86400000);
-          const h = Math.floor((diff/3600000)%24);
-          const m = Math.floor((diff/60000)%60);
+const d = Math.floor(diff / 86400000);
+const h = Math.floor((diff / 3600000) % 24);
+const m = Math.floor((diff / 60000) % 60);
+const s = Math.floor((diff / 1000) % 60);
 
-          box.innerText = L("countdown")
+box.innerText = L("countdown")
   .replace("{d}", d)
   .replace("{h}", h)
-  .replace("{m}", m);;
+  .replace("{m}", m)
+  .replace("{s}", s);
 
         },1000);
       }
@@ -4148,7 +4150,7 @@ const MSG = {
     link_locked:"🔒 Link đã bị khóa!",
     link_expired:"⛔ Link đã hết hạn!",
     access_error:"⚠️ Lỗi quyền truy cập!",
-    countdown:"⏳ Còn {d} ngày {h} giờ {m} phút"
+    countdown:"⏳ Còn {d} ngày {h} giờ {m} phút {s} giây"
   },
 
   en:{
@@ -4159,13 +4161,14 @@ const MSG = {
     link_locked:"🔒 Link locked!",
     link_expired:"⛔ Link expired!",
     access_error:"⚠️ Access error!",
-    countdown:"⏳ {d} days {h} hours {m} minutes left"
+    countdown:"⏳ {d} days {h} hours {m} minutes {s} seconds left"
   }
 
 };
 
 function L(key){
-  const lang = localStorage.getItem("lang") || "vi";
+  const urlLang = new URLSearchParams(window.location.search).get("lang");
+  const lang = urlLang || localStorage.getItem("lang") || "vi";
   return MSG[lang]?.[key] || key;
 }
 
