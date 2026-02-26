@@ -3400,32 +3400,17 @@ auth.onAuthStateChanged(async (user) => {
 
   const hasShareLink = window.location.search.includes("u=");
 
-  /* ===== KHÔNG LOGIN ===== */
+  /* ===== USER SHARE MODE ===== */
+  if(hasShareLink){
+    return; // Không can thiệp login khi ở ?u=
+  }
+
+  /* ===== CHƯA LOGIN ===== */
   if(!user){
 
-    // nếu là link share → cho xem bình thường
-    if(hasShareLink) return;
-
-    // ❌ KHÔNG hiện login nữa
-    document.getElementById("loginScreen")?.remove();
-    document.getElementById("adminPanel")?.remove();
-
-    // ✅ Chỉ hiện cảnh báo
-    document.body.innerHTML = `
-      <div style="
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        height:100vh;
-        font-size:20px;
-        font-weight:600;
-        color:#f87171;
-        background:#020617;
-      ">
-        ⚠️ Khu vực quản trị – Không được phép truy cập
-      </div>
-    `;
-
+    // Hiện màn hình login bình thường
+    document.getElementById("loginScreen").style.display = "block";
+    document.getElementById("adminPanel").style.display = "none";
     return;
   }
 
@@ -3435,22 +3420,21 @@ auth.onAuthStateChanged(async (user) => {
       .doc(user.email)
       .get();
 
-    if(!snap.exists || snap.data().role!=="admin"){
+    if(!snap.exists || snap.data().role !== "admin"){
       await auth.signOut();
       return;
     }
 
-    /* ===== LOGIN SUCCESS ===== */
-
-    document.getElementById("loginScreen").style.display="none";
-    document.getElementById("adminPanel").style.display="block";
+    // Login thành công
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("adminPanel").style.display = "block";
 
     loadLinks();
 
   }catch(err){
     console.error(err);
   }
-});;
+});
 
 
 
