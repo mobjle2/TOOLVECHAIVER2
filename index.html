@@ -3264,12 +3264,13 @@ async function check(){
   btn.disabled=true;
   btn.style.opacity="0.6";
 
-  /* ===== LOADING ===== */
-  out.innerHTML=`
-  <div style="max-width:600px;margin:40px auto;">
-    <div style="margin-bottom:8px;font-size:14px;opacity:.8;">
-      🔍 Đang phân tích dữ liệu...
-    </div>
+/* ===== LOADING ===== */
+out.innerHTML=`
+<div style="max-width:600px;margin:40px auto;">
+  <div style="margin-bottom:8px;font-size:14px;opacity:.8;">
+    ${L("analyzing")}
+  </div>
+`;
 
     <div style="width:100%;height:10px;background:rgba(255,255,255,0.06);
       border-radius:999px;overflow:hidden;">
@@ -4132,6 +4133,21 @@ apply(lang){
 };
 
 window.addEventListener("DOMContentLoaded",()=>Lang.init());
+
+const MSG = {
+  vi:{
+    analyzing:"🔍 Đang phân tích dữ liệu..."
+  },
+  en:{
+    analyzing:"🔍 Analyzing data..."
+  }
+};
+
+function L(key){
+  const lang = localStorage.getItem("lang") || "vi";
+  return MSG[lang][key];
+}
+
   
 </script>
 </body>
