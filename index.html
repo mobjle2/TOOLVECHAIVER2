@@ -1695,7 +1695,7 @@ ref.onSnapshot(async (doc)=>{
 
             await ref.update({ active:false });
 
-            box.innerText = "⛔ Link đã hết hạn!";
+            box.innerText = L("link_expired");
             disableCheckUI();
             return;
           }
@@ -1704,7 +1704,10 @@ ref.onSnapshot(async (doc)=>{
           const h = Math.floor((diff/3600000)%24);
           const m = Math.floor((diff/60000)%60);
 
-          box.innerText = `⏳ Còn ${d} ngày ${h} giờ ${m} phút`;
+          box.innerText = L("countdown")
+  .replace("{d}", d)
+  .replace("{h}", h)
+  .replace("{m}", m);;
 
         },1000);
       }
@@ -1713,7 +1716,7 @@ ref.onSnapshot(async (doc)=>{
 
   }catch(e){
     console.error(e);
-    showUserMessage("⚠️ Lỗi quyền truy cập!");
+    showUserMessage(L("access_error"));
     disableCheckUI();
   }
 }
