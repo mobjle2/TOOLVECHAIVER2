@@ -3391,32 +3391,51 @@ function togglePassword(){
 }
 
 
-// ===== CHECK ROLE =====
-auth.onAuthStateChanged(async (user) => {
+/* ===== AUTH CHECK ===== */
+auth.onAuthStateChanged(user => {
 
-  const hasShareLink = window.location.search.includes("u=");
+  const loginScreen = document.getElementById("loginScreen");
+  const adminPanel = document.getElementById("adminPanel");
 
-  /* ===== KHÔNG LOGIN ===== */
-  if(!user){
+  // Nếu là link share → không động vào
+  if (hasShareLink) return;
 
-    // nếu là link share → cho xem bình thường
-    if(hasShareLink) return;
+  /* ===== CHƯA LOGIN ===== */
+  if (!user) {
 
-    // ❌ KHÔNG hiện login nữa
-    document.getElementById("loginScreen")?.remove();
-    document.getElementById("adminPanel")?.remove();
+    if (loginScreen) loginScreen.style.display = "flex";
+    if (adminPanel) adminPanel.style.display = "none";
 
-    // ✅ Chỉ hiện cảnh báo
-    document.body.innerHTML = `
+    return;
+  }
+
+  /* ===== ĐÃ LOGIN ===== */
+  const adminEmail = "trungnguyenmobile2@gmail.com";
+
+  if (user.email === adminEmail) {
+
+    // ✅ Admin
+    if (loginScreen) loginScreen.style.display = "none";
+    if (adminPanel) adminPanel.style.display = "block";
+
+  } else {
+
+    // ❌ Không phải admin
+    if (loginScreen) loginScreen.style.display = "none";
+    if (adminPanel) adminPanel.style.display = "none";
+
+    document.body.insertAdjacentHTML("beforeend", `
       <div style="
+        position:fixed;
+        inset:0;
         display:flex;
         align-items:center;
         justify-content:center;
-        height:100vh;
         font-size:20px;
         font-weight:600;
         color:#f87171;
         background:#020617;
+        z-index:9999;
       ">
         ⚠️ Khu vực quản trị – Không được phép truy cập
       </div>
