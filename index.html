@@ -1653,83 +1653,79 @@ ref.onSnapshot(async (doc)=>{
     window._viewCounted = true;
   }
 
-      // ===== COUNTDOWN =====
-      if(data.expiresAt){
+// ===== COUNTDOWN =====
+if(data.expiresAt){
 
-        let box = document.getElementById("countdownBox");
+  let box = document.getElementById("countdownBox");
 
-        if(!box){
-          box = document.createElement("div");
-          box.id = "countdownBox";
+  if(!box){
+    box = document.createElement("div");
+    box.id = "countdownBox";
 
-          Object.assign(box.style,{
-            position:"fixed",
-            top:"12px",
-            right:"16px",
-            background:"rgba(15,23,42,0.9)",
-            border:"1px solid #334155",
-            borderRadius:"10px",
-            padding:"8px 14px",
-            fontSize:"14px",
-            fontWeight:"600",
-            color:"#facc15",
-            zIndex:"9999"
-          });
+    Object.assign(box.style,{
+      position:"fixed",
+      top:"12px",
+      right:"16px",
+      background:"rgba(15,23,42,0.9)",
+      border:"1px solid #334155",
+      borderRadius:"10px",
+      padding:"8px 14px",
+      fontSize:"14px",
+      fontWeight:"600",
+      color:"#facc15",
+      zIndex:"9999"
+    });
 
-          document.body.appendChild(box);
-        }
+    document.body.appendChild(box);
+  }
 
-        const end = data.expiresAt.toDate();
+  const end = data.expiresAt.toDate();
 
-        if(countdownInterval){
-          clearInterval(countdownInterval);
-        }
-       const end = data.expiresAt.toDate();
+  if(countdownInterval){
+    clearInterval(countdownInterval);
+  }
 
-/* ===== TÍNH NGAY LẦN ĐẦU ===== */
-const diffNow = end - new Date();
+  // ===== HIỂN THỊ NGAY =====
+  const diffNow = end - new Date();
 
-if(diffNow > 0){
-  const d = Math.floor(diffNow / 86400000);
-  const h = Math.floor((diffNow / 3600000) % 24);
-  const m = Math.floor((diffNow / 60000) % 60);
-  const s = Math.floor((diffNow / 1000) % 60);
+  if(diffNow > 0){
+    const d = Math.floor(diffNow / 86400000);
+    const h = Math.floor((diffNow / 3600000) % 24);
+    const m = Math.floor((diffNow / 60000) % 60);
+    const s = Math.floor((diffNow / 1000) % 60);
 
-  box.innerText = L("countdown")
-    .replace("{d}", d)
-    .replace("{h}", h)
-    .replace("{m}", m)
-    .replace("{s}", s);
+    box.innerText = L("countdown")
+      .replace("{d}", d)
+      .replace("{h}", h)
+      .replace("{m}", m)
+      .replace("{s}", s);
+  }
+
+  countdownInterval = setInterval(async()=>{
+
+    const diff = end - new Date();
+
+    if(diff <= 0){
+      clearInterval(countdownInterval);
+      await ref.update({ active:false });
+      box.innerText = L("link_expired");
+      disableCheckUI();
+      return;
+    }
+
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff / 3600000) % 24);
+    const m = Math.floor((diff / 60000) % 60);
+    const s = Math.floor((diff / 1000) % 60);
+
+    box.innerText = L("countdown")
+      .replace("{d}", d)
+      .replace("{h}", h)
+      .replace("{m}", m)
+      .replace("{s}", s);
+
+  },1000);
 }
-        countdownInterval = setInterval(async()=>{
-
-          const diff = end - new Date();
-
-          if(diff <= 0){
-
-            clearInterval(countdownInterval);
-
-            await ref.update({ active:false });
-
-            box.innerText = L("link_expired");
-            disableCheckUI();
-            return;
-          }
-
-const d = Math.floor(diff / 86400000);
-const h = Math.floor((diff / 3600000) % 24);
-const m = Math.floor((diff / 60000) % 60);
-const s = Math.floor((diff / 1000) % 60);
-
-box.innerText = L("countdown")
-  .replace("{d}", d)
-  .replace("{h}", h)
-  .replace("{m}", m)
-  .replace("{s}", s);
-
-        },1000);
-      }
-
     });
 
   }catch(e){
