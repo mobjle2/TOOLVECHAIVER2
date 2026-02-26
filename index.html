@@ -1,3 +1,7 @@
+
+
+
+
 <!DOCTYPE html>
 <!DOCTYPE html>
 <html lang="vi">
@@ -3391,51 +3395,32 @@ function togglePassword(){
 }
 
 
-/* ===== AUTH CHECK ===== */
-auth.onAuthStateChanged(user => {
+// ===== CHECK ROLE =====
+auth.onAuthStateChanged(async (user) => {
 
-  const loginScreen = document.getElementById("loginScreen");
-  const adminPanel = document.getElementById("adminPanel");
+  const hasShareLink = window.location.search.includes("u=");
 
-  // Nếu là link share → không động vào
-  if (hasShareLink) return;
+  /* ===== KHÔNG LOGIN ===== */
+  if(!user){
 
-  /* ===== CHƯA LOGIN ===== */
-  if (!user) {
+    // nếu là link share → cho xem bình thường
+    if(hasShareLink) return;
 
-    if (loginScreen) loginScreen.style.display = "flex";
-    if (adminPanel) adminPanel.style.display = "none";
+    // ❌ KHÔNG hiện login nữa
+    document.getElementById("loginScreen")?.remove();
+    document.getElementById("adminPanel")?.remove();
 
-    return;
-  }
-
-  /* ===== ĐÃ LOGIN ===== */
-  const adminEmail = "trungnguyenmobile2@gmail.com";
-
-  if (user.email === adminEmail) {
-
-    // ✅ Admin
-    if (loginScreen) loginScreen.style.display = "none";
-    if (adminPanel) adminPanel.style.display = "block";
-
-  } else {
-
-    // ❌ Không phải admin
-    if (loginScreen) loginScreen.style.display = "none";
-    if (adminPanel) adminPanel.style.display = "none";
-
-    document.body.insertAdjacentHTML("beforeend", `
+    // ✅ Chỉ hiện cảnh báo
+    document.body.innerHTML = `
       <div style="
-        position:fixed;
-        inset:0;
         display:flex;
         align-items:center;
         justify-content:center;
+        height:100vh;
         font-size:20px;
         font-weight:600;
         color:#f87171;
         background:#020617;
-        z-index:9999;
       ">
         ⚠️ Khu vực quản trị – Không được phép truy cập
       </div>
@@ -3508,8 +3493,7 @@ async function loadLinks(){
                  data-id="${id}">
               ${displayName}
             </div>
-            <span class="edit-icon">✏️</span>
-          </div>
+
 
           <div class="link-status ${d.active?'open':'lock'}">
             ${d.active?'🟢 Đang mở':'🟡 Đang khóa'}
