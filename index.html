@@ -1331,6 +1331,47 @@ body::before{
 
   backdrop-filter:blur(6px);
 }
+/* ===============================
+   📱 ADMIN MOBILE COMPACT
+===============================*/
+@media (max-width:768px){
+
+  .admin-top-bar{
+    flex-direction:column;
+    align-items:stretch;
+    gap:10px;
+  }
+
+  /* nút ADMIN nhỏ lại */
+  .admin-toggle-btn{
+    padding:6px 14px;
+    font-size:13px;
+    width:fit-content;
+  }
+
+  /* input search thấp hơn */
+  .clean-check input{
+    height:44px;
+    font-size:14px;
+    padding:0 50px 0 14px;
+  }
+
+  /* nút search nhỏ */
+  .clean-check .check-btn{
+    height:34px;
+    width:34px;
+    font-size:14px;
+  }
+
+  /* nút tạo link nhỏ */
+  .create-link-btn.small{
+    padding:6px 14px;
+    font-size:13px;
+    align-self:flex-end;
+  }
+
+}
+
   
 </style>
 
