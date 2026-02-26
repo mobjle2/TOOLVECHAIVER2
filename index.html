@@ -3446,20 +3446,19 @@ Array.isArray(x.models)&&x.models.length
 </div>`;
 }
 
-    html+=`</div>`;
+html+=`</div>`;
 
-    if(html===`<div class="result-grid"></div>`){
-      html=`
-        <div style="
-          margin-top:40px;
-          text-align:center;
-          font-size:18px;
-          font-weight:600;
-          color:#facc15;">
-          🔄 Mã đang cập nhật hoặc chưa có trong hệ thống
-        </div>`;
-    }
-
+if(html===`<div class="result-grid"></div>`){
+  html=`
+    <div style="
+      margin-top:40px;
+      text-align:center;
+      font-size:18px;
+      font-weight:600;
+      color:#facc15;">
+      ${L("code_not_found")}
+    </div>`;
+}
     clearInterval(fakeLoading);
 
     fill.style.width="100%";
@@ -4138,10 +4137,12 @@ window.addEventListener("DOMContentLoaded",()=>Lang.init());
 
 const MSG = {
   vi:{
-    analyzing:"🔍 Đang phân tích dữ liệu..."
+    analyzing:"🔍 Đang phân tích dữ liệu...",
+    code_not_found:"Mã đang cập nhật hoặc chưa có trong hệ thống"
   },
   en:{
-    analyzing:"🔍 Analyzing data..."
+    analyzing:"🔍 Analyzing data...",
+    code_not_found:"Code is updating or not available in the system"
   }
 };
 
