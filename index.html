@@ -1684,7 +1684,23 @@ ref.onSnapshot(async (doc)=>{
         if(countdownInterval){
           clearInterval(countdownInterval);
         }
+       const end = data.expiresAt.toDate();
 
+/* ===== TÍNH NGAY LẦN ĐẦU ===== */
+const diffNow = end - new Date();
+
+if(diffNow > 0){
+  const d = Math.floor(diffNow / 86400000);
+  const h = Math.floor((diffNow / 3600000) % 24);
+  const m = Math.floor((diffNow / 60000) % 60);
+  const s = Math.floor((diffNow / 1000) % 60);
+
+  box.innerText = L("countdown")
+    .replace("{d}", d)
+    .replace("{h}", h)
+    .replace("{m}", m)
+    .replace("{s}", s);
+}
         countdownInterval = setInterval(async()=>{
 
           const diff = end - new Date();
