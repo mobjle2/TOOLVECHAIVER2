@@ -1427,10 +1427,32 @@ body::before{
   }
 
 }
+
+
   
 </style>
 
+/* ===== LANGUAGE SWITCH ===== */
+.lang-switch{
+  margin-top:10px;
+  text-align:center;
+}
 
+.lang-switch button{
+  border:none;
+  background:#1f2937;
+  color:white;
+  padding:6px 10px;
+  margin:0 4px;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:16px;
+  transition:.25s;
+}
+
+.lang-switch button:hover{
+  background:#2563eb;
+}
 
 </head>
 
@@ -1460,7 +1482,9 @@ Chỉ nâng cấp logic JS hoặc màu sắc.
       <span class="toggle-pass" onclick="togglePassword()">👁</span>
     </div>
 
-    <button onclick="secureLogin()">ĐĂNG NHẬP</button>
+    <button onclick="secureLogin()" data-i18n="login">
+ĐĂNG NHẬP
+</button>
     <div id="loginError" class="login-error">Sai tài khoản!</div>
   </div>
 </div>
@@ -1475,8 +1499,13 @@ Chỉ nâng cấp logic JS hoặc màu sắc.
     VIP • MMC • Model
   </div>
 
-</div>
+  <!-- 🌍 LANGUAGE SWITCH -->
+  <div class="lang-switch">
+    <button onclick="Lang.set('vi')">🇻🇳</button>
+    <button onclick="Lang.set('en')">🇺🇸</button>
+  </div>
 
+</div>
 
 <!-- ===== ADMIN PANEL ===== -->
 <div id="adminPanel" class="admin-panel">
@@ -1487,17 +1516,18 @@ Chỉ nâng cấp logic JS hoặc màu sắc.
     <!-- BÊN TRÁI: ADMIN -->
     <button class="admin-toggle-btn" id="adminToggle" onclick="toggleAdmin()">
       <span class="admin-icon">⚙</span>
-      <span class="admin-text">Admin</span>
+     <span class="admin-text" data-i18n="admin">Admin</span>
     </button>
 
     <!-- Ở GIỮA: INPUT -->
-    <div class="check-group clean-check" style="flex:1;margin:0;">
-      <input id="q"
-             placeholder="Nhập mã hoặc model cần kiểm tra"
-             autocomplete="off">
-      <button class="check-btn" onclick="check()">🔍</button>
-    </div>
+<div class="check-group clean-check" style="flex:1;margin:0;">
+  <input id="q"
+         data-i18n-placeholder="search"
+         placeholder="Nhập mã hoặc model cần kiểm tra"
+         autocomplete="off">
 
+  <button class="check-btn" onclick="check()">🔍</button>
+</div>
     <!-- BÊN PHẢI: TẠO LINK -->
     <button class="create-link-btn small" onclick="createLink()">
       ＋ Tạo link
@@ -4049,7 +4079,60 @@ function getBrandLogo(name){
 
   return logo[name]||"⚪";
 }
+/* ===============================
+   🌍 ULTRA LANGUAGE SYSTEM
+===============================*/
 
+const I18N = {
+
+vi:{
+  admin:"Admin",
+  login:"ĐĂNG NHẬP",
+  search:"Nhập mã hoặc model cần kiểm tra"
+},
+
+en:{
+  admin:"Admin",
+  login:"LOGIN",
+  search:"Enter code or model to check"
+}
+
+};
+
+const Lang={
+
+current:"vi",
+
+init(){
+  const saved=localStorage.getItem("lang");
+  this.current=saved||"vi";
+  this.apply(this.current);
+},
+
+set(lang){
+  this.current=lang;
+  localStorage.setItem("lang",lang);
+  this.apply(lang);
+},
+
+apply(lang){
+
+  document.querySelectorAll("[data-i18n]").forEach(el=>{
+    const key=el.dataset.i18n;
+    el.innerText=I18N[lang][key];
+  });
+
+  document.querySelectorAll("[data-i18n-placeholder]").forEach(el=>{
+    const key=el.dataset.i18nPlaceholder;
+    el.placeholder=I18N[lang][key];
+  });
+
+}
+
+};
+
+window.addEventListener("DOMContentLoaded",()=>Lang.init());
+  
 </script>
 </body>
 </html>
