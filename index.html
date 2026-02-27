@@ -3240,9 +3240,8 @@ async function check(){
   const out = document.getElementById("out");
   const btn = document.querySelector(".check-btn");
 
-  // ===== SECURITY BLOCK FOR USER MODE =====
+  /* ===== USER MODE SECURITY ===== */
   if(window.location.search.includes("u=")){
-
     const params = new URLSearchParams(window.location.search);
     const linkId = params.get("u");
 
@@ -3250,7 +3249,7 @@ async function check(){
       const linkDoc = await db.collection("shareLinks").doc(linkId).get();
 
       if(!linkDoc.exists){
-        showUserMessage("❌ Link không tồn tại!");
+        showUserMessage(L("link_not_found"));
         disableCheckUI();
         return;
       }
@@ -3258,229 +3257,171 @@ async function check(){
       const data = linkDoc.data();
 
       if(!data || !data.active){
-        showUserMessage("🔒 Link đã bị khóa!");
+        showUserMessage(L("link_locked"));
         disableCheckUI();
         return;
       }
 
     }catch(e){
-      showUserMessage("⚠️ Lỗi xác thực link!");
+      showUserMessage(L("access_error"));
       return;
     }
   }
 
-  // ===== PHẦN CHECK CŨ CỦA BẠN BẮT ĐẦU TỪ ĐÂY =====
+  /* ===== INPUT ===== */
   const q = document.getElementById("q")?.value?.trim()?.toUpperCase();
-
   if(!q){
     out.innerHTML="";
     return;
   }
 
-  btn.disabled=true;
-  btn.style.opacity="0.6";
+  btn.disabled = true;
+  btn.style.opacity = "0.6";
 
-/* ===== LOADING ===== */
-out.innerHTML = `
-<div style="max-width:600px;margin:40px auto;">
-
-  <div style="margin-bottom:8px;font-size:14px;opacity:.8;">
-    ${L("analyzing")}
-  </div>
-
-  <div style="width:100%;height:10px;background:rgba(255,255,255,0.06);
-    border-radius:999px;overflow:hidden;">
-    <div id="progressFill"
-      style="height:100%;width:0%;
-      background:linear-gradient(90deg,#38bdf8,#06b6d4,#22c55e);
-      transition:width .35s;">
+  /* ===== LOADING UI ===== */
+  out.innerHTML = `
+    <div style="max-width:600px;margin:40px auto;">
+      <div style="margin-bottom:8px;font-size:14px;opacity:.8;">
+        ${L("analyzing")}
+      </div>
+      <div style="width:100%;height:10px;background:rgba(255,255,255,0.06);
+        border-radius:999px;overflow:hidden;">
+        <div id="progressFill"
+          style="height:100%;width:0%;
+          background:linear-gradient(90deg,#38bdf8,#06b6d4,#22c55e);
+          transition:width .35s;">
+        </div>
+      </div>
+      <div id="progressText"
+        style="text-align:right;font-size:13px;margin-top:8px;">
+        0%
+      </div>
     </div>
-  </div>
+  `;
 
-  <div id="progressText"
-    style="text-align:right;font-size:13px;margin-top:8px;">
-    0%
-  </div>
+  const fill = document.getElementById("progressFill");
+  const text = document.getElementById("progressText");
 
-</div>
-`;
+  let percent = 0;
 
-  const fill=document.getElementById("progressFill");
-  const text=document.getElementById("progressText");
-
-  let percent=0;
-
-  const fakeLoading=setInterval(()=>{
-    percent+=8;
-    if(percent>95) percent=95;
-    fill.style.width=percent+"%";
-    text.innerText=percent+"%";
+  const fakeLoading = setInterval(()=>{
+    percent += 8;
+    if(percent > 95) percent = 95;
+    fill.style.width = percent + "%";
+    text.innerText = percent + "%";
   },120);
 
   try{
 
     await new Promise(r=>setTimeout(r,300));
+    const snap = await db.collection("codes").get();
 
-    const snap=await db.collection("codes").get();
-
-    let html=`<div class="result-grid">`;
+    let html = `<div class="result-grid">`;
 
     for(const doc of snap.docs){
 
-      const x=doc.data();
-
-      /* ===== SEARCH FILTER ===== */
-      if(
-        !(
-          typeof x.code==="string" &&
-          x.code.toUpperCase().includes(q)
-        ) &&
-        !(
-          Array.isArray(x.models) &&
-          x.models.some(m=>typeof m==="string" && m.toUpperCase().includes(q))
-        )
-      ) continue;
-
-      const chip=detectChip(x.code);
-
-      /* ===== PRIORITY MMC FROM FIREBASE ===== */
-      const forceMMC = x.type==="MMC";
-
-      /* ===== VIP SYSTEM ===== */
-      let decoded;
+      const x = doc.data();
 
       if(
-        x &&
-        (
-          x.vip!=null ||
-          x.ram!=null ||
-          x.rom!=null
-        )
+        !(typeof x.code==="string" && x.code.toUpperCase().includes(q)) &&
+        !(Array.isArray(x.models) &&
+          x.models.some(m=>typeof m==="string" && m.toUpperCase().includes(q)))
       ){
-
-        decoded={
-          ram:x.ram??null,
-          rom:x.rom??null,
-          vip:x.vip??null,
-          storage:x.storage??null,
-          source:"firebase"
-        };
-
-      }else{
-
-        decoded=autoDecodeChip(x.code,x)||{};
-        decoded.source="decoder";
+        continue;
       }
 
-      /* STORAGE FALLBACK */
+      const chip = detectChip(x.code);
+
+      let decoded = {
+        ram: x.ram ?? null,
+        rom: x.rom ?? null,
+        vip: x.vip ?? null,
+        storage: x.storage ?? null
+      };
+
       if(!decoded.storage){
-        const hw=autoDecodeChip(x.code,x);
-        decoded.storage=hw?.storage||null;
+        const hw = autoDecodeChip(x.code,x) || {};
+        decoded.storage = hw.storage ?? null;
       }
 
-      /* APPLY MMC PRIORITY */
-      if(forceMMC){
-        decoded.storage="eMMC";
-        decoded.type="MMC";
-      }
+      html += `
+        <div class="result-card ${chip.class}">
 
-      /* REMOVE FAKE MMC WHEN UFS */
-      if(!forceMMC && decoded.storage?.includes("UFS")){
-        x.mmcLevel=null;
-        x.mmc=false;
-      }
+          <div class="code-main">${x.code}</div>
 
-      if(typeof decoded!=="object") decoded={};
+          <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
+            ${(() => {
 
-const isMMC =
-   x.code.startsWith("KLM") ||
-   x.code.startsWith("KMG") ||
-   decoded.storage?.includes("eMMC");
-      
-html += `
-<div class="result-card ${chip.class}">
+              const mmc = getMMCLevel(decoded.rom);
+              const hasVIP = decoded.vip != null && decoded.vip > 0;
 
-  <div class="code-main">${x.code}</div>
+              const levelBadge = hasVIP
+                ? '<div class="vip-badge vip-' + Math.floor(decoded.vip) + '">' +
+                    'VIP ' + (
+                      decoded.vip === 4.5 ? "4+" :
+                      decoded.vip === 6.5 ? "6+" :
+                      Math.floor(decoded.vip)
+                    ) +
+                  '</div>'
+                : (mmc ? '<div class="vip-badge">' + mmc + '</div>' : '');
 
-  <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
+              const specBadge =
+                decoded.ram && decoded.rom
+                  ? '<div class="ram-badge">' + decoded.ram + '/' + decoded.rom + '</div>'
+                  : decoded.rom
+                    ? '<div class="ram-badge">' + decoded.rom + 'GB</div>'
+                    : decoded.ram
+                      ? '<div class="ram-badge">' + decoded.ram + 'GB RAM</div>'
+                      : '';
 
-    ${(() => {
+              return levelBadge + specBadge;
 
-      const mmc = getMMCLevel(decoded.rom);
-      const hasVIP = decoded.vip != null && decoded.vip > 0;
+            })()}
+          </div>
 
-      const levelBadge = hasVIP
-        ? '<div class="vip-badge vip-' + Math.floor(decoded.vip) + '">' +
-            'VIP ' + (
-              decoded.vip === 4.5 ? "4+" :
-              decoded.vip === 6.5 ? "6+" :
-              Math.floor(decoded.vip)
-            ) +
-          '</div>'
-        : (mmc
-            ? '<div class="vip-badge">' + mmc + '</div>'
-            : '');
+          <div class="card-footer">
+            <div class="chip-info" style="color:${chip.color}">
+              <span class="chip-dot" style="background:${chip.color}"></span>
+              ${chip.name}
+              <span style="opacity:.6;">
+                ${decoded.storage || ""}
+              </span>
+            </div>
+          </div>
 
-      const specBadge =
-        decoded.ram && decoded.rom
-          ? '<div class="ram-badge">' + decoded.ram + '/' + decoded.rom + '</div>'
-          : decoded.rom
-            ? '<div class="ram-badge">' + decoded.rom + 'GB</div>'
-            : decoded.ram
-              ? '<div class="ram-badge">' + decoded.ram + 'GB RAM</div>'
-              : '';
+          ${
+            Array.isArray(x.models) && x.models.length
+              ? `<div class="model-line">
+                   📱 ${formatSamsungModels(x.models.join(", "))}
+                 </div>`
+              : `<div class="model-placeholder">
+                   ${L("no_model")}
+                 </div>`
+          }
 
-      return levelBadge + specBadge;
+        </div>
+      `;
+    }
 
-    })()}
+    html += `</div>`;
 
-  </div>
+    if(html === `<div class="result-grid"></div>`){
+      html = `
+        <div style="margin-top:40px;text-align:center;
+          font-size:18px;font-weight:600;color:#facc15;">
+          ${L("code_not_found")}
+        </div>
+      `;
+    }
 
-  <div class="card-footer">
-    <div class="chip-info" style="color:${chip.color}">
-      <span class="chip-dot" style="background:${chip.color}"></span>
-      ${chip.name}
-      <span style="opacity:.6;">
-        ${decoded.storage || ""}
-      </span>
-    </div>
-  </div>
-
-  ${
-    Array.isArray(x.models) && x.models.length
-      ? `<div class="model-line">
-           📱 ${formatSamsungModels(x.models.join(", "))}
-         </div>`
-      : `<div class="model-placeholder">
-           ${L("no_model")}
-         </div>`
-  }
-
-</div>
-`;
-}
-html+=`</div>`;
-
-if(html===`<div class="result-grid"></div>`){
-  html=`
-    <div style="
-      margin-top:40px;
-      text-align:center;
-      font-size:18px;
-      font-weight:600;
-      color:#facc15;">
-      ${L("code_not_found")}
-    </div>`;
-}
     clearInterval(fakeLoading);
-
     fill.style.width="100%";
     text.innerText="100%";
 
     setTimeout(()=>{
-      out.innerHTML=html;
-      btn.disabled=false;
-      btn.style.opacity="1";
+      out.innerHTML = html;
+      btn.disabled = false;
+      btn.style.opacity = "1";
     },300);
 
   }catch(err){
@@ -3488,15 +3429,16 @@ if(html===`<div class="result-grid"></div>`){
     clearInterval(fakeLoading);
     console.error(err);
 
-    out.innerHTML=`<div style="color:#ef4444;text-align:center;">
-      ⚠️ Lỗi hệ thống
-    </div>`;
+    out.innerHTML = `
+      <div style="color:#ef4444;text-align:center;">
+        ⚠️ Lỗi hệ thống
+      </div>
+    `;
 
-    btn.disabled=false;
-    btn.style.opacity="1";
+    btn.disabled = false;
+    btn.style.opacity = "1";
   }
 }
-
   
 // ===== LOGIN =====
 async function secureLogin(){
