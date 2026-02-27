@@ -3450,16 +3450,13 @@ return levelBadge + specBadge;
 </div>
 
 ${
-Array.isArray(x.models)&&x.models.length
-? `<div class="model-line">
-     📱 ${formatSamsungModels(x.models.join(", "))}
-   </div>`
-: `<div class="model-placeholder">
-     ${L("no_model")}
-   </div>``
-}
-
-</div>`;
+  Array.isArray(x.models) && x.models.length
+    ? `<div class="model-line">
+         📱 ${formatSamsungModels(x.models.join(", "))}
+       </div>`
+    : `<div class="model-placeholder">
+         ${L("no_model")}
+       </div>`
 }
 
 html+=`</div>`;
