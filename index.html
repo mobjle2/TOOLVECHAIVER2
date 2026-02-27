@@ -3397,67 +3397,67 @@ const isMMC =
    x.code.startsWith("KMG") ||
    decoded.storage?.includes("eMMC");
       
-      html+=`
+html += `
 <div class="result-card ${chip.class}">
 
   <div class="code-main">${x.code}</div>
 
-
   <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
 
-${(() => {
+    ${(() => {
 
-  // ===== PRIORITY LOGIC =====
-  const mmc = getMMCLevel(decoded.rom);
+      const mmc = getMMCLevel(decoded.rom);
+      const hasVIP = decoded.vip != null && decoded.vip > 0;
 
-  const hasVIP = decoded.vip !== null && decoded.vip !== undefined && decoded.vip > 0;
+      const levelBadge = hasVIP
+        ? '<div class="vip-badge vip-' + Math.floor(decoded.vip) + '">' +
+            'VIP ' + (
+              decoded.vip === 4.5 ? "4+" :
+              decoded.vip === 6.5 ? "6+" :
+              Math.floor(decoded.vip)
+            ) +
+          '</div>'
+        : (mmc
+            ? '<div class="vip-badge">' + mmc + '</div>'
+            : '');
 
-const levelBadge = hasVIP
-  ? '<div class="vip-badge vip-' + Math.floor(decoded.vip) + '">' +
-      'VIP ' + (
-        decoded.vip === 4.5 ? "4+" :
-        decoded.vip === 6.5 ? "6+" :
-        Math.floor(decoded.vip)
-      ) +
-    '</div>'
-  : (mmc
-      ? '<div class="vip-badge">' + mmc + '</div>'
-      : '');
+      const specBadge =
+        decoded.ram && decoded.rom
+          ? '<div class="ram-badge">' + decoded.ram + '/' + decoded.rom + '</div>'
+          : decoded.rom
+            ? '<div class="ram-badge">' + decoded.rom + 'GB</div>'
+            : decoded.ram
+              ? '<div class="ram-badge">' + decoded.ram + 'GB RAM</div>'
+              : '';
 
-  // ===== RAM / ROM BADGE =====
-  const specBadge =
-    decoded.ram && decoded.rom
-      ? '<div class="ram-badge">' + decoded.ram + '/' + decoded.rom + '</div>'
-      : decoded.rom
-        ? '<div class="ram-badge">' + decoded.rom + 'GB</div>'
-        : decoded.ram
-          ? '<div class="ram-badge">' + decoded.ram + 'GB RAM</div>'
-          : '';
+      return levelBadge + specBadge;
 
-return levelBadge + specBadge;
+    })()}
 
-})()}
-</div>
-
-<div class="card-footer">
-  <div class="chip-info" style="color:${chip.color}">
-    <span class="chip-dot" style="background:${chip.color}"></span>
-    ${chip.name}
-    <span style="opacity:.6;">
-      ${decoded.storage || ""}
-    </span>
   </div>
-</div>
 
-${
-  Array.isArray(x.models) && x.models.length
-    ? `<div class="model-line">
-         📱 ${formatSamsungModels(x.models.join(", "))}
-       </div>`
-    : `<div class="model-placeholder">
-         ${L("no_model")}
-       </div>`
-}
+  <div class="card-footer">
+    <div class="chip-info" style="color:${chip.color}">
+      <span class="chip-dot" style="background:${chip.color}"></span>
+      ${chip.name}
+      <span style="opacity:.6;">
+        ${decoded.storage || ""}
+      </span>
+    </div>
+  </div>
+
+  ${
+    Array.isArray(x.models) && x.models.length
+      ? `<div class="model-line">
+           📱 ${formatSamsungModels(x.models.join(", "))}
+         </div>`
+      : `<div class="model-placeholder">
+           ${L("no_model")}
+         </div>`
+  }
+
+</div>
+`;
 
 html+=`</div>`;
 
