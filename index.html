@@ -2011,415 +2011,198 @@ function getMMCLevel(rom){
 function decodeSamsung(code){
 
   const result = {
-    type: "Unknown",
-    ram: null,
-    rom: null,
-    storage: "Unknown",
-    version: null,
-    vip: null
+    type:"Unknown",
+    ram:null,
+    rom:null,
+    storage:"Unknown",
+    version:null,
+    vip:0
   };
 
   if(!code) return result;
 
-const main = code.toUpperCase().split("-")[0];
-/* ===============================
-   SAMSUNG KLM eMMC ENGINE
-================================ */
-if(main.startsWith("KLM")){
+  const main = code.toUpperCase().split("-")[0];
 
-  let rom = null;
+  /* =====================================================
+     🔥 PRIORITY FIX (SPECIAL CASE TRƯỚC TẤT CẢ)
+  ===================================================== */
 
-  // Samsung density encoding thật
-  if(/G1/.test(main)) rom = 16;
-  else if(/G2/.test(main)) rom = 32;
-  else if(/G4/.test(main)) rom = 64;
-  else if(/G8/.test(main)) rom = 128;
-  else if(/GA/.test(main)) rom = 256;
-
-  return {
-    type:"eMMC",
-    storage:"eMMC 5.1",
-    ram:null,
-    rom:rom,
-    vip:null
-  };
-}
-
-/* ===============================
-   SAMSUNG KLM eMMC REAL FIX
-================================ */
-if(main.startsWith("KLM")){
-
-  let rom = null;
-
-  // Samsung density mapping thật
-  if(main.includes("8G")) rom = 8;
-  else if(main.includes("1G")) rom = 16;
-  else if(main.includes("2G")) rom = 32;
-  else if(main.includes("4G")) rom = 64;
-  else if(main.includes("8H") || main.includes("8J")) rom = 128;
-  else if(main.includes("AJ")) rom = 256;
-
-  return {
-    type:"eMMC",
-    storage:"eMMC 5.1",
-    ram:null,
-    rom:rom,
-    vip:null
-  };
-}
-
-/* =====================================================
-/* =====================================================
-   🔹 KMG SERIES (Samsung eMMC uMCP)
-===================================================== */
-
-if(main.startsWith("KMG")){
-
-  result.type = "uMCP";
-  result.storage = "eMMC 5.1";
-  result.version = "eMMC 5.1";
-
-  /* ===== ROM FROM PACKAGE TOKEN ===== */
-  const pkg = main.slice(-2); // BA / BM / CM / DM
-
-  const romMap = {
-    "BA":32,
-    "BM":64,
-    "CM":128,
-    "DM":256
-  };
-
-  result.rom = romMap[pkg] || 32;
-
-  /* ===== RAM FROM SERIES LETTER ===== */
-  // KMGX6001...
-  //    ↑ chữ này quyết định RAM
-
-  const ramToken = main[3];
-
-  const ramMap = {
-    "X":3,
-    "P":3,
-    "G":4,
-    "D":2,
-    "E":2,
-    "A":2
-  };
-
-  result.ram = ramMap[ramToken] || null;
-
-  /* ===== VIP ===== */
-  result.vip = calculateVip(result.ram, result.rom);
-
-  return result;
-}
-/* =====================================================
-   🔹 KMA SERIES (LPDDR5 uMCP NEW GEN)
-===================================================== */
-
-if (main.startsWith("KMA")) {
-
-  result.type = "uMCP";
-  result.storage = "UFS 3.1";
-  result.version = "UFS 3.1";
-
-  // ===== STORAGE =====
-  result.rom = 256;
-
-  // ===== RAM TOKEN =====
-  const ramToken = main.slice(-2);
-
-  const ramMap = {
-    "PM": 8,
-    "CM": 6,
-    "DM": 4
-  };
-
-  result.ram = ramMap[ramToken] || null;
-
-  // ===== VIP =====
-  result.vip = calculateVip(result.ram, result.rom);
-
-  return result;
-}
-// =====================================================
-// 🔹 1. SAMSUNG eMMC LOW SERIES (FULL FIX)
-// =====================================================
-if(main.startsWith("KMDV6001")){
-  result.type="uMCP";
-  result.storage="UFS 2.1";
-  result.version="UFS 2.1";
-  result.rom=64;
-  result.ram=6;
-  result.vip=calculateVip(result.ram,result.rom);
-  return result;
-}
-const emmcPrefixes = [
-  "KMG","KMI","KMQ","KMW","KMH",
-  "KME","KMN","KMF","KMO","KMR","KMD"
-];
-
-if(emmcPrefixes.some(p => main.startsWith(p))){
-
-  result.type = "eMMC";
-
-  /* ===============================
-     STORAGE VERSION DETECT
-  =============================== */
-
-  // eMMC 5.0 series
-  if(
-      main.includes("1001") ||
-      main.includes("1000") ||
-      main.includes("0012") ||
-      main.includes("10012")
-  ){
-      result.storage = "eMMC 5.0";
-      result.rom = 16;
-  }
-
-  // eMMC 5.1 main production
-  else if(
-      main.includes("6001") ||
-      main.includes("6000")
-  ){
-      result.storage = "eMMC 5.1";
-
-      if(main.startsWith("KMQE") || main.startsWith("KMQ3"))
-          result.rom = 16;
-      else if(main.startsWith("KMDX"))
-          result.rom = 32;
-      else
-          result.rom = 64;
-  }
-
-  // legacy 32GB layout
-  else if(main.includes("0001")){
-      result.storage = "eMMC 5.1";
-      result.rom = 32;
-  }
-
-  // fallback Samsung rule
-  else{
-      result.storage = "eMMC 5.1";
-      result.rom = result.rom || 32;
-  }
-
-  result.version = result.storage;
-
-  /* ===============================
-     RAM DETECT
-  =============================== */
-
-  const ramChar = main[main.length - 2];
-
-  const ramMapLow = {
-    "3":2,
-    "4":4,
-    "8":3,
-    "B":2,
-    "C":6,
-    "D":6,
-    "M":8,
-    "E":4
-  };
-
-  if(ramMapLow[ramChar])
-      result.ram = ramMapLow[ramChar];
-
-  /* ===============================
-     VIP
-  =============================== */
-
-  result.vip = calculateVip(result.ram, result.rom);
-
-  return result;
-}
-
-  // =====================================================
-  // 🔹 2. KM3H / KM3V / KM4X (eMMC FIXED SKU)
-  // =====================================================
-  if(main.startsWith("KM3H") || main.startsWith("KM3V")){
-    result.type = "eMMC";
-    result.rom = 64;
-    result.ram = 6;
-    result.storage = "eMMC 5.1";
-    result.version = "eMMC 5.1";
-    result.vip = calculateVip(result.ram, result.rom);
+  // KMDV6001 = UFS 2.1 6/64
+  if(main.startsWith("KMDV6001")){
+    result.type="uMCP";
+    result.storage="UFS 2.1";
+    result.version="UFS 2.1";
+    result.rom=64;
+    result.ram=6;
+    result.vip=calculateVip(6,64);
     return result;
   }
 
-  if(main.startsWith("KM4X")){
-    result.type = "eMMC";
-    result.rom = 32;
-    result.ram = 3;
-    result.storage = "eMMC 5.1";
-    result.version = "eMMC 5.1";
-    result.vip = calculateVip(result.ram, result.rom);
+  /* =====================================================
+     🔹 KMA (UFS 3.1)
+  ===================================================== */
+  if(main.startsWith("KMA")){
+    result.type="uMCP";
+    result.storage="UFS 3.1";
+    result.version="UFS 3.1";
+    result.rom=256;
+
+    const ramMap={
+      "PM":8,
+      "CM":6,
+      "DM":4
+    };
+
+    result.ram = ramMap[main.slice(-2)] || null;
+    result.vip = calculateVip(result.ram,result.rom);
     return result;
   }
 
-// 🔹 KM5 / KM2 Samsung uMCP Decoder (FULL FIX)
-// =====================================================
-if(/^KM[25]/.test(main)){
+  /* =====================================================
+     🔹 KMJ (UFS 2.2)
+  ===================================================== */
+  if(main.startsWith("KMJ")){
+    result.type="uMCP";
+    result.storage="UFS 2.2";
+    result.version="UFS 2.2";
 
-  result.type = "uMCP";
-  result.storage = "UFS 2.1";
-  result.version = "UFS 2.1";
+    if(main.includes("A001")) result.rom=256;
+    else if(main.includes("A002")) result.rom=512;
+    else result.rom=128;
 
-  const family = main.slice(0,3);     // KM2 / KM5
-  const density = main.match(/(\d{4})/);
-  const ramToken = main.slice(-2);
+    const ramMap={
+      "RM":12,
+      "JM":8,
+      "CM":6,
+      "DM":4
+    };
 
-/* ================= ROM ================= */
-/* ===== SAMSUNG KM2 REAL DECODER ===== */
+    result.ram=ramMap[main.slice(-2)]||null;
+    result.vip=calculateVip(result.ram,result.rom);
+    return result;
+  }
 
-if(family === "KM2"){
+  /* =====================================================
+     🔹 KM2 / KM5 (UFS 2.1)
+  ===================================================== */
+  if(/^KM[25]/.test(main)){
 
-  const model = main.substring(0,4); // KM2B / KM2V / KM2A
+    result.type="uMCP";
+    result.storage="UFS 2.1";
+    result.version="UFS 2.1";
 
-  const storageMap = {
-    "KM2B":256,
-    "KM2V":128,
-    "KM2A":256
-  };
+    const romMap={
+      "KM2B":256,
+      "KM2V":128,
+      "KM2A":256,
+      "KM5C":64,
+      "KM5H":64,
+      "KM5P":64,
+      "KM5V":128
+    };
 
-  result.rom = storageMap[model] || null;
-}
+    const model = main.substring(0,4);
+    result.rom = romMap[model] || null;
 
-/* ===== SAMSUNG KM5 REAL DECODER ===== */
+    const ramMap={
+      "8M":3,
+      "DM":4,
+      "CM":6,
+      "JM":8
+    };
 
-if(family === "KM5"){
+    result.ram = ramMap[main.slice(-2)] || null;
+    result.vip = calculateVip(result.ram,result.rom);
+    return result;
+  }
 
-  const model = main.substring(0,4); // KM5C / KM5H / KM5P / KM5V
-
-  const storageMap = {
-    "KM5C":64,
-    "KM5H":64,
-    "KM5P":64,
-    "KM5V":128
-  };
-
-  result.rom = storageMap[model] || null;
-}
-
-  /* ================= RAM ================= */
-
-const ramMap = {
-  "8M":3,
-  "DM":4,
-  "CM":6,
-  "JM":8
-};;
-
-  result.ram = ramMap[ramToken] || null;
-
-  /* ================= VIP ================= */
-
-  result.vip = calculateVip(result.ram,result.rom);
-
-  return result;
-}
-/* =====================================================
-   🔹 KMJ SERIES (Samsung UFS 2.2)  ⭐ FIX MMC BUG
-===================================================== */
-if(main.startsWith("KMJ")){
-
-  result.type = "uMCP";
-  result.storage = "UFS 2.2";
-  result.version = "UFS 2.2";
-
-  // ===== ROM =====
-  if(main.includes("A001")) result.rom = 256;
-  else if(main.includes("A002")) result.rom = 512;
-  else result.rom = 128;
-
-  // ===== RAM =====
-  const ramToken = main.slice(-2);
-
-  const ramMap = {
-    "RM":12,
-    "JM":8,
-    "CM":6,
-    "DM":4
-  };
-
-  result.ram = ramMap[ramToken] || null;
-
-  // ===== VIP =====
-  result.vip = calculateVip(result.ram,result.rom);
-
-  return result;
-}
-  // =====================================================
-  // 🔹 4. KM8 / KM9 (HIGH-END)
-  // =====================================================
+  /* =====================================================
+     🔹 KM8 / KM9 (HIGH END)
+  ===================================================== */
   if(main.startsWith("KM8") || main.startsWith("KM9")){
 
-    result.type = "uMCP";
+    result.type="uMCP";
 
-    const family = main.substring(0,3);  // KM8 / KM9
-    const tier   = main[3];              // V / F / G / L / B
-    const ramToken = main.slice(-2);     // JM / MM / JA ...
-
-    let block = null;
-
-    if(main.includes("9001")) block = "9001";
-    else if(main.includes("8001")) block = "8001";
-    else if(main.includes("7001")) block = "7001";
-
-    // ===== ROM LOGIC =====
-    if(family === "KM8"){
-
-      if(block === "9001"){
-        if(tier === "G") result.rom = 512;
-        else if(tier === "L") result.rom = 128;
-        else result.rom = 256;
-      }
-
-      else if(block === "8001"){
-        result.rom = (tier === "B" || tier === "F") ? 256 : 128;
-      }
-
-      else if(block === "7001"){
-        result.rom = (tier === "L") ? 64 : 128;
-      }
-
-      result.storage = (block === "9001") ? "UFS 2.2" : "UFS 2.1";
+    if(main.includes("9001")){
+      result.storage = main.startsWith("KM9") ? "UFS 3.x" : "UFS 2.2";
+      result.rom = main.includes("G") ? 512 : 256;
+    }
+    else if(main.includes("8001")){
+      result.storage="UFS 2.2";
+      result.rom=256;
+    }
+    else{
+      result.storage="UFS 2.1";
+      result.rom=128;
     }
 
-    if(family === "KM9"){
-
-      if(block === "9001"){
-        result.rom = (tier === "G") ? 512 : 256;
-      }
-      else if(block === "8001"){
-        result.rom = 256;
-      }
-      else if(block === "7001"){
-        result.rom = 128;
-      }
-
-      result.storage = (block === "9001") ? "UFS 3.x" : "UFS 2.2";
-    }
-
-    result.version = result.storage;
-
-    const ramMapHigh = {
+    const ramMap={
       "JM":8,
-      "JA":8,
-      "LM":8,
       "MM":12,
-      "EM":12,
       "RM":12,
       "SM":16
     };
 
-    if(ramMapHigh[ramToken])
-      result.ram = ramMapHigh[ramToken];
+    result.ram = ramMap[main.slice(-2)]||null;
+    result.version=result.storage;
+    result.vip=calculateVip(result.ram,result.rom);
+    return result;
+  }
 
-    result.vip = calculateVip(result.ram, result.rom);
+  /* =====================================================
+     🔹 KLM (eMMC 5.1)
+  ===================================================== */
+  if(main.startsWith("KLM")){
+
+    const map={
+      "8G":8,
+      "1G":16,
+      "2G":32,
+      "4G":64,
+      "8H":128,
+      "8J":128,
+      "AJ":256
+    };
+
+    for(const k in map){
+      if(main.includes(k)){
+        result.type="eMMC";
+        result.storage="eMMC 5.1";
+        result.version="eMMC 5.1";
+        result.rom=map[k];
+        result.vip=calculateVip(null,result.rom);
+        return result;
+      }
+    }
+  }
+
+  /* =====================================================
+     🔹 SAMSUNG eMMC LOW SERIES
+  ===================================================== */
+
+  const emmcPrefixes=[
+    "KMI","KMQ","KMW","KMH",
+    "KME","KMN","KMF","KMO","KMR"
+  ];
+
+  if(emmcPrefixes.some(p=>main.startsWith(p))){
+
+    result.type="eMMC";
+    result.storage="eMMC 5.1";
+    result.version="eMMC 5.1";
+    result.rom=main.includes("6001")?64:32;
+
+    const ramMap={
+      "3":2,
+      "4":4,
+      "8":3,
+      "C":6,
+      "D":6,
+      "M":8
+    };
+
+    result.ram = ramMap[main[main.length-2]]||null;
+    result.vip = calculateVip(result.ram,result.rom);
     return result;
   }
 
