@@ -2146,7 +2146,15 @@ if (main.startsWith("KMA")) {
 // =====================================================
 // 🔹 1. SAMSUNG eMMC LOW SERIES (FULL FIX)
 // =====================================================
-
+if(main.startsWith("KMDV6001")){
+  result.type="uMCP";
+  result.storage="UFS 2.1";
+  result.version="UFS 2.1";
+  result.rom=64;
+  result.ram=6;
+  result.vip=calculateVip(result.ram,result.rom);
+  return result;
+}
 const emmcPrefixes = [
   "KMG","KMI","KMQ","KMW","KMH",
   "KME","KMN","KMF","KMO","KMR","KMD"
