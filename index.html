@@ -1300,7 +1300,30 @@ body::before{
 .vip-10::after{
   background:#facc15;
 }
+/* ===== VIP PLUS GLOW ===== */
 
+.vip-4-5{ color:#c084fc; }
+.vip-6-5{ color:#22d3ee; }
+.vip-8-5{ color:#a855f7; }
+.vip-9-5{ color:#ff4ecd; }
+
+.vip-4-5::after,
+.vip-6-5::after,
+.vip-8-5::after,
+.vip-9-5::after{
+  content:"";
+  position:absolute;
+  inset:-6px;
+  border-radius:999px;
+  filter:blur(14px);
+  opacity:.45;
+  z-index:-1;
+}
+
+.vip-4-5::after{ background:#c084fc; }
+.vip-6-5::after{ background:#22d3ee; }
+.vip-8-5::after{ background:#a855f7; }
+.vip-9-5::after{ background:#ff4ecd; }
 /* hover boost */
 .result-card:hover .vip-5::after,
 .result-card:hover .vip-6::after,
@@ -3355,15 +3378,26 @@ async function check(){
               const mmc = getMMCLevel(decoded.rom);
               const hasVIP = decoded.vip != null && decoded.vip > 0;
 
-              const levelBadge = hasVIP
-                ? '<div class="vip-badge vip-' + Math.floor(decoded.vip) + '">' +
-                    'VIP ' + (
-                      decoded.vip === 4.5 ? "4+" :
-                      decoded.vip === 6.5 ? "6+" :
-                      Math.floor(decoded.vip)
-                    ) +
-                  '</div>'
-                : (mmc ? '<div class="vip-badge">' + mmc + '</div>' : '');
+const levelBadge = hasVIP
+  ? (() => {
+
+      const plusMap = {
+        4.5: "4+",
+        6.5: "6+",
+        8.5: "8+",
+        9.5: "9+"
+      };
+
+      const vipDisplay = plusMap[decoded.vip] ?? decoded.vip;
+
+      const vipClass = "vip-" + String(decoded.vip).replace(".", "-");
+
+      return '<div class="vip-badge ' + vipClass + '">' +
+               'VIP ' + vipDisplay +
+             '</div>';
+
+    })()
+  : (mmc ? '<div class="vip-badge">' + mmc + '</div>' : '');
 
               const specBadge =
                 decoded.ram && decoded.rom
