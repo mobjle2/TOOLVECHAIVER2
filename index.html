@@ -3043,7 +3043,7 @@ async function loadVIPLearning(){
 
 
 /* ===============================
-   FORMAT PHONE MODELS CLEAN
+   FORMAT PHONE MODELS CLEAN (FIXED)
 ================================ */
 function formatSamsungModels(text){
 
@@ -3055,14 +3055,22 @@ function formatSamsungModels(text){
     .map(m=>m.trim())
     .filter(Boolean);
 
-const detectBrand = (m)=>{
-  if(/samsung|galaxy|a\d|m\d|j\d|s\d/i.test(m)) return "Samsung";
-  if(/oppo/i.test(m)) return "OPPO";
-  if(/vivo|y\d|v\d|pd\d/i.test(m)) return "VIVO";
-  if(/xiaomi|redmi|poco/i.test(m)) return "Xiaomi";
-  if(/realme/i.test(m)) return "Realme";
-  return "Other";
-};
+  // ===== BRAND DETECT (SAFE VERSION) =====
+  const detectBrand = (m)=>{
+
+    const t = m.toLowerCase();
+
+    // Ưu tiên detect hãng rõ ràng trước
+    if(t.includes("oppo")) return "OPPO";
+    if(t.includes("vivo")) return "VIVO";
+    if(t.includes("xiaomi") || t.includes("redmi") || t.includes("poco")) return "Xiaomi";
+    if(t.includes("realme")) return "Realme";
+
+    // Samsung chỉ khi có từ khóa thật
+    if(t.includes("samsung") || t.includes("galaxy")) return "Samsung";
+
+    return "Other";
+  };
 
   const grouped = {};
 
@@ -3070,7 +3078,7 @@ const detectBrand = (m)=>{
 
     const brand = detectBrand(m);
 
-    
+    // Xoá tên hãng khỏi model để hiển thị gọn
     const cleanModel = m
       .replace(/samsung|galaxy|oppo|vivo|xiaomi|redmi|poco|realme/gi,"")
       .trim();
