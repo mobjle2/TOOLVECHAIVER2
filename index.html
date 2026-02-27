@@ -2022,6 +2022,60 @@ function decodeSamsung(code){
   if(!code) return result;
 
   const main = code.toUpperCase().split("-")[0];
+/* =====================================================
+🔥 SAMSUNG 6001 REAL ENGINE (FIX ALL COMMON MODELS)
+===================================================== */
+
+if(main.includes("6001")){
+
+// KM3H → eMCP 6/64
+if(main.startsWith("KM3H")){
+return {
+type:"eMCP",
+storage:"eMMC 5.1",
+version:"eMMC 5.1",
+ram:6,
+rom:64,
+vip:calculateVip(6,64)
+};
+}
+
+// KMDH → uMCP UFS 2.1
+if(main.startsWith("KMDH")){
+return {
+type:"uMCP",
+storage:"UFS 2.1",
+version:"UFS 2.1",
+ram:6,
+rom:64,
+vip:calculateVip(6,64)
+};
+}
+
+// KMDX → eMMC 32GB
+if(main.startsWith("KMDX")){
+return {
+type:"eMMC",
+storage:"eMMC 5.1",
+version:"eMMC 5.1",
+ram:3,
+rom:32,
+vip:calculateVip(3,32)
+};
+}
+
+// KMGE → eMCP 4/64
+if(main.startsWith("KMGE")){
+return {
+type:"eMCP",
+storage:"eMMC 5.1",
+version:"eMMC 5.1",
+ram:4,
+rom:64,
+vip:calculateVip(4,64)
+};
+}
+}
 
   /* =====================================================
      🔥 PRIORITY FIX (SPECIAL CASE TRƯỚC TẤT CẢ)
