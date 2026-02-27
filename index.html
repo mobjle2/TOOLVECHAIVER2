@@ -3187,14 +3187,14 @@ function formatSamsungModels(text){
     .map(m=>m.trim())
     .filter(Boolean);
 
-  const detectBrand = (m)=>{
-    if(/samsung|galaxy|a\d|m\d|j\d|s\d/i.test(m)) return "Samsung";
-    if(/oppo/i.test(m)) return "OPPO";
-    if(/vivo/i.test(m)) return "VIVO";
-    if(/xiaomi|redmi|poco/i.test(m)) return "Xiaomi";
-    if(/realme/i.test(m)) return "Realme";
-    return null; // ⭐ QUAN TRỌNG
-  };
+const detectBrand = (m)=>{
+  if(/samsung|galaxy|a\d|m\d|j\d|s\d/i.test(m)) return "Samsung";
+  if(/oppo/i.test(m)) return "OPPO";
+  if(/vivo|y\d|v\d|pd\d/i.test(m)) return "VIVO";
+  if(/xiaomi|redmi|poco/i.test(m)) return "Xiaomi";
+  if(/realme/i.test(m)) return "Realme";
+  return "Other";
+};
 
   const grouped = {};
 
@@ -3202,8 +3202,7 @@ function formatSamsungModels(text){
 
     const brand = detectBrand(m);
 
-    if(!brand) return; // ⭐ KHÔNG ADD UNKNOWN
-
+    
     const cleanModel = m
       .replace(/samsung|galaxy|oppo|vivo|xiaomi|redmi|poco|realme/gi,"")
       .trim();
