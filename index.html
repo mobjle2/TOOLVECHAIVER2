@@ -3455,8 +3455,8 @@ Array.isArray(x.models)&&x.models.length
      📱 ${formatSamsungModels(x.models.join(", "))}
    </div>`
 : `<div class="model-placeholder">
-     📱 Chưa có model
-   </div>`
+     ${L("no_model")}
+   </div>``
 }
 
 </div>`;
@@ -4162,6 +4162,7 @@ const MSG = {
     link_expired:"⛔ Link đã hết hạn!",
     access_error:"⚠️ Lỗi quyền truy cập!",
     countdown:"⏳ Còn {d} ngày {h} giờ {m} phút {s} giây"
+    no_model:"📱 Chưa có model"
   },
 
   en:{
@@ -4173,6 +4174,7 @@ const MSG = {
     link_expired:"⛔ Link expired!",
     access_error:"⚠️ Access error!",
     countdown:"⏳ {d} days {h} hours {m} minutes {s} seconds left"
+    no_model:"📱 No model available"
   }
 
 };
