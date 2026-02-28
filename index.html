@@ -1660,9 +1660,22 @@ ref.onSnapshot(async (doc)=>{
 
     await ref.update({ active:false });
 
-    showUserMessage(L("link_expired"));
-    disableCheckUI();
-    return;
+out.innerHTML = `
+  <div style="text-align:center;padding:40px 20px;">
+    <div style="font-size:18px;margin-bottom:12px;">
+      ${L("link_expired")}
+    </div>
+    <div style="font-size:14px;margin-top:8px;">
+      <a href="https://t.me/MobIje2" target="_blank"
+         style="color:#38bdf8;text-decoration:none;font-weight:600;">
+        📩 @MobIje2
+      </a>
+    </div>
+  </div>
+`;
+
+disableCheckUI();
+return;
   }
 
   // ===== LINK HỢP LỆ =====
