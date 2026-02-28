@@ -1639,7 +1639,8 @@ const out = document.getElementById("out");
 // ===== REALTIME LISTENER =====
 ref.onSnapshot(async (doc)=>{
 
-  // ===== LINK BỊ XÓA =====
+  const out = document.getElementById("out");
+
   if(!doc.exists){
     showUserMessage(L("link_not_found"));
     disableCheckUI();
@@ -1648,19 +1649,11 @@ ref.onSnapshot(async (doc)=>{
 
   const data = doc.data();
 
-  // ===== LINK BỊ KHÓA =====
-  if(!data.active){
-    showUserMessage(L("link_locked"));
-    disableCheckUI();
-    return;
-  }
+  // ===== ƯU TIÊN KIỂM TRA HẾT HẠN TRƯỚC =====
+  if(data.expiresAt && data.expiresAt.toDate() < new Date()){
 
-// ===== LINK HẾT HẠN =====
-if(data.expiresAt && data.expiresAt.toDate() < new Date()){
+    await ref.update({ active:false });
 
-  await ref.update({ active:false });
-
-  if(out){
     out.innerHTML = `
       <div style="text-align:center;padding:40px 20px;">
         <div style="font-size:18px;margin-bottom:12px;">
@@ -1674,11 +1667,17 @@ if(data.expiresAt && data.expiresAt.toDate() < new Date()){
         </div>
       </div>
     `;
+
+    disableCheckUI();
+    return;
   }
 
-  disableCheckUI();
-  return;
-}
+  // ===== SAU ĐÓ MỚI CHECK ACTIVE =====
+  if(!data.active){
+    showUserMessage(L("link_locked"));
+    disableCheckUI();
+    return;
+  }
 
   // ===== LINK HỢP LỆ =====
   enableCheckUI();
