@@ -3208,137 +3208,99 @@ async function check(){
 
     let html = `<div class="result-grid">`;
 
-    for(const doc of snap.docs){
+for(const doc of snap.docs){
 
-      const x = doc.data();
+  const x = doc.data();
 
-const matchCode =
-  typeof x.code === "string" &&
-  x.code.toUpperCase().includes(q);
+  const matchCode =
+    typeof x.code === "string" &&
+    x.code.toUpperCase().includes(q);
 
-const matchModel =
-  Array.isArray(x.models) &&
-  x.models.some(m => {
+  const matchModel =
+    Array.isArray(x.models) &&
+    x.models.some(m =>
+      typeof m === "string"
+        ? m.toUpperCase().includes(q)
+        : (m.model||"").toUpperCase().includes(q)
+    );
 
-    if(!m) return false;
+  if(!matchCode && !matchModel) continue;
 
-    if(typeof m === "string")
-      return m.toUpperCase().includes(q);
+  const chip = detectChip(x.code);
 
-    if(typeof m === "object")
-      return (
-        (m.model && m.model.toUpperCase().includes(q)) ||
-        (m.brand && m.brand.toUpperCase().includes(q))
-      );
+  let decoded = {
+    ram: x.ram ?? null,
+    rom: x.rom ?? null,
+    vip: x.vip ?? null,
+    storage: x.storage ?? null
+  };
 
-    return false;
-  });
+  if(!decoded.storage){
+    const hw = autoDecodeChip(x.code,x) || {};
+    decoded.storage = hw.storage ?? null;
+  }
 
-if(!matchCode && !matchModel){
-  continue;
-}
+  html += `
+    <div class="result-card ${chip.class}">
 
-      const chip = detectChip(x.code);
+      <div class="code-main">${x.code}</div>
 
-      let decoded = {
-        ram: x.ram ?? null,
-        rom: x.rom ?? null,
-        vip: x.vip ?? null,
-        storage: x.storage ?? null
-      };
+      <div style="display:flex;gap:10px;margin-top:12px;">
+        ${
+          decoded.vip
+            ? `<div class="vip-badge">VIP ${decoded.vip}</div>`
+            : ""
+        }
+        ${
+          decoded.ram && decoded.rom
+            ? `<div class="ram-badge">${decoded.ram}/${decoded.rom}</div>`
+            : ""
+        }
+      </div>
 
-      if(!decoded.storage){
-        const hw = autoDecodeChip(x.code,x) || {};
-        decoded.storage = hw.storage ?? null;
+      <div class="card-footer">
+        <div class="chip-info" style="color:${chip.color}">
+          <span class="chip-dot" style="background:${chip.color}"></span>
+          ${chip.name}
+          <span style="opacity:.6;">${decoded.storage||""}</span>
+        </div>
+      </div>
+
+      ${
+        Array.isArray(x.models) && x.models.length
+        ? `<div class="model-line">${
+            Object.values(
+              x.models.reduce((acc,m)=>{
+                const brand=(m.brand||"OTHER").toUpperCase();
+                const model=(m.model||m).toUpperCase();
+                acc[brand]=acc[brand]||[];
+                if(!acc[brand].includes(model))
+                  acc[brand].push(model);
+                return acc;
+              },{})
+            )
+            .map((list,i)=>{
+              const brand =
+                Object.keys(
+                  x.models.reduce((a,m)=>{
+                    a[(m.brand||"OTHER").toUpperCase()]=1;
+                    return a;
+                  },{})
+                )[i];
+
+              return `📱 ${brand}: ${list.join(" / ")}`;
+            })
+            .join("<br>")
+          }</div>`
+        : `<div class="model-placeholder">${L("no_model")}</div>`
       }
 
-html += `
-  <div class="result-card ${chip.class}">
-
-    <div class="code-main">${x.code}</div>
-
-    <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
-      ${(() => {
-
-        const mmc = getMMCLevel(decoded.rom);
-        const hasVIP = decoded.vip != null && decoded.vip > 0;
-
-        const levelBadge = hasVIP
-          ? '<div class="vip-badge vip-' + String(decoded.vip).replace(".", "-") + '">VIP ' + decoded.vip + '</div>'
-          : (mmc ? '<div class="vip-badge">' + mmc + '</div>' : '');
-
-        const specBadge =
-          decoded.ram && decoded.rom
-            ? '<div class="ram-badge">' + decoded.ram + '/' + decoded.rom + '</div>'
-            : decoded.rom
-              ? '<div class="ram-badge">' + decoded.rom + 'GB</div>'
-              : decoded.ram
-                ? '<div class="ram-badge">' + decoded.ram + 'GB RAM</div>'
-                : '';
-
-        return levelBadge + specBadge;
-
-      })()}
     </div>
+  `;
+}
 
-    <div class="card-footer">
-      <div class="chip-info" style="color:${chip.color}">
-        <span class="chip-dot" style="background:${chip.color}"></span>
-        ${chip.name}
-        <span style="opacity:.6;">
-          ${decoded.storage || ""}
-        </span>
-      </div>
-    </div>
-
-    ${
-      Array.isArray(x.models) && x.models.length
-      ? `<div class="model-line">${
-          (() => {
-
-            const brandMap = {};
-
-            x.models.forEach(m => {
-
-              if(!m) return;
-
-              let brand="OTHER";
-              let model="";
-
-              if(typeof m==="string"){
-                model=m.toUpperCase();
-              }else{
-                model=(m.model||"").toUpperCase();
-                brand=(m.brand||"OTHER").toUpperCase();
-              }
-
-              if(!model) return;
-
-              if(!brandMap[brand])
-                brandMap[brand]=[];
-
-              if(!brandMap[brand].includes(model))
-                brandMap[brand].push(model);
-
-            });
-
-            return Object.keys(brandMap)
-              .sort()
-              .map(brand=>{
-                const niceBrand =
-                  brand.charAt(0)+brand.slice(1).toLowerCase();
-
-                return `📱 ${niceBrand} : ${brandMap[brand].join(" / ")}`;
-              })
-              .join("<br>");
-
-          })()
-        }</div>`
-      : `<div class="model-placeholder">${L("no_model")}</div>`
-    }
-
-  </div>
-`;
+/* ===== ĐÓNG RESULT GRID SAU FOR ===== */
+html += `</div>`;
     html += `</div>`;
 
     if(html === `<div class="result-grid"></div>`){
