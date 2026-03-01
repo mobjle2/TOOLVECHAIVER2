@@ -3236,7 +3236,7 @@ const matchModel =
 
 if(!matchCode && !matchModel){
   continue;
-}}
+}
 
       const chip = detectChip(x.code);
 
@@ -3309,62 +3309,50 @@ const levelBadge = hasVIP
           </div>
 
           ${
-            Array.isArray(x.models) && x.models.length
-<div class="model-line">
 ${
-  (() => {
+Array.isArray(x.models) && x.models.length
+? `<div class="model-line">${
+(() => {
 
-    const brandMap = {};
+  const brandMap = {};
 
-    x.models.forEach(m => {
+  x.models.forEach(m => {
 
-      if(!m) return;
+    if(!m) return;
 
-      let brand = "OTHER";
-      let model = "";
+    let brand="OTHER";
+    let model="";
 
-      if(typeof m === "string"){
-        model = m.toUpperCase();
-      }
-      else if(typeof m === "object"){
-        model = (m.model || "").toUpperCase();
+    if(typeof m==="string"){
+      model=m.toUpperCase();
+    }else{
+      model=(m.model||"").toUpperCase();
+      brand=(m.brand||"OTHER").toUpperCase();
+    }
 
-        let b = m.brand;
+    if(!model) return;
 
-        if(typeof b === "object"){
-          brand = b?.name || b?.brand || "OTHER";
-        }else{
-          brand = b || "OTHER";
-        }
+    if(!brandMap[brand])
+      brandMap[brand]=[];
 
-        brand = brand.toUpperCase();
-      }
+    if(!brandMap[brand].includes(model))
+      brandMap[brand].push(model);
 
-      if(!model) return;
+  });
 
-      if(!brandMap[brand]){
-        brandMap[brand] = new Set();
-      }
+  return Object.keys(brandMap)
+    .sort()
+    .map(brand=>{
+      const niceBrand =
+        brand.charAt(0)+brand.slice(1).toLowerCase();
 
-      brandMap[brand].add(model);
-    });
+      return `📱 ${niceBrand} : ${brandMap[brand].join(" / ")}`;
+    })
+    .join("<br>");
 
-    return Object.keys(brandMap)
-      .sort((a,b)=> a.localeCompare(b))
-      .map(brand => {
-
-        const models = Array.from(brandMap[brand]).sort();
-
-        const niceBrand =
-          brand.charAt(0) +
-          brand.slice(1).toLowerCase();
-
-       return `📱 ${niceBrand} : ${models.join(" / ")}`;
-
-      })
-      .join("<br>");
-
-  })()
+})()
+}</div>`
+: `<div class="model-placeholder">${L("no_model")}</div>`
 }
                  </div>`
               : `<div class="model-placeholder">
