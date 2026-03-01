@@ -310,15 +310,22 @@ font-weight:500;
 .vip-badge{
   display:inline-flex;
   align-items:center;
-  gap:6px;
-  margin:6px 0 8px 0;
-  padding:5px 14px;
-  border-radius:999px;
+  justify-content:center;
+
+  height:30px;          /* ⭐ BẰNG RAM */
+  min-width:90px;       /* ⭐ BẰNG RAM */
+  padding:0 16px;
+
+  border-radius:12px;   /* giống RAM */
+
   font-size:13px;
   font-weight:700;
-  letter-spacing:0.6px;
-  background:rgba(255,255,255,0.04);
-  box-shadow:0 4px 12px rgba(0,0,0,0.1);
+  letter-spacing:.3px;
+
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.12);
+
+  backdrop-filter:blur(12px);
 }
 
 .vip-dot{
