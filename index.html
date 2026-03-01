@@ -3293,26 +3293,60 @@ const levelBadge = hasVIP
           ${
             Array.isArray(x.models) && x.models.length
               ? `<div class="model-line">
-                   📱 ${
-  x.models
-    .map(m => {
+📱 ${
+  (() => {
 
-      if (typeof m === "string") return m.toUpperCase();
+    const brandMap = {};
 
-      if (typeof m === "object") {
+    x.models.forEach(m => {
 
-        let brand = m.brand;
+      if(!m) return;
 
-        if (typeof brand === "object") {
-          brand = brand?.name || brand?.brand || "OTHER";
+      let brand = "OTHER";
+      let model = "";
+
+      if(typeof m === "string"){
+        model = m.toUpperCase();
+      }
+      else if(typeof m === "object"){
+        model = (m.model || "").toUpperCase();
+
+        let b = m.brand;
+
+        if(typeof b === "object"){
+          brand = b?.name || b?.brand || "OTHER";
+        }else{
+          brand = b || "OTHER";
         }
 
-        return `${(brand || "OTHER").toUpperCase()} ${(m.model || "").toUpperCase()}`;
+        brand = brand.toUpperCase();
       }
 
-      return "";
-    })
-    .join(" / ")
+      if(!model) return;
+
+      if(!brandMap[brand]){
+        brandMap[brand] = new Set();
+      }
+
+      brandMap[brand].add(model);
+    });
+
+    return Object.keys(brandMap)
+      .sort((a,b)=> a.localeCompare(b))
+      .map(brand => {
+
+        const models = Array.from(brandMap[brand]).sort();
+
+        const niceBrand =
+          brand.charAt(0) +
+          brand.slice(1).toLowerCase();
+
+        return `${niceBrand} : ${models.join(" / ")}`;
+
+      })
+      .join("<br>");
+
+  })()
 }
                  </div>`
               : `<div class="model-placeholder">
