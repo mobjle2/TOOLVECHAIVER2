@@ -3252,109 +3252,92 @@ if(!matchCode && !matchModel){
         decoded.storage = hw.storage ?? null;
       }
 
-      html += `
-        <div class="result-card ${chip.class}">
+html += `
+  <div class="result-card ${chip.class}">
 
-          <div class="code-main">${x.code}</div>
+    <div class="code-main">${x.code}</div>
 
-          <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
-            ${(() => {
+    <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
+      ${(() => {
 
-              const mmc = getMMCLevel(decoded.rom);
-              const hasVIP = decoded.vip != null && decoded.vip > 0;
+        const mmc = getMMCLevel(decoded.rom);
+        const hasVIP = decoded.vip != null && decoded.vip > 0;
 
-const levelBadge = hasVIP
-  ? (() => {
+        const levelBadge = hasVIP
+          ? '<div class="vip-badge vip-' + String(decoded.vip).replace(".", "-") + '">VIP ' + decoded.vip + '</div>'
+          : (mmc ? '<div class="vip-badge">' + mmc + '</div>' : '');
 
-      const plusMap = {
-        4.5: "4+",
-        6.5: "6+",
-        8.5: "8+",
-        9.5: "9+"
-      };
+        const specBadge =
+          decoded.ram && decoded.rom
+            ? '<div class="ram-badge">' + decoded.ram + '/' + decoded.rom + '</div>'
+            : decoded.rom
+              ? '<div class="ram-badge">' + decoded.rom + 'GB</div>'
+              : decoded.ram
+                ? '<div class="ram-badge">' + decoded.ram + 'GB RAM</div>'
+                : '';
 
-      const vipDisplay = plusMap[decoded.vip] ?? decoded.vip;
+        return levelBadge + specBadge;
 
-      const vipClass = "vip-" + String(decoded.vip).replace(".", "-");
+      })()}
+    </div>
 
-      return '<div class="vip-badge ' + vipClass + '">' +
-               'VIP ' + vipDisplay +
-             '</div>';
+    <div class="card-footer">
+      <div class="chip-info" style="color:${chip.color}">
+        <span class="chip-dot" style="background:${chip.color}"></span>
+        ${chip.name}
+        <span style="opacity:.6;">
+          ${decoded.storage || ""}
+        </span>
+      </div>
+    </div>
 
-    })()
-  : (mmc ? '<div class="vip-badge">' + mmc + '</div>' : '');
+    ${
+      Array.isArray(x.models) && x.models.length
+      ? `<div class="model-line">${
+          (() => {
 
-              const specBadge =
-                decoded.ram && decoded.rom
-                  ? '<div class="ram-badge">' + decoded.ram + '/' + decoded.rom + '</div>'
-                  : decoded.rom
-                    ? '<div class="ram-badge">' + decoded.rom + 'GB</div>'
-                    : decoded.ram
-                      ? '<div class="ram-badge">' + decoded.ram + 'GB RAM</div>'
-                      : '';
+            const brandMap = {};
 
-              return levelBadge + specBadge;
+            x.models.forEach(m => {
 
-            })()}
-          </div>
+              if(!m) return;
 
-<div class="card-footer">
-  <div class="chip-info" style="color:${chip.color}">
-    <span class="chip-dot" style="background:${chip.color}"></span>
-    ${chip.name}
-    <span style="opacity:.6;">
-      ${decoded.storage || ""}
-    </span>
-  </div>
-</div>
+              let brand="OTHER";
+              let model="";
 
-${
-Array.isArray(x.models) && x.models.length
-? `<div class="model-line">${
-(() => {
+              if(typeof m==="string"){
+                model=m.toUpperCase();
+              }else{
+                model=(m.model||"").toUpperCase();
+                brand=(m.brand||"OTHER").toUpperCase();
+              }
 
-  const brandMap = {};
+              if(!model) return;
 
-  x.models.forEach(m => {
+              if(!brandMap[brand])
+                brandMap[brand]=[];
 
-    if(!m) return;
+              if(!brandMap[brand].includes(model))
+                brandMap[brand].push(model);
 
-    let brand="OTHER";
-    let model="";
+            });
 
-    if(typeof m==="string"){
-      model=m.toUpperCase();
-    }else{
-      model=(m.model||"").toUpperCase();
-      brand=(m.brand||"OTHER").toUpperCase();
+            return Object.keys(brandMap)
+              .sort()
+              .map(brand=>{
+                const niceBrand =
+                  brand.charAt(0)+brand.slice(1).toLowerCase();
+
+                return `📱 ${niceBrand} : ${brandMap[brand].join(" / ")}`;
+              })
+              .join("<br>");
+
+          })()
+        }</div>`
+      : `<div class="model-placeholder">${L("no_model")}</div>`
     }
 
-    if(!model) return;
-
-    if(!brandMap[brand])
-      brandMap[brand]=[];
-
-    if(!brandMap[brand].includes(model))
-      brandMap[brand].push(model);
-
-  });
-
-  return Object.keys(brandMap)
-    .sort()
-    .map(brand=>{
-      const niceBrand =
-        brand.charAt(0)+brand.slice(1).toLowerCase();
-
-      return `📱 ${niceBrand} : ${brandMap[brand].join(" / ")}`;
-    })
-    .join("<br>");
-
-})()
-}</div>`
-: `<div class="model-placeholder">${L("no_model")}</div>`
-}
-
-</div>
+  </div>
 `;
     html += `</div>`;
 
