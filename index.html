@@ -2216,7 +2216,35 @@ vip:calculateVip(4,64)
     result.vip=calculateVip(result.ram,result.rom);
     return result;
   }
+ /* =====================================================
+   🔥 SAMSUNG eMCP COMMON SERIES (FIX UNKNOWN)
+===================================================== */
 
+if(/^KMD|^KMG|^KMQ|^KMK/.test(main)){
+
+  result.type = "eMCP";
+  result.storage = "eMMC 5.1";
+  result.version = "eMMC 5.1";
+
+  if(main.includes("6001")) result.rom = 64;
+  else if(main.includes("5001")) result.rom = 32;
+  else if(main.includes("4001")) result.rom = 16;
+
+  const ramMap={
+    "8":3,
+    "3":2,
+    "4":4,
+    "C":6,
+    "D":6,
+    "M":8
+  };
+
+  result.ram = ramMap[main[main.length-2]] || null;
+
+  result.vip = calculateVip(result.ram,result.rom);
+
+  return result;
+}
   /* =====================================================
      🔹 KLM (eMMC 5.1)
   ===================================================== */
