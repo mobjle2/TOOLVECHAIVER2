@@ -3293,7 +3293,27 @@ const levelBadge = hasVIP
           ${
             Array.isArray(x.models) && x.models.length
               ? `<div class="model-line">
-                   📱 ${formatSamsungModels(x.models.join(", "))}
+                   📱 ${
+  x.models
+    .map(m => {
+
+      if (typeof m === "string") return m.toUpperCase();
+
+      if (typeof m === "object") {
+
+        let brand = m.brand;
+
+        if (typeof brand === "object") {
+          brand = brand?.name || brand?.brand || "OTHER";
+        }
+
+        return `${(brand || "OTHER").toUpperCase()} ${(m.model || "").toUpperCase()}`;
+      }
+
+      return "";
+    })
+    .join(" / ")
+}
                  </div>`
               : `<div class="model-placeholder">
                    ${L("no_model")}
