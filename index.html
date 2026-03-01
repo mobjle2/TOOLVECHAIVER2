@@ -3212,13 +3212,31 @@ async function check(){
 
       const x = doc.data();
 
-      if(
-        !(typeof x.code==="string" && x.code.toUpperCase().includes(q)) &&
-        !(Array.isArray(x.models) &&
-          x.models.some(m=>typeof m==="string" && m.toUpperCase().includes(q)))
-      ){
-        continue;
-      }
+const matchCode =
+  typeof x.code === "string" &&
+  x.code.toUpperCase().includes(q);
+
+const matchModel =
+  Array.isArray(x.models) &&
+  x.models.some(m => {
+
+    if(!m) return false;
+
+    if(typeof m === "string")
+      return m.toUpperCase().includes(q);
+
+    if(typeof m === "object")
+      return (
+        (m.model && m.model.toUpperCase().includes(q)) ||
+        (m.brand && m.brand.toUpperCase().includes(q))
+      );
+
+    return false;
+  });
+
+if(!matchCode && !matchModel){
+  continue;
+}}
 
       const chip = detectChip(x.code);
 
