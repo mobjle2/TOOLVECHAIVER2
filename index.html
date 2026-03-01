@@ -306,26 +306,25 @@ font-weight:500;
 
 
 
-/* ===== VIP BADGE ===== */
-.vip-badge{
+/* ===== VIP + RAM SAME SIZE ===== */
+
+.vip-badge,
+.ram-badge{
   display:inline-flex;
   align-items:center;
   justify-content:center;
 
-  height:30px;          /* ⭐ BẰNG RAM */
-  min-width:90px;       /* ⭐ BẰNG RAM */
-  padding:0 16px;
+  height:28px;
+  min-width:72px;
+  padding:0 14px;
 
-  border-radius:12px;   /* giống RAM */
+  border-radius:10px;
 
   font-size:13px;
   font-weight:700;
   letter-spacing:.3px;
 
-  background:rgba(255,255,255,.05);
-  border:1px solid rgba(255,255,255,.12);
-
-  backdrop-filter:blur(12px);
+  white-space:nowrap;
 }
 
 .vip-dot{
@@ -1342,31 +1341,7 @@ body::before{
   filter:blur(18px);
 }
 
-/* ===== SAMSUNG IC RAM BADGE ===== */
 
-.ram-badge{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-
-  height:30px;
-  min-width:90px;      /* ⭐ QUAN TRỌNG */
-  padding:0 16px;
-
-  border-radius:12px;
-
-  font-size:13px;
-  font-weight:700;
-  letter-spacing:.3px;
-
-  background:rgba(56,189,248,.12);
-  color:#38bdf8;
-  border:1px solid rgba(56,189,248,.35);
-
-  box-shadow:
-    inset 0 0 10px rgba(56,189,248,.15),
-    0 0 14px rgba(56,189,248,.25);
-}
 /* ===============================
 /* =====================================================
    📱 ADMIN MOBILE PRO FINAL (REPLACE OLD BLOCK)
