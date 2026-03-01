@@ -3055,33 +3055,61 @@ async function loadVIPLearning(){
   return VIP_AI_CACHE;
 }
 
-
 /* ===============================
-   FORMAT PHONE MODELS CLEAN (FIXED)
+   FORMAT PHONE MODELS CLEAN (FINAL FIX)
 ================================ */
-function formatSamsungModels(text){
+function formatSamsungModels(input){
 
-  if(!text) return "";
+  if(!input) return "";
 
-  const models = text
-    .replace(/32GB|64GB|128GB|256GB|512GB/gi,"")
-    .split(",")
-    .map(m=>m.trim())
+  // ⭐ CHUYỂN MỌI THỨ → STRING LIST
+  let models = [];
+
+  if(Array.isArray(input)){
+
+    models = input.map(m=>{
+
+      if(typeof m === "string") return m;
+
+      if(typeof m === "object"){
+
+        let brand = m.brand;
+
+        if(typeof brand === "object"){
+          brand =
+            brand?.name ||
+            brand?.brand ||
+            "Other";
+        }
+
+        return `${brand || "Other"} ${m.model || ""}`;
+      }
+
+      return "";
+    });
+
+  }else if(typeof input === "string"){
+
+    models = input.split(",");
+  }
+
+  models = models
+    .map(m=>m
+      .replace(/32GB|64GB|128GB|256GB|512GB/gi,"")
+      .trim()
+    )
     .filter(Boolean);
 
-  // ===== BRAND DETECT (SAFE VERSION) =====
-  const detectBrand = (m)=>{
+  /* ===== BRAND DETECT ===== */
+  const detectBrand = m => {
 
     const t = m.toLowerCase();
 
-    // Ưu tiên detect hãng rõ ràng trước
     if(t.includes("oppo")) return "OPPO";
     if(t.includes("vivo")) return "VIVO";
-    if(t.includes("xiaomi") || t.includes("redmi") || t.includes("poco")) return "Xiaomi";
+    if(t.includes("xiaomi")||t.includes("redmi")||t.includes("poco")) return "Xiaomi";
     if(t.includes("realme")) return "Realme";
-
-    // Samsung chỉ khi có từ khóa thật
-    if(t.includes("samsung") || t.includes("galaxy")) return "Samsung";
+    if(t.includes("samsung")||t.includes("galaxy")) return "Samsung";
 
     return "Other";
   };
@@ -3092,7 +3120,6 @@ function formatSamsungModels(text){
 
     const brand = detectBrand(m);
 
-    // Xoá tên hãng khỏi model để hiển thị gọn
     const cleanModel = m
       .replace(/samsung|galaxy|oppo|vivo|xiaomi|redmi|poco|realme/gi,"")
       .trim();
@@ -3107,7 +3134,6 @@ function formatSamsungModels(text){
     .map(([brand,list])=>`${brand}: ${list.join(" / ")}`)
     .join("<br>");
 }
-
 /* ===============================
    MMC SIZE DETECT
 ================================ */
