@@ -1418,7 +1418,17 @@ body::before{
   padding-left:0;   /* đảm bảo không thụt */
   margin-left:0;    /* đảm bảo không thụt */
 }
+.card-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
 
+.badge-row{
+  display:flex;
+  gap:10px;
+  margin-top:0;
+}
   
 </style>
 
@@ -3220,9 +3230,11 @@ async function check(){
       html += `
         <div class="result-card ${chip.class}">
 
-          <div class="code-main">${x.code}</div>
+<div class="card-header">
 
-         <div class="badge-row">
+  <div class="code-main">${x.code}</div>
+
+  <div class="badge-row">
             ${(() => {
 
               const mmc = getMMCLevel(decoded.rom);
