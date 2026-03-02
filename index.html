@@ -831,14 +831,23 @@ font-weight:500;
   color:#e2e8f0;
 }
 
-/* ===== ADMIN TOP BAR ===== */
+
+/* ===== ADMIN TOP BAR — FULL WIDTH GRID ALIGN ===== */
 .admin-top-bar{
   display:flex;
-  align-items:center;   /* đảm bảo căn giữa theo trục dọc */
+  align-items:center;
   gap:15px;
+
+  width:100%;
+  max-width:1100px;   /* ⭐ BẰNG result-grid */
+  margin:25px auto 0 auto;
 }
 
-
+/* ===== SEARCH FULL WIDTH ===== */
+.clean-check{
+  flex:1;
+  width:100%;
+}
 
 /* ===== ADMIN TOGGLE ULTRA PRO ===== */
 
@@ -1464,7 +1473,6 @@ Chỉ nâng cấp logic JS hoặc màu sắc.
 <div id="adminPanel" class="admin-panel">
 
   <div class="admin-top-bar"
-       style="max-width:1000px;margin:25px auto 0 auto;gap:15px;">
 
     <!-- BÊN TRÁI: ADMIN -->
     <button class="admin-toggle-btn" id="adminToggle" onclick="toggleAdmin()">
