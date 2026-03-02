@@ -1967,34 +1967,73 @@ function decodeSamsung(code){
   if(!code) return result;
 
   const main = code.toUpperCase().split("-")[0];
+
 /* =====================================================
-🔥 SAMSUNG 6001 REAL ENGINE (FIX ALL COMMON MODELS)
+🔥 SAMSUNG 6001 REAL ENGINE (FIXED PRO VERSION)
 ===================================================== */
 
 if(main.includes("6001")){
 
-// KM3H → eMCP 6/64
-if(main.startsWith("KM3H")){
-return {
-type:"eMCP",
-storage:"eMMC 5.1",
-version:"eMMC 5.1",
-ram:6,
-rom:64,
-vip:calculateVip(6,64)
-};
-}
+  /* ===== KM3H6001 → eMCP (eMMC 5.1) 6/64 ===== */
+  if(main.startsWith("KM3H")){
+    return {
+      type:"eMCP",
+      storage:"eMMC 5.1",
+      version:"eMMC 5.1",
+      ram:6,
+      rom:64,
+      vip:calculateVip(6,64)
+    };
+  }
 
-// KMDH → uMCP UFS 2.1
-if(main.startsWith("KMDH")){
-return {
-type:"uMCP",
-storage:"UFS 2.1",
-version:"UFS 2.1",
-ram:6,
-rom:64,
-vip:calculateVip(6,64)
-};
+  /* ===== KM3V6001 → uMCP (UFS 2.1) 6/64 ===== */
+  if(main.startsWith("KM3V")){
+    return {
+      type:"uMCP",
+      storage:"UFS 2.1",
+      version:"UFS 2.1",
+      ram:6,
+      rom:64,
+      vip:calculateVip(6,64)
+    };
+  }
+
+  /* ===== KMDV6001 → uMCP (UFS 2.1) 6/64 ===== */
+  if(main.startsWith("KMDV")){
+    return {
+      type:"uMCP",
+      storage:"UFS 2.1",
+      version:"UFS 2.1",
+      ram:6,
+      rom:64,
+      vip:calculateVip(6,64)
+    };
+  }
+
+  /* ===== KMDH6001 → uMCP (UFS 2.1) 6/64 ===== */
+  if(main.startsWith("KMDH")){
+    return {
+      type:"uMCP",
+      storage:"UFS 2.1",
+      version:"UFS 2.1",
+      ram:6,
+      rom:64,
+      vip:calculateVip(6,64)
+    };
+  }
+
+  /* ===== KMDX6001 → eMMC 5.1 3/32 ===== */
+  if(main.startsWith("KMDX")){
+    return {
+      type:"eMMC",
+      storage:"eMMC 5.1",
+      version:"eMMC 5.1",
+      ram:3,
+      rom:32,
+      vip:calculateVip(3,32)
+    };
+  }
+
 }
 
 // KMDX → eMMC 32GB
