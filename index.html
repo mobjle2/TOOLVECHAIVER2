@@ -1969,125 +1969,111 @@ function decodeSamsung(code){
   const main = code.toUpperCase().split("-")[0];
 
 /* =====================================================
-🔥 SAMSUNG 6001 REAL ENGINE (SAFE FIX)
+   🔥 PRIORITY FIX (SPECIAL CASE TRƯỚC TẤT CẢ)
 ===================================================== */
 
-if(main.includes("6001")){
+// KMDV6001 → uMCP UFS 2.1 (6/64)
+if (main.startsWith("KMDV6001")) {
+  return {
+    type: "uMCP",
+    storage: "UFS 2.1",
+    version: "UFS 2.1",
+    ram: 6,
+    rom: 64,
+    vip: calculateVip(6, 64)
+  };
+}
+
+/* =====================================================
+   🔥 SAMSUNG 6001 REAL ENGINE (SAFE FIX)
+===================================================== */
+
+if (main.includes("6001")) {
 
   // KM3H6001 → eMCP eMMC 5.1 (6/64)
-  if(main.startsWith("KM3H")){
+  if (main.startsWith("KM3H")) {
     return {
-      type:"eMCP",
-      storage:"eMMC 5.1",
-      version:"eMMC 5.1",
-      ram:6,
-      rom:64,
-      vip:calculateVip(6,64)
+      type: "eMCP",
+      storage: "eMMC 5.1",
+      version: "eMMC 5.1",
+      ram: 6,
+      rom: 64,
+      vip: calculateVip(6, 64)
     };
   }
 
   // KM3V6001 → uMCP UFS 2.1 (6/64)
-  if(main.startsWith("KM3V")){
+  if (main.startsWith("KM3V")) {
     return {
-      type:"uMCP",
-      storage:"UFS 2.1",
-      version:"UFS 2.1",
-      ram:6,
-      rom:64,
-      vip:calculateVip(6,64)
+      type: "uMCP",
+      storage: "UFS 2.1",
+      version: "UFS 2.1",
+      ram: 6,
+      rom: 64,
+      vip: calculateVip(6, 64)
     };
   }
 
   // KMDV6001 → uMCP UFS 2.1 (6/64)
-  if(main.startsWith("KMDV")){
+  if (main.startsWith("KMDV")) {
     return {
-      type:"uMCP",
-      storage:"UFS 2.1",
-      version:"UFS 2.1",
-      ram:6,
-      rom:64,
-      vip:calculateVip(6,64)
+      type: "uMCP",
+      storage: "UFS 2.1",
+      version: "UFS 2.1",
+      ram: 6,
+      rom: 64,
+      vip: calculateVip(6, 64)
     };
   }
 
   // KMDH6001 → uMCP UFS 2.1 (6/64)
-  if(main.startsWith("KMDH")){
+  if (main.startsWith("KMDH")) {
     return {
-      type:"uMCP",
-      storage:"UFS 2.1",
-      version:"UFS 2.1",
-      ram:6,
-      rom:64,
-      vip:calculateVip(6,64)
+      type: "uMCP",
+      storage: "UFS 2.1",
+      version: "UFS 2.1",
+      ram: 6,
+      rom: 64,
+      vip: calculateVip(6, 64)
     };
   }
 
   // KMDX6001 → eMMC 5.1 (3/32)
-  if(main.startsWith("KMDX")){
+  if (main.startsWith("KMDX")) {
     return {
-      type:"eMMC",
-      storage:"eMMC 5.1",
-      version:"eMMC 5.1",
-      ram:3,
-      rom:32,
-      vip:calculateVip(3,32)
+      type: "eMMC",
+      storage: "eMMC 5.1",
+      version: "eMMC 5.1",
+      ram: 3,
+      rom: 32,
+      vip: calculateVip(3, 32)
     };
   }
 
   // KMGE6001 → eMCP eMMC 5.1 (4/64)
-  if(main.startsWith("KMGE")){
+  if (main.startsWith("KMGE")) {
     return {
-      type:"eMCP",
-      storage:"eMMC 5.1",
-      version:"eMMC 5.1",
-      ram:4,
-      rom:64,
-      vip:calculateVip(4,64)
+      type: "eMCP",
+      storage: "eMMC 5.1",
+      version: "eMMC 5.1",
+      ram: 4,
+      rom: 64,
+      vip: calculateVip(4, 64)
     };
   }
 
-}
-
-// KMDX → eMMC 32GB
-if(main.startsWith("KMDX")){
-return {
-type:"eMMC",
-storage:"eMMC 5.1",
-version:"eMMC 5.1",
-ram:3,
-rom:32,
-vip:calculateVip(3,32)
-};
-}
-
-// KMGE → eMCP 4/64
-if(main.startsWith("KMGE")){
-return {
-type:"eMCP",
-storage:"eMMC 5.1",
-version:"eMMC 5.1",
-ram:4,
-rom:64,
-vip:calculateVip(4,64)
-};
-}
-}
-
-  /* =====================================================
-     🔥 PRIORITY FIX (SPECIAL CASE TRƯỚC TẤT CẢ)
-  ===================================================== */
-
-  // KMDV6001 = UFS 2.1 6/64
-  if(main.startsWith("KMDV6001")){
-    result.type="uMCP";
-    result.storage="UFS 2.1";
-    result.version="UFS 2.1";
-    result.rom=64;
-    result.ram=6;
-    result.vip=calculateVip(6,64);
-    return result;
+  // ✅ KMEG6001 → eMCP eMMC 5.1 (4/64)
+  if (main.startsWith("KMEG")) {
+    return {
+      type: "eMCP",
+      storage: "eMMC 5.1",
+      version: "eMMC 5.1",
+      ram: 4,
+      rom: 64,
+      vip: calculateVip(4, 64)
+    };
   }
-
+}
   /* =====================================================
      🔹 KMA (UFS 3.1)
   ===================================================== */
