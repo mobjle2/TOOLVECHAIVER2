@@ -14,13 +14,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <style>
-body{
-  background:linear-gradient(160deg,#111827,#1e293b);
-  color:#e5e7eb;
-}
-
-
-
 
 
 
@@ -70,52 +63,6 @@ body{
   );
 }
 
-
-/* VIP 1-4 */
-.vip-1,.vip-2,.vip-3,.vip-4{
-  color:#94a3b8;
-}
-.vip-1 .vip-dot,
-.vip-2 .vip-dot,
-.vip-3 .vip-dot,
-.vip-4 .vip-dot{
-  background:#64748b;
-}
-
-/* VIP 5-9 (SÁNG – KHÔNG TRÙNG CHIP) */
-.vip-5{ color:#00e5ff; }
-.vip-5 .vip-dot{ background:#00e5ff; }
-
-.vip-6{ color:#00ff88; }
-.vip-6 .vip-dot{ background:#00ff88; }
-
-.vip-7{ color:#ff9f1c; }
-.vip-7 .vip-dot{ background:#ff9f1c; }
-
-.vip-8{ color:#8b5cf6; }
-.vip-8 .vip-dot{ background:#8b5cf6; }
-
-.vip-9{ color:#ff4ecd; }
-.vip-9 .vip-dot{ background:#ff4ecd; }
-
-/* VIP 10-13 */
-.vip-10{ color:#facc15; }
-.vip-10 .vip-dot{ background:#facc15; }
-
-.vip-11{ color:#ef4444; }
-.vip-11 .vip-dot{ background:#ef4444; }
-
-.vip-12{
-  color:#dc2626;
-  text-shadow:0 0 6px rgba(220,38,38,0.6);
-}
-.vip-12 .vip-dot{ background:#dc2626; }
-
-.vip-13{
-  color:#ff003c;
-  text-shadow:0 0 8px rgba(255,0,60,0.8);
-}
-.vip-13 .vip-dot{ background:#ff003c; }
 
   
 
@@ -174,18 +121,8 @@ body{
 /* ================= GRID CHUẨN ĐẸP ================= */
 
 /* Container ngoài */
-#out{
-  margin-top:50px;
-}
 
-/* Grid kết quả */
-.result-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:40px;
-  max-width:1100px;
-  margin:0 auto;
-}
+
 
 
 
@@ -213,16 +150,7 @@ body{
 
 /* ================= CARD STYLE ================= */
 
-.result-card{
-  background:linear-gradient(145deg,#1e293b,#111827);
-  border-radius:22px;
-  padding:22px;
-  border:1px solid rgba(255,255,255,0.06);
-  box-shadow:0 12px 30px rgba(0,0,0,0.45);
-  transition:all 0.3s ease;
-  position:relative;
-  overflow:hidden;
-}
+
 
 
 .result-card:hover{
@@ -549,7 +477,7 @@ font-weight:500;
 
 
 /* ================= MOBILE OPTIMIZE ================= */
-@media(max-width:640px){
+
 
   /* Main container */
   .main-container{
