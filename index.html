@@ -289,23 +289,32 @@ font-weight:500;
 .login-wrapper{
   position:fixed;
   inset:0;
-  z-index:9999; /* QUAN TRỌNG: đè toàn bộ dashboard */
+  z-index:9999;
   display:flex;
   justify-content:center;
   align-items:center;
+
+  padding:20px;   /* thêm dòng này */
+
   background:
     radial-gradient(circle at 15% 20%, rgba(59,130,246,0.25), transparent 40%),
     radial-gradient(circle at 85% 80%, rgba(139,92,246,0.25), transparent 40%),
     linear-gradient(160deg,#020617,#0f172a);
-  overflow:hidden;
+
+  overflow:auto;  /* đổi hidden → auto */
+}flow:hidden;
 }
 
 
 
 
 .login-box{
-  width:420px;
-  padding:60px 45px;
+  width:100%;
+  max-width:420px;
+  margin:0 auto;
+
+  padding:45px 35px;
+
   border-radius:24px;
   background:rgba(15,23,42,0.9);
   backdrop-filter:blur(20px);
