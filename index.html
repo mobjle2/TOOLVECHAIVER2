@@ -1410,25 +1410,8 @@ body::before{
 .lang-switch button:hover{
   background:#2563eb;
 }
-.badge-row{
-  display:flex;
-  gap:10px;
-  margin-top:12px;
-  align-items:center;
-  padding-left:0;   /* đảm bảo không thụt */
-  margin-left:0;    /* đảm bảo không thụt */
-}
-.card-header{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-}
 
-.badge-row{
-  display:flex;
-  gap:10px;
-  margin-top:0;
-}
+
   
 </style>
 
@@ -3230,11 +3213,9 @@ async function check(){
       html += `
         <div class="result-card ${chip.class}">
 
-<div class="card-header">
+          <div class="code-main">${x.code}</div>
 
-  <div class="code-main">${x.code}</div>
-
-  <div class="badge-row">
+          <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
             ${(() => {
 
               const mmc = getMMCLevel(decoded.rom);
