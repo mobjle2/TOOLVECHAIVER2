@@ -3274,15 +3274,15 @@ const levelBadge = hasVIP
             </div>
           </div>
 
-          ${
-            Array.isArray(x.models) && x.models.length
-              ? `<div class="model-line">
-                  formatSamsungModels(
-  x.models
-    .map(m => typeof m === "string" ? m : m.model)
-    .join(", ")
-)
-                 </div>`
+${
+  Array.isArray(x.models) && x.models.length
+    ? `<div class="model-line">
+        ${formatSamsungModels(
+          x.models
+            .map(m => typeof m === "string" ? m : m.model)
+            .join(", ")
+        )}
+       </div>`
               : `<div class="model-placeholder">
                    ${L("no_model")}
                  </div>`
