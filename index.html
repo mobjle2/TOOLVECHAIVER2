@@ -1,6 +1,5 @@
 
 
-
 <!DOCTYPE html>
 <!DOCTYPE html>
 <html lang="vi">
@@ -3273,7 +3272,7 @@ html += `
     <div class="badge-row">
       ${
         decoded.ram != null && decoded.rom != null
-          ? '<div class="ram-badge">' + decoded.ram + '/' + decoded.rom + '</div>'
+          ? '<div class="ram-badge">' + decoded.ram + 'GB / ' + decoded.rom + 'GB</div>'
           : decoded.rom != null
             ? '<div class="ram-badge">' + decoded.rom + 'GB</div>'
             : decoded.ram != null
@@ -3286,9 +3285,13 @@ ${
     ? '<div class="vip-badge vip-' + String(decoded.vip).replace(".", "-") + '">' +
         '<span class="vip-dot"></span> VIP ' + decoded.vip +
       '</div>'
-    : ''
+    : decoded.mmc != null
+      ? '<div class="vip-badge">' +
+          '<span class="vip-dot"></span> ' + decoded.mmc +
+        '</div>'
+      : ''
 }
-</div>
+</div>`
 
     <div class="card-footer">
       <div class="chip-info" style="color:${chip.color}">
