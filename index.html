@@ -2109,17 +2109,17 @@ if (/^(KMDP|KMDD|KMDX)/.test(main)) {
     };
   }
 
-  // KMDH6001 → uMCP UFS 2.1 (6/64)
-  if (main.startsWith("KMDH")) {
-    return {
-      type: "uMCP",
-      storage: "UFS 2.1",
-      version: "UFS 2.1",
-      ram: 6,
-      rom: 64,
-      vip: calculateVip(6, 64)
-    };
-  }
+// KMDH6001 → eMCP eMMC 5.1 (6/64)
+if (main.startsWith("KMDH")) {
+  return {
+    type: "eMCP",
+    storage: "eMMC 5.1",
+    version: "eMMC 5.1",
+    ram: 6,
+    rom: 64,
+    vip: calculateVip(6, 64)
+  };
+}
 
 
 
