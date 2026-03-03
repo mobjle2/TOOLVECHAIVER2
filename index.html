@@ -3102,7 +3102,6 @@ function extractMMCSize(code){
 
   code = (code || "").toUpperCase();
 
-  // ===== Samsung KLMB / KLMG REAL SIZE =====
   if(code.includes("G1")) return 16;
   if(code.includes("G2")) return 32;
   if(code.includes("G3")) return 64;
@@ -3134,46 +3133,35 @@ async function check(){
 
   try{
 
-    /* ===== CACHE CHECK ===== */
     if(turboCache.has(q)){
       out.innerHTML = turboCache.get(q);
       return;
     }
 
-    /* ===== QUERY SONG SONG ===== */
+    /* ===== QUERY ARRAY-CONTAINS TRƯỚC ===== */
+    const snapSearch = await db.collection("codes")
+      .where("searchText", "array-contains", q)
+      .limit(30)
+      .get();
 
-    const queryByCode = db.collection("codes")
+    /* ===== QUERY PREFIX CODE ===== */
+    const snapCode = await db.collection("codes")
       .where("code", ">=", q)
       .where("code", "<=", q + "\uf8ff")
       .limit(30)
       .get();
 
+    const docsMap = new Map();
 
-const snapCode = await db.collection("codes")
-  .where("code", ">=", q)
-  .where("code", "<=", q + "\uf8ff")
-  .limit(30)
-  .get();
+    /* ===== GỘP KẾT QUẢ ARRAY-CONTAINS ===== */
+    snapSearch.forEach(doc=>{
+      docsMap.set(doc.id, doc);
+    });
 
-const docsMap = new Map();
-
-snapCode.forEach(doc => {
-  const x = doc.data();
-
-  const matchModel =
-    Array.isArray(x.models) &&
-    x.models.some(m =>
-      typeof m === "string" &&
-      m.toUpperCase().includes(q)
-    );
-
-  if(
-    x.code.toUpperCase().includes(q) ||
-    matchModel
-  ){
-    docsMap.set(doc.id, doc);
-  }
-});
+    /* ===== GỘP KẾT QUẢ PREFIX ===== */
+    snapCode.forEach(doc=>{
+      docsMap.set(doc.id, doc);
+    });
 
     if(docsMap.size === 0){
       const notFoundHTML = `
@@ -3234,7 +3222,14 @@ snapCode.forEach(doc => {
 
           ${
             Array.isArray(x.models) && x.models.length
-              ? `<div class="model-line">${x.models.join(", ")}</div>`
+              ? `<div class="model-line">${
+                  x.models.map(m=>{
+                    if(typeof m === "string") return m;
+                    if(typeof m === "object" && m !== null)
+                      return (m.brand || "") + " " + (m.model || "");
+                    return "";
+                  }).join(", ")
+                }</div>`
               : `<div class="model-placeholder">Chưa có model</div>`
           }
 
