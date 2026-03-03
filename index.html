@@ -236,19 +236,45 @@ font-weight:500;
 
 
 
-/* ===== VIP BADGE ===== */
+/* =====================================================
+   ⭐ CLEAN BADGE SYSTEM (RAM = VIP SAME SIZE)
+===================================================== */
+
+.ram-badge,
 .vip-badge{
   display:inline-flex;
   align-items:center;
   gap:6px;
-  margin:6px 0 8px 0;
-  padding:5px 14px;
+
+  padding:5px 16px;
   border-radius:999px;
+
   font-size:13px;
   font-weight:700;
-  letter-spacing:0.6px;
-  background:rgba(255,255,255,0.04);
-  box-shadow:0 4px 12px rgba(0,0,0,0.1);
+  letter-spacing:.4px;
+
+  backdrop-filter:blur(6px);
+  transition:.25s ease;
+}
+
+/* ================= RAM (Samsung Blue) ================= */
+
+.ram-badge{
+  color:#38E1FF;
+  background:rgba(0,194,255,.10);
+  border:1px solid rgba(56,225,255,.55);
+  box-shadow:0 0 14px rgba(0,194,255,.30);
+}
+
+.result-card:hover .ram-badge{
+  box-shadow:0 0 22px rgba(0,194,255,.45);
+}
+
+/* ================= VIP BASE ================= */
+
+.vip-badge{
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.12);
 }
 
 .vip-dot{
@@ -1318,36 +1344,7 @@ body::before{
    ⭐ SAMSUNG RAM BADGE — SHARP & CLEAN
 ===================================================== */
 
-.ram-badge{
-  padding:6px 20px;
-  border-radius:999px;
 
-  font-weight:800;          /* đậm hơn */
-  font-size:15px;           /* to hơn nhẹ */
-  letter-spacing:.6px;
-
-  color:#38E1FF;            /* xanh sáng hơn */
-
-  background:rgba(0,194,255,.10);
-
-  border:1px solid rgba(56,225,255,.75);
-
-  box-shadow:
-    0 0 18px rgba(0,194,255,.35);
-
-  text-shadow:
-    0 0 6px rgba(56,225,255,.8);
-
-  backdrop-filter:blur(6px);
-
-  transition:.25s ease;
-}
-
-/* Hover */
-.result-card:hover .ram-badge{
-  box-shadow:
-    0 0 28px rgba(0,194,255,.6);
-}
 /* ===============================
 /* =====================================================
    📱 ADMIN MOBILE PRO FINAL (REPLACE OLD BLOCK)
