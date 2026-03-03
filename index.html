@@ -3264,7 +3264,29 @@ if(!decoded.storage){
   const hw = autoDecodeChip(x.code,x) || {};
   decoded.storage = hw.storage ?? null;
 }
+let modelLine = '';
 
+if (Array.isArray(decoded.models) && decoded.models.length) {
+
+  const grouped = {};
+
+  decoded.models.forEach(m => {
+    if (!m || !m.brand || !m.model) return;
+
+    if (!grouped[m.brand]) grouped[m.brand] = [];
+    grouped[m.brand].push(m.model);
+  });
+
+  modelLine = Object.keys(grouped)
+    .map(b => b + ' : ' + grouped[b].join(' / '))
+    .join(' | ');
+}
+${
+  modelLine
+    ? '<div class="model-line">' + modelLine + '</div>'
+    : ''
+}
+      
 html += `
   <div class="result-card ${chip.class}">
     <div class="code-main">${x.code}</div>
