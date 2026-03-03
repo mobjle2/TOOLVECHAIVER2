@@ -1314,44 +1314,39 @@ body::before{
     0 0 25px rgba(253,224,71,.6);
 }
 
-/* ===== SAMSUNG IC RAM BADGE ===== */
-
 /* =====================================================
-   ⭐ SAMSUNG RAM BADGE — BRIGHT CLEAN
+   ⭐ SAMSUNG RAM BADGE — SHARP & CLEAN
 ===================================================== */
 
 .ram-badge{
-  padding:6px 18px;
+  padding:6px 20px;
   border-radius:999px;
 
-  font-weight:700;
-  font-size:14px;
-  letter-spacing:.4px;
+  font-weight:800;          /* đậm hơn */
+  font-size:15px;           /* to hơn nhẹ */
+  letter-spacing:.6px;
 
-  color:#00C2FF;   /* Samsung bright blue */
+  color:#38E1FF;            /* xanh sáng hơn */
 
-  background:linear-gradient(
-    135deg,
-    rgba(0,194,255,.20),
-    rgba(0,140,255,.08)
-  );
+  background:rgba(0,194,255,.10);
 
-  border:1px solid rgba(0,194,255,.55);
+  border:1px solid rgba(56,225,255,.75);
 
   box-shadow:
-    inset 0 0 14px rgba(0,194,255,.30),
-    0 0 22px rgba(0,194,255,.35);
+    0 0 18px rgba(0,194,255,.35);
 
-  backdrop-filter:blur(8px);
+  text-shadow:
+    0 0 6px rgba(56,225,255,.8);
 
-  transition:.3s ease;
+  backdrop-filter:blur(6px);
+
+  transition:.25s ease;
 }
 
-/* Hover glow mạnh hơn */
+/* Hover */
 .result-card:hover .ram-badge{
   box-shadow:
-    inset 0 0 18px rgba(0,194,255,.45),
-    0 0 35px rgba(0,194,255,.55);
+    0 0 28px rgba(0,194,255,.6);
 }
 /* ===============================
 /* =====================================================
