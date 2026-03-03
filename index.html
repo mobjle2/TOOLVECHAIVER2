@@ -3109,17 +3109,35 @@ function extractMMCSize(code){
   if(code.includes("G4")) return 128;
   if(code.includes("G5")) return 256;
 
-  return null;
-}
+/* ================= CHECK V5 PRODUCTION ================= */
+
+let searchTimer = null;
+document.addEventListener("DOMContentLoaded", () => {
+
+  const input = document.getElementById("q");
+
+  if(!input) return;
+
+  input.addEventListener("input", () => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(check, 300);
+  });
+
+});
 
 async function check(){
 
   const out = document.getElementById("out");
   const btn = document.querySelector(".check-btn");
-  const q = document.getElementById("q")?.value?.trim()?.toUpperCase();
 
-  if(!q){
-    out.innerHTML="";
+  let q = document.getElementById("q")
+    ?.value
+    ?.trim()
+    ?.replace(/\s+/g," ")
+    ?.toUpperCase();
+
+  if(!q || q.length < 2){
+    out.innerHTML = "";
     return;
   }
 
@@ -3128,7 +3146,7 @@ async function check(){
 
   out.innerHTML = `
     <div style="text-align:center;margin:40px 0;opacity:.8;">
-      🔎 Đang phân tích...
+      🔎 Đang tìm kiếm...
     </div>
   `;
 
@@ -3140,40 +3158,19 @@ async function check(){
       return;
     }
 
-    /* ===== LOAD DATA ===== */
+    /* ===== QUERY V5 ===== */
     const snap = await db.collection("codes")
-      .limit(200)
+      .where("searchText", ">=", q)
+      .where("searchText", "<=", q + "\uf8ff")
+      .limit(30)
       .get();
 
-    const docs = [];
-
-    snap.forEach(doc => {
-
-      const x = doc.data();
-
-      const matchCode =
-        typeof x.code === "string" &&
-        x.code.toUpperCase().includes(q);
-
-      const matchModel =
-        Array.isArray(x.models) &&
-        x.models.some(m =>
-          m.brand?.toUpperCase().includes(q) ||
-          m.model?.toUpperCase().includes(q)
-        );
-
-      if(matchCode || matchModel){
-        docs.push(x);
-      }
-
-    });
-
-    if(docs.length === 0){
+    if(snap.empty){
 
       const notFound = `
         <div style="margin-top:40px;text-align:center;
           font-size:18px;font-weight:600;color:#facc15;">
-          Không tìm thấy mã
+          Không tìm thấy mã phù hợp
         </div>
       `;
 
@@ -3182,15 +3179,13 @@ async function check(){
       return;
     }
 
-    /* ===== RENDER ===== */
-
     let html = `<div class="result-grid">`;
 
-    docs.forEach(x => {
+    snap.forEach(doc => {
 
-      const chip = detectChip(x.code);
+      const x = doc.data();
 
-      /* ===== GROUP MODEL BY BRAND ===== */
+      /* ===== GROUP MODEL ===== */
 
       let modelHTML = "";
 
@@ -3199,42 +3194,56 @@ async function check(){
         const grouped = {};
 
         x.models.forEach(m => {
-          if(!grouped[m.brand]){
-            grouped[m.brand] = [];
+
+          if(!m?.brand || !m?.model) return;
+
+          const brand = m.brand.toUpperCase();
+          const model = m.model.toUpperCase();
+
+          if(!grouped[brand]){
+            grouped[brand] = [];
           }
-          grouped[m.brand].push(m.model);
+
+          grouped[brand].push(model);
         });
 
         modelHTML = Object.keys(grouped)
+          .sort()
           .map(brand =>
-            brand + " : " + grouped[brand].join(" / ")
+            `<div><strong>${brand}</strong> : ${grouped[brand].join(" / ")}</div>`
           )
-          .join("<br>");
+          .join("");
+      }
+
+      /* ===== CẤU HÌNH ===== */
+
+      let configHTML = "";
+
+      if(x.ram){
+        configHTML += `RAM : ${x.ram}GB<br>`;
+      }
+
+      if(x.rom){
+        configHTML += `ROM : ${x.rom}GB<br>`;
+      }
+
+      if(x.vip){
+        configHTML += `VIP : ${x.vip}<br>`;
+      }
+      else if(x.mmc){
+        configHTML += `MMC : ${x.mmc}<br>`;
       }
 
       html += `
-        <div class="result-card ${chip.class}">
+        <div class="result-card">
 
           <div class="code-main">${x.code}</div>
 
-          <div class="badge-row">
-            ${
-              x.ram && x.rom
-                ? '<div class="ram-badge">' + x.ram + '/' + x.rom + '</div>'
-                : x.rom
-                  ? '<div class="ram-badge">' + x.rom + 'GB</div>'
-                  : x.ram
-                    ? '<div class="ram-badge">' + x.ram + 'GB RAM</div>'
-                    : ''
-            }
-          </div>
-
-          <div class="card-footer">
-            <div class="chip-info" style="color:${chip.color}">
-              <span class="chip-dot" style="background:${chip.color}"></span>
-              ${chip.name}
-            </div>
-          </div>
+          ${
+            configHTML
+              ? `<div class="config-line">${configHTML}</div>`
+              : ""
+          }
 
           ${
             modelHTML
@@ -3257,15 +3266,14 @@ async function check(){
 
     out.innerHTML = `
       <div style="color:#ef4444;text-align:center;">
-        ⚠️ Lỗi hệ thống
+        ⚠️ Lỗi hệ thống. Vui lòng thử lại.
       </div>
     `;
 
-  } finally {
+  }finally{
 
     btn.disabled = false;
     btn.style.opacity = "1";
-
   }
 }
 // ===== LOGIN =====
