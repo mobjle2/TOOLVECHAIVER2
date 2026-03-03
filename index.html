@@ -3264,15 +3264,14 @@ if(!decoded.storage){
   const hw = autoDecodeChip(x.code,x) || {};
   decoded.storage = hw.storage ?? null;
 }
+
 let modelLine = '';
 
 if (Array.isArray(decoded.models) && decoded.models.length) {
-
   const grouped = {};
 
   decoded.models.forEach(m => {
     if (!m || !m.brand || !m.model) return;
-
     if (!grouped[m.brand]) grouped[m.brand] = [];
     grouped[m.brand].push(m.model);
   });
@@ -3281,6 +3280,7 @@ if (Array.isArray(decoded.models) && decoded.models.length) {
     .map(b => b + ' : ' + grouped[b].join(' / '))
     .join(' | ');
 }
+
 html += `
   <div class="result-card ${chip.class}">
     <div class="code-main">${x.code}</div>
@@ -3296,17 +3296,17 @@ html += `
               : ''
       }
 
-${
-  decoded.vip != null
-    ? '<div class="vip-badge vip-' + String(decoded.vip).replace(".", "-") + '">' +
-        '<span class="vip-dot"></span> VIP ' + decoded.vip +
-      '</div>'
-    : decoded.mmc != null
-      ? '<div class="vip-badge">' +
-          '<span class="vip-dot"></span> ' + decoded.mmc +
-        '</div>'
-      : ''
-}
+      ${
+        decoded.vip != null
+          ? '<div class="vip-badge vip-' + String(decoded.vip).replace(".", "-") + '">' +
+              '<span class="vip-dot"></span> VIP ' + decoded.vip +
+            '</div>'
+          : decoded.mmc != null
+            ? '<div class="vip-badge">' +
+                '<span class="vip-dot"></span> ' + decoded.mmc +
+              '</div>'
+            : ''
+      }
     </div>
 
     ${
@@ -3314,8 +3314,6 @@ ${
         ? '<div class="model-line">' + modelLine + '</div>'
         : ''
     }
-
-  </div>`;
 
     <div class="card-footer">
       <div class="chip-info" style="color:${chip.color}">
@@ -3341,9 +3339,7 @@ ${
     }
 
   </div>
-`;;
-    });
-
+`;
     html += `</div>`;
 
     turboCache.set(q, html);
