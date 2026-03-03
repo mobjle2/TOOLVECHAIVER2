@@ -3112,130 +3112,154 @@ function extractMMCSize(code){
   return null;
 }
 
-/* ================= CHECK V6 FINAL (FIX VIP) ================= */
-
-window.turboCache = window.turboCache || new Map();
-
 async function check(){
 
   const out = document.getElementById("out");
-  const inputEl = document.getElementById("q");
-
-  if(!out || !inputEl) return;
-
-  let q = inputEl.value.trim().toUpperCase();
+  const btn = document.querySelector(".check-btn");
+  const q = document.getElementById("q")?.value?.trim()?.toUpperCase();
 
   if(!q){
-    out.innerHTML = "";
+    out.innerHTML="";
     return;
   }
 
-  if(window.turboCache.has(q)){
-    out.innerHTML = window.turboCache.get(q);
-    return;
-  }
+  btn.disabled = true;
+  btn.style.opacity = "0.6";
 
   out.innerHTML = `
     <div style="text-align:center;margin:40px 0;opacity:.8;">
-      🔎 Đang tìm kiếm...
+      🔎 Đang phân tích...
     </div>
   `;
 
   try{
 
-    const snap = await db.collection("codes")
-      .where("searchText", "array-contains", q)
+    /* ===== CACHE CHECK ===== */
+    if(turboCache.has(q)){
+      out.innerHTML = turboCache.get(q);
+      return;
+    }
+
+    /* ===== QUERY SONG SONG ===== */
+
+    const queryByCode = db.collection("codes")
+      .where("code", ">=", q)
+      .where("code", "<=", q + "\uf8ff")
       .limit(30)
       .get();
 
-    if(snap.empty){
 
-      const notFound = `
+const snapCode = await db.collection("codes")
+  .where("code", ">=", q)
+  .where("code", "<=", q + "\uf8ff")
+  .limit(30)
+  .get();
+
+const docsMap = new Map();
+
+snapCode.forEach(doc => {
+  const x = doc.data();
+
+  const matchModel =
+    Array.isArray(x.models) &&
+    x.models.some(m =>
+      typeof m === "string" &&
+      m.toUpperCase().includes(q)
+    );
+
+  if(
+    x.code.toUpperCase().includes(q) ||
+    matchModel
+  ){
+    docsMap.set(doc.id, doc);
+  }
+});
+
+    if(docsMap.size === 0){
+      const notFoundHTML = `
         <div style="margin-top:40px;text-align:center;
           font-size:18px;font-weight:600;color:#facc15;">
-          Không tìm thấy mã phù hợp
+          Không tìm thấy mã
         </div>
       `;
-
-      window.turboCache.set(q, notFound);
-      out.innerHTML = notFound;
+      turboCache.set(q, notFoundHTML);
+      out.innerHTML = notFoundHTML;
       return;
     }
 
     let html = `<div class="result-grid">`;
 
-    snap.forEach(doc => {
+    docsMap.forEach(doc => {
 
       const x = doc.data();
-      let configHTML = "";
+      const chip = detectChip(x.code);
 
-      /* ===== RAM / ROM ===== */
-      if(x.ram !== undefined && x.ram !== null && x.ram !== ""){
-        configHTML += `RAM : ${x.ram}GB<br>`;
-      }
+      let decoded = {
+        ram: x.ram ?? null,
+        rom: x.rom ?? null,
+        vip: x.vip ?? null,
+        storage: x.storage ?? null
+      };
 
-      if(x.rom !== undefined && x.rom !== null && x.rom !== ""){
-        configHTML += `ROM : ${x.rom}GB<br>`;
-      }
-
-      /* ===== VIP / MMC (FIX CHẮC CHẮN HIỆN) ===== */
-      if(x.vip !== undefined && x.vip !== null && x.vip !== ""){
-        configHTML += `VIP : ${x.vip}<br>`;
-      }
-
-      if(x.mmc !== undefined && x.mmc !== null && x.mmc !== ""){
-        configHTML += `MMC : ${x.mmc}<br>`;
-      }
-
-      /* ===== MODELS ===== */
-      let modelHTML = "";
-
-      if(Array.isArray(x.models) && x.models.length){
-
-        const grouped = {};
-
-        x.models.forEach(m=>{
-          if(!m || typeof m !== "object") return;
-          if(!m.brand || !m.model) return;
-
-          const brand = String(m.brand).toUpperCase();
-          const model = String(m.model).toUpperCase();
-
-          if(!grouped[brand]) grouped[brand] = [];
-          grouped[brand].push(model);
-        });
-
-        modelHTML = Object.keys(grouped)
-          .sort()
-          .map(b =>
-            `<div><strong>${b}</strong> : ${grouped[b].join(" / ")}</div>`
-          )
-          .join("");
+      if(!decoded.storage){
+        const hw = autoDecodeChip(x.code,x) || {};
+        decoded.storage = hw.storage ?? null;
       }
 
       html += `
-        <div class="result-card">
-          <div class="code-main">${x.code || ""}</div>
-          ${configHTML ? `<div class="config-line">${configHTML}</div>` : ""}
-          ${modelHTML ? `<div class="model-line">${modelHTML}</div>` : ""}
+        <div class="result-card ${chip.class}">
+          <div class="code-main">${x.code}</div>
+
+          <div class="badge-row">
+            ${
+              decoded.ram && decoded.rom
+                ? '<div class="ram-badge">' + decoded.ram + '/' + decoded.rom + '</div>'
+                : decoded.rom
+                  ? '<div class="ram-badge">' + decoded.rom + 'GB</div>'
+                  : decoded.ram
+                    ? '<div class="ram-badge">' + decoded.ram + 'GB RAM</div>'
+                    : ''
+            }
+          </div>
+
+          <div class="card-footer">
+            <div class="chip-info" style="color:${chip.color}">
+              <span class="chip-dot" style="background:${chip.color}"></span>
+              ${chip.name}
+              <span style="opacity:.6;">
+                ${decoded.storage || ""}
+              </span>
+            </div>
+          </div>
+
+          ${
+            Array.isArray(x.models) && x.models.length
+              ? `<div class="model-line">${x.models.join(", ")}</div>`
+              : `<div class="model-placeholder">Chưa có model</div>`
+          }
+
         </div>
       `;
     });
 
     html += `</div>`;
 
-    window.turboCache.set(q, html);
+    turboCache.set(q, html);
     out.innerHTML = html;
 
   }catch(err){
 
-    console.error("CHECK V6 ERROR:", err);
+    console.error(err);
 
     out.innerHTML = `
       <div style="color:#ef4444;text-align:center;">
         ⚠️ Lỗi hệ thống
       </div>
     `;
+
+  } finally {
+    btn.disabled = false;
+    btn.style.opacity = "1";
   }
 }
 // ===== LOGIN =====
