@@ -3229,12 +3229,14 @@ html += `
               : ''
       }
 
-      ${
-        decoded.vip != null
-          ? '<div class="vip-badge">VIP ' + decoded.vip + '</div>'
-          : ''
-      }
-    </div>
+${
+  decoded.vip != null
+    ? '<div class="vip-badge vip-' + String(decoded.vip).replace(".", "-") + '">' +
+        '<span class="vip-dot"></span> VIP ' + decoded.vip +
+      '</div>'
+    : ''
+}
+</div>
 
     <div class="card-footer">
       <div class="chip-info" style="color:${chip.color}">
