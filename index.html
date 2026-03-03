@@ -3134,90 +3134,97 @@ async function check(){
 
   try{
 
-    /* ===== CACHE CHECK ===== */
+    /* ===== CACHE ===== */
     if(turboCache.has(q)){
       out.innerHTML = turboCache.get(q);
       return;
     }
 
-    /* ===== QUERY SONG SONG ===== */
-
-    const queryByCode = db.collection("codes")
-      .where("code", ">=", q)
-      .where("code", "<=", q + "\uf8ff")
-      .limit(30)
+    /* ===== LOAD DATA ===== */
+    const snap = await db.collection("codes")
+      .limit(200)
       .get();
 
+    const docs = [];
 
-const snapCode = await db.collection("codes")
-  .where("code", ">=", q)
-  .where("code", "<=", q + "\uf8ff")
-  .limit(30)
-  .get();
+    snap.forEach(doc => {
 
-const docsMap = new Map();
+      const x = doc.data();
 
-snapCode.forEach(doc => {
-  const x = doc.data();
+      const matchCode =
+        typeof x.code === "string" &&
+        x.code.toUpperCase().includes(q);
 
-  const matchModel =
-    Array.isArray(x.models) &&
-    x.models.some(m =>
-      typeof m === "string" &&
-      m.toUpperCase().includes(q)
-    );
+      const matchModel =
+        Array.isArray(x.models) &&
+        x.models.some(m =>
+          m.brand?.toUpperCase().includes(q) ||
+          m.model?.toUpperCase().includes(q)
+        );
 
-  if(
-    x.code.toUpperCase().includes(q) ||
-    matchModel
-  ){
-    docsMap.set(doc.id, doc);
-  }
-});
+      if(matchCode || matchModel){
+        docs.push(x);
+      }
 
-    if(docsMap.size === 0){
-      const notFoundHTML = `
+    });
+
+    if(docs.length === 0){
+
+      const notFound = `
         <div style="margin-top:40px;text-align:center;
           font-size:18px;font-weight:600;color:#facc15;">
           Không tìm thấy mã
         </div>
       `;
-      turboCache.set(q, notFoundHTML);
-      out.innerHTML = notFoundHTML;
+
+      turboCache.set(q, notFound);
+      out.innerHTML = notFound;
       return;
     }
 
+    /* ===== RENDER ===== */
+
     let html = `<div class="result-grid">`;
 
-    docsMap.forEach(doc => {
+    docs.forEach(x => {
 
-      const x = doc.data();
       const chip = detectChip(x.code);
 
-      let decoded = {
-        ram: x.ram ?? null,
-        rom: x.rom ?? null,
-        vip: x.vip ?? null,
-        storage: x.storage ?? null
-      };
+      /* ===== GROUP MODEL BY BRAND ===== */
 
-      if(!decoded.storage){
-        const hw = autoDecodeChip(x.code,x) || {};
-        decoded.storage = hw.storage ?? null;
+      let modelHTML = "";
+
+      if(Array.isArray(x.models) && x.models.length){
+
+        const grouped = {};
+
+        x.models.forEach(m => {
+          if(!grouped[m.brand]){
+            grouped[m.brand] = [];
+          }
+          grouped[m.brand].push(m.model);
+        });
+
+        modelHTML = Object.keys(grouped)
+          .map(brand =>
+            brand + " : " + grouped[brand].join(" / ")
+          )
+          .join("<br>");
       }
 
       html += `
         <div class="result-card ${chip.class}">
+
           <div class="code-main">${x.code}</div>
 
           <div class="badge-row">
             ${
-              decoded.ram && decoded.rom
-                ? '<div class="ram-badge">' + decoded.ram + '/' + decoded.rom + '</div>'
-                : decoded.rom
-                  ? '<div class="ram-badge">' + decoded.rom + 'GB</div>'
-                  : decoded.ram
-                    ? '<div class="ram-badge">' + decoded.ram + 'GB RAM</div>'
+              x.ram && x.rom
+                ? '<div class="ram-badge">' + x.ram + '/' + x.rom + '</div>'
+                : x.rom
+                  ? '<div class="ram-badge">' + x.rom + 'GB</div>'
+                  : x.ram
+                    ? '<div class="ram-badge">' + x.ram + 'GB RAM</div>'
                     : ''
             }
           </div>
@@ -3226,16 +3233,13 @@ snapCode.forEach(doc => {
             <div class="chip-info" style="color:${chip.color}">
               <span class="chip-dot" style="background:${chip.color}"></span>
               ${chip.name}
-              <span style="opacity:.6;">
-                ${decoded.storage || ""}
-              </span>
             </div>
           </div>
 
           ${
-            Array.isArray(x.models) && x.models.length
-              ? `<div class="model-line">${x.models.join(", ")}</div>`
-              : `<div class="model-placeholder">Chưa có model</div>`
+            modelHTML
+              ? `<div class="model-line">${modelHTML}</div>`
+              : ""
           }
 
         </div>
@@ -3258,8 +3262,10 @@ snapCode.forEach(doc => {
     `;
 
   } finally {
+
     btn.disabled = false;
     btn.style.opacity = "1";
+
   }
 }
 // ===== LOGIN =====
