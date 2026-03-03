@@ -3285,7 +3285,11 @@ ${
     ? '<div class="vip-badge vip-' + String(decoded.vip).replace(".", "-") + '">' +
         '<span class="vip-dot"></span> VIP ' + decoded.vip +
       '</div>'
-    : ''
+    : decoded.mmc != null
+      ? '<div class="vip-badge">' +
+          '<span class="vip-dot"></span> ' + decoded.mmc +
+        '</div>'
+      : ''
 }
 </div>
 
