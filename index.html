@@ -3182,59 +3182,85 @@ async function check(){
       const x = doc.data();
       const chip = detectChip(x.code);
 
-      let decoded = {
-        ram: x.ram ?? null,
-        rom: x.rom ?? null,
-        vip: x.vip ?? null,
-        storage: x.storage ?? null
-      };
+let decoded = {
+  ram: null,
+  rom: null,
+  vip: null,
+  storage: null
+};
 
-      if(!decoded.storage){
-        const hw = autoDecodeChip(x.code,x) || {};
-        decoded.storage = hw.storage ?? null;
+/* ===== ƯU TIÊN CẤU TRÚC MỚI ===== */
+if(x.ram != null) decoded.ram = x.ram;
+if(x.rom != null) decoded.rom = x.rom;
+if(x.vip != null) decoded.vip = x.vip;
+if(x.storage != null) decoded.storage = x.storage;
+
+/* ===== FALLBACK CẤU TRÚC CŨ ===== */
+if(decoded.vip == null && x.type === "VIP" && x.value){
+  decoded.vip = String(x.value).replace("VIP","").trim();
+}
+
+if(decoded.ram == null && decoded.rom == null && x.type === "RAMROM" && x.value){
+  const parts = String(x.value).split("/");
+  if(parts.length === 2){
+    decoded.ram = parts[0];
+    decoded.rom = parts[1];
+  }
+}
+
+/* ===== AUTO STORAGE ===== */
+if(!decoded.storage){
+  const hw = autoDecodeChip(x.code,x) || {};
+  decoded.storage = hw.storage ?? null;
+}
+
+html += `
+  <div class="result-card ${chip.class}">
+    <div class="code-main">${x.code}</div>
+
+    <div class="badge-row">
+      ${
+        decoded.ram != null && decoded.rom != null
+          ? '<div class="ram-badge">' + decoded.ram + '/' + decoded.rom + '</div>'
+          : decoded.rom != null
+            ? '<div class="ram-badge">' + decoded.rom + 'GB</div>'
+            : decoded.ram != null
+              ? '<div class="ram-badge">' + decoded.ram + 'GB RAM</div>'
+              : ''
       }
 
-      html += `
-        <div class="result-card ${chip.class}">
-          <div class="code-main">${x.code}</div>
+      ${
+        decoded.vip != null
+          ? '<div class="vip-badge">VIP ' + decoded.vip + '</div>'
+          : ''
+      }
+    </div>
 
-          <div class="badge-row">
-            ${
-              decoded.ram && decoded.rom
-                ? '<div class="ram-badge">' + decoded.ram + '/' + decoded.rom + '</div>'
-                : decoded.rom
-                  ? '<div class="ram-badge">' + decoded.rom + 'GB</div>'
-                  : decoded.ram
-                    ? '<div class="ram-badge">' + decoded.ram + 'GB RAM</div>'
-                    : ''
-            }
-          </div>
+    <div class="card-footer">
+      <div class="chip-info" style="color:${chip.color}">
+        <span class="chip-dot" style="background:${chip.color}"></span>
+        ${chip.name}
+        <span style="opacity:.6;">
+          ${decoded.storage || ""}
+        </span>
+      </div>
+    </div>
 
-          <div class="card-footer">
-            <div class="chip-info" style="color:${chip.color}">
-              <span class="chip-dot" style="background:${chip.color}"></span>
-              ${chip.name}
-              <span style="opacity:.6;">
-                ${decoded.storage || ""}
-              </span>
-            </div>
-          </div>
+    ${
+      Array.isArray(x.models) && x.models.length
+        ? `<div class="model-line">${
+            x.models.map(m=>{
+              if(typeof m === "string") return m;
+              if(typeof m === "object" && m !== null)
+                return (m.brand || "") + " " + (m.model || "");
+              return "";
+            }).join(", ")
+          }</div>`
+        : `<div class="model-placeholder">Chưa có model</div>`
+    }
 
-          ${
-            Array.isArray(x.models) && x.models.length
-              ? `<div class="model-line">${
-                  x.models.map(m=>{
-                    if(typeof m === "string") return m;
-                    if(typeof m === "object" && m !== null)
-                      return (m.brand || "") + " " + (m.model || "");
-                    return "";
-                  }).join(", ")
-                }</div>`
-              : `<div class="model-placeholder">Chưa có model</div>`
-          }
-
-        </div>
-      `;
+  </div>
+`;;
     });
 
     html += `</div>`;
