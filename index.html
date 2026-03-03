@@ -3111,13 +3111,15 @@ function extractMMCSize(code){
   return null;
 }
 
-/* ================= CHECK V5 PRODUCTION ================= */
+/* ================= CHECK V6 ================= */
 
 let searchTimer = null;
+const turboCache = new Map();
 
 document.addEventListener("DOMContentLoaded", () => {
 
   const input = document.getElementById("q");
+
   if(!input) return;
 
   input.addEventListener("input", () => {
@@ -3125,18 +3127,15 @@ document.addEventListener("DOMContentLoaded", () => {
     searchTimer = setTimeout(check, 300);
   });
 
-}); // ✅ ĐÃ ĐÓNG ĐÚNG
-
+});
 
 async function check(){
 
   const out = document.getElementById("out");
-  const btn = document.querySelector(".check-btn");
 
   let q = document.getElementById("q")
     ?.value
     ?.trim()
-    ?.replace(/\s+/g," ")
     ?.toUpperCase();
 
   if(!q || q.length < 2){
@@ -3144,9 +3143,9 @@ async function check(){
     return;
   }
 
-  if(btn){
-    btn.disabled = true;
-    btn.style.opacity = "0.6";
+  if(turboCache.has(q)){
+    out.innerHTML = turboCache.get(q);
+    return;
   }
 
   out.innerHTML = `
@@ -3157,15 +3156,10 @@ async function check(){
 
   try{
 
-    if(turboCache.has(q)){
-      out.innerHTML = turboCache.get(q);
-      return;
-    }
-
-const snap = await db.collection("codes")
-  .where("searchText", "array-contains", q)
-  .limit(30)
-  .get();
+    const snap = await db.collection("codes")
+      .where("searchText", "array-contains", q)
+      .limit(30)
+      .get();
 
     if(snap.empty){
 
@@ -3187,61 +3181,38 @@ const snap = await db.collection("codes")
 
       const x = doc.data();
 
+      let configHTML = "";
+
+      if(x.ram) configHTML += `RAM : ${x.ram}GB<br>`;
+      if(x.rom) configHTML += `ROM : ${x.rom}GB<br>`;
+      if(x.vip) configHTML += `VIP : ${x.vip}<br>`;
+      else if(x.mmc) configHTML += `MMC : ${x.mmc}<br>`;
+
       let modelHTML = "";
 
-      if(Array.isArray(x.models) && x.models.length){
+      if(Array.isArray(x.models)){
 
         const grouped = {};
 
-        x.models.forEach(m => {
-
-          if(!m?.brand || !m?.model) return;
-
+        x.models.forEach(m=>{
           const brand = m.brand.toUpperCase();
           const model = m.model.toUpperCase();
 
-          if(!grouped[brand]){
-            grouped[brand] = [];
-          }
-
+          if(!grouped[brand]) grouped[brand] = [];
           grouped[brand].push(model);
         });
 
         modelHTML = Object.keys(grouped)
           .sort()
-          .map(brand =>
-            `<div><strong>${brand}</strong> : ${grouped[brand].join(" / ")}</div>`
-          )
+          .map(b => `<div><strong>${b}</strong> : ${grouped[b].join(" / ")}</div>`)
           .join("");
-      }
-
-      let configHTML = "";
-
-      if(x.ram) configHTML += `RAM : ${x.ram}GB<br>`;
-      if(x.rom) configHTML += `ROM : ${x.rom}GB<br>`;
-
-      if(x.vip){
-        configHTML += `VIP : ${x.vip}<br>`;
-      }else if(x.mmc){
-        configHTML += `MMC : ${x.mmc}<br>`;
       }
 
       html += `
         <div class="result-card">
           <div class="code-main">${x.code}</div>
-
-          ${
-            configHTML
-              ? `<div class="config-line">${configHTML}</div>`
-              : ""
-          }
-
-          ${
-            modelHTML
-              ? `<div class="model-line">${modelHTML}</div>`
-              : ""
-          }
-
+          ${configHTML ? `<div class="config-line">${configHTML}</div>` : ""}
+          ${modelHTML ? `<div class="model-line">${modelHTML}</div>` : ""}
         </div>
       `;
     });
@@ -3257,17 +3228,9 @@ const snap = await db.collection("codes")
 
     out.innerHTML = `
       <div style="color:#ef4444;text-align:center;">
-        ⚠️ Lỗi hệ thống. Vui lòng thử lại.
+        ⚠️ Lỗi hệ thống
       </div>
     `;
-
-  }finally{
-
-    if(btn){
-      btn.disabled = false;
-      btn.style.opacity = "1";
-    }
-
   }
 }
 // ===== LOGIN =====
