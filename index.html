@@ -2061,6 +2061,18 @@ if (main.startsWith("KMDV6001")) {
 
 if (main.includes("6001")) {
 
+  // KMDP6001 → eMCP eMMC 5.1 (3/32)
+if (main.startsWith("KMDP")) {
+  return {
+    type: "eMCP",
+    storage: "eMMC 5.1",
+    version: "eMMC 5.1",
+    ram: 3,
+    rom: 32,
+    vip: calculateVip(3, 32)
+  };
+}
+
   // KM3H6001 → eMCP eMMC 5.1 (6/64)
   if (main.startsWith("KM3H")) {
     return {
