@@ -3281,12 +3281,6 @@ if (Array.isArray(decoded.models) && decoded.models.length) {
     .map(b => b + ' : ' + grouped[b].join(' / '))
     .join(' | ');
 }
-${
-  modelLine
-    ? '<div class="model-line">' + modelLine + '</div>'
-    : ''
-}
-      
 html += `
   <div class="result-card ${chip.class}">
     <div class="code-main">${x.code}</div>
@@ -3313,7 +3307,15 @@ ${
         '</div>'
       : ''
 }
-</div>`
+    </div>
+
+    ${
+      modelLine
+        ? '<div class="model-line">' + modelLine + '</div>'
+        : ''
+    }
+
+  </div>`;
 
     <div class="card-footer">
       <div class="chip-info" style="color:${chip.color}">
