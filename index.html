@@ -3111,32 +3111,24 @@ function extractMMCSize(code){
   return null;
 }
 
-/* ================= CHECK V6 ================= */
+/* ================= CHECK V6 FINAL ================= */
 
 let searchTimer = null;
 const turboCache = new Map();
 
-document.addEventListener("DOMContentLoaded", () => {
+function debounceSearch(){
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(checkV6, 300);
+}
 
-  const input = document.getElementById("q");
-
-  if(!input) return;
-
-  input.addEventListener("input", () => {
-    clearTimeout(searchTimer);
-    searchTimer = setTimeout(check, 300);
-  });
-
-});
-
-async function check(){
+async function checkV6(){
 
   const out = document.getElementById("out");
+  const inputEl = document.getElementById("q");
 
-  let q = document.getElementById("q")
-    ?.value
-    ?.trim()
-    ?.toUpperCase();
+  if(!out || !inputEl) return;
+
+  let q = inputEl.value.trim().toUpperCase();
 
   if(!q || q.length < 2){
     out.innerHTML = "";
@@ -3181,6 +3173,8 @@ async function check(){
 
       const x = doc.data();
 
+      /* ===== CẤU HÌNH ===== */
+
       let configHTML = "";
 
       if(x.ram) configHTML += `RAM : ${x.ram}GB<br>`;
@@ -3188,13 +3182,17 @@ async function check(){
       if(x.vip) configHTML += `VIP : ${x.vip}<br>`;
       else if(x.mmc) configHTML += `MMC : ${x.mmc}<br>`;
 
+      /* ===== GROUP MODEL ===== */
+
       let modelHTML = "";
 
-      if(Array.isArray(x.models)){
+      if(Array.isArray(x.models) && x.models.length){
 
         const grouped = {};
 
         x.models.forEach(m=>{
+          if(!m?.brand || !m?.model) return;
+
           const brand = m.brand.toUpperCase();
           const model = m.model.toUpperCase();
 
@@ -3204,7 +3202,9 @@ async function check(){
 
         modelHTML = Object.keys(grouped)
           .sort()
-          .map(b => `<div><strong>${b}</strong> : ${grouped[b].join(" / ")}</div>`)
+          .map(b =>
+            `<div><strong>${b}</strong> : ${grouped[b].join(" / ")}</div>`
+          )
           .join("");
       }
 
@@ -3224,7 +3224,7 @@ async function check(){
 
   }catch(err){
 
-    console.error(err);
+    console.error("CHECK V6 ERROR:", err);
 
     out.innerHTML = `
       <div style="color:#ef4444;text-align:center;">
