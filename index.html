@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <!DOCTYPE html>
 <html lang="vi">
@@ -3264,7 +3265,23 @@ if(!decoded.storage){
   const hw = autoDecodeChip(x.code,x) || {};
   decoded.storage = hw.storage ?? null;
 }
+let modelLine = '';
 
+if (Array.isArray(decoded.models) && decoded.models.length) {
+
+  const grouped = {};
+
+  decoded.models.forEach(m => {
+    if (!m || !m.brand || !m.model) return;
+
+    if (!grouped[m.brand]) grouped[m.brand] = [];
+    grouped[m.brand].push(m.model);
+  });
+
+  modelLine = Object.keys(grouped)
+    .map(b => b + ' : ' + grouped[b].join(' / '))
+    .join(' | ');
+}
 html += `
   <div class="result-card ${chip.class}">
     <div class="code-main">${x.code}</div>
@@ -3280,18 +3297,26 @@ html += `
               : ''
       }
 
-      ${
-        decoded.vip != null
-          ? '<div class="vip-badge vip-' + String(decoded.vip).replace(".", "-") + '">' +
-              '<span class="vip-dot"></span> VIP ' + decoded.vip +
-            '</div>'
-          : decoded.mmc != null
-            ? '<div class="vip-badge">' +
-                '<span class="vip-dot"></span> ' + decoded.mmc +
-              '</div>'
-            : ''
-      }
+${
+  decoded.vip != null
+    ? '<div class="vip-badge vip-' + String(decoded.vip).replace(".", "-") + '">' +
+        '<span class="vip-dot"></span> VIP ' + decoded.vip +
+      '</div>'
+    : decoded.mmc != null
+      ? '<div class="vip-badge">' +
+          '<span class="vip-dot"></span> ' + decoded.mmc +
+        '</div>'
+      : ''
+}
     </div>
+
+    ${
+      modelLine
+        ? '<div class="model-line">' + modelLine + '</div>'
+        : ''
+    }
+
+  </div>`;
 
     <div class="card-footer">
       <div class="chip-info" style="color:${chip.color}">
@@ -3305,26 +3330,27 @@ html += `
 
     ${
       Array.isArray(x.models) && x.models.length
-        ? '<div class="model-line">' +
-            x.models.map(function(m){
-              if (typeof m === "string") return m;
-              if (typeof m === "object" && m !== null) {
+        ? `<div class="model-line">${
+            x.models.map(m=>{
+              if(typeof m === "string") return m;
+              if(typeof m === "object" && m !== null)
                 return (m.brand || "") + " " + (m.model || "");
-              }
               return "";
-            }).join(", ") +
-          '</div>'
-        : '<div class="model-placeholder">Chưa có model</div>'
+            }).join(", ")
+          }</div>`
+        : `<div class="model-placeholder">Chưa có model</div>`
     }
 
   </div>
-`;
+`;;
     });
+
+    html += `</div>`;
 
     turboCache.set(q, html);
     out.innerHTML = html;
 
-  } catch (err) {
+  }catch(err){
 
     console.error(err);
 
@@ -3334,11 +3360,6 @@ html += `
       </div>
     `;
 
-  } finally {
-    btn.disabled = false;
-    btn.style.opacity = "1";
-  }
-}
   } finally {
     btn.disabled = false;
     btn.style.opacity = "1";
