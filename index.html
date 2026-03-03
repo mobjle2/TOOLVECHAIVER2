@@ -3112,15 +3112,11 @@ function extractMMCSize(code){
 
 /* ================= CHECK V6 FINAL ================= */
 
-let searchTimer = null;
-const turboCache = new Map();
+/* ===== GLOBAL SAFE ===== */
+window.turboCache = window.turboCache || new Map();
 
-function debounceSearch(){
-  clearTimeout(searchTimer);
-  searchTimer = setTimeout(checkV6, 300);
-}
-
-async function checkV6(){
+/* ===== HÀM CHECK ===== */
+async function check(){
 
   const out = document.getElementById("out");
   const inputEl = document.getElementById("q");
@@ -3129,13 +3125,13 @@ async function checkV6(){
 
   let q = inputEl.value.trim().toUpperCase();
 
-  if(!q || q.length < 2){
+  if(!q){
     out.innerHTML = "";
     return;
   }
 
-  if(turboCache.has(q)){
-    out.innerHTML = turboCache.get(q);
+  if(window.turboCache.has(q)){
+    out.innerHTML = window.turboCache.get(q);
     return;
   }
 
@@ -3161,7 +3157,7 @@ async function checkV6(){
         </div>
       `;
 
-      turboCache.set(q, notFound);
+      window.turboCache.set(q, notFound);
       out.innerHTML = notFound;
       return;
     }
@@ -3172,16 +3168,12 @@ async function checkV6(){
 
       const x = doc.data();
 
-      /* ===== CẤU HÌNH ===== */
-
       let configHTML = "";
 
       if(x.ram) configHTML += `RAM : ${x.ram}GB<br>`;
       if(x.rom) configHTML += `ROM : ${x.rom}GB<br>`;
       if(x.vip) configHTML += `VIP : ${x.vip}<br>`;
       else if(x.mmc) configHTML += `MMC : ${x.mmc}<br>`;
-
-      /* ===== GROUP MODEL ===== */
 
       let modelHTML = "";
 
@@ -3218,7 +3210,7 @@ async function checkV6(){
 
     html += `</div>`;
 
-    turboCache.set(q, html);
+    window.turboCache.set(q, html);
     out.innerHTML = html;
 
   }catch(err){
