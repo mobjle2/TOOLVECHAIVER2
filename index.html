@@ -1538,6 +1538,9 @@ const db = firebase.firestore(firebase.app());
 
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
+/* 🚀 TURBO CACHE */
+const turboCache = new Map();
+
 
 /* ===== SAFE USER MODE DETECT ===== */
 
@@ -3125,23 +3128,29 @@ async function check(){
 
   out.innerHTML = `
     <div style="text-align:center;margin:40px 0;opacity:.8;">
-      🔍 Đang phân tích...
+      🔎 Đang phân tích...
     </div>
   `;
 
   try{
 
-    /* ===== QUERY TURBO ===== */
+    /* ===== CACHE CHECK ===== */
+    if(turboCache.has(q)){
+      out.innerHTML = turboCache.get(q);
+      return;
+    }
+
+    /* ===== QUERY SONG SONG ===== */
 
     const queryByCode = db.collection("codes")
       .where("code", ">=", q)
       .where("code", "<=", q + "\uf8ff")
-      .limit(20)
+      .limit(30)
       .get();
 
     const queryByModel = db.collection("codes")
       .where("models", "array-contains", q)
-      .limit(20)
+      .limit(30)
       .get();
 
     const [snapCode, snapModel] = await Promise.all([
@@ -3155,14 +3164,14 @@ async function check(){
     snapModel.forEach(doc => docsMap.set(doc.id, doc));
 
     if(docsMap.size === 0){
-      out.innerHTML = `
+      const notFoundHTML = `
         <div style="margin-top:40px;text-align:center;
           font-size:18px;font-weight:600;color:#facc15;">
           Không tìm thấy mã
         </div>
       `;
-      btn.disabled = false;
-      btn.style.opacity = "1";
+      turboCache.set(q, notFoundHTML);
+      out.innerHTML = notFoundHTML;
       return;
     }
 
@@ -3193,7 +3202,11 @@ async function check(){
             ${
               decoded.ram && decoded.rom
                 ? '<div class="ram-badge">' + decoded.ram + '/' + decoded.rom + '</div>'
-                : ''
+                : decoded.rom
+                  ? '<div class="ram-badge">' + decoded.rom + 'GB</div>'
+                  : decoded.ram
+                    ? '<div class="ram-badge">' + decoded.ram + 'GB RAM</div>'
+                    : ''
             }
           </div>
 
@@ -3212,27 +3225,31 @@ async function check(){
               ? `<div class="model-line">${x.models.join(", ")}</div>`
               : `<div class="model-placeholder">Chưa có model</div>`
           }
+
         </div>
       `;
     });
 
     html += `</div>`;
 
+    turboCache.set(q, html);
     out.innerHTML = html;
 
   }catch(err){
+
     console.error(err);
+
     out.innerHTML = `
       <div style="color:#ef4444;text-align:center;">
         ⚠️ Lỗi hệ thống
       </div>
     `;
-  }
 
-  btn.disabled = false;
-  btn.style.opacity = "1";
+  } finally {
+    btn.disabled = false;
+    btn.style.opacity = "1";
+  }
 }
-  
 // ===== LOGIN =====
 async function secureLogin(){
   const email = document.getElementById("loginEmail").value.trim();
