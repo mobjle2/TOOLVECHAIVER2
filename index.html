@@ -259,31 +259,31 @@ font-weight:500;
   box-shadow:0 0 8px currentColor;
 }
 
-/* ===== VIP COLORS ===== */
+/* =====================================================
+   ⭐ NEW VIP COLOR SYSTEM (NO PURPLE)
+   1–4: Nhẹ
+   5+: Đẹp dần
+===================================================== */
 
-/* 1-4 */
-.vip-1{ color:#94a3b8; }
-.vip-2{ color:#64748b; }
-.vip-3{ color:#a78bfa; }
-.vip-4{ color:#c084fc; }
+/* ===== 1–4 (NHẸ, DỊU) ===== */
+.vip-1{ color:#64748b; }   /* xám xanh */
+.vip-2{ color:#475569; }   /* xám đậm */
+.vip-3{ color:#0ea5e9; }   /* xanh dương nhẹ */
+.vip-4{ color:#06b6d4; }   /* cyan nhẹ */
 
-/* 5-9 (SÁNG – KHÔNG TRÙNG CHIP) */
-.vip-5{ color:#00e5ff; }
-.vip-6{ color:#00ff88; }
-.vip-7{ color:#ff9f1c; }
-.vip-8{ color:#8b5cf6; }
-.vip-9{ color:#ff4ecd; }
+/* ===== 5–7 (BẮT ĐẦU ĐẸP) ===== */
+.vip-5{ color:#22c55e; }   /* xanh lá sáng */
+.vip-6{ color:#10b981; }   /* emerald */
+.vip-7{ color:#f59e0b; }   /* vàng cam */
 
-/* 10-13 */
-.vip-10{ color:#facc15; }
-.vip-11{ color:#ef4444; }
-.vip-12{
-  color:#dc2626;
-  text-shadow:0 0 6px rgba(220,38,38,0.6);
-}
-.vip-13{
-  color:#ff003c;
-  text-shadow:0 0 8px rgba(255,0,60,0.8);
+/* ===== 8–9 (NỔI BẬT) ===== */
+.vip-8{ color:#f97316; }   /* cam mạnh */
+.vip-9{ color:#ef4444; }   /* đỏ */
+
+/* ===== 10 (CAO NHẤT) ===== */
+.vip-10{
+  color:#facc15;           /* vàng gold */
+  text-shadow:0 0 8px rgba(250,204,21,.6);
 }
 /* ================= CLEAN LOGIN FINAL ================= */
 
@@ -1185,94 +1185,133 @@ body::before{
   color:#e2e8f0;
 }
 /* =====================================================
-   ⭐ VIP GLOW SYSTEM (5 → 10 ONLY)
+/* =====================================================
+   ⭐ COMPLETE VIP SYSTEM (1 → 10)
+   Bright • Clean • No Purple • Clear Ranking
 ===================================================== */
 
-/* base glow */
+/* =====================================================
+   1 → 4 (NO GLOW – LIGHT LEVEL)
+===================================================== */
+
+.vip-1{
+  color:#94a3b8;   /* light gray */
+}
+
+.vip-2{
+  color:#60a5fa;   /* soft blue */
+}
+
+.vip-3{
+  color:#38bdf8;   /* bright sky */
+}
+
+.vip-4{
+  color:#22d3ee;   /* cyan */
+}
+
+/* =====================================================
+   BASE STYLE FOR GLOW LEVELS (5+)
+===================================================== */
+
 .vip-5,
 .vip-6,
 .vip-7,
 .vip-8,
 .vip-9,
-.vip-10{
+.vip-10,
+.vip-4-5,
+.vip-6-5,
+.vip-8-5,
+.vip-9-5{
   position:relative;
-  transition:.35s;
+  z-index:1;
+  transition:all .35s ease;
 }
 
-/* glow layer */
+/* =====================================================
+   GLOW LAYER
+===================================================== */
+
 .vip-5::after,
 .vip-6::after,
 .vip-7::after,
 .vip-8::after,
 .vip-9::after,
-.vip-10::after{
-  content:"";
-  position:absolute;
-  inset:-6px;
-  border-radius:999px;
-  filter:blur(12px);
-  opacity:.35;
-  z-index:-1;
-}
-
-/* ===== COLORS ===== */
-
-.vip-5::after{
-  background:#00e5ff;
-}
-
-.vip-6::after{
-  background:#00ff88;
-}
-
-.vip-7::after{
-  background:#ff9f1c;
-}
-
-.vip-8::after{
-  background:#8b5cf6;
-}
-
-.vip-9::after{
-  background:#ff4ecd;
-}
-
-.vip-10::after{
-  background:#facc15;
-}
-/* ===== VIP PLUS GLOW ===== */
-
-.vip-4-5{ color:#c084fc; }
-.vip-6-5{ color:#22d3ee; }
-.vip-8-5{ color:#a855f7; }
-.vip-9-5{ color:#ff4ecd; }
-
+.vip-10::after,
 .vip-4-5::after,
 .vip-6-5::after,
 .vip-8-5::after,
 .vip-9-5::after{
   content:"";
   position:absolute;
-  inset:-6px;
+  inset:-7px;
   border-radius:999px;
-  filter:blur(14px);
+  filter:blur(18px);
   opacity:.45;
   z-index:-1;
+  transition:all .35s ease;
 }
 
-.vip-4-5::after{ background:#c084fc; }
-.vip-6-5::after{ background:#22d3ee; }
-.vip-8-5::after{ background:#a855f7; }
-.vip-9-5::after{ background:#ff4ecd; }
-/* hover boost */
+/* =====================================================
+   5 → 10 MAIN LEVEL (BRIGHT SCALE)
+===================================================== */
+
+.vip-5{ color:#34d399; }
+.vip-6{ color:#2dd4bf; }
+.vip-7{ color:#fbbf24; }
+.vip-8{ color:#fb923c; }
+.vip-9{ color:#f87171; }
+.vip-10{
+  color:#fde047;
+  text-shadow:0 0 10px rgba(253,224,71,.7);
+}
+
+/* glow colors */
+.vip-5::after{ background:#34d399; }
+.vip-6::after{ background:#2dd4bf; }
+.vip-7::after{ background:#fbbf24; }
+.vip-8::after{ background:#fb923c; }
+.vip-9::after{ background:#f87171; }
+.vip-10::after{ background:#fde047; }
+
+/* =====================================================
+   PLUS LEVELS (x.5)
+===================================================== */
+
+.vip-4-5{ color:#0ea5e9; }   /* deeper blue */
+.vip-6-5{ color:#10b981; }
+.vip-8-5{ color:#ea580c; }
+.vip-9-5{ color:#dc2626; }
+
+.vip-4-5::after{ background:#0ea5e9; }
+.vip-6-5::after{ background:#10b981; }
+.vip-8-5::after{ background:#ea580c; }
+.vip-9-5::after{ background:#dc2626; }
+
+/* =====================================================
+   HOVER BOOST
+===================================================== */
+
 .result-card:hover .vip-5::after,
 .result-card:hover .vip-6::after,
 .result-card:hover .vip-7::after,
 .result-card:hover .vip-8::after,
 .result-card:hover .vip-9::after,
-.result-card:hover .vip-10::after{
-  opacity:.7;
-  filter:blur(18px);
+.result-card:hover .vip-10::after,
+.result-card:hover .vip-4-5::after,
+.result-card:hover .vip-6-5::after,
+.result-card:hover .vip-8-5::after,
+.result-card:hover .vip-9-5::after{
+  opacity:.85;
+  filter:blur(24px);
+}
+
+/* VIP 10 extra premium */
+.result-card:hover .vip-10{
+  text-shadow:
+    0 0 12px rgba(253,224,71,.9),
+    0 0 25px rgba(253,224,71,.6);
 }
 
 /* ===== SAMSUNG IC RAM BADGE ===== */
