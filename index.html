@@ -3266,29 +3266,44 @@ if(!decoded.storage){
   decoded.storage = hw.storage ?? null;
 }
 
+/* ===== SAFE NORMALIZE ===== */
+decoded.ram = Number(decoded.ram) || null;
+decoded.rom = Number(decoded.rom) || null;
+decoded.vip = Number(decoded.vip) || 0;
+
+const mmcLevel = getMMCLevel(decoded.rom);
+
 html += `
   <div class="result-card ${chip.class}">
     <div class="code-main">${x.code}</div>
 
     <div class="badge-row">
       ${
-        decoded.ram != null && decoded.rom != null
+        decoded.ram > 0 && decoded.rom > 0
           ? '<div class="ram-badge">' + decoded.ram + '/' + decoded.rom + '</div>'
-          : decoded.rom != null
+          : decoded.rom > 0
             ? '<div class="ram-badge">' + decoded.rom + 'GB</div>'
-            : decoded.ram != null
+            : decoded.ram > 0
               ? '<div class="ram-badge">' + decoded.ram + 'GB RAM</div>'
               : ''
       }
 
-${
-  decoded.vip != null
-    ? '<div class="vip-badge vip-' + String(decoded.vip).replace(".", "-") + '">' +
-        '<span class="vip-dot"></span> VIP ' + decoded.vip +
-      '</div>'
-    : ''
-}
-</div>
+      ${
+        mmcLevel
+          ? '<div class="ram-badge mmc-badge">' +
+              '<span class="mmc-dot"></span> ' + mmcLevel +
+            '</div>'
+          : ''
+      }
+
+      ${
+        decoded.vip > 0
+          ? '<div class="vip-badge vip-' + String(decoded.vip).replace(".", "-") + '">' +
+              '<span class="vip-dot"></span> VIP ' + decoded.vip +
+            '</div>'
+          : ''
+      }
+    </div>
 
     <div class="card-footer">
       <div class="chip-info" style="color:${chip.color}">
@@ -3314,7 +3329,7 @@ ${
     }
 
   </div>
-`;;
+`;
     });
 
     html += `</div>`;
