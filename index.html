@@ -2061,8 +2061,8 @@ if (main.startsWith("KMDV6001")) {
 
 if (main.includes("6001")) {
 
-  // KMDP6001 → eMCP eMMC 5.1 (3/32)
-if (main.startsWith("KMDP")) {
+// ===== 6001 LOW eMMC (3/32) =====
+if (/^(KMDP|KMDD|KMDX)/.test(main)) {
   return {
     type: "eMCP",
     storage: "eMMC 5.1",
@@ -2121,17 +2121,7 @@ if (main.startsWith("KMDP")) {
     };
   }
 
-  // KMDX6001 → eMMC 5.1 (3/32)
-  if (main.startsWith("KMDX")) {
-    return {
-      type: "eMMC",
-      storage: "eMMC 5.1",
-      version: "eMMC 5.1",
-      ram: 3,
-      rom: 32,
-      vip: calculateVip(3, 32)
-    };
-  }
+
 
   // KMGE6001 → eMCP eMMC 5.1 (4/64)
   if (main.startsWith("KMGE")) {
