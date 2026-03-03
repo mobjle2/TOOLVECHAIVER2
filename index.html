@@ -3102,27 +3102,30 @@ function extractMMCSize(code){
 
   code = (code || "").toUpperCase();
 
-  // ===== Samsung KLMB / KLMG REAL SIZE =====
   if(code.includes("G1")) return 16;
   if(code.includes("G2")) return 32;
   if(code.includes("G3")) return 64;
   if(code.includes("G4")) return 128;
   if(code.includes("G5")) return 256;
-  }
+
+  return null;
+}
 
 /* ================= CHECK V5 PRODUCTION ================= */
 
 let searchTimer = null;
+
 document.addEventListener("DOMContentLoaded", () => {
 
   const input = document.getElementById("q");
-
   if(!input) return;
 
   input.addEventListener("input", () => {
     clearTimeout(searchTimer);
     searchTimer = setTimeout(check, 300);
   });
+
+}); // ✅ ĐÃ ĐÓNG ĐÚNG
 
 
 async function check(){
@@ -3141,8 +3144,10 @@ async function check(){
     return;
   }
 
-  btn.disabled = true;
-  btn.style.opacity = "0.6";
+  if(btn){
+    btn.disabled = true;
+    btn.style.opacity = "0.6";
+  }
 
   out.innerHTML = `
     <div style="text-align:center;margin:40px 0;opacity:.8;">
@@ -3152,13 +3157,11 @@ async function check(){
 
   try{
 
-    /* ===== CACHE ===== */
     if(turboCache.has(q)){
       out.innerHTML = turboCache.get(q);
       return;
     }
 
-    /* ===== QUERY V5 ===== */
     const snap = await db.collection("codes")
       .where("searchText", ">=", q)
       .where("searchText", "<=", q + "\uf8ff")
@@ -3184,8 +3187,6 @@ async function check(){
     snap.forEach(doc => {
 
       const x = doc.data();
-
-      /* ===== GROUP MODEL ===== */
 
       let modelHTML = "";
 
@@ -3215,28 +3216,19 @@ async function check(){
           .join("");
       }
 
-      /* ===== CẤU HÌNH ===== */
-
       let configHTML = "";
 
-      if(x.ram){
-        configHTML += `RAM : ${x.ram}GB<br>`;
-      }
-
-      if(x.rom){
-        configHTML += `ROM : ${x.rom}GB<br>`;
-      }
+      if(x.ram) configHTML += `RAM : ${x.ram}GB<br>`;
+      if(x.rom) configHTML += `ROM : ${x.rom}GB<br>`;
 
       if(x.vip){
         configHTML += `VIP : ${x.vip}<br>`;
-      }
-      else if(x.mmc){
+      }else if(x.mmc){
         configHTML += `MMC : ${x.mmc}<br>`;
       }
 
       html += `
         <div class="result-card">
-
           <div class="code-main">${x.code}</div>
 
           ${
@@ -3272,8 +3264,11 @@ async function check(){
 
   }finally{
 
-    btn.disabled = false;
-    btn.style.opacity = "1";
+    if(btn){
+      btn.disabled = false;
+      btn.style.opacity = "1";
+    }
+
   }
 }
 // ===== LOGIN =====
