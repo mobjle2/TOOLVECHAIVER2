@@ -1472,7 +1472,15 @@ body::before{
   padding-left:0;   /* đảm bảo không thụt */
   margin-left:0;    /* đảm bảo không thụt */
 }
-
+.chip-badge{
+  background:linear-gradient(135deg,#22c55e,#16a34a);
+  color:#fff;
+  font-weight:700;
+  padding:4px 10px;
+  border-radius:8px;
+  font-size:12px;
+  display:inline-block;
+}
   
 </style>
 
@@ -3304,7 +3312,7 @@ html += `
 
 ${
   decoded.chip > 0
-    ? '<div class="ram-badge">' + decoded.chip + ' CHIP</div>'
+    '<div class="chip-badge">' + decoded.chip + ' CHIP</div>'
     :
   decoded.vip > 0
     ? '<div class="vip-badge vip-' + String(decoded.vip).replace(".", "-") + '">' +
