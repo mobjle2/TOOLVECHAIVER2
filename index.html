@@ -2060,6 +2060,7 @@ if (main.startsWith("KMDV6001")) {
    🔥 SAMSUNG 6001 REAL ENGINE (SAFE FIX)
 ===================================================== */
 
+
 if (main.includes("6001")) {
 
 // ===== 6001 LOW eMMC (3/32) =====
@@ -2074,6 +2075,18 @@ if (/^(KMDP|KMDD|KMDX)/.test(main)) {
   };
 }
 
+// ===== KMGD6001 → eMCP eMMC 5.1 (4/64) =====
+if (main.startsWith("KMGD")) {
+  return {
+    type: "eMCP",
+    storage: "eMMC 5.1",
+    version: "eMMC 5.1",
+    ram: 4,
+    rom: 64,
+    vip: calculateVip(4, 64)
+  };
+}
+  
   // KM3H6001 → eMCP eMMC 5.1 (6/64)
   if (main.startsWith("KM3H")) {
     return {
