@@ -3122,6 +3122,25 @@ function formatSamsungModels(text){
     if(t.includes("xiaomi") || t.includes("redmi") || t.includes("poco")) return "Xiaomi";
     if(t.includes("realme")) return "Realme";
     if(t.includes("vsmart")) return "VSMART";
+    if(t.includes("huawei")) return "HUAWEI";
+if(t.includes("honor")) return "HONOR";
+if(t.includes("meizu")) return "MEIZU";
+if(t.includes("oneplus")) return "ONEPLUS";
+if(t.includes("lenovo")) return "LENOVO";
+if(t.includes("zte")) return "ZTE";
+if(t.includes("nubia")) return "NUBIA";
+
+if(t.includes("masstel")) return "MASSTEL";
+if(t.includes("mobell")) return "MOBELL";
+if(t.includes("mobiistar")) return "MOBIISTAR";
+if(t.includes("bkav") || t.includes("bphone")) return "BKAV";
+
+if(t.includes("nokia")) return "NOKIA";
+if(t.includes("sony")) return "SONY";
+if(t.includes("asus")) return "ASUS";
+if(t.includes("tecno")) return "TECNO";
+if(t.includes("infinix")) return "INFINIX";
+if(t.includes("itel")) return "ITEL";
     // Samsung chỉ khi có từ khóa thật
    if(t.includes("samsung") || t.includes("galaxy")) return "SAMSUNG";
 
@@ -3151,7 +3170,23 @@ const cleanModel = m
 
 });
 
-const order = ["Samsung","OPPO","Realme","VIVO","Xiaomi","VSMART"];
+const order = [
+"SAMSUNG",
+"OPPO",
+"REALME",
+"VIVO",
+"XIAOMI",
+"HONOR",
+"HUAWEI",
+"VSMART",
+"MASSTEL",
+"MOBELL",
+"MOBIISTAR",
+"BKAV",
+"NOKIA",
+"SONY",
+"ASUS"
+];
 
 return Object.entries(grouped)
   .filter(([brand]) => brand !== "Other")
