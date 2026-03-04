@@ -3129,25 +3129,34 @@ function formatSamsungModels(text){
 
   const grouped = {};
 
-  models.forEach(m=>{
+  
 
-    const brand = detectBrand(m);
+models.forEach(m=>{
 
-    // Xoá tên hãng khỏi model để hiển thị gọn
-    const cleanModel = m
-      .replace(/samsung|galaxy|oppo|vivo|xiaomi|redmi|poco|realme/gi,"")
-      .trim();
+  const brand = detectBrand(m);
 
-    if(!grouped[brand]) grouped[brand] = [];
+  // Xoá tên hãng khỏi model để hiển thị gọn
+  const cleanModel = m
+    .replace(/(samsung|galaxy|oppo|vivo|xiaomi|redmi|poco|realme)/gi,"")
+    .replace(/\s+/g," ")
+    .trim();
 
-    if(!grouped[brand].includes(cleanModel))
-      grouped[brand].push(cleanModel);
-  });
+  if(!cleanModel) return;
 
-  return Object.entries(grouped)
-    .map(([brand,list])=>`${brand}: ${list.join(" / ")}`)
-    .join("<br>");
-}
+  if(!grouped[brand]) grouped[brand] = [];
+
+  if(!grouped[brand].includes(cleanModel))
+    grouped[brand].push(cleanModel);
+
+});
+
+const order = ["Samsung","OPPO","Realme","VIVO","Xiaomi","VSMART"];
+
+return Object.entries(grouped)
+  .filter(([brand]) => brand !== "Other")
+  .sort((a,b)=>order.indexOf(a[0]) - order.indexOf(b[0]))
+  .map(([brand,list])=>`${brand} : ${list.join(" / ")}`)
+  .join("<br>");
 
 /* ===============================
    MMC SIZE DETECT
