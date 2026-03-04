@@ -2028,6 +2028,7 @@ function getMMCLevel(rom){
 function decodeSamsung(code){
 
 const r={
+vendor:"Samsung",
 type:"Unknown",
 ram:null,
 rom:null,
@@ -2038,111 +2039,134 @@ vip:0
 
 if(!code) return r;
 
-const main=code.toUpperCase().split("-")[0];
+const main = code.toUpperCase().split("-")[0];
 
 
-/* =========================
-   EMMC SERIES
-========================= */
+/* ======================================
+   EMMC SERIES (KLM / KLU)
+====================================== */
 
-if(main.startsWith("KLMAG")) r.rom=16;
-
-else if(main.startsWith("KLMBG")) r.rom=32;
-
-else if(main.startsWith("KLMCG") || main.startsWith("KLMCC")) r.rom=64;
-
-else if(main.startsWith("KLMDG") || main.startsWith("KLUDG")) r.rom=128;
-
-else if(main.startsWith("KLUEG")) r.rom=256;
-
-else if(main.startsWith("KLUFG")) r.rom=512;
-
-else if(main.startsWith("KLUCG") || main.startsWith("KLUBG")){
-
-if(main.includes("G1")) r.rom=16;
-else if(main.includes("G2")) r.rom=32;
-else if(main.includes("G4")) r.rom=64;
-else if(main.includes("G8")) r.rom=128;
-
-}
-
-if(r.rom){
+if(main.startsWith("KLM") || main.startsWith("KLU")){
 
 r.type="eMMC";
-r.storage="eMMC 5.1";
+r.storage="eMMC";
 r.version="eMMC 5.1";
 
+const emmcMap={
+
+"1J":16,
+"2G":32,
+"2J":32,
+"4G":64,
+"4J":64,
+"8G":128,
+"8J":128,
+"A1":256,
+"AJ":256
+
+};
+
+for(const k in emmcMap){
+
+if(main.includes(k)){
+r.rom=emmcMap[k];
+break;
+}
+
+}
+
 }
 
 
-/* =========================
-   UFS / uMCP SERIES
-========================= */
+/* ======================================
+   UFS / uMCP SERIES (KM)
+====================================== */
 
-if(main.startsWith("KM4X")){
+if(main.startsWith("KM")){
+
 r.type="uMCP";
-r.storage="UFS 2.1";
-r.ram=3;
-r.rom=32;
+
+/* ===== UFS VERSION ===== */
+
+if(main.includes("9001")){
+r.storage="UFS 3.x";
+r.version="UFS 3.x";
 }
 
-if(main.startsWith("KM5C")){
-r.type="uMCP";
-r.storage="UFS 2.1";
-r.ram=4;
-r.rom=64;
-}
-
-if(main.startsWith("KM5H") || main.startsWith("KM5P")){
-r.type="uMCP";
-r.storage="UFS 2.1";
-r.ram=6;
-r.rom=64;
-}
-
-if(main.startsWith("KM5V")){
-r.type="uMCP";
-r.storage="UFS 2.1";
-r.ram=8;
-r.rom=128;
-}
-
-if(main.startsWith("KM2V")){
-r.type="uMCP";
-r.storage="UFS 2.1";
-r.ram=4;
-r.rom=128;
-}
-
-if(main.startsWith("KM3H")){
-r.type="eMCP";
-r.storage="eMMC 5.1";
-r.ram=6;
-r.rom=64;
-}
-
-if(main.startsWith("KM3V")){
-r.type="uMCP";
-r.storage="UFS 2.1";
-r.ram=6;
-r.rom=64;
-}
-
-if(main.startsWith("KM8V")){
-r.type="uMCP";
+else if(main.includes("8001")){
 r.storage="UFS 2.2";
-r.ram=8;
-r.rom=128;
+r.version="UFS 2.2";
 }
 
-if(main.startsWith("KM8F")){
-r.type="uMCP";
-r.storage="UFS 2.2";
-r.ram=12;
-r.rom=128;
+else if(main.includes("7001") || main.includes("6001")){
+r.storage="UFS 2.1";
+r.version="UFS 2.1";
 }
 
-if(main.startsWith("KMDH")){
+
+/* ===== ROM MAP ===== */
+
+const romPrefix={
+
+KM2B:256,
+KM2H:128,
+KM2V:128,
+
+KM3H:64,
+KM3V:64,
+
+KM4X:32,
+
+KM5C:64,
+KM5H:64,
+KM5P:64,
+KM5V:128,
+
+KM8V:128,
+KM8F:128,
+KM8L:256
+
+};
+
+for(const p in romPrefix){
+
+if(main.startsWith(p)){
+r.rom=romPrefix[p];
+break;
+}
+
+}
+
+
+/* ===== RAM SUFFIX ===== */
+
+const suffix = main.slice(-2);
+
+const ramMap={
+
+DM:4,
+CM:6,
+JM:8,
+MM:12,
+RM:12,
+SM:16,
+PM:8
+
+};
+
+if(ramMap[suffix])
+r.ram=ramMap[suffix];
+
+}
+
+
+/* ======================================
+   SPECIAL 6001 eMCP SERIES
+====================================== */
+
+if(main.includes("6001")){
+
+if(main.startsWith("KMDH") || main.startsWith("KM3H")){
 r.type="eMCP";
 r.storage="eMMC 5.1";
 r.ram=6;
@@ -2156,40 +2180,25 @@ r.ram=3;
 r.rom=32;
 }
 
-if(main.startsWith("KMDX")){
-r.type="eMCP";
-r.storage="eMMC 5.1";
-r.ram=4;
-r.rom=64;
-}
-
-if(main.startsWith("KMDV")){
+if(main.startsWith("KMDV") || main.startsWith("KM3V")){
 r.type="uMCP";
 r.storage="UFS 2.1";
 r.ram=6;
 r.rom=64;
 }
 
-if(main.startsWith("KMGD") || main.startsWith("KMGX") || main.startsWith("KMGP")){
-r.type="eMCP";
-r.storage="eMMC 5.1";
-r.ram=4;
-r.rom=64;
 }
 
-if(main.startsWith("KMA")){
-r.type="uMCP";
-r.storage="UFS 3.1";
-}
 
-if(main.startsWith("KMJ")){
-r.type="uMCP";
-r.storage="UFS 2.2";
-}
+/* ======================================
+   VIP
+====================================== */
 
+if(typeof calculateVip==="function")
 r.vip=calculateVip(r.ram,r.rom);
 
 return r;
+
 }
   
 // ======================================================
