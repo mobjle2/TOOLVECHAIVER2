@@ -2654,7 +2654,7 @@ function autoDecodeChip(code, dbData){
 
   code = code.toUpperCase().trim();
   // ===== YMTC / YMEC ENGINE =====
-if(code.startsWith("YMEC")){
+if(code.startsWith("YMEC") || code.startsWith("YMU")){
 
   let rom = null;
 
