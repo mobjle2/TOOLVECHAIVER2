@@ -3137,8 +3137,8 @@ models.forEach(m=>{
   const brand = detectBrand(m);
 
   // Xoá tên hãng khỏi model để hiển thị gọn
-  const cleanModel = m
-    .replace(/(samsung|galaxy|oppo|vivo|xiaomi|redmi|poco|realme)/gi,"")
+const cleanModel = m
+  .replace(/(samsung|galaxy|oppo|vivo|xiaomi|redmi|poco|realme|vsmart)/gi,"")
     .replace(/\s+/g," ")
     .trim();
 
