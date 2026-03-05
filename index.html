@@ -2483,9 +2483,10 @@ function buildHardware(code, data){
       rom: data.rom ?? null,
       vip: data.vip ?? null,
 
-      type: data.type ?? null,      // ⭐ đọc TYPE từ Firestore
-      storage: data.storage ?? null,
+      /* ⭐ QUAN TRỌNG */
+      storage: data.type ?? data.storage ?? "Manual",
 
+      type: data.type ?? null,
       mmc: data.mmc ?? null,
       chip: data.chip ?? null,
 
