@@ -3105,10 +3105,14 @@ if(decoded.ram == null && decoded.rom == null && x.type === "RAMROM" && x.value)
 }
 
 /* ===== AUTO STORAGE ===== */
-if(!decoded.storage){
-  const hw = autoDecodeChip(x.code,x) || {};
+/* ===== AUTO STORAGE + TYPE ===== */
+const hw = autoDecodeChip(x.code,x) || {};
+
+if(!decoded.storage)
   decoded.storage = hw.storage ?? null;
-}
+
+if(!decoded.type)
+  decoded.type = hw.type ?? null;
 
 /* ===== SAFE NORMALIZE ===== */
 decoded.ram = Number(decoded.ram) || null;
