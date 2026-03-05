@@ -3069,12 +3069,14 @@ async function check(){
       return;
     }
 
-    let html = `<div class="result-grid">`;
+let html = `<div class="result-grid">`;
 
-    docsMap.forEach(doc => {
+docsMap.forEach(doc => {
 
-      const x = doc.data();
-      const chip = detectChip(x.code);
+  const x = doc.data();
+  console.log("Firestore:", x);   // ⭐ thêm dòng này
+
+  const chip = detectChip(x.code);
 
 let decoded = {
   ram: null,
