@@ -2473,26 +2473,28 @@ if(code.startsWith("YMEC") || code.startsWith("YMU")){
 
 function buildHardware(code, data){
 
-  /* ===== PRIORITY FIREBASE ===== */
-  if(
-    data &&
-    (
-      data.vip != null ||
-      data.ram != null ||
-      data.rom != null
-    )
-  ){
+  /* ===== ƯU TIÊN FIRESTORE ===== */
+
+  if(data){
+
     return {
+
       ram: data.ram ?? null,
       rom: data.rom ?? null,
       vip: data.vip ?? null,
-      storage: data.storage ?? "Manual",
-      type: "Manual",
+
+      type: data.type ?? null,      // ⭐ đọc TYPE từ Firestore
+      storage: data.storage ?? null,
+
+      mmc: data.mmc ?? null,
+      chip: data.chip ?? null,
+
       source: "firebase"
     };
   }
 
   /* ===== FALLBACK DECODER ===== */
+
   const hw = autoDecodeChip(code);
 
   hw.source = "decoder";
