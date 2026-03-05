@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -3103,8 +3104,8 @@ if(decoded.ram == null && decoded.rom == null && x.type === "RAMROM" && x.value)
 }
 
 /* ===== AUTO STORAGE ===== */
-if(!decoded.storage && !decoded.type){
-  const hw = autoDecodeChip(x.code) || {};
+if(!decoded.storage){
+  const hw = autoDecodeChip(x.code,x) || {};
   decoded.storage = hw.storage ?? null;
 }
 
