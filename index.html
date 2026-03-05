@@ -2020,7 +2020,8 @@ function getMMCLevel(rom){
   if(rom === 32) return "MMC2";
   if(rom === 64) return "MMC3";
   if(rom === 128) return "MMC4";
-  if(rom >= 256) return "MMC5";
+  if(rom === 256) return "MMC5";
+  if(rom >= 512) return "MMC6";
 
   return "MMC";
 }
