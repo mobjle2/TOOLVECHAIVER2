@@ -3138,7 +3138,7 @@ ${
     :
   decoded.vip > 0
     ? '<div class="vip-badge vip-' + String(decoded.vip).replace(".", "-") + '">' +
-        '<span class="vip-dot"></span> VIP ' + decoded.vip +
+        '<span class="vip-dot"></span> VIP ' + (decoded.vip % 1 ? Math.floor(decoded.vip) + '+' : decoded.vip) +
       '</div>'
     : (mmcLevel
         ? '<div class="ram-badge mmc-badge">' +
