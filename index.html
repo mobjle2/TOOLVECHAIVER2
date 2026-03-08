@@ -1718,7 +1718,7 @@ if(!window._viewCounted){
     let country = "unknown";
 
     try{
-      const geo = await fetch("https://ipapi.co/json/");
+      const geo = await fetch("https://ipwho.is/");
       const g = await geo.json();
       country = g.country_code || "unknown";
     }catch(e){}
