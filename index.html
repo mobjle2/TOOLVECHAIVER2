@@ -3354,68 +3354,70 @@ async function loadLinks(){
     const displayName =
       d.alias && d.alias.trim() !== "" ? d.alias : id;
 
-    html += `
-      <div class="link-card">
-        
-        <div class="link-left">
+html += `
+<div class="link-card">
+  
+  <div class="link-left">
 
-          <div class="link-id-row">
-            <div class="link-id editable-name"
-                 contenteditable="true"
-                 data-id="${id}">
-              ${displayName}
-            </div>
-            
-          </div>
-
-          <div class="link-status ${d.active?'open':'lock'}">
-            ${d.active?'🟢 Đang mở':'🟡 Đang khóa'}
-          </div>
-
-          <div id="remain-${id}" style="margin-top:6px;font-size:12px;color:#facc15;">
-            ${d.expiresAt ? '⏳ Đang tính...' : '♾ Không giới hạn'}
-          </div>
-
-<div style="margin-top:4px;font-size:12px;color:#22c55e;">
-  👁 Views: ${d.views || 0}
-</div>
-
-<div style="display:flex;gap:12px;margin-top:6px;font-size:11px;flex-wrap:wrap;">
-
-  <div id="online-${id}" style="color:#22c55e;">
-    🟢 online: 0
-  </div>
-
-  <div id="visitDetail-${id}" style="color:#94a3b8;">
-    📊 loading...
-  </div>
-
-</div>
-
-        </div>
-
-        <div class="link-actions">
-
-          <button class="icon-btn" onclick="copyLink('${id}',this)">📋</button>
-
-          <button class="icon-btn"
-            style="background:${d.active?'#16a34a':'#f59e0b'};color:white"
-            onclick="toggleLink('${id}',${d.active})">
-            ${d.active?'🔓':'🔒'}
-          </button>
-
-          <button class="icon-btn" onclick="configExpire('${id}')">⏰</button>
-
-          <button class="icon-btn delete"
-            style="background:#dc2626;color:white"
-            onclick="deleteLink('${id}')">
-            🗑
-          </button>
-
-        </div>
-
+    <div class="link-id-row">
+      <div class="link-id editable-name"
+           contenteditable="true"
+           data-id="${id}">
+        ${displayName}
       </div>
-    `;
+    </div>
+
+    <!-- STATUS -->
+    <div class="link-status ${d.active ? 'open' : 'lock'}">
+      ${d.active ? '🟢 MỞ' : '🔴 KHÓA'}
+    </div>
+
+    <div id="remain-${id}" style="margin-top:6px;font-size:12px;color:#facc15;">
+      ${d.expiresAt ? '⏳ Đang tính...' : '♾ Không giới hạn'}
+    </div>
+
+    <div style="margin-top:4px;font-size:12px;color:#22c55e;">
+      👁 Views: ${d.views || 0}
+    </div>
+
+    <div style="display:flex;gap:12px;margin-top:6px;font-size:11px;flex-wrap:wrap;">
+
+      <div id="online-${id}" style="color:#22c55e;">
+        🟢 online: 0
+      </div>
+
+      <div id="visitDetail-${id}" style="color:#94a3b8;">
+        📊 loading...
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="link-actions">
+
+    <button class="icon-btn" onclick="copyLink('${id}',this)">📋</button>
+
+    <!-- LOCK / UNLOCK -->
+    <button class="icon-btn"
+      style="background:${d.active ? '#16a34a' : '#dc2626'};color:white"
+      onclick="toggleLink('${id}',${d.active})"
+      title="${d.active ? 'Khóa link' : 'Mở link'}">
+      ${d.active ? '🔒' : '🔓'}
+    </button>
+
+    <button class="icon-btn" onclick="configExpire('${id}')">⏰</button>
+
+    <button class="icon-btn delete"
+      style="background:#dc2626;color:white"
+      onclick="deleteLink('${id}')">
+      🗑
+    </button>
+
+  </div>
+
+</div>
+`;
   });
 
 /* ===== RENDER LIST ===== */
