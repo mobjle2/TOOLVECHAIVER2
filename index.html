@@ -3436,12 +3436,11 @@ snap.forEach(async doc => {
   const el = document.getElementById("visitDetail-"+id);
 
   if(el){
-    el.innerHTML = `
-      📊 24h: ${visitSnap.size}
-      • 📱 ${mobile}
-      • 💻 ${desktop}
-      • 🌍 ${topCountry ? topCountry[0] : "--"}
-    `;
+    el.innerHTML =
+      "📊 24h: " + visitSnap.size +
+      " • 📱 " + mobile +
+      " • 💻 " + desktop +
+      " • 🌍 " + (topCountry ? topCountry[0] : "--");
   }
 
   // ===== ONLINE =====
@@ -3453,7 +3452,7 @@ snap.forEach(async doc => {
   const onlineEl = document.getElementById("online-"+id);
 
   if(onlineEl){
-    onlineEl.innerHTML = `🟢 online: ${onlineSnap.size}`;
+    onlineEl.innerText = "🟢 online: " + onlineSnap.size;
   }
 
 });
