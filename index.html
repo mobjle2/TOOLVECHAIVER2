@@ -3397,17 +3397,19 @@ async function loadLinks(){
     `;
   });
 
-  /* ===== RENDER LIST ===== */
-  document.getElementById("linkList").innerHTML = html;
-  // ===== VISIT ANALYTICS =====
+/* ===== RENDER LIST ===== */
+document.getElementById("linkList").innerHTML = html;
+
+/* ===== VISIT ANALYTICS ===== */
 snap.forEach(async doc => {
 
   const id = doc.id;
 
   const now = Date.now();
-  const dayAgo = new Date(now - 86400000);
-  const onlineAgo = new Date(now - 120000);
+  const dayAgo = new Date(now - 86400000); // 24h
+  const onlineAgo = new Date(now - 30000); // 30s
 
+  // Lấy visit trong 24h
   const visitSnap = await db.collection("link_visits")
     .where("linkId","==",id)
     .where("time",">=",dayAgo)
@@ -3417,7 +3419,7 @@ snap.forEach(async doc => {
   let desktop = 0;
   let countries = {};
 
-  visitSnap.forEach(v=>{
+  visitSnap.forEach(v => {
 
     const d = v.data();
 
@@ -3436,17 +3438,15 @@ snap.forEach(async doc => {
   const el = document.getElementById("visitDetail-"+id);
 
   if(el){
-
     el.innerHTML = `
       📊 24h: ${visitSnap.size}
       • 📱 ${mobile}
       • 💻 ${desktop}
       • 🌍 ${topCountry ? topCountry[0] : "--"}
     `;
-
   }
 
-  // ===== ONLINE =====
+  /* ===== ONLINE USERS ===== */
   const onlineSnap = await db.collection("link_visits")
     .where("linkId","==",id)
     .where("time",">=",onlineAgo)
@@ -3459,53 +3459,6 @@ snap.forEach(async doc => {
   }
 
 });
-  // ===== VISIT ANALYTICS =====
-snap.forEach(async doc => {
-
-  const id = doc.id;
-
-  const now = Date.now();
-  const dayAgo = new Date(now - 86400000);
-  const onlineAgo = new Date(now - 30000);
-
-  const visitSnap = await db.collection("link_visits")
-    .where("linkId","==",id)
-    .where("time",">=",dayAgo)
-    .get();
-
-  let mobile = 0;
-  let desktop = 0;
-  let countries = {};
-
-  visitSnap.forEach(v=>{
-
-    const d = v.data();
-
-    if(d.device === "mobile") mobile++;
-    else desktop++;
-
-    if(d.country){
-      countries[d.country] = (countries[d.country] || 0) + 1;
-    }
-
-  });
-
-  const topCountry = Object.entries(countries)
-    .sort((a,b)=>b[1]-a[1])[0];
-
-  const el = document.getElementById("visitDetail-"+id);
-
-  if(el){
-
-    el.innerHTML = `
-      📊 24h: ${visitSnap.size}
-      • 📱 ${mobile}
-      • 💻 ${desktop}
-      • 🌍 ${topCountry ? topCountry[0] : "--"}
-    `;
-
-  }
-
   // ===== ONLINE DETECT =====
   const onlineSnap = await db.collection("link_visits")
     .where("linkId","==",id)
@@ -3518,84 +3471,7 @@ snap.forEach(async doc => {
     onlineEl.innerHTML = `🟢 online: ${onlineSnap.size}`;
   }
 
-});
-  // ===== LOAD VISIT STATS =====
-snap.forEach(async doc => {
-
-  const id = doc.id;
-
-  const now = Date.now();
-  const dayAgo = new Date(now - 86400000);
-
-  const visitSnap = await db.collection("link_visits")
-    .where("linkId","==",id)
-    .where("time",">=",dayAgo)
-    .get();
-
-  let mobile = 0;
-  let desktop = 0;
-  let countries = {};
-
-  visitSnap.forEach(v=>{
-
-    const d = v.data();
-
-    if(d.device === "mobile") mobile++;
-    else desktop++;
-
-    if(d.country){
-      countries[d.country] = (countries[d.country] || 0) + 1;
-    }
-
-  });
-
-  const topCountry = Object.entries(countries)
-    .sort((a,b)=>b[1]-a[1])[0];
-
-  const el = document.getElementById("visitDetail-"+id);
-
-  if(el){
-
-    el.innerHTML = `
-      📊 24h: ${visitSnap.size}
-      • 📱 ${mobile}
-      • 💻 ${desktop}
-      • 🌍 ${topCountry ? topCountry[0] : "--"}
-    `;
-
-  }
-
-});
-  // ===== LOAD VISIT DETAIL =====
-snap.forEach(async doc => {
-
-  const id = doc.id;
-
-  const visitSnap = await db.collection("link_visits")
-    .where("linkId","==",id)
-    .orderBy("time","desc")
-    .limit(20)
-    .get();
-
-  let mobile = 0;
-  let desktop = 0;
-
-  visitSnap.forEach(v=>{
-    const d = v.data();
-
-    if(d.device === "mobile") mobile++;
-    else desktop++;
-  });
-
-  const el = document.getElementById("visitDetail-"+id);
-
-  if(el){
-    el.innerHTML = `
-      📱 ${mobile} mobile • 💻 ${desktop} desktop
-    `;
-  }
-
-});
+});;
 
 
   /* ===== INLINE RENAME SAVE ===== */
