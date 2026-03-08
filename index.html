@@ -1699,13 +1699,24 @@ if(!window._viewCounted){
       views: firebase.firestore.FieldValue.increment(1)
     });
 
-    await db.collection("link_visits").add({
-      linkId: id,
-      time: firebase.firestore.FieldValue.serverTimestamp(),
-      device: /mobile|android|iphone/i.test(navigator.userAgent) ? "mobile" : "desktop",
-      browser: navigator.userAgent.includes("Chrome") ? "chrome" : "other",
-      referrer: document.referrer || "direct"
-    });
+// ===== DETECT COUNTRY =====
+let country = "unknown";
+
+try{
+  const geo = await fetch("https://ipapi.co/json/");
+  const g = await geo.json();
+  country = g.country_code || "unknown";
+}catch(e){}
+
+// ===== SAVE VISIT =====
+await db.collection("link_visits").add({
+  linkId: id,
+  time: firebase.firestore.FieldValue.serverTimestamp(),
+  device: /mobile|android|iphone/i.test(navigator.userAgent) ? "mobile" : "desktop",
+  browser: navigator.userAgent.includes("Chrome") ? "chrome" : "other",
+  referrer: document.referrer || "direct",
+  country: country
+});
 
   }
 
@@ -3342,9 +3353,24 @@ async function loadLinks(){
             ${d.expiresAt ? '⏳ Đang tính...' : '♾ Không giới hạn'}
           </div>
 
-          <div style="margin-top:4px;font-size:12px;color:#22c55e;">
-            👁 Lượt truy cập: ${d.views || 0}
-          </div>
+<div style="margin-top:4px;font-size:12px;color:#22c55e;">
+  👁 Views: ${d.views || 0}
+</div>
+
+<div id="visitDetail-${id}" 
+     style="font-size:11px;color:#94a3b8;margin-top:4px;">
+  loading analytics...
+</div>
+
+<div id="online-${id}" 
+     style="font-size:11px;color:#22c55e;">
+  🟢 online: 0
+</div>
+
+<div id="visitDetail-${id}" 
+     style="font-size:11px;color:#94a3b8;margin-top:2px;">
+  loading...
+</div>
 
         </div>
 
@@ -3374,6 +3400,143 @@ async function loadLinks(){
 
   /* ===== RENDER LIST ===== */
   document.getElementById("linkList").innerHTML = html;
+  // ===== VISIT ANALYTICS =====
+snap.forEach(async doc => {
+
+  const id = doc.id;
+
+  const now = Date.now();
+  const dayAgo = new Date(now - 86400000);
+  const onlineAgo = new Date(now - 120000); // 2 phút
+
+  const visitSnap = await db.collection("link_visits")
+    .where("linkId","==",id)
+    .where("time",">=",dayAgo)
+    .get();
+
+  let mobile = 0;
+  let desktop = 0;
+  let countries = {};
+
+  visitSnap.forEach(v=>{
+
+    const d = v.data();
+
+    if(d.device === "mobile") mobile++;
+    else desktop++;
+
+    if(d.country){
+      countries[d.country] = (countries[d.country] || 0) + 1;
+    }
+
+  });
+
+  const topCountry = Object.entries(countries)
+    .sort((a,b)=>b[1]-a[1])[0];
+
+  const el = document.getElementById("visitDetail-"+id);
+
+  if(el){
+
+    el.innerHTML = `
+      📊 24h: ${visitSnap.size}
+      • 📱 ${mobile}
+      • 💻 ${desktop}
+      • 🌍 ${topCountry ? topCountry[0] : "--"}
+    `;
+
+  }
+
+  // ===== ONLINE DETECT =====
+  const onlineSnap = await db.collection("link_visits")
+    .where("linkId","==",id)
+    .where("time",">=",onlineAgo)
+    .get();
+
+  const onlineEl = document.getElementById("online-"+id);
+
+  if(onlineEl){
+    onlineEl.innerHTML = `🟢 online: ${onlineSnap.size}`;
+  }
+
+});
+  // ===== LOAD VISIT STATS =====
+snap.forEach(async doc => {
+
+  const id = doc.id;
+
+  const now = Date.now();
+  const dayAgo = new Date(now - 86400000);
+
+  const visitSnap = await db.collection("link_visits")
+    .where("linkId","==",id)
+    .where("time",">=",dayAgo)
+    .get();
+
+  let mobile = 0;
+  let desktop = 0;
+  let countries = {};
+
+  visitSnap.forEach(v=>{
+
+    const d = v.data();
+
+    if(d.device === "mobile") mobile++;
+    else desktop++;
+
+    if(d.country){
+      countries[d.country] = (countries[d.country] || 0) + 1;
+    }
+
+  });
+
+  const topCountry = Object.entries(countries)
+    .sort((a,b)=>b[1]-a[1])[0];
+
+  const el = document.getElementById("visitDetail-"+id);
+
+  if(el){
+
+    el.innerHTML = `
+      📊 24h: ${visitSnap.size}
+      • 📱 ${mobile}
+      • 💻 ${desktop}
+      • 🌍 ${topCountry ? topCountry[0] : "--"}
+    `;
+
+  }
+
+});
+  // ===== LOAD VISIT DETAIL =====
+snap.forEach(async doc => {
+
+  const id = doc.id;
+
+  const visitSnap = await db.collection("link_visits")
+    .where("linkId","==",id)
+    .orderBy("time","desc")
+    .limit(20)
+    .get();
+
+  let mobile = 0;
+  let desktop = 0;
+
+  visitSnap.forEach(v=>{
+    const d = v.data();
+
+    if(d.device === "mobile") mobile++;
+    else desktop++;
+  });
+
+  const el = document.getElementById("visitDetail-"+id);
+
+  if(el){
+    el.innerHTML = `
+      📱 ${mobile} mobile • 💻 ${desktop} desktop
+    `;
+  }
+
+});
 
 
   /* ===== INLINE RENAME SAVE ===== */
