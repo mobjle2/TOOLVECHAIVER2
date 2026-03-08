@@ -1688,18 +1688,26 @@ enableCheckUI();
 // ===== TĂNG VIEW (CHỈ TĂNG 1 LẦN) =====
 if(!window._viewCounted){
 
-  await ref.update({
-    views: firebase.firestore.FieldValue.increment(1)
-  });
+  const visitKey = "visit_" + id;
 
-  // ghi visit
-  await db.collection("link_visits").add({
-    linkId: id,
-    time: firebase.firestore.FieldValue.serverTimestamp(),
-    device: /mobile|android|iphone/i.test(navigator.userAgent) ? "mobile" : "desktop",
-    browser: navigator.userAgent.includes("Chrome") ? "chrome" : "other",
-    referrer: document.referrer || "direct"
-  });
+  // nếu chưa từng mở link này trên thiết bị
+  if(!localStorage.getItem(visitKey)){
+
+    localStorage.setItem(visitKey, true);
+
+    await ref.update({
+      views: firebase.firestore.FieldValue.increment(1)
+    });
+
+    await db.collection("link_visits").add({
+      linkId: id,
+      time: firebase.firestore.FieldValue.serverTimestamp(),
+      device: /mobile|android|iphone/i.test(navigator.userAgent) ? "mobile" : "desktop",
+      browser: navigator.userAgent.includes("Chrome") ? "chrome" : "other",
+      referrer: document.referrer || "direct"
+    });
+
+  }
 
   window._viewCounted = true;
 }
