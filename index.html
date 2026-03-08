@@ -1660,7 +1660,47 @@ ref.onSnapshot(async (doc)=>{
     return;
   }
 
-  const data = doc.data();
+ const data = doc.data();
+
+/* ===== SAVE VISIT (1 lần) ===== */
+if(!window._viewCounted){
+
+  const visitKey = "visit_" + id;
+
+  if(!localStorage.getItem(visitKey)){
+
+    localStorage.setItem(visitKey,true);
+
+    try{
+
+      await ref.update({
+        views: firebase.firestore.FieldValue.increment(1)
+      });
+
+      await db.collection("link_visits").add({
+        linkId: id,
+        time: firebase.firestore.FieldValue.serverTimestamp(),
+        device: /mobile|android|iphone/i.test(navigator.userAgent)
+          ? "mobile"
+          : "desktop",
+        browser: navigator.userAgent.includes("Chrome")
+          ? "chrome"
+          : "other",
+        referrer: document.referrer || "direct",
+        country: "unknown"
+      });
+
+      console.log("VISIT SAVED",id);
+
+    }catch(err){
+      console.error("Visit save error:",err);
+    }
+
+  }
+
+  window._viewCounted = true;
+}
+  
 
   // ===== LINK BỊ KHÓA =====
   if(!data.active){
