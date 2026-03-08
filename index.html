@@ -3355,7 +3355,12 @@ async function loadLinks(){
       d.alias && d.alias.trim() !== "" ? d.alias : id;
 
 html += `
-<div class="link-card" style="display:flex;justify-content:space-between;gap:16px;">
+<div class="link-card" style="
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:16px;
+">
 
   <!-- LEFT INFO -->
   <div style="flex:1">
@@ -3363,7 +3368,7 @@ html += `
     <div class="link-id editable-name"
          contenteditable="true"
          data-id="${id}"
-         style="font-weight:600;margin-bottom:6px;">
+         style="font-weight:600;font-size:14px;margin-bottom:6px;">
       ${displayName}
     </div>
 
@@ -3379,8 +3384,8 @@ html += `
       👁 ${d.views || 0} views
     </div>
 
-    <div style="margin-top:4px;font-size:11px;color:#94a3b8;">
-      <span id="online-${id}" style="color:#22c55e">● online: 0</span>
+    <div style="margin-top:4px;font-size:11px;">
+      <span id="online-${id}" style="color:#22c55e;">● online: 0</span>
     </div>
 
     <div id="visitDetail-${id}"
@@ -3391,7 +3396,11 @@ html += `
   </div>
 
   <!-- RIGHT ACTIONS -->
-  <div style="display:flex;align-items:center;gap:8px;">
+  <div style="
+    display:flex;
+    align-items:center;
+    gap:8px;
+  ">
 
     <button class="icon-btn" onclick="copyLink('${id}',this)">📋</button>
 
