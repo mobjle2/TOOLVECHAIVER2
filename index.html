@@ -736,14 +736,22 @@ font-weight:500;
   padding:16px;
   transition:0.25s ease;
 
-  display:flex;               /* thêm */
-  justify-content:space-between; /* thêm */
-  align-items:center;         /* thêm */
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  min-height:120px;
 }
 
 .link-card:hover{
   border-color:#2563eb;
   box-shadow:0 10px 30px rgba(37,99,235,0.25);
+}
+
+/* ===== LEFT INFO ===== */
+.link-left{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
 }
 
 
