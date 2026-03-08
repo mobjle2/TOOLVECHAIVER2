@@ -3314,7 +3314,7 @@ async function createLink(){
     views: 0
   });
 
-  loadLinks();
+ 
 }
 
 
@@ -3442,7 +3442,7 @@ snap.forEach(async doc => {
       • 💻 ${desktop}
       • 🌍 ${topCountry ? topCountry[0] : "--"}
     `;
-  
+  }
 
   // ===== ONLINE =====
   const onlineSnap = await db.collection("link_visits")
@@ -3455,6 +3455,8 @@ snap.forEach(async doc => {
   if(onlineEl){
     onlineEl.innerHTML = `🟢 online: ${onlineSnap.size}`;
   }
+
+});
 
 
   /* ===== INLINE RENAME SAVE ===== */
