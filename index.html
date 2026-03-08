@@ -1721,19 +1721,22 @@ try{
 }catch(e){}
 
 // ===== SAVE VISIT =====
-await db.collection("link_visits").add({
-  linkId: id,
-  time: firebase.firestore.FieldValue.serverTimestamp(),
-  device: /mobile|android|iphone/i.test(navigator.userAgent) ? "mobile" : "desktop",
-  browser: navigator.userAgent.includes("Chrome") ? "chrome" : "other",
-  referrer: document.referrer || "direct",
-  country: country
-});
+try{
 
-  }
+  await db.collection("link_visits").add({
+    linkId: id,
+    time: firebase.firestore.FieldValue.serverTimestamp(),
+    device: /mobile|android|iphone/i.test(navigator.userAgent) ? "mobile" : "desktop",
+    browser: navigator.userAgent.includes("Chrome") ? "chrome" : "other",
+    referrer: document.referrer || "direct",
+    country: country || "unknown"
+  });
 
-  window._viewCounted = true;
+}catch(err){
+  console.error("Visit save error:",err);
 }
+
+window._viewCounted = true;
 
 // ===== COUNTDOWN =====
 if(data.expiresAt){
