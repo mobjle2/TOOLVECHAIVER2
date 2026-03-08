@@ -732,32 +732,55 @@ font-weight:500;
 }
 
 
-/* ===== ADMIN CARD CLEAN ===== */
+/* ===== ADMIN CARD PRO ===== */
+
 .link-card{
-  background:#0f172a;
-  border:1px solid #1f2937;
-  border-radius:16px;
-  padding:16px;
+  background:
+    linear-gradient(145deg,
+      rgba(15,23,42,.95),
+      rgba(2,6,23,.85)
+    );
+
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:18px;
+
+  padding:18px;
 
   display:flex;
-  flex-direction:column;   /* ⭐ chuyển sang layout dọc */
-
+  flex-direction:column;
   gap:12px;
-  min-height:120px;
+
+  min-height:125px;
+
+  transition:.35s;
+
+  backdrop-filter:blur(12px);
+
+  box-shadow:
+    0 15px 45px rgba(0,0,0,.6),
+    inset 0 0 20px rgba(255,255,255,.02);
 }
 
 .link-card:hover{
-  border-color:#2563eb;
-  box-shadow:0 10px 30px rgba(37,99,235,0.25);
+  transform:translateY(-3px);
+
+  border-color:#38bdf8;
+
+  box-shadow:
+    0 25px 60px rgba(0,0,0,.85),
+    0 0 18px rgba(56,189,248,.2);
 }
 
-/* ===== LEFT INFO ===== */
+/* ===== GRID INFO ===== */
+
 .link-left{
   display:grid;
-  grid-template-columns:1fr 1fr;  /* ⭐ 2 cột */
-  gap:6px 14px;
-}
+  grid-template-columns:1fr 1fr;
+  gap:8px 14px;
 
+  font-size:13px;
+  opacity:.9;
+}
 
 /* ===== RESULT GRID FINAL (FIX ĐÈ CARD) ===== */
 
