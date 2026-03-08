@@ -3401,7 +3401,7 @@ async function loadLinks(){
 document.getElementById("linkList").innerHTML = html;
 
 /* ===== VISIT ANALYTICS ===== */
-snap.forEach(async doc => {
+snap.forEach(async (doc) => {
 
   const id = doc.id;
 
@@ -3411,32 +3411,32 @@ snap.forEach(async doc => {
 
   // ===== VISIT 24H =====
   const visitSnap = await db.collection("link_visits")
-    .where("linkId","==",id)
-    .where("time",">=",dayAgo)
+    .where("linkId", "==", id)
+    .where("time", ">=", dayAgo)
     .get();
 
   let mobile = 0;
   let desktop = 0;
   let countries = {};
 
-  visitSnap.forEach(v=>{
+  visitSnap.forEach(v => {
     const d = v.data();
 
-    if(d.device === "mobile") mobile++;
+    if (d.device === "mobile") mobile++;
     else desktop++;
 
-    if(d.country){
+    if (d.country) {
       countries[d.country] = (countries[d.country] || 0) + 1;
     }
   });
 
   const topCountry = Object.entries(countries)
-    .sort((a,b)=>b[1]-a[1])[0];
+    .sort((a, b) => b[1] - a[1])[0];
 
-  const el = document.getElementById("visitDetail-"+id);
+  const el = document.getElementById("visitDetail-" + id);
 
-  if(el){
-    el.innerHTML =
+  if (el) {
+    el.innerText =
       "📊 24h: " + visitSnap.size +
       " • 📱 " + mobile +
       " • 💻 " + desktop +
@@ -3445,54 +3445,55 @@ snap.forEach(async doc => {
 
   // ===== ONLINE =====
   const onlineSnap = await db.collection("link_visits")
-    .where("linkId","==",id)
-    .where("time",">=",onlineAgo)
+    .where("linkId", "==", id)
+    .where("time", ">=", onlineAgo)
     .get();
 
-  const onlineEl = document.getElementById("online-"+id);
+  const onlineEl = document.getElementById("online-" + id);
 
-  if(onlineEl){
+  if (onlineEl) {
     onlineEl.innerText = "🟢 online: " + onlineSnap.size;
   }
 
 });
 
 
-  /* ===== INLINE RENAME SAVE ===== */
-  document.querySelectorAll(".editable-name").forEach(el=>{
+/* ===== INLINE RENAME SAVE ===== */
+document.querySelectorAll(".editable-name").forEach(el => {
 
-    const id = el.dataset.id;
+  const id = el.dataset.id;
 
-    el.addEventListener("keydown", e=>{
-      if(e.key === "Enter"){
-        e.preventDefault();
-        el.blur();
-      }
-    });
+  el.addEventListener("keydown", e => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      el.blur();
+    }
+  });
 
-    el.addEventListener("blur", async ()=>{
+  el.addEventListener("blur", async () => {
 
-      const value = el.innerText.trim();
-      const ref = db.collection("shareLinks").doc(id);
+    const value = el.innerText.trim();
+    const ref = db.collection("shareLinks").doc(id);
 
-      try{
-        if(!value){
-          await ref.update({
-            alias: firebase.firestore.FieldValue.delete()
-          });
-        }else{
-          await ref.update({
-            alias: value
-          });
-        }
-      }catch(err){
-        console.error("Rename error:",err);
+    try {
+
+      if (!value) {
+        await ref.update({
+          alias: firebase.firestore.FieldValue.delete()
+        });
+      } else {
+        await ref.update({
+          alias: value
+        });
       }
 
-    });
+    } catch (err) {
+      console.error("Rename error:", err);
+    }
 
   });
 
+});
 
   /* ===== COUNTDOWN REALTIME ===== */
 
