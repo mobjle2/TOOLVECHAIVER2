@@ -1682,16 +1682,27 @@ if(data.expiresAt && data.expiresAt.toDate() < new Date()){
   return;
 }
 
-  // ===== LINK HỢP LỆ =====
-  enableCheckUI();
+// ===== LINK HỢP LỆ =====
+enableCheckUI();
 
-  // ===== TĂNG VIEW (CHỈ TĂNG 1 LẦN) =====
-  if(!window._viewCounted){
-    await ref.update({
-      views: firebase.firestore.FieldValue.increment(1)
-    });
-    window._viewCounted = true;
-  }
+// ===== TĂNG VIEW (CHỈ TĂNG 1 LẦN) =====
+if(!window._viewCounted){
+
+  await ref.update({
+    views: firebase.firestore.FieldValue.increment(1)
+  });
+
+  // ghi visit
+  await db.collection("link_visits").add({
+    linkId: id,
+    time: firebase.firestore.FieldValue.serverTimestamp(),
+    device: /mobile|android|iphone/i.test(navigator.userAgent) ? "mobile" : "desktop",
+    browser: navigator.userAgent.includes("Chrome") ? "chrome" : "other",
+    referrer: document.referrer || "direct"
+  });
+
+  window._viewCounted = true;
+}
 
 // ===== COUNTDOWN =====
 if(data.expiresAt){
