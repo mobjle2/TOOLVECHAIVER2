@@ -3357,18 +3357,18 @@ async function loadLinks(){
   👁 Views: ${d.views || 0}
 </div>
 
-<div style="margin-top:4px;font-size:12px;color:#22c55e;">
-  👁 Views: ${d.views || 0}
-</div>
+<div style="display:flex;justify-content:space-between;margin-top:6px;gap:10px;">
 
-<div id="visitDetail-${id}" 
-     style="font-size:11px;color:#94a3b8;margin-top:4px;">
-  loading analytics...
-</div>
+  <div id="online-${id}" 
+       style="font-size:11px;color:#22c55e;">
+    🟢 online: 0
+  </div>
 
-<div id="online-${id}" 
-     style="font-size:11px;color:#22c55e;">
-  🟢 online: 0
+  <div id="visitDetail-${id}" 
+       style="font-size:11px;color:#94a3b8;text-align:right;">
+    loading analytics...
+  </div>
+
 </div>
 
         </div>
