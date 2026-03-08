@@ -1711,32 +1711,36 @@ if(!window._viewCounted){
       views: firebase.firestore.FieldValue.increment(1)
     });
 
-// ===== DETECT COUNTRY =====
-let country = "unknown";
+    // ===== DETECT COUNTRY =====
+    let country = "unknown";
 
-try{
-  const geo = await fetch("https://ipapi.co/json/");
-  const g = await geo.json();
-  country = g.country_code || "unknown";
-}catch(e){}
+    try{
+      const geo = await fetch("https://ipapi.co/json/");
+      const g = await geo.json();
+      country = g.country_code || "unknown";
+    }catch(e){}
 
-// ===== SAVE VISIT =====
-try{
+    // ===== SAVE VISIT =====
+    try{
 
-  await db.collection("link_visits").add({
-    linkId: id,
-    time: firebase.firestore.FieldValue.serverTimestamp(),
-    device: /mobile|android|iphone/i.test(navigator.userAgent) ? "mobile" : "desktop",
-    browser: navigator.userAgent.includes("Chrome") ? "chrome" : "other",
-    referrer: document.referrer || "direct",
-    country: country || "unknown"
-  });
+      await db.collection("link_visits").add({
+        linkId: id,
+        time: firebase.firestore.FieldValue.serverTimestamp(),
+        device: /mobile|android|iphone/i.test(navigator.userAgent) ? "mobile" : "desktop",
+        browser: navigator.userAgent.includes("Chrome") ? "chrome" : "other",
+        referrer: document.referrer || "direct",
+        country: country || "unknown"
+      });
 
-}catch(err){
-  console.error("Visit save error:",err);
-}
+    }catch(err){
+      console.error("Visit save error:",err);
+    }
 
-window._viewCounted = true;
+  } // đóng if localStorage
+
+  window._viewCounted = true;
+
+} // đóng if _viewCounted
 
 // ===== COUNTDOWN =====
 if(data.expiresAt){
