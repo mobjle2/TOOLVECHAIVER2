@@ -3536,12 +3536,14 @@ document.querySelectorAll(".editable-name").forEach(el => {
       const minutes = Math.floor((diff/60000)%60);
       const seconds = Math.floor((diff/1000)%60);
 
-      el.innerText =
-        `⏳ ${days}d ${hours}h ${minutes}m ${seconds}s`;
+el.innerText =
+  `⏳ ${days}d ${hours}h ${minutes}m ${seconds}s`;
 
-    },1000);
+},1000);
 
   });
+
+  });   // thêm dòng này để đóng onSnapshot
 
 }
 
