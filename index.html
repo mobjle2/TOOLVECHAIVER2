@@ -3456,14 +3456,10 @@ snap.forEach(async (doc) => {
 
   const el = document.getElementById("visitDetail-" + id);
 
-  if (el) {
-    el.innerText =
-      "📊 24h: " + visitSnap.size +
-      " • 📱 " + mobile +
-      " • 💻 " + desktop +
-      "🌍 " + (topCountry ? "🇦🇺".replace("AU",topCountry[0]) : "--")
-  }
-
+if (el) {
+  el.innerText =
+    `📊 24h: ${visitSnap.size} • 📱 ${mobile} • 💻 ${desktop}`;
+}
   // ===== ONLINE =====
   const onlineSnap = await db.collection("link_visits")
     .where("linkId", "==", id)
