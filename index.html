@@ -99,30 +99,16 @@
 
 .link-actions{
   display:flex;
-  gap:10px;
-
-  justify-content:center;
-
-  margin-top:8px;
+  gap:8px;
 }
 
 .icon-btn{
-  width:34px;
-  height:34px;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
   border:none;
   background:#1f1f1f;
-
+  padding:8px 10px;
   border-radius:10px;
   cursor:pointer;
-
-  font-size:15px;
-
-  transition:.2s;
+  transition:0.2s;
 }
 
 .icon-btn:hover{
@@ -742,254 +728,78 @@ font-weight:500;
 }
 
 
-/* =====================================================
-/* =====================================================
-ADMIN DASHBOARD UI FIX FINAL
-===================================================== */
+/* ===== ADMIN CARD CLEAN ===== */
+.link-card{
+  background:#0f172a;
+  border:1px solid #1f2937;
+  border-radius:16px;
+  padding:16px;
+  transition:0.25s ease;
 
-/* ===== GRID ===== */
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  min-height:120px;
+}
 
-#linkList{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(320px,320px));
-  justify-content:center;
-  gap:26px;
+.link-card:hover{
+  border-color:#2563eb;
+  box-shadow:0 10px 30px rgba(37,99,235,0.25);
+}
+
+/* ===== LEFT INFO ===== */
+.link-left{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+
+/* ===== RESULT GRID FINAL (FIX ĐÈ CARD) ===== */
+
+#out{
   margin-top:30px;
 }
 
-
-/* =====================================================
-CARD
-===================================================== */
-
-.link-card{
-
-  width:320px;
-
-  position:relative;
-
-  background:
-  linear-gradient(
-  145deg,
-  rgba(12,25,45,.92),
-  rgba(2,8,25,.88)
-  );
-
-  border-radius:18px;
-
-  padding:18px;
-
-  border:1px solid rgba(255,255,255,.06);
-
-  display:flex;
-  flex-direction:column;
-
-  gap:10px;
-
-  backdrop-filter:blur(12px);
-
-  transition:.25s ease;
-
-  box-shadow:
-  0 12px 40px rgba(0,0,0,.6);
-}
-
-
-/* hover */
-
-.link-card:hover{
-
-  transform:translateY(-4px);
-
-  border-color:#38bdf8;
-
-  box-shadow:
-  0 25px 60px rgba(0,0,0,.8),
-  0 0 14px rgba(56,189,248,.18);
-}
-
-
-/* =====================================================
-HEADER
-===================================================== */
-
-.link-id{
-
-  font-size:15px;
-  font-weight:700;
-
-  letter-spacing:.3px;
-
-  color:#e2e8f0;
-}
-
-
-/* =====================================================
-STATUS
-===================================================== */
-
-.link-status{
-
-  font-size:12px;
-
-  padding:3px 10px;
-
-  border-radius:999px;
-
-  font-weight:600;
-}
-
-.link-status.open{
-
-  background:rgba(34,197,94,.2);
-  color:#22c55e;
-}
-
-.link-status.lock{
-
-  background:rgba(250,204,21,.2);
-  color:#facc15;
-}
-
-
-/* =====================================================
-INFO GRID
-===================================================== */
-
-.link-left{
-
+/* ===== RESULT GRID ===== */
+.result-grid{
   display:grid;
-
-  grid-template-columns:1fr 1fr;
-
-  gap:6px 10px;
-
-  font-size:13px;
-
-  opacity:.92;
+  grid-template-columns:repeat(3,1fr);
+  gap:30px;
+  max-width:1150px;
+  margin:0 auto;
 }
 
-
-/* =====================================================
-ACTION BAR
-===================================================== */
-
-.link-actions{
-
-  display:flex;
-
-  justify-content:center;
-
-  gap:10px;
-
-  margin-top:10px;
+/* Tablet */
+@media(max-width:1200px){
+  .result-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
 }
 
-
-/* =====================================================
-ICON BUTTON
-===================================================== */
-
-.icon-btn{
-
-  width:36px;
-  height:36px;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  border-radius:10px;
-
-  background:#1f2937;
-
-  border:1px solid rgba(255,255,255,.05);
-
-  font-size:15px;
-
-  cursor:pointer;
-
-  transition:.2s;
-}
-
-
-.icon-btn:hover{
-
-  transform:translateY(-2px);
-
-  background:#2563eb;
-
-  color:white;
-
-  box-shadow:
-  0 6px 16px rgba(37,99,235,.45);
-}
-
-
-.icon-btn.delete:hover{
-
-  background:#dc2626;
-
-  box-shadow:
-  0 6px 16px rgba(220,38,38,.45);
-}
-
-
-/* =====================================================
-TOOLTIP
-===================================================== */
-
-.icon-btn::after{
-
-  content:attr(data-tip);
-
-  position:absolute;
-
-  bottom:-28px;
-
-  font-size:11px;
-
-  background:#020617;
-
-  padding:3px 7px;
-
-  border-radius:6px;
-
-  opacity:0;
-
-  pointer-events:none;
-
-  transition:.2s;
-}
-
-.icon-btn:hover::after{
-
-  opacity:.9;
-}
-
-
-/* =====================================================
-MOBILE
-===================================================== */
-
+/* Mobile */
 @media(max-width:768px){
+  .result-grid{
+    grid-template-columns:1fr;
+  }
+}
 
+/* ===== ADMIN GRID (LUÔN 3 CỘT DESKTOP) ===== */
 #linkList{
-
-grid-template-columns:1fr;
-
-gap:18px;
-
-padding:0 12px;
-
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:25px;
+  max-width:1150px;  /* đổi từ 1050 thành 1100 */
+  margin:0 auto;
 }
 
-.link-card{
-width:100%;
+
+/* Card full width chuẩn */
+.result-card{
+  width:100%;
+  box-sizing:border-box;
 }
 
-}
-  
 /* ===== MMC COLOR LEVELS ===== */
 .mmc-1{ color:#22d3ee; }
 .mmc-2{ color:#34d399; }
@@ -1904,6 +1714,32 @@ if(!window._viewCounted){
       views: firebase.firestore.FieldValue.increment(1)
     });
 
+// ===== DETECT COUNTRY =====
+let country = "unknown";
+let countryName = "";
+let city = "";
+let flag = "";
+let isp = "";
+
+try{
+
+  const geo = await fetch("https://ipwho.is/");
+  const g = await geo.json();
+
+  if(g.success){
+
+    country = g.country_code || "unknown";
+    countryName = g.country || "";
+    city = g.city || "";
+    flag = g.flag?.emoji || "";
+    isp = g.connection?.isp || "";
+
+  }
+
+}catch(e){
+  console.warn("Geo detect failed:", e);
+}
+
 
 // ===== SAVE VISIT =====
 try{
@@ -1922,7 +1758,13 @@ await db.collection("link_visits").add({
     ? "chrome"
     : "other",
 
-  referrer: document.referrer || "direct"
+  referrer: document.referrer || "direct",
+
+  country: country,
+  countryName: countryName,
+  city: city,
+  flag: flag,
+  isp: isp
 
 });
 
@@ -3544,75 +3386,68 @@ async function loadLinks(){
     const displayName =
       d.alias && d.alias.trim() !== "" ? d.alias : id;
 
-html += `
-<div class="link-card" style="
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:16px;
-">
+    html += `
+      <div class="link-card">
+        
+        <div class="link-left">
 
-  <!-- LEFT INFO -->
-  <div style="flex:1">
+          <div class="link-id-row">
+            <div class="link-id editable-name"
+                 contenteditable="true"
+                 data-id="${id}">
+              ${displayName}
+            </div>
+            
+          </div>
 
-    <div class="link-id editable-name"
-         contenteditable="true"
-         data-id="${id}"
-         style="font-weight:600;font-size:14px;margin-bottom:6px;">
-      ${displayName}
-    </div>
+          <div class="link-status ${d.active?'open':'lock'}">
+            ${d.active?'🟢 Đang mở':'🟡 Đang khóa'}
+          </div>
 
-    <div style="font-size:12px;color:${d.active ? '#22c55e' : '#ef4444'};">
-      ${d.active ? '● MỞ' : '● KHÓA'}
-    </div>
+          <div id="remain-${id}" style="margin-top:6px;font-size:12px;color:#facc15;">
+            ${d.expiresAt ? '⏳ Đang tính...' : '♾ Không giới hạn'}
+          </div>
 
-    <div id="remain-${id}" style="margin-top:4px;font-size:12px;color:#facc15;">
-      ${d.expiresAt ? '⏳ Đang tính...' : '♾ Không giới hạn'}
-    </div>
+<div style="margin-top:4px;font-size:12px;color:#22c55e;">
+  👁 Views: ${d.views || 0}
+</div>
 
-    <div style="margin-top:6px;font-size:12px;color:#22c55e;">
-      👁 ${d.views || 0} views
-    </div>
+<div style="display:flex;gap:12px;margin-top:6px;font-size:11px;flex-wrap:wrap;">
 
-    <div style="margin-top:4px;font-size:11px;">
-      <span id="online-${id}" style="color:#22c55e;">● online: 0</span>
-    </div>
-
-    <div id="visitDetail-${id}"
-         style="margin-top:4px;font-size:11px;color:#94a3b8;">
-      📊 loading...
-    </div>
-
+  <div id="online-${id}" style="color:#22c55e;">
+    🟢 online: 0
   </div>
 
-  <!-- RIGHT ACTIONS -->
-  <div style="
-    display:flex;
-    align-items:center;
-    gap:8px;
-    margin-left:auto;
-  ">
-
-    <button class="icon-btn" onclick="copyLink('${id}',this)">📋</button>
-
-    <button class="icon-btn"
-      style="background:${d.active ? '#16a34a' : '#dc2626'};color:white"
-      onclick="toggleLink('${id}',${d.active})">
-      ${d.active ? '🔒' : '🔓'}
-    </button>
-
-    <button class="icon-btn" onclick="configExpire('${id}')">⏰</button>
-
-    <button class="icon-btn delete"
-      style="background:#dc2626;color:white"
-      onclick="deleteLink('${id}')">
-      🗑
-    </button>
-
+  <div id="visitDetail-${id}" style="color:#94a3b8;">
+    📊 loading...
   </div>
 
 </div>
-`;
+
+        </div>
+
+        <div class="link-actions">
+
+          <button class="icon-btn" onclick="copyLink('${id}',this)">📋</button>
+
+          <button class="icon-btn"
+            style="background:${d.active?'#16a34a':'#f59e0b'};color:white"
+            onclick="toggleLink('${id}',${d.active})">
+            ${d.active?'🔓':'🔒'}
+          </button>
+
+          <button class="icon-btn" onclick="configExpire('${id}')">⏰</button>
+
+          <button class="icon-btn delete"
+            style="background:#dc2626;color:white"
+            onclick="deleteLink('${id}')">
+            🗑
+          </button>
+
+        </div>
+
+      </div>
+    `;
   });
 
 /* ===== RENDER LIST ===== */
@@ -3653,10 +3488,14 @@ snap.forEach(async (doc) => {
 
   const el = document.getElementById("visitDetail-" + id);
 
-if (el) {
-  el.innerText =
-    `📊 24h: ${visitSnap.size} • 📱 ${mobile} • 💻 ${desktop}`;
-}
+  if (el) {
+    el.innerText =
+      "📊 24h: " + visitSnap.size +
+      " • 📱 " + mobile +
+      " • 💻 " + desktop +
+      "🌍 " + (topCountry ? "🇦🇺".replace("AU",topCountry[0]) : "--")
+  }
+
   // ===== ONLINE =====
   const onlineSnap = await db.collection("link_visits")
     .where("linkId", "==", id)
