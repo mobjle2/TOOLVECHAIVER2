@@ -1714,35 +1714,7 @@ if(!window._viewCounted){
       views: firebase.firestore.FieldValue.increment(1)
     });
 
-// ===== DETECT COUNTRY =====
-let country = "unknown";
-let countryName = "";
-let city = "";
-let flag = "";
-let isp = "";
 
-try {
-
-  const geo = await fetch("https://ipapi.co/json/");
-  const g = await geo.json();
-
-  country = g.country_code || "unknown";
-  countryName = g.country_name || "";
-  city = g.city || "";
-
-  flag = country
-    .toUpperCase()
-    .replace(/./g, c =>
-      String.fromCodePoint(127397 + c.charCodeAt())
-    );
-
-  isp = g.org || "";
-
-} catch (e) {
-
-  console.warn("Geo API failed:", e);
-
-}
 // ===== SAVE VISIT =====
 try{
 
@@ -1760,13 +1732,7 @@ await db.collection("link_visits").add({
     ? "chrome"
     : "other",
 
-  referrer: document.referrer || "direct",
-
-  country: country,
-  countryName: countryName,
-  city: city,
-  flag: flag,
-  isp: isp
+  referrer: document.referrer || "direct"
 
 });
 
