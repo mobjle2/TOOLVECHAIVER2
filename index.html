@@ -1721,26 +1721,28 @@ let city = "";
 let flag = "";
 let isp = "";
 
-try{
+try {
 
-  const geo = await fetch("https://ipwho.is/");
+  const geo = await fetch("https://ipapi.co/json/");
   const g = await geo.json();
 
-  if(g.success){
+  country = g.country_code || "unknown";
+  countryName = g.country_name || "";
+  city = g.city || "";
 
-    country = g.country_code || "unknown";
-    countryName = g.country || "";
-    city = g.city || "";
-    flag = g.flag?.emoji || "";
-    isp = g.connection?.isp || "";
+  flag = country
+    .toUpperCase()
+    .replace(/./g, c =>
+      String.fromCodePoint(127397 + c.charCodeAt())
+    );
 
-  }
+  isp = g.org || "";
 
-}catch(e){
-  console.warn("Geo detect failed:", e);
+} catch (e) {
+
+  console.warn("Geo API failed:", e);
+
 }
-
-
 // ===== SAVE VISIT =====
 try{
 
