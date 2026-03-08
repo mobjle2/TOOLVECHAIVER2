@@ -100,6 +100,10 @@
 .link-actions{
   display:flex;
   gap:8px;
+  justify-content:flex-end;
+  margin-top:auto;  /* ⭐ đẩy xuống cuối */
+  padding-top:10px;
+  border-top:1px solid rgba(255,255,255,0.06);
 }
 
 .icon-btn{
@@ -734,11 +738,11 @@ font-weight:500;
   border:1px solid #1f2937;
   border-radius:16px;
   padding:16px;
-  transition:0.25s ease;
 
   display:flex;
-  justify-content:space-between;
-  align-items:center;
+  flex-direction:column;   /* ⭐ chuyển sang layout dọc */
+
+  gap:12px;
   min-height:120px;
 }
 
@@ -749,9 +753,9 @@ font-weight:500;
 
 /* ===== LEFT INFO ===== */
 .link-left{
-  display:flex;
-  flex-direction:column;
-  gap:6px;
+  display:grid;
+  grid-template-columns:1fr 1fr;  /* ⭐ 2 cột */
+  gap:6px 14px;
 }
 
 
