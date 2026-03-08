@@ -1723,14 +1723,14 @@ if(!window._viewCounted){
 // ===== SAVE VISIT =====
 try{
 
-  await db.collection("link_visits").add({
-    linkId: id, // phải đúng id của link
-    time: firebase.firestore.FieldValue.serverTimestamp(),
-    device: /mobile|android|iphone/i.test(navigator.userAgent) ? "mobile" : "desktop",
-    browser: navigator.userAgent.includes("Chrome") ? "chrome" : "other",
-    referrer: document.referrer || "direct",
-    country: country || "unknown"
-  });
+await db.collection("link_visits").add({
+  linkId: id,   // PHẢI LÀ id của link
+  time: firebase.firestore.FieldValue.serverTimestamp(),
+  device: /mobile|android|iphone/i.test(navigator.userAgent) ? "mobile" : "desktop",
+  browser: navigator.userAgent.includes("Chrome") ? "chrome" : "other",
+  referrer: document.referrer || "direct",
+  country: country || "unknown"
+});
 
 }catch(err){
   console.error("Visit save error:",err);
