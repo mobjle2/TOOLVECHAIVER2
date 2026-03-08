@@ -742,101 +742,193 @@ font-weight:500;
 }
 
 
-/* ===== ADMIN CARD PRO ===== */
+/* =================================================
+ADMIN DASHBOARD FINAL FIX
+=================================================*/
 
-.link-card{
-  background:
-    linear-gradient(145deg,
-      rgba(15,23,42,.95),
-      rgba(2,6,23,.85)
-    );
+/* ===== GRID ===== */
 
-  border:1px solid rgba(255,255,255,.06);
-  border-radius:18px;
-
-  padding:18px;
-
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-
-  min-height:125px;
-
-  transition:.35s;
-
-  backdrop-filter:blur(12px);
-
-  box-shadow:
-    0 15px 45px rgba(0,0,0,.6),
-    inset 0 0 20px rgba(255,255,255,.02);
-}
-
-.link-card:hover{
-  transform:translateY(-3px);
-
-  border-color:#38bdf8;
-
-  box-shadow:
-    0 25px 60px rgba(0,0,0,.85),
-    0 0 18px rgba(56,189,248,.2);
-}
-
-/* ===== GRID INFO ===== */
-
-.link-left{
+#linkList{
   display:grid;
-  grid-template-columns:1fr 1fr;
-
-  gap:6px 12px;
-
-  font-size:13px;
-}
-
-/* ===== RESULT GRID FINAL (FIX ĐÈ CARD) ===== */
-
-#out{
-  margin-top:30px;
-}
-
-/* ===== RESULT GRID ===== */
-.result-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:30px;
+  grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  gap:28px;
   max-width:1150px;
   margin:0 auto;
 }
 
-/* Tablet */
-@media(max-width:1200px){
-  .result-grid{
-    grid-template-columns:repeat(2,1fr);
-  }
+
+/* ===== CARD ===== */
+
+.link-card{
+
+  background:
+  linear-gradient(145deg,
+  rgba(10,20,40,.92),
+  rgba(2,6,23,.88));
+
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:20px;
+
+  padding:20px;
+
+  display:flex;
+  flex-direction:column;
+
+  gap:12px;
+
+  transition:.35s;
+
+  backdrop-filter:blur(14px);
+
+  box-shadow:
+  0 20px 60px rgba(0,0,0,.65),
+  inset 0 0 25px rgba(255,255,255,.03);
 }
 
-/* Mobile */
-@media(max-width:768px){
-  .result-grid{
-    grid-template-columns:1fr;
-  }
+
+.link-card:hover{
+
+  transform:translateY(-4px);
+
+  border-color:#38bdf8;
+
+  box-shadow:
+  0 35px 80px rgba(0,0,0,.9),
+  0 0 20px rgba(56,189,248,.25);
 }
 
-/* ===== ADMIN GRID (LUÔN 3 CỘT DESKTOP) ===== */
-#linkList{
+
+/* ===== HEADER ===== */
+
+.link-id{
+  font-weight:700;
+  font-size:16px;
+  letter-spacing:.3px;
+}
+
+
+/* ===== INFO GRID ===== */
+
+.link-left{
+
   display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:25px;
-  max-width:1150px;  /* đổi từ 1050 thành 1100 */
-  margin:0 auto;
+
+  grid-template-columns:1fr 1fr;
+
+  gap:6px 14px;
+
+  font-size:13px;
+
+  opacity:.9;
 }
 
 
-/* Card full width chuẩn */
-.result-card{
-  width:100%;
-  box-sizing:border-box;
+/* ===== STATUS ===== */
+
+.link-status{
+
+  font-size:12px;
+
+  padding:4px 10px;
+
+  border-radius:999px;
+
+  display:inline-block;
 }
 
+.link-status.open{
+
+  background:#16a34a22;
+  color:#22c55e;
+}
+
+.link-status.lock{
+
+  background:#facc1522;
+  color:#facc15;
+}
+
+
+/* ===== ACTION BAR ===== */
+
+.link-actions{
+
+  display:flex;
+
+  justify-content:center;
+
+  gap:12px;
+
+  margin-top:10px;
+}
+
+
+/* ===== ICON BUTTON ===== */
+
+.icon-btn{
+
+  width:38px;
+  height:38px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border:none;
+
+  background:#1f2937;
+
+  border-radius:12px;
+
+  cursor:pointer;
+
+  font-size:16px;
+
+  transition:.25s;
+}
+
+
+.icon-btn:hover{
+
+  transform:translateY(-2px);
+
+  background:#2563eb;
+
+  color:white;
+
+  box-shadow:
+  0 6px 18px rgba(37,99,235,.5);
+}
+
+
+/* delete */
+
+.icon-btn.delete:hover{
+
+  background:#dc2626;
+
+  box-shadow:
+  0 6px 18px rgba(220,38,38,.5);
+}
+
+
+/* ===== MOBILE ===== */
+
+@media(max-width:768px){
+
+#linkList{
+
+grid-template-columns:1fr;
+
+gap:16px;
+
+padding:0 10px;
+
+}
+
+}
+
+  
 /* ===== MMC COLOR LEVELS ===== */
 .mmc-1{ color:#22d3ee; }
 .mmc-2{ color:#34d399; }
