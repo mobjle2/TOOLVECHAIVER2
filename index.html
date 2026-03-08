@@ -3409,7 +3409,7 @@ snap.forEach(async doc => {
   const dayAgo = new Date(now - 86400000); // 24h
   const onlineAgo = new Date(now - 30000); // 30s
 
-  // Lấy visit trong 24h
+  // ===== VISIT 24H =====
   const visitSnap = await db.collection("link_visits")
     .where("linkId","==",id)
     .where("time",">=",dayAgo)
@@ -3419,8 +3419,7 @@ snap.forEach(async doc => {
   let desktop = 0;
   let countries = {};
 
-  visitSnap.forEach(v => {
-
+  visitSnap.forEach(v=>{
     const d = v.data();
 
     if(d.device === "mobile") mobile++;
@@ -3429,7 +3428,6 @@ snap.forEach(async doc => {
     if(d.country){
       countries[d.country] = (countries[d.country] || 0) + 1;
     }
-
   });
 
   const topCountry = Object.entries(countries)
@@ -3446,7 +3444,7 @@ snap.forEach(async doc => {
     `;
   }
 
-  /* ===== ONLINE USERS ===== */
+  // ===== ONLINE =====
   const onlineSnap = await db.collection("link_visits")
     .where("linkId","==",id)
     .where("time",">=",onlineAgo)
@@ -3459,20 +3457,6 @@ snap.forEach(async doc => {
   }
 
 });
-  // ===== ONLINE DETECT =====
-  const onlineSnap = await db.collection("link_visits")
-    .where("linkId","==",id)
-    .where("time",">=",onlineAgo)
-    .get();
-
-  const onlineEl = document.getElementById("online-"+id);
-
-  if(onlineEl){
-    onlineEl.innerHTML = `🟢 online: ${onlineSnap.size}`;
-  }
-
-});;
-
 
   /* ===== INLINE RENAME SAVE ===== */
   document.querySelectorAll(".editable-name").forEach(el=>{
