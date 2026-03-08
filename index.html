@@ -3355,57 +3355,45 @@ async function loadLinks(){
       d.alias && d.alias.trim() !== "" ? d.alias : id;
 
 html += `
-<div class="link-card">
+<div class="link-card" style="display:flex;justify-content:space-between;gap:16px;">
 
-  <!-- HEADER -->
-  <div class="link-id editable-name"
-       contenteditable="true"
-       data-id="${id}">
-    ${displayName}
-  </div>
+  <!-- LEFT INFO -->
+  <div style="flex:1">
 
-  <!-- INFO GRID -->
-  <div style="
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:6px;
-      margin-top:8px;
-      font-size:12px;
-  ">
+    <div class="link-id editable-name"
+         contenteditable="true"
+         data-id="${id}"
+         style="font-weight:600;margin-bottom:6px;">
+      ${displayName}
+    </div>
 
-    <div style="color:${d.active ? '#22c55e' : '#ef4444'}">
+    <div style="font-size:12px;color:${d.active ? '#22c55e' : '#ef4444'};">
       ${d.active ? '● MỞ' : '● KHÓA'}
     </div>
 
-    <div style="color:#facc15">
+    <div id="remain-${id}" style="margin-top:4px;font-size:12px;color:#facc15;">
       ${d.expiresAt ? '⏳ Đang tính...' : '♾ Không giới hạn'}
     </div>
 
-    <div style="color:#22c55e">
+    <div style="margin-top:6px;font-size:12px;color:#22c55e;">
       👁 ${d.views || 0} views
     </div>
 
-    <div id="online-${id}" style="color:#22c55e">
-      ● online: 0
+    <div style="margin-top:4px;font-size:11px;color:#94a3b8;">
+      <span id="online-${id}" style="color:#22c55e">● online: 0</span>
+    </div>
+
+    <div id="visitDetail-${id}"
+         style="margin-top:4px;font-size:11px;color:#94a3b8;">
+      📊 loading...
     </div>
 
   </div>
 
-  <div id="visitDetail-${id}"
-       style="margin-top:6px;font-size:11px;color:#94a3b8;">
-    📊 loading...
-  </div>
+  <!-- RIGHT ACTIONS -->
+  <div style="display:flex;align-items:center;gap:8px;">
 
-  <!-- ACTION BAR -->
-  <div style="
-      margin-top:12px;
-      display:flex;
-      gap:8px;
-  ">
-
-    <button class="icon-btn" onclick="copyLink('${id}',this)">
-      📋
-    </button>
+    <button class="icon-btn" onclick="copyLink('${id}',this)">📋</button>
 
     <button class="icon-btn"
       style="background:${d.active ? '#16a34a' : '#dc2626'};color:white"
@@ -3413,9 +3401,7 @@ html += `
       ${d.active ? '🔒' : '🔓'}
     </button>
 
-    <button class="icon-btn" onclick="configExpire('${id}')">
-      ⏰
-    </button>
+    <button class="icon-btn" onclick="configExpire('${id}')">⏰</button>
 
     <button class="icon-btn delete"
       style="background:#dc2626;color:white"
