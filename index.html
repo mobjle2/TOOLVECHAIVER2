@@ -743,18 +743,17 @@ font-weight:500;
 
 
 /* =====================================================
-ADMIN DASHBOARD UI PRO
+ADMIN DASHBOARD UI FIX FINAL
 ===================================================== */
 
 /* ===== GRID ===== */
 
 #linkList{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
-  gap:28px;
-
-  max-width:1200px;
-  margin:0 auto;
+  grid-template-columns:repeat(auto-fit,minmax(320px,320px));
+  justify-content:center;
+  gap:26px;
+  margin-top:30px;
 }
 
 
@@ -764,31 +763,34 @@ CARD
 
 .link-card{
 
+  width:320px;
+
   position:relative;
 
   background:
-  linear-gradient(145deg,
-  rgba(12,25,45,.9),
-  rgba(2,8,25,.85));
+  linear-gradient(
+  145deg,
+  rgba(12,25,45,.92),
+  rgba(2,8,25,.88)
+  );
 
-  border-radius:20px;
+  border-radius:18px;
 
-  padding:22px;
+  padding:18px;
 
   border:1px solid rgba(255,255,255,.06);
 
   display:flex;
   flex-direction:column;
 
-  gap:14px;
+  gap:10px;
 
-  backdrop-filter:blur(16px);
+  backdrop-filter:blur(12px);
 
-  transition:.35s cubic-bezier(.4,0,.2,1);
+  transition:.25s ease;
 
   box-shadow:
-  0 20px 60px rgba(0,0,0,.65),
-  inset 0 0 25px rgba(255,255,255,.03);
+  0 12px 40px rgba(0,0,0,.6);
 }
 
 
@@ -796,13 +798,13 @@ CARD
 
 .link-card:hover{
 
-  transform:translateY(-6px);
+  transform:translateY(-4px);
 
   border-color:#38bdf8;
 
   box-shadow:
-  0 35px 90px rgba(0,0,0,.9),
-  0 0 25px rgba(56,189,248,.25);
+  0 25px 60px rgba(0,0,0,.8),
+  0 0 14px rgba(56,189,248,.18);
 }
 
 
@@ -812,7 +814,7 @@ HEADER
 
 .link-id{
 
-  font-size:16px;
+  font-size:15px;
   font-weight:700;
 
   letter-spacing:.3px;
@@ -822,14 +824,14 @@ HEADER
 
 
 /* =====================================================
-STATUS BADGE
+STATUS
 ===================================================== */
 
 .link-status{
 
   font-size:12px;
 
-  padding:4px 12px;
+  padding:3px 10px;
 
   border-radius:999px;
 
@@ -838,13 +840,13 @@ STATUS BADGE
 
 .link-status.open{
 
-  background:rgba(34,197,94,.18);
+  background:rgba(34,197,94,.2);
   color:#22c55e;
 }
 
 .link-status.lock{
 
-  background:rgba(250,204,21,.18);
+  background:rgba(250,204,21,.2);
   color:#facc15;
 }
 
@@ -859,7 +861,7 @@ INFO GRID
 
   grid-template-columns:1fr 1fr;
 
-  gap:8px 14px;
+  gap:6px 10px;
 
   font-size:13px;
 
@@ -877,9 +879,9 @@ ACTION BAR
 
   justify-content:center;
 
-  gap:14px;
+  gap:10px;
 
-  margin-top:6px;
+  margin-top:10px;
 }
 
 
@@ -889,24 +891,24 @@ ICON BUTTON
 
 .icon-btn{
 
-  width:40px;
-  height:40px;
+  width:36px;
+  height:36px;
 
   display:flex;
   align-items:center;
   justify-content:center;
 
-  border-radius:12px;
+  border-radius:10px;
 
-  background:rgba(255,255,255,.05);
+  background:#1f2937;
 
-  border:1px solid rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.05);
 
-  font-size:16px;
+  font-size:15px;
 
   cursor:pointer;
 
-  transition:.25s;
+  transition:.2s;
 }
 
 
@@ -919,18 +921,16 @@ ICON BUTTON
   color:white;
 
   box-shadow:
-  0 8px 22px rgba(37,99,235,.5);
+  0 6px 16px rgba(37,99,235,.45);
 }
 
-
-/* delete button */
 
 .icon-btn.delete:hover{
 
   background:#dc2626;
 
   box-shadow:
-  0 8px 22px rgba(220,38,38,.5);
+  0 6px 16px rgba(220,38,38,.45);
 }
 
 
@@ -944,13 +944,13 @@ TOOLTIP
 
   position:absolute;
 
-  bottom:-32px;
+  bottom:-28px;
 
   font-size:11px;
 
   background:#020617;
 
-  padding:4px 8px;
+  padding:3px 7px;
 
   border-radius:6px;
 
@@ -977,14 +977,17 @@ MOBILE
 
 grid-template-columns:1fr;
 
-gap:16px;
+gap:18px;
 
-padding:0 10px;
-
-}
+padding:0 12px;
 
 }
 
+.link-card{
+width:100%;
+}
+
+}
   
 /* ===== MMC COLOR LEVELS ===== */
 .mmc-1{ color:#22d3ee; }
