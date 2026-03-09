@@ -3199,6 +3199,16 @@ async function check(){
     out.innerHTML="";
     return;
   }
+  /* ===== RAM SEARCH FIRST ===== */
+
+if(CODE_CACHE.has(q)){
+
+  const results = CODE_CACHE.get(q);
+
+  renderResults(results);
+
+  return;
+}
 
   btn.disabled = true;
   btn.style.opacity = "0.6";
