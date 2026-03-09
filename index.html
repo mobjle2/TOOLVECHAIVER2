@@ -313,6 +313,15 @@ font-weight:500;
   color:#facc15;           /* vàng gold */
   text-shadow:0 0 8px rgba(250,204,21,.6);
 }
+.vip-11{
+ color:#fde047;
+ text-shadow:0 0 12px rgba(253,224,71,.9);
+}
+
+.vip-12{
+ color:#facc15;
+ text-shadow:0 0 14px rgba(250,204,21,.9);
+}
 /* ================= CLEAN LOGIN FINAL ================= */
 
 .login-wrapper{
@@ -1665,6 +1674,36 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
 /* 🚀 TURBO CACHE */
 const turboCache = new Map();
+
+/* ===== RAM DATABASE ===== */
+const CODE_CACHE = new Map();
+
+/* ================= TURBO CACHE ENGINE ================= */
+
+async function preloadCodes(){
+
+  console.log("Loading code cache...");
+
+  const snap = await db.collection("codes").get();
+
+  snap.forEach(doc=>{
+
+    const d = doc.data();
+
+    if(!d.code) return;
+
+    const key = d.code.toUpperCase();
+
+    if(!CODE_CACHE.has(key))
+      CODE_CACHE.set(key,[]);
+
+    CODE_CACHE.get(key).push(d);
+
+  });
+
+  console.log("CACHE READY:",CODE_CACHE.size);
+
+}
 
 
 /* ===== SAFE USER MODE DETECT ===== */
@@ -3408,7 +3447,7 @@ auth.onAuthStateChanged(async (user) => {
     // Login thành công
     document.getElementById("loginScreen").style.display = "none";
     document.getElementById("adminPanel").style.display = "block";
-
+    preloadCodes();   // ⭐ THÊM DÒNG NÀY
     loadLinks();
 
   }catch(err){
