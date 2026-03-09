@@ -2274,8 +2274,8 @@ r.type="uMCP";
 /* ===== UFS VERSION ===== */
 
 if(main.includes("9001")){
-  r.storage="UFS";
-  r.version="UFS";
+r.storage="UFS 3.x";
+r.version="UFS 3.x";
 }
 
 else if(main.includes("8001")){
@@ -3193,71 +3193,12 @@ async function check(){
 
   const out = document.getElementById("out");
   const btn = document.querySelector(".check-btn");
-
-  let q = document.getElementById("q")?.value?.trim()?.toUpperCase();
-
-  if(!q){
-    out.innerHTML="";
-    return;
-  }
-
-  /* ===== CODE CACHE SEARCH FIRST ===== */
-
-  if(CODE_CACHE.has(q)){
-
-    const results = CODE_CACHE.get(q);
-
-    renderResults(results);
-
-    return;
-  }
-
-  /* ===== MODEL FUZZY SEARCH ===== */
-
-  const fuzzy = q.replace(/[^A-Z0-9]/g,"");
-
-  if(fuzzy.length >= 3){
-
-    const snapModel = await db.collection("codes")
-      .where("searchText","array-contains-any",[
-        fuzzy,
-        fuzzy + "F",
-        fuzzy + "G",
-        fuzzy + "N"
-      ])
-      .limit(30)
-      .get();
-
-    if(!snapModel.empty){
-
-      const docsMap = new Map();
-
-      snapModel.forEach(doc=>{
-        docsMap.set(doc.id,doc);
-      });
-
-      renderResults([...docsMap.values()].map(d=>d.data()));
-
-      return;
-    }
-
-  }
-
+  const q = document.getElementById("q")?.value?.trim()?.toUpperCase();
 
   if(!q){
     out.innerHTML="";
     return;
   }
-  /* ===== RAM SEARCH FIRST ===== */
-
-if(CODE_CACHE.has(q)){
-
-  const results = CODE_CACHE.get(q);
-
-  renderResults(results);
-
-  return;
-}
 
   btn.disabled = true;
   btn.style.opacity = "0.6";
