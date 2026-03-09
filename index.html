@@ -3198,9 +3198,8 @@ async function check(){
 
   if(!q) return;
 
-  /* giữ nguyên code, không cắt sau dấu "-" */
-
-  /* ===== MODEL FUZZY SEARCH ===== */
+  /* ===== NORMALIZE CODE ===== */
+  // giữ nguyên code đầy đủ, không cắt sau dấu "-"
 
   const fuzzy = q.replace(/[^A-Z0-9]/g,"");
 
