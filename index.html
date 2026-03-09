@@ -3194,6 +3194,36 @@ async function check(){
   const out = document.getElementById("out");
   const btn = document.querySelector(".check-btn");
   const q = document.getElementById("q")?.value?.trim()?.toUpperCase();
+  /* ===== MODEL FUZZY SEARCH ===== */
+
+const fuzzy = q.replace(/[^A-Z0-9]/g,"");
+
+if(fuzzy.length >= 3){
+
+  const snapModel = await db.collection("codes")
+    .where("searchText", "array-contains-any", [
+      fuzzy,
+      fuzzy + "F",
+      fuzzy + "G",
+      fuzzy + "N"
+    ])
+    .limit(30)
+    .get();
+
+  if(!snapModel.empty){
+
+    const docsMap = new Map();
+
+    snapModel.forEach(doc=>{
+      docsMap.set(doc.id,doc);
+    });
+
+    renderResults([...docsMap.values()].map(d=>d.data()));
+
+    return;
+  }
+
+}
 
   if(!q){
     out.innerHTML="";
