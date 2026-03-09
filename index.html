@@ -3193,13 +3193,16 @@ async function check(){
 
   const out = document.getElementById("out");
   const btn = document.querySelector(".check-btn");
- let q = document.getElementById("q")?.value?.trim()?.toUpperCase();
+async function check(){
 
-/* ===== NORMALIZE CODE ===== */
+  const out = document.getElementById("out");
+  const btn = document.querySelector(".check-btn");
 
-if(q.includes("-")){
-  q = q.split("-")[0];
-}
+  let q = document.getElementById("q")?.value?.trim()?.toUpperCase();
+
+  if(!q) return;
+
+  /* giữ nguyên code, không cắt sau dấu "-" */
   /* ===== MODEL FUZZY SEARCH ===== */
 
 const fuzzy = q.replace(/[^A-Z0-9]/g,"");
