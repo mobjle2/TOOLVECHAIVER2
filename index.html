@@ -3196,17 +3196,30 @@ async function check(){
 
   let q = document.getElementById("q")?.value?.trim()?.toUpperCase();
 
-  if(!q) return;
+  if(!q){
+    out.innerHTML="";
+    return;
+  }
 
-  /* ===== NORMALIZE CODE ===== */
-  // giữ nguyên code đầy đủ, không cắt sau dấu "-"
+  /* ===== CODE CACHE SEARCH FIRST ===== */
+
+  if(CODE_CACHE.has(q)){
+
+    const results = CODE_CACHE.get(q);
+
+    renderResults(results);
+
+    return;
+  }
+
+  /* ===== MODEL FUZZY SEARCH ===== */
 
   const fuzzy = q.replace(/[^A-Z0-9]/g,"");
 
   if(fuzzy.length >= 3){
 
     const snapModel = await db.collection("codes")
-      .where("searchText", "array-contains-any", [
+      .where("searchText","array-contains-any",[
         fuzzy,
         fuzzy + "F",
         fuzzy + "G",
@@ -3225,7 +3238,7 @@ async function check(){
 
       renderResults([...docsMap.values()].map(d=>d.data()));
 
-      
+      return;
     }
 
   }
