@@ -2090,7 +2090,9 @@ function detectChip(code){
 
 function autoDecodeChip(code){
 
-  code = code.toUpperCase().trim();
+  if(!code) return null;
+
+  code = String(code).toUpperCase().trim();
 
   /* ===== QUICK YMTC SHORTCODE ===== */
 
@@ -3276,7 +3278,7 @@ if(docsMap.size === 0){
   const key = q.toUpperCase().trim();
   const auto = autoDecodeChip(key);
 
-  if(auto !== null){
+  if(auto){
 
     const romHTML = auto.rom ? `<div class="ram-badge">${auto.rom}GB</div>` : "";
     const vipHTML = auto.vip ? `<div class="vip-badge vip-${auto.vip}">
@@ -3300,8 +3302,8 @@ if(docsMap.size === 0){
       </div>
     `;
 
-    turboCache.set(key, html);
     out.innerHTML = html;
+    turboCache.set(key, html);
     return;
   }
 
