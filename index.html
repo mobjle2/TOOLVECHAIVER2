@@ -3273,6 +3273,30 @@ async function check(){
       docsMap.set(doc.id, doc);
     });
 
+    /* ===== FILTER LẠI THEO CODE + MODEL ===== */
+    const filteredMap = new Map();
+
+    docsMap.forEach((doc,id)=>{
+
+      const d = doc.data();
+
+      const code = (d.code || "").toUpperCase();
+      const model = (d.model || "").toUpperCase();
+
+      const text = code + " " + model;
+
+      if(text.includes(q)){
+        filteredMap.set(id, doc);
+      }
+
+    });
+
+    docsMap.clear();
+
+    filteredMap.forEach((v,k)=>{
+      docsMap.set(k,v);
+    });
+
 if(docsMap.size === 0){
 
   const key = q.toUpperCase().trim();
