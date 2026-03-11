@@ -2058,29 +2058,6 @@ function detectChip(code){
     return {name:"UNKNOWN",color:"#6b7280",class:"brand-unknown"};
 
   code = code.toUpperCase().trim();
-  function autoDecodeChip(code){
-
-  code = code.toUpperCase().trim();
-
-  /* ===== QUICK YMTC SHORTCODE ===== */
-
-  if(code === "C6"){
-    return { type:"UFS", storage:"UFS", ram:null, rom:32, vip:5 };
-  }
-
-  if(code === "C7"){
-    return { type:"UFS", storage:"UFS", ram:null, rom:64, vip:6 };
-  }
-
-  if(code === "C8"){
-    return { type:"UFS", storage:"UFS", ram:null, rom:128, vip:7 };
-  }
-
-  if(code === "C9"){
-    return { type:"UFS", storage:"UFS", ram:null, rom:256, vip:8 };
-  }
-
-  // code decode tiếp phía dưới...
 
   if(/^K/.test(code))
     return {name:"Samsung",color:"#22c55e",class:"brand-samsung"};
@@ -2106,9 +2083,39 @@ function detectChip(code){
   return {name:"UNKNOWN",color:"#6b7280",class:"brand-unknown"};
 }
 
-// ===== VIP RULE (ỔN ĐỊNH & CHUẨN HÓA KIỂU DỮ LIỆU) =====
-function calculateVip(ram, rom){
 
+/* =====================================================
+   AUTO DECODE CHIP
+===================================================== */
+
+function autoDecodeChip(code){
+
+  code = code.toUpperCase().trim();
+
+  /* ===== QUICK YMTC SHORTCODE ===== */
+
+  if(code === "C6"){
+    return { type:"UFS", storage:"UFS", ram:null, rom:32, vip:5 };
+  }
+
+  if(code === "C7"){
+    return { type:"UFS", storage:"UFS", ram:null, rom:64, vip:6 };
+  }
+
+  if(code === "C8"){
+    return { type:"UFS", storage:"UFS", ram:null, rom:128, vip:7 };
+  }
+
+  if(code === "C9"){
+    return { type:"UFS", storage:"UFS", ram:null, rom:256, vip:8 };
+  }
+
+  return null;
+}
+
+
+// ===== VIP RULE =====
+function calculateVip(ram, rom){
   // =========================
   // SAFE TYPE
   // =========================
