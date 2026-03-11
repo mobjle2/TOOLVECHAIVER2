@@ -3271,17 +3271,41 @@ async function check(){
       docsMap.set(doc.id, doc);
     });
 
-    if(docsMap.size === 0){
-      const notFoundHTML = `
-        <div style="margin-top:40px;text-align:center;
-          font-size:18px;font-weight:600;color:#facc15;">
-          Không tìm thấy mã
+if(docsMap.size === 0){
+
+  const auto = autoDecodeChip(q);
+
+  if(auto){
+
+    let html = `
+    <div class="result-grid">
+      <div class="result-card">
+        <div class="code-main">${q}</div>
+
+        <div class="badge-row">
+          ${auto.rom ? '<div class="ram-badge">'+auto.rom+'GB</div>' : ''}
+          ${auto.vip ? '<div class="vip-badge vip-'+auto.vip+'"><span class="vip-dot"></span> VIP '+auto.vip+'</div>' : ''}
         </div>
-      `;
-      turboCache.set(q, notFoundHTML);
-      out.innerHTML = notFoundHTML;
-      return;
-    }
+      </div>
+    </div>
+    `;
+
+    out.innerHTML = html;
+    turboCache.set(q, html);
+    return;
+  }
+
+  const notFoundHTML = `
+    <div style="margin-top:40px;text-align:center;
+      font-size:18px;font-weight:600;color:#facc15;">
+      Không tìm thấy mã
+    </div>
+  `;
+
+  turboCache.set(q, notFoundHTML);
+  out.innerHTML = notFoundHTML;
+  return;
+}
 
     let html = `<div class="result-grid">`;
 
