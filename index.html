@@ -3273,36 +3273,50 @@ async function check(){
 
 if(docsMap.size === 0){
 
-  const auto = autoDecodeChip(q);
+  const key = q.toUpperCase().trim();
+  const auto = autoDecodeChip(key);
 
-  if(auto){
+  if(auto !== null){
 
-    let html = `
-    <div class="result-grid">
-      <div class="result-card">
-        <div class="code-main">${q}</div>
+    const romHTML = auto.rom ? `<div class="ram-badge">${auto.rom}GB</div>` : "";
+    const vipHTML = auto.vip ? `<div class="vip-badge vip-${auto.vip}">
+      <span class="vip-dot"></span> VIP ${auto.vip}
+    </div>` : "";
 
-        <div class="badge-row">
-          ${auto.rom ? '<div class="ram-badge">'+auto.rom+'GB</div>' : ''}
-          ${auto.vip ? '<div class="vip-badge vip-'+auto.vip+'"><span class="vip-dot"></span> VIP '+auto.vip+'</div>' : ''}
+    const html = `
+      <div class="result-grid">
+        <div class="result-card">
+
+          <div class="code-title">
+            <span class="code-badge">${key}</span>
+          </div>
+
+          <div class="badge-row">
+            ${romHTML}
+            ${vipHTML}
+          </div>
+
         </div>
       </div>
-    </div>
     `;
 
+    turboCache.set(key, html);
     out.innerHTML = html;
-    turboCache.set(q, html);
     return;
   }
 
   const notFoundHTML = `
-    <div style="margin-top:40px;text-align:center;
-      font-size:18px;font-weight:600;color:#facc15;">
+    <div style="
+      margin-top:40px;
+      text-align:center;
+      font-size:18px;
+      font-weight:600;
+      color:#facc15;">
       Không tìm thấy mã
     </div>
   `;
 
-  turboCache.set(q, notFoundHTML);
+  turboCache.set(key, notFoundHTML);
   out.innerHTML = notFoundHTML;
   return;
 }
