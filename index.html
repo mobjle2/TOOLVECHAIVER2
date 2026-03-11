@@ -3248,31 +3248,43 @@ async function check(){
       return;
     }
 
-    /* ===== QUERY ARRAY-CONTAINS TRƯỚC ===== */
-    const snapSearch = await db.collection("codes")
-      .where("searchText", "array-contains", search)
-      .limit(30)
-      .get();
+/* ===== SMART SEARCH ENGINE ===== */
 
-    /* ===== QUERY PREFIX CODE ===== */
-    const snapCode = await db.collection("codes")
-.where("code", ">=", q.toUpperCase())
-.where("code", "<=", q.toUpperCase() + "\uf8ff")
-      .limit(30)
-      .get();
+const docsMap = new Map();
 
-    const docsMap = new Map();
+/* ===== QUERY CODE PREFIX ===== */
+const snapCode = await db.collection("codes")
+  .where("code", ">=", q)
+  .where("code", "<=", q + "\uf8ff")
+  .limit(30)
+  .get();
 
-    /* ===== GỘP KẾT QUẢ ARRAY-CONTAINS ===== */
-    snapSearch.forEach(doc=>{
-      docsMap.set(doc.id, doc);
-    });
+/* ===== QUERY MODEL PREFIX ===== */
+const snapModel = await db.collection("codes")
+  .where("models", ">=", q)
+  .where("models", "<=", q + "\uf8ff")
+  .limit(30)
+  .get();
 
-    /* ===== GỘP KẾT QUẢ PREFIX ===== */
-    snapCode.forEach(doc=>{
-      docsMap.set(doc.id, doc);
-    });
+/* ===== QUERY CHIP PREFIX ===== */
+const snapChip = await db.collection("codes")
+  .where("chip", ">=", q)
+  .where("chip", "<=", q + "\uf8ff")
+  .limit(30)
+  .get();
 
+/* ===== MERGE RESULTS ===== */
+snapCode.forEach(doc=>{
+  docsMap.set(doc.id, doc);
+});
+
+snapModel.forEach(doc=>{
+  docsMap.set(doc.id, doc);
+});
+
+snapChip.forEach(doc=>{
+  docsMap.set(doc.id, doc);
+});
 if(docsMap.size === 0){
 
   const key = q.toUpperCase().trim();
