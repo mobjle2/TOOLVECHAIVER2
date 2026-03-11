@@ -3267,12 +3267,41 @@ snapSearch.forEach(doc=>{
 
   const d = doc.data();
 
-  const code = (d.code || "").toUpperCase();
-  const model = (d.model || "").toUpperCase();
+const code = (d.code || "").toUpperCase();
 
-  const text = code + " " + model;
+/* ===== GHÉP MODEL ===== */
+let modelsText = "";
 
-  if(text.includes(q)){
+if(Array.isArray(d.models)){
+
+  modelsText = d.models.map(m=>{
+
+    if(typeof m === "string")
+      return m;
+
+    if(typeof m === "object" && m)
+      return (m.brand || "") + " " + (m.model || "");
+
+    return "";
+
+  }).join(" ");
+
+}
+
+else if(d.model){
+
+  modelsText = d.model;
+
+}
+
+/* ===== TEXT SEARCH ===== */
+const text = (code + " " + modelsText).toUpperCase();
+
+ if(
+  text.includes(q) ||
+  q.includes(code) ||
+  code.includes(q)
+){
     docsMap.set(doc.id, doc);
   }
 
