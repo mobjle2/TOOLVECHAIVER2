@@ -2085,16 +2085,14 @@ function detectChip(code){
 
 
 /* =====================================================
-   AUTO DECODE CHIP
+   QUICK SHORTCODE DECODE (C6 C7 C8 C9)
 ===================================================== */
 
-function autoDecodeChip(code){
+function quickDecodeChip(code){
 
   if(!code) return null;
 
   code = String(code).toUpperCase().trim();
-
-  /* ===== QUICK YMTC SHORTCODE ===== */
 
   if(code === "C6"){
     return { type:"UFS", storage:"UFS", ram:null, rom:32, vip:5 };
@@ -2114,7 +2112,6 @@ function autoDecodeChip(code){
 
   return null;
 }
-
 
 // ===== VIP RULE =====
 function calculateVip(ram, rom){
@@ -2659,6 +2656,8 @@ vip
   
 // ===== MAIN DECODER =====
 function autoDecodeChip(code, dbData){
+const quick = quickDecodeChip(code);
+if(quick) return quick;
 
   code = code.toUpperCase().trim();
   // ===== YMTC / YMEC ENGINE =====
