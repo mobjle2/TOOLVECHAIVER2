@@ -3250,7 +3250,7 @@ async function check(){
 
     /* ===== LOAD DATA ===== */
     const snapSearch = await db.collection("codes")
-      .limit(200)
+      .limit(1000)
       .get();
 
     const snapCode = await db.collection("codes")
