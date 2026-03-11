@@ -3249,10 +3249,9 @@ async function check(){
     }
 
     /* ===== QUERY ARRAY-CONTAINS TRƯỚC ===== */
-    const snapSearch = await db.collection("codes")
-      .where("searchText", "array-contains", q)
-      .limit(30)
-      .get();
+const snapSearch = await db.collection("codes")
+  .limit(60)
+  .get();
 
     /* ===== QUERY PREFIX CODE ===== */
     const snapCode = await db.collection("codes")
@@ -3264,9 +3263,20 @@ async function check(){
     const docsMap = new Map();
 
     /* ===== GỘP KẾT QUẢ ARRAY-CONTAINS ===== */
-    snapSearch.forEach(doc=>{
-      docsMap.set(doc.id, doc);
-    });
+snapSearch.forEach(doc=>{
+
+  const d = doc.data();
+
+  const code = (d.code || "").toUpperCase();
+  const model = (d.model || "").toUpperCase();
+
+  const text = code + " " + model;
+
+  if(text.includes(q)){
+    docsMap.set(doc.id, doc);
+  }
+
+});
 
     /* ===== GỘP KẾT QUẢ PREFIX ===== */
     snapCode.forEach(doc=>{
