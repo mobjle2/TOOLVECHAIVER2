@@ -3319,14 +3319,22 @@ const text = (code + " " + modelsText).toUpperCase();
 
       const d = doc.data();
 
-      const code = (d.code || "").toUpperCase();
-      const model = (d.model || "").toUpperCase();
+const code = (d.code || "").toUpperCase();
 
-      const text = code + " " + model;
+const models = Array.isArray(d.models)
+  ? d.models.map(m=>{
+      if(typeof m === "string") return m.toUpperCase();
+      if(typeof m === "object" && m)
+        return ((m.brand||"") + " " + (m.model||"")).toUpperCase();
+      return "";
+    }).join(" ")
+  : (d.model || "").toUpperCase();
 
-      if(text.includes(q)){
-        filteredMap.set(id, doc);
-      }
+const text = code + " " + models;
+
+if(text.includes(q)){
+  filteredMap.set(id, doc);
+}
 
     });
 
