@@ -3225,6 +3225,7 @@ async function check(){
   const out = document.getElementById("out");
   const btn = document.querySelector(".check-btn");
   const q = document.getElementById("q")?.value?.trim()?.toUpperCase();
+  const search = q.toLowerCase();
 
   if(!q){
     out.innerHTML="";
@@ -3249,14 +3250,14 @@ async function check(){
 
     /* ===== QUERY ARRAY-CONTAINS TRƯỚC ===== */
     const snapSearch = await db.collection("codes")
-      .where("searchText", "array-contains", q)
+      .where("searchText", "array-contains", search)
       .limit(30)
       .get();
 
     /* ===== QUERY PREFIX CODE ===== */
     const snapCode = await db.collection("codes")
-      .where("code", ">=", q)
-      .where("code", "<=", q + "\uf8ff")
+.where("code", ">=", q.toUpperCase())
+.where("code", "<=", q.toUpperCase() + "\uf8ff")
       .limit(30)
       .get();
 
