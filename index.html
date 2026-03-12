@@ -3345,10 +3345,7 @@ snapCode.forEach(doc=>{
   docsMap.set(doc.id, doc);
 });
 
-/* =====================================================
-   KHÔNG TÌM THẤY TRONG FIRESTORE
-===================================================== */
-
+/* ===== TRƯỜNG HỢP KHÔNG TÌM THẤY TRONG FIRESTORE ===== */
 if(docsMap.size === 0){
 
   const key = q.toUpperCase().trim();
@@ -3359,42 +3356,41 @@ if(docsMap.size === 0){
   /* ===== TÌM GIÁ MODEL ===== */
   const price = findPriceByModel(key);
 
-/* ===== HIỂN THỊ ROM ===== */
-let romHTML = "";
-let vipHTML = "";
+  /* ===== HTML ROM / VIP ===== */
+  let romHTML = "";
+  let vipHTML = "";
 
-if(auto){
+  if(auto){
+    romHTML = auto.rom
+      ? `<div class="ram-badge">${auto.rom}GB</div>`
+      : "";
 
-  romHTML = auto.rom
-    ? `<div class="ram-badge">${auto.rom}GB</div>`
-    : "";
+    vipHTML = auto.vip
+      ? `<div class="vip-badge vip-${auto.vip}">
+          <span class="vip-dot"></span> VIP ${auto.vip}
+        </div>`
+      : "";
+  }
 
-  vipHTML = auto.vip
-    ? `<div class="vip-badge vip-${auto.vip}">
-        <span class="vip-dot"></span> VIP ${auto.vip}
-      </div>`
-    : "";
+  /* ===== HTML GIÁ ===== */
+  let priceHTML = "";
 
-}
+  if(price){
+    priceHTML = `
+      <div class="model-row">
+        Samsung loại ${price.type}
+      </div>
 
-  /* ===== HIỂN THỊ GIÁ ===== */
-if(price){
+      <div style="margin-top:10px;line-height:1.6;">
+        <div style="font-weight:600;">📦 Giá máy</div>
+        <div>Có pin: ${Math.round(price.pin/1000)}k</div>
+        <div>Không pin: ${Math.round(price.no_pin/1000)}k</div>
+        <div>Main: ${Math.round(price.main/1000)}k</div>
+      </div>
+    `;
+  }
 
-  priceHTML = `
-    <div class="model-row">
-      Samsung loại ${price.type}
-    </div>
-
-    <div style="margin-top:12px;font-size:14px;line-height:1.6;">
-      <div style="font-weight:600;">📦 Giá máy</div>
-      <div>Có pin: ${Math.round(price.pin/1000)}k</div>
-      <div>Không pin: ${Math.round(price.no_pin/1000)}k</div>
-      <div>Main: ${Math.round(price.main/1000)}k</div>
-    </div>
-  `;
-}
-
-  /* ===== CÓ DECODE HOẶC CÓ GIÁ ===== */
+  /* ===== NẾU CÓ CHIP HOẶC CÓ GIÁ ===== */
   if(auto || price){
 
     const html = `
@@ -3419,11 +3415,9 @@ if(price){
     out.innerHTML = html;
     turboCache.set(key, html);
     return;
-
   }
 
   /* ===== KHÔNG CÓ GÌ ===== */
-
   const notFoundHTML = `
     <div style="
       margin-top:40px;
@@ -3438,7 +3432,6 @@ if(price){
   turboCache.set(key, notFoundHTML);
   out.innerHTML = notFoundHTML;
   return;
-
 }
 
     let html = `<div class="result-grid">`;
