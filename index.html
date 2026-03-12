@@ -1728,30 +1728,22 @@ async function preloadPriceTable(){
 
 /* ================= TÌM GIÁ THEO MODEL ================= */
 
-/* ================= TÌM GIÁ THEO MODEL ================= */
 function findPriceByModel(input){
 
   if(!input) return null;
 
-  let key = String(input).toUpperCase();
+  let model = input.toUpperCase();
 
-  // bỏ SM-
-  key = key.replace("SM-","");
-
-  // lấy mã kiểu G531
-  const m = key.match(/[A-Z]\d{3}/);
-  if(m) key = m[0];
+  const m = model.match(/[A-Z]\d{2,4}/);
+  if(m) model = m[0];
 
   for(const p of PRICE_TABLE){
 
     const pm = String(p.model || "").toUpperCase();
 
-    // match trực tiếp
-    if(pm.includes(key)) return p;
-
-    // match mã model nằm trong tên (nếu có)
-    const code = pm.match(/[A-Z]\d{3}/);
-    if(code && code[0] === key) return p;
+    if(pm.includes(model)){
+      return p;
+    }
 
   }
 
