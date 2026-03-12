@@ -3354,23 +3354,23 @@ if(docsMap.size === 0){
   /* ===== TÌM GIÁ MODEL ===== */
   const price = findPriceByModel(key);
 
-  /* ===== HIỂN THỊ ROM ===== */
-  let romHTML = "";
-  let vipHTML = "";
+/* ===== HIỂN THỊ ROM ===== */
+let romHTML = "";
+let vipHTML = "";
 
-  if(auto){
+if(auto){
 
-    romHTML = auto.rom
-      ? `<div class="ram-badge">${auto.rom}GB</div>`
-      : "";
+  romHTML = auto.rom
+    ? `<div class="ram-badge">${auto.rom}GB</div>`
+    : "";
 
-    vipHTML = auto.vip
-      ? `<div class="vip-badge vip-${auto.vip}">
-          <span class="vip-dot"></span> VIP ${auto.vip}
-        </div>`
-      : "";
+  vipHTML = auto.vip
+    ? `<div class="vip-badge vip-${auto.vip}">
+        <span class="vip-dot"></span> VIP ${auto.vip}
+      </div>`
+    : "";
 
-  }
+}
 
   /* ===== HIỂN THỊ GIÁ ===== */
   let priceHTML = "";
