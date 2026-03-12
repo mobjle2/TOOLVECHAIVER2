@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -3349,14 +3350,53 @@ snapCode.forEach(doc=>{
   docsMap.set(doc.id, doc);
 });
 
+/* ===== TRƯỜNG HỢP KHÔNG TÌM THẤY TRONG FIRESTORE ===== */
 if(docsMap.size === 0){
 
   const key = q.toUpperCase().trim();
 
-  /* ===== TÌM GIÁ THEO MODEL ===== */
+  /* ===== DECODE CHIP ===== */
+  const auto = autoDecodeChip(key);
+
+  /* ===== TÌM GIÁ MODEL ===== */
   const price = findPriceByModel(key);
 
+  /* ===== HTML ROM / VIP ===== */
+  let romHTML = "";
+  let vipHTML = "";
+
+  if(auto){
+    romHTML = auto.rom
+      ? `<div class="ram-badge">${auto.rom}GB</div>`
+      : "";
+
+    vipHTML = auto.vip
+      ? `<div class="vip-badge vip-${auto.vip}">
+          <span class="vip-dot"></span> VIP ${auto.vip}
+        </div>`
+      : "";
+  }
+
+  /* ===== HTML GIÁ ===== */
+  let priceHTML = "";
+
   if(price){
+    priceHTML = `
+      <div class="model-row">
+        Samsung loại ${price.type}
+      </div>
+
+      <div style="margin-top:10px;line-height:1.6;">
+        <div style="font-weight:600;">📦 Giá máy</div>
+        <div>Có pin: ${Math.round(price.pin/1000)}k</div>
+        <div>Không pin: ${Math.round(price.no_pin/1000)}k</div>
+        <div>Main: ${Math.round(price.main/1000)}k</div>
+      </div>
+    `;
+  }
+
+  /* ===== NẾU CÓ CHIP HOẶC CÓ GIÁ ===== */
+  if(auto || price){
 
     const html = `
       <div class="result-grid">
@@ -3366,16 +3406,12 @@ if(docsMap.size === 0){
             <span class="code-badge">${key}</span>
           </div>
 
-          <div class="model-row">
-            Samsung loại ${price.type}
+          <div class="badge-row">
+            ${romHTML}
+            ${vipHTML}
           </div>
 
-          <div style="margin-top:10px;line-height:1.6;">
-            <div style="font-weight:600;">📦 Giá máy</div>
-            <div>Có pin: ${Math.round(price.pin/1000)}k</div>
-            <div>Không pin: ${Math.round(price.no_pin/1000)}k</div>
-            <div>Main: ${Math.round(price.main/1000)}k</div>
-          </div>
+          ${priceHTML}
 
         </div>
       </div>
@@ -3402,8 +3438,8 @@ if(docsMap.size === 0){
   turboCache.set(key, notFoundHTML);
   out.innerHTML = notFoundHTML;
   return;
-}
 
+}
   /* ===== KHÔNG CÓ GÌ ===== */
   const notFoundHTML = `
     <div style="
