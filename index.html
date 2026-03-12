@@ -1733,16 +1733,21 @@ function findPriceByModel(model){
 
   model = model.toUpperCase();
 
-  /* ===== LẤY MODEL TRONG NGOẶC ===== */
+  /* ===== TÁCH MODEL TRONG NGOẶC ===== */
   const m = model.match(/\((.*?)\)/);
-
   if(m){
     model = m[1];
   }
 
+  /* ===== BỎ SM- PREFIX ===== */
+  model = model.replace("SM-","");
+
   for(const p of PRICE_TABLE){
 
-    if(model.includes(p.model)){
+    const pm = String(p.model || "").toUpperCase();
+
+    /* match trực tiếp */
+    if(model.includes(pm) || pm.includes(model)){
       return p;
     }
 
