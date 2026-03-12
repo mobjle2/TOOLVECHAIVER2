@@ -3282,6 +3282,42 @@ async function check(){
   const out = document.getElementById("out");
   const btn = document.querySelector(".check-btn");
   const q = document.getElementById("q")?.value?.trim()?.toUpperCase();
+  /* ===== FORCE MODEL SEARCH ===== */
+const modelMatch = q.match(/[A-Z]\d{3}/);
+
+if(modelMatch){
+
+  const price = findPriceByModel(modelMatch[0]);
+
+  if(price){
+
+    const html = `
+      <div class="result-grid">
+        <div class="result-card">
+
+          <div class="code-title">
+            <span class="code-badge">${modelMatch[0]}</span>
+          </div>
+
+          <div class="model-row">
+            Samsung loại ${price.type}
+          </div>
+
+          <div style="margin-top:10px;line-height:1.6;">
+            <div>📦 Có pin: ${Math.round(price.pin/1000)}k</div>
+            <div>📦 Không pin: ${Math.round(price.no_pin/1000)}k</div>
+            <div>📦 Main: ${Math.round(price.main/1000)}k</div>
+          </div>
+
+        </div>
+      </div>
+    `;
+
+    document.getElementById("out").innerHTML = html;
+    return;
+  }
+
+}
 
   if(!q){
     out.innerHTML="";
