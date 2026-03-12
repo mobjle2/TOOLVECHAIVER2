@@ -1725,13 +1725,13 @@ async function preloadPriceTable(){
 
 }
 
-/* ================= FIND PRICE BY MODEL ================= */
+/* ================= TÌM GIÁ THEO MODEL ================= */
 
-function findPriceByModel(model){
+function findPriceByModel(input){
 
-  if(!model) return null;
+  if(!input) return null;
 
-  model = model.toUpperCase();
+  let model = input.toUpperCase();
 
   /* ===== TÁCH MODEL TRONG NGOẶC ===== */
   const m = model.match(/\((.*?)\)/);
@@ -1746,8 +1746,14 @@ function findPriceByModel(model){
 
     const pm = String(p.model || "").toUpperCase();
 
-    /* match trực tiếp */
+    /* ===== MATCH TRỰC TIẾP ===== */
     if(model.includes(pm) || pm.includes(model)){
+      return p;
+    }
+
+    /* ===== MATCH MÃ MODEL (G530 G531...) ===== */
+    const num = pm.match(/[A-Z]\d{3}/);
+    if(num && model.includes(num[0])){
       return p;
     }
 
