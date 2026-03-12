@@ -1678,6 +1678,8 @@ const turboCache = new Map();
 
 /* ===== RAM DATABASE ===== */
 const CODE_CACHE = new Map();
+/* ===== PRICE TABLE ===== */
+let PRICE_TABLE = [];
 
 /* ================= TURBO CACHE ENGINE ================= */
 
@@ -1705,7 +1707,43 @@ async function preloadCodes(){
   console.log("CACHE READY:",CODE_CACHE.size);
 
 }
+/* ================= PRICE TABLE CACHE ================= */
 
+async function preloadPriceTable(){
+
+  console.log("Loading price table...");
+
+  const snap = await db.collection("price_table").get();
+
+  PRICE_TABLE = [];
+
+  snap.forEach(doc=>{
+    PRICE_TABLE.push(doc.data());
+  });
+
+  console.log("PRICE TABLE READY:",PRICE_TABLE.length);
+
+}
+
+/* ================= FIND PRICE BY MODEL ================= */
+
+function findPriceByModel(model){
+
+  if(!model) return null;
+
+  model = model.toUpperCase();
+
+  for(const p of PRICE_TABLE){
+
+    if(model.includes(p.model)){
+      return p;
+    }
+
+  }
+
+  return null;
+
+}
 
 /* ===== SAFE USER MODE DETECT ===== */
 
@@ -3291,40 +3329,54 @@ async function check(){
 
     });
 
-    /* ===== PREFIX CODE ===== */
-    snapCode.forEach(doc=>{
-      docsMap.set(doc.id, doc);
-    });
+/* ===== LƯU DANH SÁCH CODE PREFIX ===== */
+snapCode.forEach(doc=>{
+  docsMap.set(doc.id, doc);
+});
 
-    /* ===== KHÔNG TÌM THẤY ===== */
-    if(docsMap.size === 0){
+/* ===== TRƯỜNG HỢP KHÔNG TÌM THẤY TRONG FIRESTORE ===== */
+if(docsMap.size === 0){
 
-      const key = q.toUpperCase().trim();
-      const auto = autoDecodeChip(key);
+  /* Chuẩn hóa mã người dùng nhập */
+  const key = q.toUpperCase().trim();
 
-      if(auto){
+  /* Thử decode nhanh chip (C6 C7 C8 C9...) */
+  const auto = autoDecodeChip(key);
 
-        const romHTML = auto.rom ? `<div class="ram-badge">${auto.rom}GB</div>` : "";
-        const vipHTML = auto.vip ? `<div class="vip-badge vip-${auto.vip}">
+  if(auto){
+
+    /* ===== HIỂN THỊ ROM ===== */
+    const romHTML = auto.rom 
+      ? `<div class="ram-badge">${auto.rom}GB</div>` 
+      : "";
+
+    /* ===== HIỂN THỊ VIP ===== */
+    const vipHTML = auto.vip 
+      ? `<div class="vip-badge vip-${auto.vip}">
           <span class="vip-dot"></span> VIP ${auto.vip}
-        </div>` : "";
+        </div>` 
+      : "";
 
-        const html = `
-          <div class="result-grid">
-            <div class="result-card">
+    /* ===== TÌM GIÁ THEO MODEL ===== */
+    const price = findPriceByModel(key);
 
-              <div class="code-title">
-                <span class="code-badge">${key}</span>
-              </div>
+    /* ===== TẠO HTML CARD KẾT QUẢ ===== */
+    const html = `
+      <div class="result-grid">
+        <div class="result-card">
 
-              <div class="badge-row">
-                ${romHTML}
-                ${vipHTML}
-              </div>
-
-            </div>
+          <div class="code-title">
+            <span class="code-badge">${key}</span>
           </div>
-        `;
+
+          <div class="badge-row">
+            ${romHTML}
+            ${vipHTML}
+          </div>
+
+        </div>
+      </div>
+    `;
 
         out.innerHTML = html;
         turboCache.set(key, html);
@@ -3539,6 +3591,7 @@ auth.onAuthStateChanged(async (user) => {
     document.getElementById("loginScreen").style.display = "none";
     document.getElementById("adminPanel").style.display = "block";
     preloadCodes();   // ⭐ THÊM DÒNG NÀY
+    preloadPriceTable();
     loadLinks();
 
   }catch(err){
