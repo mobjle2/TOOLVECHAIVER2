@@ -3378,20 +3378,21 @@ if(auto){
 }
 
   /* ===== HIỂN THỊ GIÁ ===== */
-  let priceHTML = "";
+if(price){
 
-  if(price){
+  priceHTML = `
+    <div class="model-row">
+      Samsung loại ${price.type}
+    </div>
 
-    priceHTML = `
-      <div style="margin-top:12px;font-size:14px;line-height:1.6;">
-        <div style="font-weight:600;">📦 Giá máy</div>
-        <div>Có pin: ${Math.round(price.pin/1000)}k</div>
-        <div>Không pin: ${Math.round(price.no_pin/1000)}k</div>
-        <div>Main: ${Math.round(price.main/1000)}k</div>
-      </div>
-    `;
-
-  }
+    <div style="margin-top:12px;font-size:14px;line-height:1.6;">
+      <div style="font-weight:600;">📦 Giá máy</div>
+      <div>Có pin: ${Math.round(price.pin/1000)}k</div>
+      <div>Không pin: ${Math.round(price.no_pin/1000)}k</div>
+      <div>Main: ${Math.round(price.main/1000)}k</div>
+    </div>
+  `;
+}
 
   /* ===== CÓ DECODE HOẶC CÓ GIÁ ===== */
   if(auto || price){
