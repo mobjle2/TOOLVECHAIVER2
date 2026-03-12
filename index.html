@@ -1733,6 +1733,13 @@ function findPriceByModel(model){
 
   model = model.toUpperCase();
 
+  /* ===== LẤY MODEL TRONG NGOẶC ===== */
+  const m = model.match(/\((.*?)\)/);
+
+  if(m){
+    model = m[1];
+  }
+
   for(const p of PRICE_TABLE){
 
     if(model.includes(p.model)){
@@ -1742,7 +1749,6 @@ function findPriceByModel(model){
   }
 
   return null;
-
 }
 
 /* ===== SAFE USER MODE DETECT ===== */
