@@ -1734,27 +1734,27 @@ function findPriceByModel(input){
 
   let model = input.toUpperCase();
 
-  /* ===== TÁCH MODEL TRONG NGOẶC ===== */
-  const m = model.match(/\((.*?)\)/);
-  if(m){
-    model = m[1];
-  }
-
-  /* ===== BỎ SM- PREFIX ===== */
+  /* bỏ SM- */
   model = model.replace("SM-","");
+
+  /* lấy mã kiểu G531 */
+  const m = model.match(/[A-Z]\d{3}/);
+  if(m){
+    model = m[0];
+  }
 
   for(const p of PRICE_TABLE){
 
     const pm = String(p.model || "").toUpperCase();
 
-    /* ===== MATCH TRỰC TIẾP ===== */
-    if(model.includes(pm) || pm.includes(model)){
+    /* match trực tiếp */
+    if(pm.includes(model)){
       return p;
     }
 
-    /* ===== MATCH MÃ MODEL (G530 G531...) ===== */
-    const num = pm.match(/[A-Z]\d{3}/);
-    if(num && model.includes(num[0])){
+    /* match mã model trong bảng */
+    const code = pm.match(/[A-Z]\d{3}/);
+    if(code && code[0] === model){
       return p;
     }
 
