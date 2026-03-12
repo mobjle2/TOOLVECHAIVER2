@@ -3267,7 +3267,7 @@ async function check(){
   const btn = document.querySelector(".check-btn");
   const q = document.getElementById("q")?.value?.trim()?.toUpperCase();
   /* ===== FORCE MODEL SEARCH ===== */
-const modelMatch = q.match(/[A-Z]\d{3}/);
+const modelMatch = q.match(/[A-Z]\d{2,4}/);
 
 if(modelMatch){
 
