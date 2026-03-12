@@ -1731,30 +1731,28 @@ function findPriceByModel(input){
 
   if(!input) return null;
 
-  let model = input.toUpperCase();
-
-  /* ===== TÁCH MODEL TRONG NGOẶC ===== */
-  const m = model.match(/\((.*?)\)/);
-  if(m){
-    model = m[1];
-  }
-
-  /* ===== BỎ SM- PREFIX ===== */
-  model = model.replace("SM-","");
+  const key = input.toUpperCase();
 
   for(const p of PRICE_TABLE){
 
     const pm = String(p.model || "").toUpperCase();
 
-    /* ===== MATCH TRỰC TIẾP ===== */
-    if(model.includes(pm) || pm.includes(model)){
+    /* match trực tiếp */
+    if(key.includes(pm) || pm.includes(key)){
       return p;
     }
 
-    /* ===== MATCH MÃ MODEL (G530 G531...) ===== */
-    const num = pm.match(/[A-Z]\d{3}/);
-    if(num && model.includes(num[0])){
-      return p;
+    /* match mã model kiểu G530 G531 */
+    const match = key.match(/[A-Z]\d{3}/);
+
+    if(match){
+
+      const code = match[0];
+
+      if(pm.includes(code)){
+        return p;
+      }
+
     }
 
   }
