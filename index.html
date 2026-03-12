@@ -3353,7 +3353,16 @@ snapCode.forEach(doc=>{
 });
 
 /* ===== TRƯỜNG HỢP KHÔNG TÌM THẤY TRONG FIRESTORE ===== */
-if(docsMap.size === 0){
+if(docsMap.size === 0 || q.match(/[A-Z]\d{3}/i)){
+/* ===== MODEL QUICK FIX ===== */
+const modelMatch = q.match(/[A-Z]\d{3}/);
+
+if(modelMatch){
+  const price = findPriceByModel(modelMatch[0]);
+  if(price){
+    docsMap.clear();
+  }
+}
 
   const key = q.toUpperCase().trim();
 
