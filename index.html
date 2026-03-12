@@ -1728,35 +1728,30 @@ async function preloadPriceTable(){
 
 /* ================= TÌM GIÁ THEO MODEL ================= */
 
+/* ================= TÌM GIÁ THEO MODEL ================= */
 function findPriceByModel(input){
 
   if(!input) return null;
 
-  let model = input.toUpperCase();
+  let key = String(input).toUpperCase();
 
-  /* bỏ SM- */
-  model = model.replace("SM-","");
+  // bỏ SM-
+  key = key.replace("SM-","");
 
-  /* lấy mã kiểu G531 */
-  const m = model.match(/[A-Z]\d{3}/);
-  if(m){
-    model = m[0];
-  }
+  // lấy mã kiểu G531
+  const m = key.match(/[A-Z]\d{3}/);
+  if(m) key = m[0];
 
   for(const p of PRICE_TABLE){
 
     const pm = String(p.model || "").toUpperCase();
 
-    /* match trực tiếp */
-    if(pm.includes(model)){
-      return p;
-    }
+    // match trực tiếp
+    if(pm.includes(key)) return p;
 
-    /* match mã model trong bảng */
+    // match mã model nằm trong tên (nếu có)
     const code = pm.match(/[A-Z]\d{3}/);
-    if(code && code[0] === model){
-      return p;
-    }
+    if(code && code[0] === key) return p;
 
   }
 
@@ -3388,102 +3383,49 @@ snapCode.forEach(doc=>{
   docsMap.set(doc.id, doc);
 });
 
-/* ===== TRƯỜNG HỢP KHÔNG TÌM THẤY TRONG FIRESTORE ===== */
-if(docsMap.size === 0 || q.match(/[A-Z]\d{3}/i)){
-/* ===== MODEL QUICK FIX ===== */
-const modelMatch = q.match(/[A-Z]\d{3}/);
 
-if(modelMatch){
-  const price = findPriceByModel(modelMatch[0]);
-  if(price){
-    docsMap.clear();
-  }
-}
+/* ===== TRƯỜNG HỢP KHÔNG TÌM THẤY TRONG FIRESTORE ===== */
+if(docsMap.size === 0){
 
   const key = q.toUpperCase().trim();
 
-  /* ===== DECODE CHIP ===== */
-  const auto = autoDecodeChip(key);
+  /* ===== MODEL QUICK FIX ===== */
+  const modelMatch = key.match(/[A-Z]\d{3}/);
 
-  /* ===== TÌM GIÁ MODEL ===== */
-  const price = findPriceByModel(key);
+  if(modelMatch){
 
-  /* ===== HTML ROM / VIP ===== */
-  let romHTML = "";
-  let vipHTML = "";
+    const price = findPriceByModel(modelMatch[0]);
 
-  if(auto){
-    romHTML = auto.rom
-      ? `<div class="ram-badge">${auto.rom}GB</div>`
-      : "";
+    if(price){
 
-    vipHTML = auto.vip
-      ? `<div class="vip-badge vip-${auto.vip}">
-          <span class="vip-dot"></span> VIP ${auto.vip}
-        </div>`
-      : "";
-  }
+      const html = `
+        <div class="result-grid">
+          <div class="result-card">
 
-  /* ===== HTML GIÁ ===== */
-  let priceHTML = "";
+            <div class="code-title">
+              <span class="code-badge">${modelMatch[0]}</span>
+            </div>
 
-  if(price){
-    priceHTML = `
-      <div class="model-row">
-        Samsung loại ${price.type}
-      </div>
+            <div class="model-row">
+              Samsung loại ${price.type}
+            </div>
 
-      <div style="margin-top:10px;line-height:1.6;">
-        <div style="font-weight:600;">📦 Giá máy</div>
-        <div>Có pin: ${Math.round(price.pin/1000)}k</div>
-        <div>Không pin: ${Math.round(price.no_pin/1000)}k</div>
-        <div>Main: ${Math.round(price.main/1000)}k</div>
-      </div>
-    `;
-  }
+            <div style="margin-top:10px;line-height:1.6;">
+              <div>📦 Có pin: ${Math.round(price.pin/1000)}k</div>
+              <div>📦 Không pin: ${Math.round(price.no_pin/1000)}k</div>
+              <div>📦 Main: ${Math.round(price.main/1000)}k</div>
+            </div>
 
-  /* ===== NẾU CÓ CHIP HOẶC CÓ GIÁ ===== */
-  if(auto || price){
-
-    const html = `
-      <div class="result-grid">
-        <div class="result-card">
-
-          <div class="code-title">
-            <span class="code-badge">${key}</span>
           </div>
-
-          <div class="badge-row">
-            ${romHTML}
-            ${vipHTML}
-          </div>
-
-          ${priceHTML}
-
         </div>
-      </div>
-    `;
+      `;
 
-    out.innerHTML = html;
-    turboCache.set(key, html);
-    return;
+      out.innerHTML = html;
+      turboCache.set(key, html);
+      return;
+    }
   }
 
-  /* ===== KHÔNG CÓ GÌ ===== */
-  const notFoundHTML = `
-    <div style="
-      margin-top:40px;
-      text-align:center;
-      font-size:18px;
-      font-weight:600;
-      color:#facc15;">
-      Không tìm thấy mã
-    </div>
-  `;
-
-  turboCache.set(key, notFoundHTML);
-  out.innerHTML = notFoundHTML;
-  return;
 }
 
     let html = `<div class="result-grid">`;
