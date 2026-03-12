@@ -1732,16 +1732,13 @@ function findPriceByModel(input){
 
   if(!input) return null;
 
-  let model = input.toUpperCase();
-
-  const m = model.match(/[A-Z]\d{2,4}/);
-  if(m) model = m[0];
+  const key = input.toUpperCase();
 
   for(const p of PRICE_TABLE){
 
     const pm = String(p.model || "").toUpperCase();
 
-    if(pm.includes(model)){
+    if(pm.includes(key) || key.includes(pm)){
       return p;
     }
 
