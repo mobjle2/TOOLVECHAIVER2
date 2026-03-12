@@ -3292,81 +3292,105 @@ async function check(){
       return;
     }
 
-    /* ===== LOAD DATA ===== */
-    const snapSearch = await db.collection("codes")
-      .orderBy("code")
-      .limit(1000)
-      .get();
+/* ===== LOAD DATA ===== */
+const snapSearch = await db.collection("codes")
+  .orderBy("code")
+  .limit(1000)
+  .get();
 
-    const snapCode = await db.collection("codes")
-      .where("code", ">=", q)
-      .where("code", "<=", q + "\uf8ff")
-      .limit(30)
-      .get();
+const snapCode = await db.collection("codes")
+  .where("code", ">=", q)
+  .where("code", "<=", q + "\uf8ff")
+  .limit(30)
+  .get();
 
-    const docsMap = new Map();
+const docsMap = new Map();
 
-    /* ===== SEARCH TEXT ===== */
-    snapSearch.forEach(doc=>{
+/* ===== SEARCH TEXT ===== */
+snapSearch.forEach(doc=>{
 
-      const d = doc.data();
+  const d = doc.data();
 
-      const code = (d.code || "").toUpperCase();
+  const code = (d.code || "").toUpperCase();
 
-      let models = "";
+  let models = "";
 
-      if(Array.isArray(d.models)){
-        models = d.models.map(m=>{
-          if(typeof m === "string") return m;
-          if(typeof m === "object" && m)
-            return (m.brand || "") + " " + (m.model || "");
-          return "";
-        }).join(" ");
-      }
-      else if(d.model){
-        models = d.model;
-      }
+  if(Array.isArray(d.models)){
+    models = d.models.map(m=>{
+      if(typeof m === "string") return m;
+      if(typeof m === "object" && m)
+        return (m.brand || "") + " " + (m.model || "");
+      return "";
+    }).join(" ");
+  }
+  else if(d.model){
+    models = d.model;
+  }
 
-      const text = (code + " " + models).toUpperCase();
+  const text = (code + " " + models).toUpperCase();
 
-      if(text.includes(q)){
-        docsMap.set(doc.id, doc);
-      }
+  if(text.includes(q)){
+    docsMap.set(doc.id, doc);
+  }
 
-    });
+});
 
 /* ===== LƯU DANH SÁCH CODE PREFIX ===== */
 snapCode.forEach(doc=>{
   docsMap.set(doc.id, doc);
 });
 
-/* ===== TRƯỜNG HỢP KHÔNG TÌM THẤY TRONG FIRESTORE ===== */
+/* =====================================================
+   KHÔNG TÌM THẤY TRONG FIRESTORE
+===================================================== */
+
 if(docsMap.size === 0){
 
-  /* Chuẩn hóa mã người dùng nhập */
   const key = q.toUpperCase().trim();
 
-  /* Thử decode nhanh chip (C6 C7 C8 C9...) */
+  /* ===== DECODE CHIP ===== */
   const auto = autoDecodeChip(key);
+
+  /* ===== TÌM GIÁ MODEL ===== */
+  const price = findPriceByModel(key);
+
+  /* ===== HIỂN THỊ ROM ===== */
+  let romHTML = "";
+  let vipHTML = "";
 
   if(auto){
 
-    /* ===== HIỂN THỊ ROM ===== */
-    const romHTML = auto.rom 
-      ? `<div class="ram-badge">${auto.rom}GB</div>` 
+    romHTML = auto.rom
+      ? `<div class="ram-badge">${auto.rom}GB</div>`
       : "";
 
-    /* ===== HIỂN THỊ VIP ===== */
-    const vipHTML = auto.vip 
+    vipHTML = auto.vip
       ? `<div class="vip-badge vip-${auto.vip}">
           <span class="vip-dot"></span> VIP ${auto.vip}
-        </div>` 
+        </div>`
       : "";
 
-    /* ===== TÌM GIÁ THEO MODEL ===== */
-    const price = findPriceByModel(key);
+  }
 
-    /* ===== TẠO HTML CARD KẾT QUẢ ===== */
+  /* ===== HIỂN THỊ GIÁ ===== */
+  let priceHTML = "";
+
+  if(price){
+
+    priceHTML = `
+      <div style="margin-top:12px;font-size:14px;line-height:1.6;">
+        <div style="font-weight:600;">📦 Giá máy</div>
+        <div>Có pin: ${Math.round(price.pin/1000)}k</div>
+        <div>Không pin: ${Math.round(price.no_pin/1000)}k</div>
+        <div>Main: ${Math.round(price.main/1000)}k</div>
+      </div>
+    `;
+
+  }
+
+  /* ===== CÓ DECODE HOẶC CÓ GIÁ ===== */
+  if(auto || price){
+
     const html = `
       <div class="result-grid">
         <div class="result-card">
@@ -3380,30 +3404,36 @@ if(docsMap.size === 0){
             ${vipHTML}
           </div>
 
+          ${priceHTML}
+
         </div>
       </div>
     `;
 
-        out.innerHTML = html;
-        turboCache.set(key, html);
-        return;
-      }
+    out.innerHTML = html;
+    turboCache.set(key, html);
+    return;
 
-      const notFoundHTML = `
-        <div style="
-          margin-top:40px;
-          text-align:center;
-          font-size:18px;
-          font-weight:600;
-          color:#facc15;">
-          Không tìm thấy mã
-        </div>
-      `;
+  }
 
-      turboCache.set(key, notFoundHTML);
-      out.innerHTML = notFoundHTML;
-      return;
-    }
+  /* ===== KHÔNG CÓ GÌ ===== */
+
+  const notFoundHTML = `
+    <div style="
+      margin-top:40px;
+      text-align:center;
+      font-size:18px;
+      font-weight:600;
+      color:#facc15;">
+      Không tìm thấy mã
+    </div>
+  `;
+
+  turboCache.set(key, notFoundHTML);
+  out.innerHTML = notFoundHTML;
+  return;
+
+}
 
     let html = `<div class="result-grid">`;
 
