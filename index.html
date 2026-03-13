@@ -3390,7 +3390,7 @@ if(docsMap.size === 0){
           <div class="result-card">
 
             <div class="code-title">
-              <span class="code-badge">${modelMatch[0]}</span>
+           <span class="code-badge">${getModelName(modelMatch[0])}</span>
             </div>
 
             <div class="model-row">
@@ -4295,33 +4295,35 @@ function L(key){
   const lang = urlLang || localStorage.getItem("lang") || "vi";
   return MSG[lang]?.[key] || key;
 }
-async function getModelName(code){
+
+function getModelName(code){
 
   code = code.toUpperCase();
 
-  const snap = await db.collection("codes").get();
+  if(!CODE_CACHE.size) return code;
 
-  for(const doc of snap.docs){
+  for(const [key,items] of CODE_CACHE){
 
-    const d = doc.data();
+    for(const d of items){
 
-    if(!Array.isArray(d.models)) continue;
+      let models = "";
 
-    for(const m of d.models){
-
-      let text="";
-
-      if(typeof m==="string"){
-        text = m;
+      if(Array.isArray(d.models)){
+        models = d.models.map(m=>{
+          if(typeof m==="string") return m;
+          if(typeof m==="object")
+            return (m.brand||"")+" "+(m.model||"");
+          return "";
+        }).join(" ");
       }
-      else if(typeof m==="object" && m){
-        text = (m.brand || "") + " " + (m.model || "");
+      else if(d.model){
+        models = d.model;
       }
 
-      text = text.toUpperCase();
+      models = models.toUpperCase();
 
-      if(text.includes(code)){
-        return text + " ("+code+")";
+      if(models.includes(code)){
+        return models + " ("+code+")";
       }
 
     }
@@ -4331,6 +4333,7 @@ async function getModelName(code){
   return code;
 
 }
+  
   
 </script>
 </body>
