@@ -3278,7 +3278,7 @@ if(modelMatch){
         <div class="result-card">
 
           <div class="code-title">
-            <span class="code-badge">${modelMatch[0]}</span>
+      <span class="code-badge">${await getModelName(modelMatch[0])}</span>
           </div>
 
           <div class="model-row">
@@ -4295,7 +4295,42 @@ function L(key){
   const lang = urlLang || localStorage.getItem("lang") || "vi";
   return MSG[lang]?.[key] || key;
 }
+async function getModelName(code){
 
+  code = code.toUpperCase();
+
+  const snap = await db.collection("codes").get();
+
+  for(const doc of snap.docs){
+
+    const d = doc.data();
+
+    if(!Array.isArray(d.models)) continue;
+
+    for(const m of d.models){
+
+      let text="";
+
+      if(typeof m==="string"){
+        text = m;
+      }
+      else if(typeof m==="object" && m){
+        text = (m.brand || "") + " " + (m.model || "");
+      }
+
+      text = text.toUpperCase();
+
+      if(text.includes(code)){
+        return text + " ("+code+")";
+      }
+
+    }
+
+  }
+
+  return code;
+
+}
   
 </script>
 </body>
