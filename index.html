@@ -3267,20 +3267,7 @@ async function check(){
   const btn = document.querySelector(".check-btn");
   const q = document.getElementById("q")?.value?.trim()?.toUpperCase();
   /* ===== FORCE MODEL SEARCH ===== */
-const modelMatch = q.match(/^[A-Z]\d{2,4}/);
-
-if(modelMatch){
-
-  const price = findPriceByModel(modelMatch[0]);
-
-  if(price){
-
-    const html = `
-      <div class="result-grid">
-        <div class="result-card">
-
-          <div class="code-title">
-            <span class="code-badge">${modelMatch[0]}</span>
+<span class="code-badge">${getModelName(modelMatch[0])}</span>
           </div>
 
           <div class="model-row">
@@ -3392,7 +3379,7 @@ if(docsMap.size === 0){
           <div class="result-card">
 
             <div class="code-title">
-              <span class="code-badge">${modelMatch[0]}</span>
+           <span class="code-badge">${getModelName(modelMatch[0])}</span>
             </div>
 
             <div class="model-row">
@@ -4297,7 +4284,21 @@ function L(key){
   const lang = urlLang || localStorage.getItem("lang") || "vi";
   return MSG[lang]?.[key] || key;
 }
+function getModelName(code){
 
+  const map = {
+    "G998":"S21 ULTRA",
+    "G988":"S20 ULTRA",
+    "G985":"S20+",
+    "S908":"S22 ULTRA",
+    "S918":"S23 ULTRA",
+    "S928":"S24 ULTRA",
+    "N986":"NOTE 20 ULTRA"
+  };
+
+  return map[code] ? map[code] + " (" + code + ")" : code;
+
+}
   
 </script>
 </body>
