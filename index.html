@@ -3278,7 +3278,9 @@ if(modelMatch){
         <div class="result-card">
 
           <div class="code-title">
-      <span class="code-badge">${await getModelName(modelMatch[0])}</span>
+      <span class="code-badge">
+${getSamsungName(modelMatch[0]) || modelMatch[0]}
+</span>
           </div>
 
           <div class="model-row">
@@ -4333,7 +4335,37 @@ function getModelName(code){
   return code;
 
 }
-  
+function getSamsungName(code){
+
+  code = code.toUpperCase();
+
+  for(const [k,list] of CODE_CACHE){
+
+    for(const d of list){
+
+      if(!d.models) continue;
+
+      for(const m of d.models){
+
+        let name = "";
+
+        if(typeof m === "string")
+          name = m;
+
+        if(typeof m === "object")
+          name = (m.brand||"")+" "+(m.model||"");
+
+        if(name.toUpperCase().includes(code))
+          return name;
+
+      }
+
+    }
+
+  }
+
+  return null;
+}  
   
 </script>
 </body>
