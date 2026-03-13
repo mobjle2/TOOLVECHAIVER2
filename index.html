@@ -4335,37 +4335,31 @@ function getModelName(code){
   return code;
 
 }
+
 function getSamsungName(code){
 
   code = code.toUpperCase();
 
-  for(const [k,list] of CODE_CACHE){
+  const list = CODE_CACHE.get(code);
 
-    for(const d of list){
+  if(!list) return null;
 
-      if(!d.models) continue;
+  const d = list[0];
 
-      for(const m of d.models){
+  if(!d.models) return code;
 
-        let name = "";
+  const m = d.models[0];
 
-        if(typeof m === "string")
-          name = m;
+  if(typeof m === "object")
+    return (m.brand || "") + " " + (m.model || "") + " ("+code+")";
 
-        if(typeof m === "object")
-          name = (m.brand||"")+" "+(m.model||"");
+  if(typeof m === "string")
+    return m + " ("+code+")";
 
-        if(name.toUpperCase().includes(code))
-          return name;
+  return code;
 
-      }
-
-    }
-
-  }
-
-  return null;
-}  
+}
+  
   
 </script>
 </body>
