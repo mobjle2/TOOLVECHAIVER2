@@ -1730,21 +1730,35 @@ function findPriceByModel(input){
 
   if(!input) return null;
 
-  const key = input.toUpperCase();
+  let key = input.toUpperCase().replace("SM-","").trim();
 
   for(const p of PRICE_TABLE){
 
-    const pm = String(p.model || "").toUpperCase();
+    const model = String(p["Mã máy"] || "").toUpperCase();
 
-    if(pm.includes(key) || key.includes(pm)){
-      return p;
+    const code = model.match(/\((.*?)\)/)?.[1];
+
+    const name = model.split("(")[0].trim();
+
+    if(!code) continue;
+
+    if(
+      code === key ||           // G988
+      key === "SM-"+code ||     // SM-G988
+      name.includes(key)       // S21 ULTRA
+    ){
+      return {
+        ...p,
+        modelName: name,
+        modelCode: code
+      };
     }
 
   }
 
   return null;
-}
 
+}
 /* ===== SAFE USER MODE DETECT ===== */
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -3268,14 +3282,7 @@ function extractMMCSize(code){
   return null;
 }
 
-const MODEL_NAME_MAP = {
-  G988: "Samsung S20 Ultra",
-  G998: "Samsung S21 Ultra",
-  G991: "Samsung S21",
-  G980: "Samsung S20",
-  G950: "Samsung S8"
-};
-  
+
 async function check(){
 
   const out = document.getElementById("out");
@@ -3307,7 +3314,7 @@ async function check(){
 
     <div class="code-title">
 <span class="code-badge">
-${MODEL_NAME_MAP[modelMatch[0]] || modelMatch[0]} (${modelMatch[0]})
+${price.modelName} (${price.modelCode})
 </span>
     </div>
 
