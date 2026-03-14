@@ -3425,11 +3425,7 @@ return;
 SAMSUNG SEARCH ENGINE PRO
 ================================================= */
 
-const samsung = searchSamsung(q);
-
-if(samsung){
-
-  const p = samsung.price;
+const p = samsung2.price;
 
 const html = `
 <div class="result-grid">
@@ -3454,7 +3450,6 @@ const html = `
   </div>
 </div>
 `;
-
   out.innerHTML = html;
   turboCache.set(q, html);
   return;
