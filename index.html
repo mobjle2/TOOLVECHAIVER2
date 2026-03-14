@@ -1761,14 +1761,23 @@ const userParam = params.get("u");
 
 if(userParam){
 
-  window.addEventListener("DOMContentLoaded",()=>{
+  window.addEventListener("DOMContentLoaded", async ()=>{
 
     const login=document.getElementById("loginScreen");
     if(login) login.style.display="none";
 
+    /* ⭐ LOAD CACHE CHO USER MODE */
+    try{
+      await preloadCodes();
+      await preloadPriceTable();
+    }catch(e){
+      console.error("Cache load error:",e);
+    }
+
     runUserMode(userParam);
 
   });
+
 }
 
 
