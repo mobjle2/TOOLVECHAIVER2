@@ -3268,6 +3268,14 @@ function extractMMCSize(code){
   return null;
 }
 
+const MODEL_NAME_MAP = {
+  G988: "Samsung S20 Ultra",
+  G998: "Samsung S21 Ultra",
+  G991: "Samsung S21",
+  G980: "Samsung S20",
+  G950: "Samsung S8"
+};
+  
 async function check(){
 
   const out = document.getElementById("out");
@@ -3299,7 +3307,7 @@ async function check(){
 
     <div class="code-title">
 <span class="code-badge">
-${getModelName(modelMatch[0]) || modelMatch[0]} (${modelMatch[0]})
+${MODEL_NAME_MAP[modelMatch[0]] || modelMatch[0]} (${modelMatch[0]})
 </span>
     </div>
 
