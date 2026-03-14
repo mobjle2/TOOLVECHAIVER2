@@ -3401,7 +3401,7 @@ async function check(){
   else if(q.startsWith("S24+")) q = "S926";
   else if(q.startsWith("S24")) q = "S921";
 
-  const modelMatch = q.match(/[A-Z]\d{3}/);
+  const modelMatch = q.match(/[A-Z]\d{3,4}/);
 
   if(modelMatch){
     const price = findPriceByModel(modelMatch[0]);
