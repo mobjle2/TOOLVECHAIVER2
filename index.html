@@ -3532,38 +3532,38 @@ if(docsMap.size === 0){
 
   const samsung2 = searchSamsung(q);
 
-  if(samsung2){
+if(samsung2){
 
-    const p = samsung2.price;
+  const p = samsung2.price;
 
-    const html = `
-      <div class="result-grid">
-        <div class="result-card">
+  const html = `
+<div class="result-grid">
+  <div class="result-card">
 
-          <div class="code-title">
-            <span class="code-badge">
-              ${samsung2.name} (${samsung2.code})
-            </span>
-          </div>
+    <div class="code-title">
+      <span class="code-badge">
+        ${samsung2.name} (${samsung2.code})
+      </span>
+    </div>
 
-          <div class="model-row">
-            Samsung loại ${p.type}
-          </div>
+    <div class="model-row">
+      Samsung loại ${p.type}
+    </div>
 
-          <div style="margin-top:10px;line-height:1.6;">
-            <div>📦 Có pin: ${Math.round(p.pin/1000)}k</div>
-            <div>📦 Không pin: ${Math.round(p.no_pin/1000)}k</div>
-            <div>📦 Main: ${Math.round(p.main/1000)}k</div>
-          </div>
+    <div style="margin-top:10px;line-height:1.6;">
+      <div>📦 Có pin: ${Math.round(p.pin/1000)}k</div>
+      <div>📦 Không pin: ${Math.round(p.no_pin/1000)}k</div>
+      <div>📦 Main: ${Math.round(p.main/1000)}k</div>
+    </div>
 
-        </div>
-      </div>
-    `;
+  </div>
+</div>
+`;
 
-    out.innerHTML = html;
-    turboCache.set(q, html);
-    return;
-  }
+  out.innerHTML = html;
+  turboCache.set(q, html);
+  return;
+}
 
 }
 
