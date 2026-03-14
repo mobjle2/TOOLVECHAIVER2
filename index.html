@@ -3273,17 +3273,22 @@ async function check(){
   const out = document.getElementById("out");
   const btn = document.querySelector(".check-btn");
  let q = document.getElementById("q")?.value?.trim()?.toUpperCase().replace("SM-","") || "";
-
   /* ===== FORCE MODEL SEARCH ===== */
 
-  if(q.startsWith("S22")) q = "G998";
-  if(q.startsWith("S21")) q = "G998";
-  if(q.startsWith("S20")) q = "G988";
+  if(q.startsWith("S8")) q = "G950";
+
+  if(q.startsWith("S20 ULTRA")) q = "G988";
+  else if(q.startsWith("S20")) q = "G980";
+
+  if(q.startsWith("S21 ULTRA")) q = "G998";
+  else if(q.startsWith("S21")) q = "G991";
+
+  if(q.startsWith("S22 ULTRA")) q = "G998";
+  else if(q.startsWith("S22")) q = "G998";
 
   const modelMatch = q.match(/[A-Z]\d{3}/);
 
   if(modelMatch){
-
     const price = findPriceByModel(modelMatch[0]);
 
     if(price){
@@ -3293,9 +3298,9 @@ async function check(){
   <div class="result-card">
 
     <div class="code-title">
-      <span class="code-badge">
-${getSamsungName(modelMatch[0]) || modelMatch[0]}
-      </span>
+<span class="code-badge">
+${getSamsungName(modelMatch[0]) || "Samsung " + modelMatch[0]} (${modelMatch[0]})
+</span>
     </div>
 
     <div class="model-row">
