@@ -3433,27 +3433,27 @@ if(samsung){
 const p = samsung.price;
 
 const html = `
-  <div class="result-grid">
-    <div class="result-card">
+<div class="result-grid">
+  <div class="result-card">
 
-      <div class="code-title">
-        <span class="code-badge">
-          ${samsung.name} (${samsung.code})
-        </span>
-      </div>
-
-      <div class="model-row">
-        Samsung loại ${p.type}
-      </div>
-
-      <div style="margin-top:10px;line-height:1.6;">
-        <div>📦 Có pin: ${Math.round(p.pin/1000)}k</div>
-        <div>📦 Không pin: ${Math.round(p.no_pin/1000)}k</div>
-        <div>📦 Main: ${Math.round(p.main/1000)}k</div>
-      </div>
-
+    <div class="code-title">
+      <span class="code-badge">
+        ${samsung.name} (${samsung.code})
+      </span>
     </div>
+
+    <div class="model-row">
+      Samsung loại ${p.type}
+    </div>
+
+    <div style="margin-top:10px;line-height:1.6;">
+      <div>📦 Có pin: ${Math.round(p.pin/1000)}k</div>
+      <div>📦 Không pin: ${Math.round(p.no_pin/1000)}k</div>
+      <div>📦 Main: ${Math.round(p.main/1000)}k</div>
+    </div>
+
   </div>
+</div>
 `;
 
 out.innerHTML = html;
