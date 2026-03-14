@@ -3450,9 +3450,10 @@ const html = `
   </div>
 </div>
 `;
-  out.innerHTML = html;
-  turboCache.set(q, html);
-  return;
+
+out.innerHTML = html;
+turboCache.set(q, html);
+return;
 }
 
 /* ===== UI LOADING ===== */
