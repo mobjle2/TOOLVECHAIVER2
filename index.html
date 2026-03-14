@@ -1822,7 +1822,7 @@ ref.onSnapshot(async (doc)=>{
 // ===== LINK HẾT HẠN =====
 if(data.expiresAt && data.expiresAt.toDate() < new Date()){
 
-  await ref.update({ active:false });
+  ref.update({ active:false }).catch(()=>{});
 
   if(out){
     out.innerHTML = `
