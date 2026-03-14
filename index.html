@@ -1735,13 +1735,11 @@ function findPriceByModel(input){
 
   for(const p of PRICE_TABLE){
 
-    const pm = String(p.model || "").toUpperCase();
+    const pm = String(p.model || "")
+      .toUpperCase()
+      .match(/\((.*?)\)/)?.[1];   // lấy code trong ngoặc: G988, S908
 
-   const pm = String(p.model || "").toUpperCase().match(/\((.*?)\)/)?.[1];
-
-if(pm === key){
-  return p;
-}
+    if(pm === key){
       return p;
     }
 
