@@ -3272,7 +3272,7 @@ async function check(){
 
   const out = document.getElementById("out");
   const btn = document.querySelector(".check-btn");
-  let q = document.getElementById("q")?.value?.trim()?.toUpperCase() || "";
+ let q = document.getElementById("q")?.value?.trim()?.toUpperCase().replace("SM-","") || "";
 
   /* ===== FORCE MODEL SEARCH ===== */
 
