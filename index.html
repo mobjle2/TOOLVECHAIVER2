@@ -3532,11 +3532,11 @@ if(docsMap.size === 0){
 
   const samsung2 = searchSamsung(q);
 
-if(samsung2){
+  if(samsung2){
 
-  const p = samsung2.price;
+    const p = samsung2.price;
 
-  const html = `
+    const html = `
 <div class="result-grid">
   <div class="result-card">
 
@@ -3560,10 +3560,10 @@ if(samsung2){
 </div>
 `;
 
-  out.innerHTML = html;
-  turboCache.set(q, html);
-  return;
-}
+    out.innerHTML = html;
+    turboCache.set(q, html);
+    return;
+  }
 
 }
 
