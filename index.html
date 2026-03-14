@@ -3272,45 +3272,45 @@ async function check(){
 
   const out = document.getElementById("out");
   const btn = document.querySelector(".check-btn");
-  const q = document.getElementById("q")?.value?.trim()?.toUpperCase();
+  const q = document.getElementById("q")?.value?.trim()?.toUpperCase() || "";
   /* ===== FORCE MODEL SEARCH ===== */
-const modelMatch = q.match(/^[A-Z]\d{2,4}/);
+  const modelMatch = q.match(/^[A-Z]\d{2,4}/);
 
-if(modelMatch){
+  if(modelMatch){
 
-  const price = findPriceByModel(modelMatch[0]);
+    const price = findPriceByModel(modelMatch[0]);
 
-  if(price){
+    if(price){
 
-    const html = `
-      <div class="result-grid">
-        <div class="result-card">
+      const html = `
+<div class="result-grid">
+  <div class="result-card">
 
-          <div class="code-title">
+    <div class="code-title">
       <span class="code-badge">
-${getSamsungName(modelMatch[0]) || modelMatch[0]}
-</span>
-          </div>
+        ${getSamsungName(modelMatch[0]) || modelMatch[0]}
+      </span>
+    </div>
 
-          <div class="model-row">
-            Samsung loại ${price.type}
-          </div>
+    <div class="model-row">
+      Samsung loại ${price.type}
+    </div>
 
-          <div style="margin-top:10px;line-height:1.6;">
-            <div>📦 Có pin: ${Math.round(price.pin/1000)}k</div>
-            <div>📦 Không pin: ${Math.round(price.no_pin/1000)}k</div>
-            <div>📦 Main: ${Math.round(price.main/1000)}k</div>
-          </div>
+    <div style="margin-top:10px;line-height:1.6;">
+      <div>📦 Có pin: ${Math.round(price.pin/1000)}k</div>
+      <div>📦 Không pin: ${Math.round(price.no_pin/1000)}k</div>
+      <div>📦 Main: ${Math.round(price.main/1000)}k</div>
+    </div>
 
-        </div>
-      </div>
-    `;
+  </div>
+</div>
+`;
 
-    document.getElementById("out").innerHTML = html;
-    return;
+      out.innerHTML = html;
+      return;
+    }
+
   }
-
-}
 
   if(!q){
     out.innerHTML="";
@@ -3321,10 +3321,10 @@ ${getSamsungName(modelMatch[0]) || modelMatch[0]}
   btn.style.opacity = "0.6";
 
   out.innerHTML = `
-    <div style="text-align:center;margin:40px 0;opacity:.8;">
-      🔎 Đang phân tích...
-    </div>
-  `;
+<div style="text-align:center;margin:40px 0;opacity:.8;">
+  🔎 Đang phân tích...
+</div>
+`;
 
   try{
 
@@ -3397,26 +3397,26 @@ if(docsMap.size === 0){
     if(price){
 
       const html = `
-        <div class="result-grid">
-          <div class="result-card">
+<div class="result-grid">
+  <div class="result-card">
 
-            <div class="code-title">
-           <span class="code-badge">${getModelName(modelMatch[0])}</span>
-            </div>
+    <div class="code-title">
+      <span class="code-badge">${getModelName(modelMatch[0])}</span>
+    </div>
 
-            <div class="model-row">
-              Samsung loại ${price.type}
-            </div>
+    <div class="model-row">
+      Samsung loại ${price.type}
+    </div>
 
-            <div style="margin-top:10px;line-height:1.6;">
-              <div>📦 Có pin: ${Math.round(price.pin/1000)}k</div>
-              <div>📦 Không pin: ${Math.round(price.no_pin/1000)}k</div>
-              <div>📦 Main: ${Math.round(price.main/1000)}k</div>
-            </div>
+    <div style="margin-top:10px;line-height:1.6;">
+      <div>📦 Có pin: ${Math.round(price.pin/1000)}k</div>
+      <div>📦 Không pin: ${Math.round(price.no_pin/1000)}k</div>
+      <div>📦 Main: ${Math.round(price.main/1000)}k</div>
+    </div>
 
-          </div>
-        </div>
-      `;
+  </div>
+</div>
+`;
 
       out.innerHTML = html;
       turboCache.set(key, html);
