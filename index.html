@@ -3383,7 +3383,8 @@ async function check(){
   else if(q.startsWith("S21")) q = "G991";
 
   if(q.startsWith("S22 ULTRA")) q = "G998";
-  else if(q.startsWith("S22")) q = "G998";
+ if(q.startsWith("S22 ULTRA")) q = "S908";
+else if(q.startsWith("S22")) q = "S901";
 
   const modelMatch = q.match(/[A-Z]\d{3}/);
 
