@@ -1730,26 +1730,25 @@ function findPriceByModel(input){
 
   if(!input) return null;
 
-  let key = input.toUpperCase().replace("SM-","").trim();
+  const key = input.toUpperCase().replace("SM-","").trim();
 
   for(const p of PRICE_TABLE){
 
     const model = String(p["Mã máy"] || "").toUpperCase();
 
-    const code = model.match(/\((.*?)\)/)?.[1];
-
-    const name = model.split("(")[0].trim();
+    const code = model.match(/\((.*?)\)/)?.[1];  // G988
+    const name = model.split("(")[0].trim();     // S20 ULTRA
 
     if(!code) continue;
 
     if(
-      code === key ||           // G988
-      key === "SM-"+code ||     // SM-G988
-      name.includes(key)       // S21 ULTRA
+      key === code ||          // g988
+      key === "SM-"+code ||    // sm-g988
+      name.includes(key)       // s20 ultra
     ){
       return {
         ...p,
-        modelName: name,
+        modelName: "Samsung " + name,
         modelCode: code
       };
     }
@@ -1757,7 +1756,6 @@ function findPriceByModel(input){
   }
 
   return null;
-
 }
 /* ===== SAFE USER MODE DETECT ===== */
 
