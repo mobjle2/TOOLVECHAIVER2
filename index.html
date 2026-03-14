@@ -1854,15 +1854,22 @@ enableCheckUI();
 
 // ===== TĂNG VIEW (CHỈ TĂNG 1 LẦN) =====
 if(!window._viewCounted){
-
+/* =====================================================
+   TẠO VISIT KEY LOCAL
+===================================================== */
   const visitKey = "visit_" + id;
 
-  // nếu chưa từng mở link này trên thiết bị
+/* =====================================================
+   KIỂM TRA VISIT LOCAL STORAGE
+===================================================== */
   if(!localStorage.getItem(visitKey)){
 
     localStorage.setItem(visitKey, true);
 
     await ref.update({
+      /* =====================================================
+   TĂNG VIEW LINK FIRESTORE
+===================================================== */
       views: firebase.firestore.FieldValue.increment(1)
     });
 
@@ -1925,7 +1932,9 @@ await db.collection("link_visits").add({
 }
 
   } // đóng if localStorage
-
+/* =====================================================
+   ĐÁNH DẤU VIEW ĐÃ TÍNH
+===================================================== */
   window._viewCounted = true;
 
 } // đóng if _viewCounted
