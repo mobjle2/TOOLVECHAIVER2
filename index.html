@@ -3429,10 +3429,9 @@ const samsung = searchSamsung(q);
 
 if(samsung){
 
-```
-const p = samsung.price;
+  const p = samsung.price;
 
-const html = `
+  const html = `
 <div class="result-grid">
   <div class="result-card">
 
@@ -3456,11 +3455,9 @@ const html = `
 </div>
 `;
 
-out.innerHTML = html;
-turboCache.set(q, html);
-return;
-```
-
+  out.innerHTML = html;
+  turboCache.set(q, html);
+  return;
 }
 
 /* ===== UI LOADING ===== */
