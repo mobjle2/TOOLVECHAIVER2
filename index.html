@@ -3373,33 +3373,33 @@ async function check(){
   const btn = document.querySelector(".check-btn");
   let q = document.getElementById("q")?.value?.trim()?.toUpperCase().replace("SM-","") || "";
 
-  /* ===== FORCE MODEL SEARCH ===== */
+/* ===== FORCE MODEL SEARCH ===== */
 
-  if(q.startsWith("S8")) q = "G950";
+if(q.startsWith("S8")) q = "G950";
 
-  if(q.startsWith("S9")) q = "G960";
+if(q.startsWith("S9")) q = "G960";
 
-  if(q.startsWith("S10")) q = "G973";
+if(q.startsWith("S10")) q = "G973";
 
-  if(q.startsWith("S20 ULTRA")) q = "G988";
-  else if(q.startsWith("S20+")) q = "G985";
-  else if(q.startsWith("S20")) q = "G980";
+if(q.startsWith("S20 ULTRA")) q = "G988";
+else if(q.startsWith("S20+")) q = "G985";
+else if(q.startsWith("S20")) q = "G980";
 
-  if(q.startsWith("S21 ULTRA")) q = "G998";
-  else if(q.startsWith("S21+")) q = "G996";
-  else if(q.startsWith("S21")) q = "G991";
+if(q.startsWith("S21 ULTRA")) q = "G998";
+else if(q.startsWith("S21+")) q = "G996";
+else if(q.startsWith("S21")) q = "G991";
 
-  if(q.startsWith("S22 ULTRA")) q = "S908";
-  else if(q.startsWith("S22+")) q = "S906";
-  else if(q.startsWith("S22")) q = "S901";
+if(q.startsWith("S22 ULTRA")) q = "S908";
+else if(q.startsWith("S22+")) q = "S906";
+else if(q.startsWith("S22")) q = "S901";
 
-  if(q.startsWith("S23 ULTRA")) q = "S918";
-  else if(q.startsWith("S23+")) q = "S916";
-  else if(q.startsWith("S23")) q = "S911";
+if(q.startsWith("S23 ULTRA")) q = "S918";
+else if(q.startsWith("S23+")) q = "S916";
+else if(q.startsWith("S23")) q = "S911";
 
-  if(q.startsWith("S24 ULTRA")) q = "S928";
-  else if(q.startsWith("S24+")) q = "S926";
-  else if(q.startsWith("S24")) q = "S921";
+if(q.startsWith("S24 ULTRA")) q = "S928";
+else if(q.startsWith("S24+")) q = "S926";
+else if(q.startsWith("S24")) q = "S921";
 
   const modelMatch = q.match(/[A-Z]\d{3,4}/);
 
