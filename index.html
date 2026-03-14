@@ -1737,7 +1737,11 @@ function findPriceByModel(input){
 
     const pm = String(p.model || "").toUpperCase();
 
-    if(pm.includes(key) || key.includes(pm)){
+   const pm = String(p.model || "").toUpperCase().match(/\((.*?)\)/)?.[1];
+
+if(pm === key){
+  return p;
+}
       return p;
     }
 
