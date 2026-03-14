@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -1730,33 +1731,21 @@ function findPriceByModel(input){
 
   if(!input) return null;
 
-  const key = input.toUpperCase().replace("SM-","").trim();
+  const key = input.toUpperCase();
 
   for(const p of PRICE_TABLE){
 
-    const model = String(p["Mã máy"] || "").toUpperCase();
+    const pm = String(p.model || "").toUpperCase();
 
-    const code = model.match(/\((.*?)\)/)?.[1];  // G988
-    const name = model.split("(")[0].trim();     // S20 ULTRA
-
-    if(!code) continue;
-
-    if(
-      key === code ||          // g988
-      key === "SM-"+code ||    // sm-g988
-      name.includes(key)       // s20 ultra
-    ){
-      return {
-        ...p,
-        modelName: "Samsung " + name,
-        modelCode: code
-      };
+    if(pm.includes(key) || key.includes(pm)){
+      return p;
     }
 
   }
 
   return null;
 }
+
 /* ===== SAFE USER MODE DETECT ===== */
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -3280,7 +3269,14 @@ function extractMMCSize(code){
   return null;
 }
 
-
+const MODEL_NAME_MAP = {
+  G988: "Samsung S20 Ultra",
+  G998: "Samsung S21 Ultra",
+  G991: "Samsung S21",
+  G980: "Samsung S20",
+  G950: "Samsung S8"
+};
+  
 async function check(){
 
   const out = document.getElementById("out");
@@ -3312,7 +3308,7 @@ async function check(){
 
     <div class="code-title">
 <span class="code-badge">
-${price.modelName} (${price.modelCode})
+${MODEL_NAME_MAP[modelMatch[0]] || modelMatch[0]} (${modelMatch[0]})
 </span>
     </div>
 
