@@ -3272,9 +3272,15 @@ async function check(){
 
   const out = document.getElementById("out");
   const btn = document.querySelector(".check-btn");
-  const q = document.getElementById("q")?.value?.trim()?.toUpperCase() || "";
+  let q = document.getElementById("q")?.value?.trim()?.toUpperCase() || "";
+
   /* ===== FORCE MODEL SEARCH ===== */
-  const modelMatch = q.match(/^[A-Z]\d{2,4}/);
+
+  if(q.startsWith("S22")) q = "G998";
+  if(q.startsWith("S21")) q = "G998";
+  if(q.startsWith("S20")) q = "G988";
+
+  const modelMatch = q.match(/[A-Z]\d{3}/);
 
   if(modelMatch){
 
@@ -3288,7 +3294,7 @@ async function check(){
 
     <div class="code-title">
       <span class="code-badge">
-        ${getSamsungName(modelMatch[0]) || modelMatch[0]}
+${getSamsungName(modelMatch[0]) || modelMatch[0]}
       </span>
     </div>
 
@@ -3311,7 +3317,6 @@ async function check(){
     }
 
   }
-
   if(!q){
     out.innerHTML="";
     return;
