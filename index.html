@@ -1834,7 +1834,9 @@ async function runUserMode(id){
 // ===== REALTIME LISTENER =====
 ref.onSnapshot(async (doc)=>{
 
-  // ===== LINK BỊ XÓA =====
+ /* =====================================================
+   KIỂM TRA LINK KHÔNG TỒN TẠI
+===================================================== */
   if(!doc.exists){
     showUserMessage(L("link_not_found"));
     disableCheckUI();
@@ -1846,14 +1848,18 @@ ref.onSnapshot(async (doc)=>{
 
   
 
-  // ===== LINK BỊ KHÓA =====
+ /* =====================================================
+   KIỂM TRA LINK BỊ KHÓA
+===================================================== */
   if(!data.active){
     showUserMessage(L("link_locked"));
     disableCheckUI();
     return;
   }
 
-// ===== LINK HẾT HẠN =====
+/* =====================================================
+   KIỂM TRA LINK HẾT HẠN
+===================================================== */
 if(data.expiresAt && data.expiresAt.toDate() < new Date()){
 
   ref.update({ active:false }).catch(()=>{});
@@ -1878,7 +1884,9 @@ if(data.expiresAt && data.expiresAt.toDate() < new Date()){
   return;
 }
 
-// ===== LINK HỢP LỆ =====
+/* =====================================================
+   KÍCH HOẠT SEARCH KHI LINK HỢP LỆ
+===================================================== */
 enableCheckUI();
 
 /* =====================================================
@@ -1976,7 +1984,9 @@ await db.collection("link_visits").add({
    Hiển thị countdown và tự khóa link khi hết hạn
 ===================================================== */
 if(data.expiresAt){
-
+/* =====================================================
+   TẠO BOX HIỂN THỊ COUNTDOWN LINK
+===================================================== */
   let box = document.getElementById("countdownBox");
 
   if(!box){
@@ -2030,6 +2040,9 @@ if(data.expiresAt){
       clearInterval(countdownInterval);
       await ref.update({ active:false });
       box.innerText = L("link_expired");
+      /* =====================================================
+      KHÓA SEARCH KHI LINK KHÔNG HỢP LỆ
+      ===================================================== */
       disableCheckUI();
       return;
     }
@@ -3441,7 +3454,9 @@ const MODEL_NAME_MAP = {
   N935: "Samsung Note FE"
 
 };;
-  
+/* =====================================================
+   HÀM SEARCH KIỂM TRA CHIP
+===================================================== */  
 async function check(){
 
   const out = document.getElementById("out");
@@ -3752,7 +3767,9 @@ if(docsMap.size === 0){
     btn.style.opacity = "1";
   }
 }
-// ===== LOGIN =====
+/* =====================================================
+   XỬ LÝ ĐĂNG NHẬP ADMIN
+===================================================== */
 async function secureLogin(){
   const email = document.getElementById("loginEmail").value.trim();
   const pass = document.getElementById("loginPass").value.trim();
@@ -3772,7 +3789,9 @@ async function secureLogin(){
 
 
 
-// ===== TOGGLE PASSWORD =====
+/* =====================================================
+   HIỆN / ẨN MẬT KHẨU LOGIN
+===================================================== */
 function togglePassword(){
   const passInput = document.getElementById("loginPass");
 
@@ -3828,7 +3847,9 @@ auth.onAuthStateChanged(async (user) => {
 
 
 
-
+/* =====================================================
+   TẠO LINK CHIA SẺ USER MODE
+===================================================== */
 async function createLink(){
   const id = Date.now().toString(36) + Math.random().toString(36).substring(2,6);
 
@@ -3842,7 +3863,9 @@ async function createLink(){
  
 }
 
-
+/* =====================================================
+   TẢI DANH SÁCH LINK TRONG ADMIN PANEL
+===================================================== */
 async function loadLinks(){
 
   db.collection("shareLinks").onSnapshot(snap=>{
@@ -4232,7 +4255,9 @@ function copyLink(id, btn){
   },1500);
 }
 
-// ===== DELETE LINK =====
+/* =====================================================
+   XÓA LINK CHIA SẺ
+===================================================== */
 function deleteLink(id){
   if(!confirm("Xóa link này?")) return;
 
@@ -4265,7 +4290,9 @@ async function startRename(id){
 }
 
 
-// ===== TOGGLE LINK (MỞ / KHÓA) =====
+/* =====================================================
+   KHÓA / MỞ LINK CHIA SẺ
+===================================================== */
 async function toggleLink(id, current){
 
   try{
@@ -4385,6 +4412,9 @@ document.getElementById("q").addEventListener("keydown",function(e){
     check();
   }
 });
+/* =====================================================
+   MỞ / ĐÓNG ADMIN PANEL
+===================================================== */
 function toggleAdmin(){
 
   const content = document.getElementById("adminContent");
@@ -4503,6 +4533,9 @@ const MSG = {
 
 function L(key){
   const urlLang = new URLSearchParams(window.location.search).get("lang");
+  /* =====================================================
+   HỆ THỐNG NGÔN NGỮ (VI / EN)
+===================================================== */
   const lang = urlLang || localStorage.getItem("lang") || "vi";
   return MSG[lang]?.[key] || key;
 }
