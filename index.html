@@ -3280,12 +3280,35 @@ const MODEL_NAME_MAP = {
   G980: "Samsung S20",
   G950: "Samsung S8"
 };
-  
+/* =================================================
+ENGINE TÌM KIẾM MODEL SAMSUNG
+================================================= */
+
+function chuẩnHóaModel(input){
+
+  input = String(input || "")
+    .toUpperCase()
+    .trim()
+    .replace("SM-","");
+
+  /* A50 (A505) */
+  const ngoặc = input.match(/\(([^)]+)\)/);
+  if(ngoặc) return ngoặc[1];
+
+  /* A51 -> A515 */
+  const m = input.match(/^([A-Z])(\d{2})$/);
+  if(m){
+    return m[1] + m[2] + "5";
+  }
+
+  return input;
+}  
 async function check(){
 
   const out = document.getElementById("out");
   const btn = document.querySelector(".check-btn");
  let q = document.getElementById("q")?.value?.trim()?.toUpperCase().replace("SM-","") || "";
+  
   /* ===== FORCE MODEL SEARCH ===== */
 
   if(q.startsWith("S8")) q = "G950";
