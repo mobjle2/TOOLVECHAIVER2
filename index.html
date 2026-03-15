@@ -3437,40 +3437,49 @@ async function check(){
 
   const out = document.getElementById("out");
   const btn = document.querySelector(".check-btn");
+
+/* ===== LẤY GIÁ TRỊ TỪ Ô TÌM KIẾM (GET SEARCH INPUT) ===== */
+
 let q = document.getElementById("q")?.value || "";
 q = chuẩnHóaModel(q);
 q = q.toUpperCase();
-  
-  /* ===== FORCE MODEL SEARCH ===== */
 
-  if(q.startsWith("S8")) q = "G950";
 
-  if(q.startsWith("S20 ULTRA")) q = "G988";
-  else if(q.startsWith("S20")) q = "G980";
+/* ===== CHUYỂN MODEL PHỔ BIẾN SANG MÃ CHIP (FORCE MODEL SEARCH) ===== */
 
-  if(q.startsWith("S21 ULTRA")) q = "G998";
-  else if(q.startsWith("S21")) q = "G991";
+if(q.startsWith("S8")) q = "G950";
 
-/* ===== S22 ===== */
+if(q.startsWith("S20 ULTRA")) q = "G988";
+else if(q.startsWith("S20")) q = "G980";
+
+if(q.startsWith("S21 ULTRA")) q = "G998";
+else if(q.startsWith("S21")) q = "G991";
+
+
+/* ===== DÒNG GALAXY S22 ===== */
 
 if(q.startsWith("S22 ULTRA")) q = "S908";
 else if(q.startsWith("S22+")) q = "S906";
 else if(q.startsWith("S22")) q = "S901";
 
-/* ===== S23 ===== */
+
+/* ===== DÒNG GALAXY S23 ===== */
 
 if(q.startsWith("S23 ULTRA")) q = "S918";
 else if(q.startsWith("S23+")) q = "S916";
 else if(q.startsWith("S23")) q = "S911";
 
-/* ===== S24 ===== */
+
+/* ===== DÒNG GALAXY S24 ===== */
 
 if(q.startsWith("S24 ULTRA")) q = "S928";
 else if(q.startsWith("S24+")) q = "S926";
 else if(q.startsWith("S24")) q = "S921";
-  
 
-const modelMatch = chuẩnHóaModel(q).match(/[A-Z]\d{3,4}/);
+
+/* ===== TÌM MODEL CHIP TỪ CHUỖI (MATCH MODEL CODE) ===== */
+
+const modelMatch = chuẩnHóaModel(q).match(/[A-Z]\d{3,4}[A-Z]?/);
 
   if(modelMatch){
    const key = chuẩnHóaModel(q);
