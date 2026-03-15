@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -1654,10 +1653,8 @@ Chỉ nâng cấp logic JS hoặc màu sắc.
 <script>
 
 
-/* =====================================================
-   KHỞI TẠO FIREBASE
-   Cấu hình Auth + Firestore
-===================================================== */
+/* ===== SAFE FIREBASE INIT ===== */
+
 const firebaseConfig = {
   apiKey: "AIzaSyClXx0V66GQHKGO0EwQc0nYNguFLc705A0",
   authDomain: "toolvechaiver2.firebaseapp.com",
@@ -1668,23 +1665,14 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-/* =====================================================
-   KHỞI TẠO FIREBASE AUTH
-===================================================== */
+
 const auth = firebase.auth();
 
-/* =====================================================
-   KHỞI TẠO FIRESTORE DATABASE
-===================================================== */
+/* ⭐ QUAN TRỌNG */
 const db = firebase.firestore(firebase.app());
-/* =====================================================
-   DUY TRÌ PHIÊN ĐĂNG NHẬP ADMIN
-===================================================== */
+
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-/* =====================================================
-   BỘ NHỚ CACHE TĂNG TỐC TOOL
-   Lưu dữ liệu RAM để giảm truy vấn Firestore
-===================================================== */
+
 /* 🚀 TURBO CACHE */
 const turboCache = new Map();
 
@@ -1693,9 +1681,8 @@ const CODE_CACHE = new Map();
 /* ===== PRICE TABLE ===== */
 let PRICE_TABLE = [];
 
-/* =====================================================
-   TẢI PRICE TABLE VÀO CACHE RAM
-===================================================== */
+/* ================= TURBO CACHE ENGINE ================= */
+
 async function preloadCodes(){
 
   console.log("Loading code cache...");
@@ -1763,35 +1750,22 @@ function findPriceByModel(input){
   return null;
 }
 
-/* =====================================================
-   KHỞI TẠO URL PARAMS
-===================================================== */
+/* ===== SAFE USER MODE DETECT ===== */
+
 const urlParams = new URLSearchParams(window.location.search);
-/* =====================================================
-   PHÁT HIỆN USER MODE TỪ URL
-===================================================== */
 const isUserMode = urlParams.has("u");
 
 /* ❗ KHÔNG logout ngay nữa */
 /* auth listener phía dưới sẽ xử lý */
-/* =====================================================
-   THIẾT LẬP TRẠNG THÁI USER LINK
-===================================================== */
+
 window.USER_LINK_ACTIVE = true;
 /* ===== USER MODE (?u=) ===== */
 
 const params = new URLSearchParams(window.location.search);
-/* =====================================================
-   LẤY PARAM USER LINK TỪ URL
-===================================================== */
 const userParam = params.get("u");
-/* =====================================================
-   KÍCH HOẠT USER MODE TỪ LINK CHIA SẺ
-===================================================== */
+
 if(userParam){
-/* =====================================================
-   CHỜ DOM READY TRƯỚC KHI CHẠY USER MODE
-===================================================== */
+
   window.addEventListener("DOMContentLoaded", async ()=>{
 
     const login=document.getElementById("loginScreen");
@@ -1804,9 +1778,7 @@ if(userParam){
     }catch(e){
       console.error("Cache load error:",e);
     }
-   /* =====================================================
-   KHỞI CHẠY USER MODE ENGINE
-===================================================== */
+
     runUserMode(userParam);
 
   });
@@ -1814,10 +1786,8 @@ if(userParam){
 }
 
 
-/* =====================================================
-   HỆ THỐNG USER MODE
-   Chế độ kiểm tra code khi truy cập link chia sẻ
-===================================================== */
+/* ===== USER MODE ENGINE (REALTIME VERSION) ===== */
+
 async function runUserMode(id){
 
   try{
@@ -1882,27 +1852,17 @@ if(data.expiresAt && data.expiresAt.toDate() < new Date()){
 // ===== LINK HỢP LỆ =====
 enableCheckUI();
 
-/* =====================================================
-   GHI NHẬN LƯỢT TRUY CẬP LINK
-   Tăng view + lưu thông tin truy cập (country / device / browser)
-===================================================== */
+// ===== TĂNG VIEW (CHỈ TĂNG 1 LẦN) =====
 if(!window._viewCounted){
-/* =====================================================
-   TẠO VISIT KEY LOCAL
-===================================================== */
+
   const visitKey = "visit_" + id;
 
-/* =====================================================
-   KIỂM TRA VISIT LOCAL STORAGE
-===================================================== */
+  // nếu chưa từng mở link này trên thiết bị
   if(!localStorage.getItem(visitKey)){
 
     localStorage.setItem(visitKey, true);
 
     await ref.update({
-      /* =====================================================
-   TĂNG VIEW LINK FIRESTORE
-===================================================== */
       views: firebase.firestore.FieldValue.increment(1)
     });
 
@@ -1965,17 +1925,12 @@ await db.collection("link_visits").add({
 }
 
   } // đóng if localStorage
-/* =====================================================
-   ĐÁNH DẤU VIEW ĐÃ TÍNH
-===================================================== */
+
   window._viewCounted = true;
 
 } // đóng if _viewCounted
 
-/* =====================================================
-   ĐẾM NGƯỢC THỜI GIAN HẾT HẠN LINK
-   Hiển thị countdown và tự khóa link khi hết hạn
-===================================================== */
+// ===== COUNTDOWN =====
 if(data.expiresAt){
 
   let box = document.getElementById("countdownBox");
@@ -2056,10 +2011,6 @@ if(data.expiresAt){
     disableCheckUI();
   }
 }
-/* =====================================================
-   TẮT SEARCH UI
-===================================================== */
-=============
 function disableCheckUI(){
 
   // 🔒 Đánh dấu link không còn hợp lệ
@@ -2089,9 +2040,7 @@ function disableCheckUI(){
     adminPanel.style.display = "none";
   }
 }
-/* =====================================================
-   BẬT LẠI SEARCH UI
-===================================================== */
+
 function enableCheckUI(){
 
   // ✅ Đánh dấu link đang hoạt động
@@ -2117,16 +2066,13 @@ function enableCheckUI(){
   }
 }
 
-/* =====================================================
-   BẮT LỖI TOÀN CỤC (GLOBAL ERROR SHIELD)
-===================================================== */
+/* ===== GLOBAL ERROR SHIELD ===== */
+
 window.addEventListener("error",e=>{
   console.error("GLOBAL ERROR:",e.error);
 });
 
-/* =====================================================
-   HIỂN THỊ THÔNG BÁO CHO USER
-===================================================== */
+// ===== THÊM HÀM NÀY NẾU CHƯA CÓ =====
 function showUserMessage(text){
   const out = document.getElementById("out");
   if(out){
@@ -2143,9 +2089,6 @@ function showUserMessage(text){
     `;
   }
 }
-/* =====================================================
-   LƯU ALIAS CHO LINK CHIA SẺ
-===================================================== */
 async function saveAlias(id,value){
 
   const ref = db.collection("shareLinks").doc(id);
@@ -2160,9 +2103,7 @@ async function saveAlias(id,value){
     });
   }
 }
-/* =====================================================
-   NHẬN DIỆN HÃNG CHIP (SAMSUNG / HYNIX / MICRON / YMTC)
-===================================================== */
+
 
 function detectChip(code){
 
@@ -2197,8 +2138,9 @@ function detectChip(code){
 
 
 /* =====================================================
-   GIẢI MÃ CODE NHANH (SHORTCODE C6 C7 C8 C9)
+   QUICK SHORTCODE DECODE (C6 C7 C8 C9)
 ===================================================== */
+
 function quickDecodeChip(code){
 
   if(!code) return null;
@@ -2224,9 +2166,7 @@ function quickDecodeChip(code){
   return null;
 }
 
-/* =====================================================
-   HỆ THỐNG TÍNH VIP DỰA TRÊN RAM + ROM
-===================================================== */
+// ===== VIP RULE =====
 function calculateVip(ram, rom){
   // =========================
   // SAFE TYPE
@@ -2351,9 +2291,7 @@ function getMMCLevel(rom){
 
   return "MMC";
 }
-/* =====================================================
-   ENGINE GIẢI MÃ CHIP SAMSUNG
-===================================================== */
+
 function decodeSamsung(code){
 
 const r={
@@ -2531,9 +2469,14 @@ return r;
 
 }
   
-/* =====================================================
-   ENGINE GIẢI MÃ CHIP SK HYNIX
-===================================================== */
+// ======================================================
+// SK HYNIX FULL ENGINE (FINAL - USER VIP STANDARD)
+// ======================================================
+
+// ======================================================
+// SK HYNIX FULL DECODER (STABLE)
+// ======================================================
+
 function decodeHynix(code){
 
 code = (code || "").toUpperCase().trim();
@@ -2764,21 +2707,13 @@ vip
   
   
   
-/* =====================================================
-   AUTO DECODER CHIP (CHỌN ENGINE THEO HÃNG)
-===================================================== */
+// ===== MAIN DECODER =====
 function autoDecodeChip(code, dbData){
-/* =====================================================
-   KIỂM TRA QUICK SHORTCODE (C6 C7 C8 C9)
-===================================================== */
 const quick = quickDecodeChip(code);
 if(quick) return quick;
 
   code = code.toUpperCase().trim();
   // ===== YMTC / YMEC ENGINE =====
-/* =====================================================
-   ENGINE GIẢI MÃ CHIP YMTC
-===================================================== */
 if(code.startsWith("YMEC") || code.startsWith("YMU")){
 
   let rom = null;
@@ -2801,8 +2736,9 @@ if(code.startsWith("YMEC") || code.startsWith("YMU")){
 }
 
 /* =====================================================
-   ƯU TIÊN DỮ LIỆU FIREBASE (OVERRIDE DECODER)
+   🔥 FIREBASE PRIORITY ENGINE
 ===================================================== */
+
 function buildHardware(code, data){
 
   /* ===== ƯU TIÊN FIRESTORE ===== */
@@ -2835,9 +2771,7 @@ function buildHardware(code, data){
   return hw;
 }
 
-/* =====================================================
-   ENGINE GIẢI MÃ CHIP MICRON OEM
-===================================================== */  
+  
 function decodeMicronOEM(code){
 
   code = code.toUpperCase().trim();
@@ -2931,14 +2865,12 @@ function decodeMicronOEM(code){
 
   return null;
 }
-  /* =====================================================
-   KIỂM TRA MICRON TRƯỚC KHI AUTO DECODE
-===================================================== */
+  // ===== MICRON CHECK FIRST =====
   const micron = decodeMicronOEM(code);
   if(micron) return micron;
-/* =====================================================
-   ENGINE GIẢI MÃ CHIP SANDISK / WD
-===================================================== */
+  /* ===============================
+   SANDISK / WD eMMC FIX
+================================ */
 if(code.startsWith("SDIN")){
 
   const size = code.match(/(\d{2,3})G/i);
@@ -2963,16 +2895,12 @@ if(code.startsWith("WDC")){
 }
 
 
-  /* =====================================================
-   KIỂM TRA CHIP SAMSUNG
-===================================================== */
+  // ===== Samsung =====
   if(/^K/.test(code)){
     return decodeSamsung(code);
   }
 
-/* =====================================================
-   KIỂM TRA CHIP SK HYNIX
-===================================================== */
+// ===== SK hynix =====
 if(/^H/.test(code)){
 
   const h = decodeHynix(code);
