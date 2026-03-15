@@ -1731,17 +1731,15 @@ function findPriceByModel(input){
 
   if(!input) return null;
 
-  const key = input.toUpperCase();
+  const key = input.toUpperCase().replace("SM-","").replace("F","");
 
   for(const p of PRICE_TABLE){
 
-    const pm = String(p.model || "").toUpperCase();
+    let pm = String(p.model || "").toUpperCase();
 
-    if(
-      pm.includes(key) ||
-      key.includes(pm) ||
-      pm.startsWith(key)
-    ){
+    pm = pm.replace("SM-","").replace("F","");
+
+    if(pm === key){
       return p;
     }
 
@@ -1749,7 +1747,6 @@ function findPriceByModel(input){
 
   return null;
 }
-
 /* ===== SAFE USER MODE DETECT ===== */
 
 const urlParams = new URLSearchParams(window.location.search);
