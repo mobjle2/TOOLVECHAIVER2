@@ -3323,7 +3323,7 @@ q = chuẩnHóaModel(q);
   if(q.startsWith("S22 ULTRA")) q = "G998";
   else if(q.startsWith("S22")) q = "G998";
 
-const modelMatch = chuẩnHóaModel(q).match(/[A-Z]\d{3}/);
+const modelMatch = chuẩnHóaModel(q).match(/[A-Z]\d{3,4}/);
 
   if(modelMatch){
    const key = chuẩnHóaModel(q);
