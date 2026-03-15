@@ -3299,7 +3299,7 @@ async function check(){
   if(q.startsWith("S22 ULTRA")) q = "G998";
   else if(q.startsWith("S22")) q = "G998";
 
-  const modelMatch = q.match(/[A-Z]\d{3}/);
+  const modelMatch = q.match(/[A-Z]\d{2,3}/);
 
   if(modelMatch){
     const price = findPriceByModel(modelMatch[0]);
