@@ -3450,8 +3450,24 @@ q = chuẩnHóaModel(q);
   if(q.startsWith("S21 ULTRA")) q = "G998";
   else if(q.startsWith("S21")) q = "G991";
 
-  if(q.startsWith("S22 ULTRA")) q = "G998";
-  else if(q.startsWith("S22")) q = "G998";
+/* ===== S22 ===== */
+
+if(q.startsWith("S22 ULTRA")) q = "S908";
+else if(q.startsWith("S22+")) q = "S906";
+else if(q.startsWith("S22")) q = "S901";
+
+/* ===== S23 ===== */
+
+if(q.startsWith("S23 ULTRA")) q = "S918";
+else if(q.startsWith("S23+")) q = "S916";
+else if(q.startsWith("S23")) q = "S911";
+
+/* ===== S24 ===== */
+
+if(q.startsWith("S24 ULTRA")) q = "S928";
+else if(q.startsWith("S24+")) q = "S926";
+else if(q.startsWith("S24")) q = "S921";
+  
 
 const modelMatch = chuẩnHóaModel(q).match(/[A-Z]\d{3,4}/);
 
