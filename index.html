@@ -1560,48 +1560,53 @@ body::before{
 /* ===== BẢNG GIÁ MODEL ===== */
 
 .price-box{
-  margin-top:12px;
-  display:flex;
-  flex-direction:column;
-  gap:8px;
+margin-top:12px;
+display:flex;
+flex-direction:column;
+gap:8px;
 }
 
-.price-title{
-  font-size:13px;
-  font-weight:600;
-  color:#94a3b8;
-  margin-bottom:4px;
-  letter-spacing:.5px;
+.price-row{
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+
+background:rgba(255,255,255,0.05);
+
+padding:8px 12px;
+border-radius:10px;
+
+font-size:14px;
 }
 
-.price-item{
-  display:flex;
-  justify-content:space-between;
-  background:rgba(255,255,255,0.05);
-  padding:6px 10px;
-  border-radius:8px;
+.price-row b{
+color:#22c55e;
+font-weight:700;
 }
 
-.price-value{
-  font-weight:600;
-  color:#22c55e;
-}
-
-/* ===== MODEL TYPE ===== */
+/* ===== HIỂN THỊ LOẠI SAMSUNG ===== */
 
 .model-type{
-  margin-top:8px;
-  font-size:13px;
-  color:#94a3b8;
-  background:rgba(255,255,255,0.04);
-  padding:6px 10px;
-  border-radius:8px;
-  display:inline-block;
+
+margin-top:8px;
+
+font-size:13px;
+
+color:#94a3b8;
+
+background:rgba(255,255,255,0.04);
+
+padding:6px 10px;
+
+border-radius:8px;
+
+display:inline-block;
+
 }
 
 .model-type b{
-  color:#22c55e;
-  font-weight:600;
+color:#22c55e;
 }
   
 </style>
@@ -3567,23 +3572,19 @@ ${MODEL_NAME_MAP[modelKey] || "Samsung " + modelKey + "F"} (${modelKey}F)
 
 <div class="price-box">
 
-  <div class="price-title">💰 BẢNG GIÁ</div>
+<div class="price-row">
+<span>🔋 Có pin</span>
+<b>310k</b>
+</div>
 
-  <div class="price-item">
-    <span class="price-label">🔋 Có pin</span>
-    <span class="price-value">${price.pin ? Math.round(price.pin/1000)+"k" : "-"}</span>
-  </div>
+<div class="price-row">
+<span>⚡ Không pin</span>
+<b>295k</b>
+</div>
 
-  <div class="price-item">
-    <span class="price-label">⚡ Không pin</span>
-    <span class="price-value">${price.no_pin ? Math.round(price.no_pin/1000)+"k" : "-"}</span>
-  </div>
-
-  <div class="price-item">
-    <span class="price-label">🧠 Main</span>
-    <span class="price-value">${price.main ? Math.round(price.main/1000)+"k" : "-"}</span>
-  </div>
-
+<div class="price-row">
+<span>🧠 Main</span>
+<b>290k</b>
 </div>
 
 </div>
