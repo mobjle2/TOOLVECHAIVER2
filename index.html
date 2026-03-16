@@ -1797,10 +1797,9 @@ function findPriceByModel(input){
 }
   
 
-===================================================== */
-
 /* =====================================================
    SEARCH MODEL + SAMSUNG SERIES
+   Fix tìm S21 / S22 / S23
 ===================================================== */
 
 function searchPriceModel(q){
@@ -1810,9 +1809,9 @@ function searchPriceModel(q){
   const result = [];
 
   const seriesMap = {
-    S21:["G991","G996","G998"],
-    S22:["S901","S906","S908"],
-    S23:["S911","S916","S918"]
+    "S21":["G991","G996","G998"],
+    "S22":["S901","S906","S908"],
+    "S23":["S911","S916","S918"]
   };
 
   for(const p of PRICE_TABLE){
@@ -1826,7 +1825,10 @@ function searchPriceModel(q){
 
       const codes = seriesMap[q];
 
-      if(codes.some(c => model.includes(c) || short.includes(c))){
+      if(codes.some(function(c){
+        return model.includes(c) || short.includes(c);
+      })){
+
         result.push({
           source:"price",
           model:p.model,
@@ -1835,6 +1837,7 @@ function searchPriceModel(q){
           no_pin:p.no_pin,
           main:p.main
         });
+
       }
 
       continue;
@@ -1842,10 +1845,8 @@ function searchPriceModel(q){
 
     /* ===== SEARCH BÌNH THƯỜNG ===== */
 
-    if(
-      model.includes(q) ||
-      short.includes(q)
-    ){
+    if(model.includes(q) || short.includes(q)){
+
       result.push({
         source:"price",
         model:p.model,
@@ -1854,11 +1855,13 @@ function searchPriceModel(q){
         no_pin:p.no_pin,
         main:p.main
       });
+
     }
 
   }
 
   return result;
+
 }
 /* ===== SAFE USER MODE DETECT ===== */
 
