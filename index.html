@@ -2938,25 +2938,49 @@ if(code.startsWith("WDC")){
     return decodeSamsung(code);
   }
 
-// ===== SK hynix =====
+// ===== SK HYNIX =====
 if(/^H/.test(code)){
 
   const h = decodeHynix(code);
 
-/* ===== SAFE GUARD ===== */
-if(!h){
-  return {
-    ram: null,
-    rom: null,
-    storage: "Unknown",
-    vip: 0
-  };
-}
+  /* ===== BẢO VỆ DỮ LIỆU ===== */
+  if(!h){
+    return {
+      ram:null,
+      rom:null,
+      storage:"Unknown",
+      vip:0
+    };
+  }
 
-  /* ===== NORMALIZE DATA ===== */
+  /* ===== CHUẨN HÓA DỮ LIỆU ===== */
   h.ram = Number(h.ram) || null;
   h.rom = Number(h.rom) || null;
   h.storage = h.storage || "Unknown";
+
+  /* ===== SỬA LẠI QUY TẮC VIP ===== */
+
+  if(h.storage.includes("eMMC") && h.ram <= 1)
+    h.vip = 1;
+
+  else if(h.storage.includes("eMMC") && h.ram === 2)
+    h.vip = 2;
+
+  else if(h.storage.includes("eMMC") && h.ram >= 3)
+    h.vip = calculateVip(h.ram, h.rom);
+
+  return h;
+}
+
+/* ===== TRƯỜNG HỢP KHÔNG NHẬN DIỆN ===== */
+return {
+  ram:null,
+  rom:null,
+  storage:"Unknown",
+  vip:0
+};
+
+}
 
   /* ===== VIP RULE FIX ===== */
 
