@@ -1795,9 +1795,36 @@ function findPriceByModel(input){
 
   return null;
 }
+  
+/* =====================================================
+   FIX SEARCH SAMSUNG SERIES (S21 / S22 / S23)
+
+   Mục đích:
+   - Khi người dùng nhập: S21 / S22 / S23
+   - Tool vẫn tìm được các model thật trong database:
+       S21  → G991 / G996 / G998
+       S22  → S901 / S906 / S908
+       S23  → S911 / S916 / S918
+
+   Ưu điểm:
+   - Không phá logic cũ
+   - Vẫn tìm được G991 / S901 / S911 bình thường
+   - Tăng khả năng search cho user
+
+   Ngày sửa: 2026
+===================================================== */
+
 function searchPriceModel(q){
 
   q = q.toUpperCase().trim();
+
+  /* ===== MAP SERIES SAMSUNG ===== */
+
+  const samsungSeriesMap = {
+    "S21":["G991","G996","G998"],
+    "S22":["S901","S906","S908"],
+    "S23":["S911","S916","S918"]
+  };
 
   const result = [];
 
@@ -1805,6 +1832,8 @@ function searchPriceModel(q){
 
     const model = (p.model || "").toUpperCase();
     const short = (p.short || "").toUpperCase();
+
+    /* ===== SEARCH CŨ ===== */
 
     if(
       model.includes(q) ||
@@ -1818,6 +1847,26 @@ function searchPriceModel(q){
         no_pin:p.no_pin,
         main:p.main
       });
+      continue;
+    }
+
+    /* ===== SEARCH SERIES SAMSUNG ===== */
+
+    if(samsungSeriesMap[q]){
+
+      const list = samsungSeriesMap[q];
+
+      if(list.some(x => model.includes(x) || short.includes(x))){
+        result.push({
+          source:"price",
+          model:p.model,
+          type:p.type,
+          pin:p.pin,
+          no_pin:p.no_pin,
+          main:p.main
+        });
+      }
+
     }
 
   }
