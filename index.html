@@ -2067,39 +2067,46 @@ function disableCheckUI(){
   }
 }
 
+/* ===== BẬT LẠI CHỨC NĂNG KIỂM TRA ===== */
 function enableCheckUI(){
 
-  // ✅ Đánh dấu link đang hoạt động
+  // ===== ĐÁNH DẤU LINK ĐANG HOẠT ĐỘNG =====
   window.USER_LINK_ACTIVE = true;
 
   const input = document.getElementById("q");
   const btn   = document.querySelector(".check-btn");
 
+  // ===== MỞ KHÓA Ô NHẬP =====
   if(input){
     input.disabled = false;
     input.style.opacity = "1";
   }
 
-finally{
-  btn.disabled = false;
-  btn.style.opacity = "1";
-}
-  // ===== HIỆN LẠI THANH SEARCH =====
+  // ===== MỞ KHÓA NÚT TÌM KIẾM =====
+  if(btn){
+    btn.disabled = false;
+    btn.style.opacity = "1";
+  }
+
+  // ===== HIỆN LẠI THANH TÌM KIẾM =====
   const searchBox = document.querySelector(".clean-check");
   if(searchBox){
     searchBox.style.display = "flex";
   }
 }
 
-/* ===== GLOBAL ERROR SHIELD ===== */
 
+/* ===== BẮT LỖI TOÀN CỤC ===== */
 window.addEventListener("error",e=>{
-  console.error("GLOBAL ERROR:",e.error);
+  console.error("LỖI HỆ THỐNG:",e.error);
 });
 
-// ===== THÊM HÀM NÀY NẾU CHƯA CÓ =====
+
+/* ===== HIỂN THỊ THÔNG BÁO CHO NGƯỜI DÙNG ===== */
 function showUserMessage(text){
+
   const out = document.getElementById("out");
+
   if(out){
     out.innerHTML = `
       <div style="
@@ -2114,22 +2121,27 @@ function showUserMessage(text){
     `;
   }
 }
+
+
+/* ===== LƯU ALIAS CHO LINK ===== */
 async function saveAlias(id,value){
 
   const ref = db.collection("shareLinks").doc(id);
 
   if(!value || !value.trim()){
+
     await ref.update({
       alias: firebase.firestore.FieldValue.delete()
     });
+
   }else{
+
     await ref.update({
       alias: value.trim()
     });
+
   }
 }
-
-
 function detectChip(code){
 
   if(!code)
