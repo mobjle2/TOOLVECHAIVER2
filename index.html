@@ -2067,7 +2067,7 @@ function disableCheckUI(){
   }
 }
 
-/* ===== BẬT LẠI CHỨC NĂNG KIỂM TRA ===== */
+/* ===== BẬT LẠI GIAO DIỆN KIỂM TRA ===== */
 function enableCheckUI(){
 
   // ===== ĐÁNH DẤU LINK ĐANG HOẠT ĐỘNG =====
@@ -2082,16 +2082,15 @@ function enableCheckUI(){
     input.style.opacity = "1";
   }
 
-  // ===== MỞ KHÓA NÚT TÌM KIẾM =====
-finally{
-  btn.disabled = false;
-  btn.style.opacity = "1";
-}
-
-}   // ← đóng function check()
+  // ===== MỞ KHÓA NÚT KIỂM TRA =====
+  if(btn){
+    btn.disabled = false;
+    btn.style.opacity = "1";
+  }
 
   // ===== HIỆN LẠI THANH TÌM KIẾM =====
   const searchBox = document.querySelector(".clean-check");
+
   if(searchBox){
     searchBox.style.display = "flex";
   }
