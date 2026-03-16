@@ -1796,9 +1796,11 @@ function findPriceByModel(input){
   return null;
 }
   
+
+===================================================== */
+
 /* =====================================================
    SEARCH MODEL + SAMSUNG SERIES
-   Fix tìm S21 / S22 / S23
 ===================================================== */
 
 function searchPriceModel(q){
@@ -1807,12 +1809,10 @@ function searchPriceModel(q){
 
   const result = [];
 
-  /* ===== MAP SERIES SAMSUNG ===== */
-
   const seriesMap = {
-    "S21":["G991","G996","G998"],
-    "S22":["S901","S906","S908"],
-    "S23":["S911","S916","S918"]
+    S21:["G991","G996","G998"],
+    S22:["S901","S906","S908"],
+    S23:["S911","S916","S918"]
   };
 
   for(const p of PRICE_TABLE){
@@ -1826,7 +1826,7 @@ function searchPriceModel(q){
 
       const codes = seriesMap[q];
 
-      if(codes.some(x => model.includes(x) || short.includes(x))){
+      if(codes.some(c => model.includes(c) || short.includes(c))){
         result.push({
           source:"price",
           model:p.model,
