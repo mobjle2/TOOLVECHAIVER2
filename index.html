@@ -2133,7 +2133,7 @@ function enableCheckUI(){
   if(btn){
     btn.disabled = false;
     btn.style.opacity = "1";
-  
+  }
 
   // ===== HIỆN LẠI THANH TÌM KIẾM =====
   const searchBox = document.querySelector(".clean-check");
@@ -3506,153 +3506,105 @@ async function check(){
   const priceResults = searchPriceModel(q);
 
 
-  /* ===== CHUYỂN MODEL PHỔ BIẾN SANG MÃ CHIP (FORCE MODEL SEARCH) ===== */
+/* ===== CHUYỂN MODEL PHỔ BIẾN SANG MÃ CHIP (FORCE MODEL SEARCH) ===== */
 
-  if(q.startsWith("S8")) q = "G950";
+if(q.startsWith("S8")) q = "G950";
 
-  if(q.startsWith("S20 ULTRA")) q = "G988";
-  else if(q.startsWith("S20")) q = "G980";
+if(q.startsWith("S20 ULTRA")) q = "G988";
+else if(q.startsWith("S20")) q = "G980";
 
-  if(q.startsWith("S21 ULTRA")) q = "G998";
-  else if(q.startsWith("S21")) q = "G991";
-
-
-  /* ===== DÒNG GALAXY S22 ===== */
-
-  if(q.startsWith("S22 ULTRA")) q = "G908";
-  else if(q.startsWith("S22+")) q = "G906";
-  else if(q.startsWith("S22")) q = "G901";
+if(q.startsWith("S21 ULTRA")) q = "G998";
+else if(q.startsWith("S21")) q = "G991";
 
 
-  /* ===== DÒNG GALAXY S23 ===== */
+/* ===== DÒNG GALAXY S22 ===== */
 
-  if(q.startsWith("S23 ULTRA")) q = "G918";
-  else if(q.startsWith("S23+")) q = "G916";
-  else if(q.startsWith("S23")) q = "G911";
-
-
-  /* ===== DÒNG GALAXY S24 ===== */
-
-  if(q.startsWith("S24 ULTRA")) q = "S928";
-  else if(q.startsWith("S24+")) q = "S926";
-  else if(q.startsWith("S24")) q = "S921";
+if(q.startsWith("S22 ULTRA")) q = "S908";
+else if(q.startsWith("S22+")) q = "S906";
+else if(q.startsWith("S22")) q = "S901";
 
 
-  /* =================================================
-     TÌM MODEL TỪ CHUỖI NHẬP
-  ================================================= */
+/* ===== DÒNG GALAXY S23 ===== */
 
-  const modelMatch = chuẩnHóaModel(q).match(/[A-Z]\d{2,4}[A-Z]?/);
+if(q.startsWith("S23 ULTRA")) q = "S918";
+else if(q.startsWith("S23+")) q = "S916";
+else if(q.startsWith("S23")) q = "S911";
 
-  if(modelMatch){
 
-    const modelKey = modelMatch[0];
+/* ===== DÒNG GALAXY S24 ===== */
 
-    /* ===== TÌM TẤT CẢ MODEL TRONG BẢNG GIÁ ===== */
+if(q.startsWith("S24 ULTRA")) q = "S928";
+else if(q.startsWith("S24+")) q = "S926";
+else if(q.startsWith("S24")) q = "S921";
 
-    let priceList = searchPriceModel(modelKey);
 
-    /* ===== NẾU KHÔNG TÌM THẤY → TÌM THEO SERIES GALAXY S ===== */
+/* ===== TÌM MODEL TỪ CHUỖI NHẬP ===== */
 
-    if(!priceList.length){
+const modelMatch = chuẩnHóaModel(q).match(/[A-Z]\d{2,4}[A-Z]?/);
 
-      const series = modelKey.match(/^S\d{2}/);
+if(modelMatch){
 
-      if(series){
+  const modelKey = modelMatch[0];
 
-        const map = {
-          S21:["G991","G996","G998"],
-          S22:["G901","G906","G908"],
-          S23:["G911","G916","G918"],
-          S24:["S921","S926","S928"]
-        };
+  const price = findPriceByModel(modelKey);
 
-        const models = map[series[0]];
+  if(price){
 
-        if(models){
-
-          priceList = [];
-
-          for(const m of models){
-            const r = searchPriceModel(m);
-            if(r.length) priceList.push(...r);
-          }
-
-        }
-
-      }
-
-    }
-
-    /* ===== RENDER KẾT QUẢ ===== */
-
-    if(priceList && priceList.length){
-
-      let html = `<div class="result-grid">`;
-
-      for(const price of priceList){
-
-        const modelCode = price.model;
-
-        html += `
-<div class="result-card">
+    const html = `
+<div class="result-grid">
+  <div class="result-card">
 
 <div class="code-title">
 <span class="code-badge">
-${MODEL_NAME_MAP[modelCode] || "Samsung " + modelCode + "F"} (${modelCode}F)
+${MODEL_NAME_MAP[modelKey] || "Samsung " + modelKey + "F"} (${modelKey}F)
 </span>
 </div>
 
 <div class="model-type">
-📱 Samsung loại <b>${price.type || "?"}</b>
+  📱 Samsung loại <b>${price.type || "?"}</b>
 </div>
 
 <div class="price-box">
 
-<div class="price-title">💰 BẢNG GIÁ</div>
+  <div class="price-title">💰 BẢNG GIÁ</div>
 
-<div class="price-item">
-<span class="price-label">🔋 Có pin</span>
-<span class="price-value">${price.pin ? Math.round(price.pin/1000)+"k" : "-"}</span>
+  <div class="price-item">
+    <span class="price-label">🔋 Có pin</span>
+    <span class="price-value">${price.pin ? Math.round(price.pin/1000)+"k" : "-"}</span>
+  </div>
+
+  <div class="price-item">
+    <span class="price-label">⚡ Không pin</span>
+    <span class="price-value">${price.no_pin ? Math.round(price.no_pin/1000)+"k" : "-"}</span>
+  </div>
+
+  <div class="price-item">
+    <span class="price-label">🧠 Main</span>
+    <span class="price-value">${price.main ? Math.round(price.main/1000)+"k" : "-"}</span>
+  </div>
+
 </div>
 
-<div class="price-item">
-<span class="price-label">⚡ Không pin</span>
-<span class="price-value">${price.no_pin ? Math.round(price.no_pin/1000)+"k" : "-"}</span>
 </div>
-
-<div class="price-item">
-<span class="price-label">🧠 Main</span>
-<span class="price-value">${price.main ? Math.round(price.main/1000)+"k" : "-"}</span>
-</div>
-
-</div>
-
 </div>
 `;
-      }
 
-      html += `</div>`;
+    out.innerHTML = html;
 
-      out.innerHTML = html;
+    turboCache.set(q, html);
 
-      turboCache.set(q, html);
-
-      return;
-
-    }
-
-  }
-
-  if(!q){
-    out.innerHTML="";
     return;
   }
 
-  btn.disabled = false;
-  btn.style.opacity = "1";
-
 }
+
+if(!q){
+  out.innerHTML="";
+  return;
+}
+
+btn.disabled = true;
+btn.style.opacity = "0.6";
 
 out.innerHTML = `
 <div style="text-align:center;margin:40px 0;opacity:.8;">
@@ -3922,17 +3874,15 @@ out.innerHTML = `
 }
 finally{
 
-  btn.disabled = false;
-  btn.style.opacity = "1";
+btn.disabled = false;
+btn.style.opacity = "1";
 
 }
 
-}  
-
-/* ===== LOGIN ===== */
-
+}
+  
+// ===== LOGIN =====
 async function secureLogin(){
-
   const email = document.getElementById("loginEmail").value.trim();
   const pass = document.getElementById("loginPass").value.trim();
   const err = document.getElementById("loginError");
@@ -3941,16 +3891,12 @@ async function secureLogin(){
 
   try{
     await auth.signInWithEmailAndPassword(email, pass);
-
+    // KHÔNG làm gì thêm
   }catch(e){
-
     err.style.display = "block";
     err.innerText = "Sai tài khoản hoặc mật khẩu!";
-
     return; // QUAN TRỌNG
-
   }
-
 }
 
 
