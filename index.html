@@ -2982,61 +2982,7 @@ return {
 
 }
 
-  /* ===== VIP RULE FIX ===== */
 
-  if(h.storage.includes("eMMC") && h.ram<=1)
-      h.vip = 1;
-
-  else if(h.storage.includes("eMMC") && h.ram===2 && h.rom<=8)
-      h.vip = 2;
-
-  else if(h.storage.includes("eMMC") && h.ram<=1 && h.rom===16)
-      h.vip = 3;
-
-  else if(h.storage.includes("eMMC") && h.ram===2 && h.rom===16)
-      h.vip = 4;
-
-  else if(h.storage.includes("eMMC") && h.ram>=2 && h.rom===32)
-      h.vip = 4.5;
-
-  else if(h.storage.includes("UFS") &&
-         ((h.ram===3 && h.rom===32) ||
-          (h.ram===4 && h.rom===32) ||
-          (h.ram===3 && h.rom===64)))
-      h.vip = 5;
-
-  else if(h.storage.includes("eMMC") &&
-         (h.ram===4 || h.ram===6) && h.rom===64)
-      h.vip = 6;
-
-  else if(h.storage.includes("UFS") &&
-         (h.ram===4 || h.ram===6) && h.rom===128)
-      h.vip = 7;
-
-  else if(h.storage.includes("UFS") &&
-         (h.ram===8 || h.ram===10) && h.rom===128)
-      h.vip = 8;
-
-  else if(h.storage.includes("UFS") &&
-         ((h.ram===6 && h.rom===256) ||
-          (h.ram===8 && h.rom===256) ||
-          (h.ram===10 && h.rom===256) ||
-          (h.ram===12 && h.rom===128)))
-      h.vip = 9;
-
-  else if((h.ram===12 && h.rom===256) ||
-          (h.ram===8 && h.rom===512))
-      h.vip = 10;
-
-  else if(h.ram===12 && h.rom===512)
-      h.vip = 11;
-
-  else if(h.ram>=16 && h.rom>=512)
-      h.vip = 12;
-
-  return h;
-}
-}
 /* ===============================
    VIP AUTO BALANCE ENGINE
 ================================ */
