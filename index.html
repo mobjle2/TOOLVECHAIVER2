@@ -3538,7 +3538,9 @@ else if(q.startsWith("S24+")) q = "S926";
 else if(q.startsWith("S24")) q = "S921";
 
 
-/* ===== TÌM MODEL TỪ CHUỖI NHẬP ===== */
+/* =================================================
+   TÌM MODEL TỪ CHUỖI NHẬP
+================================================= */
 
 const modelMatch = chuẩnHóaModel(q).match(/[A-Z]\d{2,4}[A-Z]?/);
 
@@ -3546,48 +3548,57 @@ if(modelMatch){
 
   const modelKey = modelMatch[0];
 
-  const price = findPriceByModel(modelKey);
+  /* ===== TÌM TẤT CẢ MODEL TRONG BẢNG GIÁ ===== */
 
-  if(price){
+  const priceList = searchPriceModel(modelKey);
 
-    const html = `
-<div class="result-grid">
-  <div class="result-card">
+  if(priceList && priceList.length){
+
+    let html = `<div class="result-grid">`;
+
+    for(const price of priceList){
+
+      const modelCode = price.model;
+
+      html += `
+<div class="result-card">
 
 <div class="code-title">
 <span class="code-badge">
-${MODEL_NAME_MAP[modelKey] || "Samsung " + modelKey + "F"} (${modelKey}F)
+${MODEL_NAME_MAP[modelCode] || "Samsung " + modelCode + "F"} (${modelCode}F)
 </span>
 </div>
 
 <div class="model-type">
-  📱 Samsung loại <b>${price.type || "?"}</b>
+📱 Samsung loại <b>${price.type || "?"}</b>
 </div>
 
 <div class="price-box">
 
-  <div class="price-title">💰 BẢNG GIÁ</div>
+<div class="price-title">💰 BẢNG GIÁ</div>
 
-  <div class="price-item">
-    <span class="price-label">🔋 Có pin</span>
-    <span class="price-value">${price.pin ? Math.round(price.pin/1000)+"k" : "-"}</span>
-  </div>
+<div class="price-item">
+<span class="price-label">🔋 Có pin</span>
+<span class="price-value">${price.pin ? Math.round(price.pin/1000)+"k" : "-"}</span>
+</div>
 
-  <div class="price-item">
-    <span class="price-label">⚡ Không pin</span>
-    <span class="price-value">${price.no_pin ? Math.round(price.no_pin/1000)+"k" : "-"}</span>
-  </div>
+<div class="price-item">
+<span class="price-label">⚡ Không pin</span>
+<span class="price-value">${price.no_pin ? Math.round(price.no_pin/1000)+"k" : "-"}</span>
+</div>
 
-  <div class="price-item">
-    <span class="price-label">🧠 Main</span>
-    <span class="price-value">${price.main ? Math.round(price.main/1000)+"k" : "-"}</span>
-  </div>
-
+<div class="price-item">
+<span class="price-label">🧠 Main</span>
+<span class="price-value">${price.main ? Math.round(price.main/1000)+"k" : "-"}</span>
 </div>
 
 </div>
+
 </div>
 `;
+    }
+
+    html += `</div>`;
 
     out.innerHTML = html;
 
