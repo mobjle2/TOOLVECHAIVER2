@@ -3441,17 +3441,22 @@ function chuẩnHóaModel(input){
 
   return input;
 }  
+/* =================================================
+ENGINE TÌM KIẾM MODEL SAMSUNG
+================================================= */
+
 async function check(){
-const priceResults = searchPriceModel(q);
 
   const out = document.getElementById("out");
   const btn = document.querySelector(".check-btn");
 
-/* ===== LẤY GIÁ TRỊ TỪ Ô TÌM KIẾM (GET SEARCH INPUT) ===== */
+  /* ===== LẤY GIÁ TRỊ TỪ Ô TÌM KIẾM (GET SEARCH INPUT) ===== */
 
-let q = document.getElementById("q")?.value || "";
-q = chuẩnHóaModel(q);
-q = q.toUpperCase();
+  let q = document.getElementById("q")?.value || "";
+  q = chuẩnHóaModel(q);
+  q = q.toUpperCase();
+
+  const priceResults = searchPriceModel(q);
 
 
 /* ===== CHUYỂN MODEL PHỔ BIẾN SANG MÃ CHIP (FORCE MODEL SEARCH) ===== */
