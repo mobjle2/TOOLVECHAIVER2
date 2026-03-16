@@ -2083,10 +2083,12 @@ function enableCheckUI(){
   }
 
   // ===== MỞ KHÓA NÚT TÌM KIẾM =====
-  if(btn){
-    btn.disabled = false;
-    btn.style.opacity = "1";
-  }
+finally{
+  btn.disabled = false;
+  btn.style.opacity = "1";
+}
+
+}   // ← đóng function check()
 
   // ===== HIỆN LẠI THANH TÌM KIẾM =====
   const searchBox = document.querySelector(".clean-check");
