@@ -3548,17 +3548,41 @@ if(modelMatch){
 
   const modelKey = modelMatch[0];
 
-  /* ===== TÌM TẤT CẢ MODEL TRONG BẢNG GIÁ ===== */
+/* ===== TÌM TẤT CẢ MODEL TRONG BẢNG GIÁ ===== */
 
-  const priceList = searchPriceModel(modelKey);
+let priceList = searchPriceModel(modelKey);
 
-  if(priceList && priceList.length){
+/* ===== NẾU KHÔNG TÌM THẤY → TÌM THEO SERIES GALAXY S ===== */
 
-    let html = `<div class="result-grid">`;
+if(!priceList.length){
 
-    for(const price of priceList){
+  const series = modelKey.match(/^S\d{2}/);
 
-      const modelCode = price.model;
+  if(series){
+
+    const map = {
+      S21:["G991","G996","G998"],
+      S22:["G901","G906","G908"],
+      S23:["G911","G916","G918"],
+      S24:["S921","S926","S928"]
+    };
+
+    const models = map[series[0]];
+
+    if(models){
+
+      priceList = [];
+
+      for(const m of models){
+        const r = searchPriceModel(m);
+        if(r.length) priceList.push(...r);
+      }
+
+    }
+
+  }
+
+}
 
       html += `
 <div class="result-card">
