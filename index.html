@@ -3922,12 +3922,15 @@ out.innerHTML = `
 }
 finally{
 
-btn.disabled = false;
-btn.style.opacity = "1";
+  btn.disabled = false;
+  btn.style.opacity = "1";
 
+}
 
-// ===== LOGIN =====
+/* ===== LOGIN ===== */
+
 async function secureLogin(){
+
   const email = document.getElementById("loginEmail").value.trim();
   const pass = document.getElementById("loginPass").value.trim();
   const err = document.getElementById("loginError");
@@ -3936,12 +3939,16 @@ async function secureLogin(){
 
   try{
     await auth.signInWithEmailAndPassword(email, pass);
-    // KHÔNG làm gì thêm
+
   }catch(e){
+
     err.style.display = "block";
     err.innerText = "Sai tài khoản hoặc mật khẩu!";
+
     return; // QUAN TRỌNG
+
   }
+
 }
 
 
