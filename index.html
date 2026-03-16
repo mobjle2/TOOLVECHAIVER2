@@ -3507,95 +3507,61 @@ async function check(){
   const priceResults = searchPriceModel(q);
 
 
-  /* ===== CHUYỂN MODEL PHỔ BIẾN SANG MÃ CHIP (FORCE MODEL SEARCH) ===== */
+/* ===== CHUYỂN MODEL PHỔ BIẾN SANG MÃ CHIP (FORCE MODEL SEARCH) ===== */
 
-  if(q.startsWith("S8")) q = "G950";
+if(q.startsWith("S8")) q = "G950";
 
-  if(q.startsWith("S20 ULTRA")) q = "G988";
-  else if(q.startsWith("S20")) q = "G980";
+if(q.startsWith("S20 ULTRA")) q = "G988";
+else if(q.startsWith("S20")) q = "G980";
 
-  if(q.startsWith("S21 ULTRA")) q = "G998";
-  else if(q.startsWith("S21")) q = "G991";
-
-
-  /* ===== DÒNG GALAXY S22 ===== */
-
-  if(q.startsWith("S22 ULTRA")) q = "G908";
-  else if(q.startsWith("S22+")) q = "G906";
-  else if(q.startsWith("S22")) q = "G901";
+if(q.startsWith("S21 ULTRA")) q = "G998";
+else if(q.startsWith("S21")) q = "G991";
 
 
-  /* ===== DÒNG GALAXY S23 ===== */
+/* ===== DÒNG GALAXY S22 ===== */
 
-  if(q.startsWith("S23 ULTRA")) q = "G918";
-  else if(q.startsWith("S23+")) q = "G916";
-  else if(q.startsWith("S23")) q = "G911";
-
-
-  /* ===== DÒNG GALAXY S24 ===== */
-
-  if(q.startsWith("S24 ULTRA")) q = "S928";
-  else if(q.startsWith("S24+")) q = "S926";
-  else if(q.startsWith("S24")) q = "S921";
+if(q.startsWith("S22 ULTRA")) q = "G908";
+else if(q.startsWith("S22+")) q = "G906";
+else if(q.startsWith("S22")) q = "G901"
 
 
-  /* =================================================
-     TÌM MODEL TỪ CHUỖI NHẬP
-  ================================================= */
+/* ===== DÒNG GALAXY S23 ===== */
 
-  const modelMatch = chuẩnHóaModel(q).match(/[A-Z]\d{2,4}[A-Z]?/);
+if(q.startsWith("S23 ULTRA")) q = "G918";
+else if(q.startsWith("S23+")) q = "G916";
+else if(q.startsWith("S23")) q = "G911";
 
-  if(modelMatch){
 
-    const modelKey = modelMatch[0];
+/* ===== DÒNG GALAXY S24 ===== */
 
-    /* ===== TÌM TẤT CẢ MODEL TRONG BẢNG GIÁ ===== */
+if(q.startsWith("S24 ULTRA")) q = "S928";
+else if(q.startsWith("S24+")) q = "S926";
+else if(q.startsWith("S24")) q = "S921";
 
-    let priceList = searchPriceModel(modelKey);
 
-    /* ===== NẾU KHÔNG TÌM THẤY → TÌM THEO SERIES GALAXY S ===== */
+/* =================================================
+   TÌM MODEL TỪ CHUỖI NHẬP
+================================================= */
 
-    if(!priceList.length){
+const modelMatch = chuẩnHóaModel(q).match(/[A-Z]\d{2,4}[A-Z]?/);
 
-      const series = modelKey.match(/^S\d{2}/);
+if(modelMatch){
 
-      if(series){
+  const modelKey = modelMatch[0];
 
-        const map = {
-          S21:["G991","G996","G998"],
-          S22:["G901","G906","G908"],
-          S23:["G911","G916","G918"],
-          S24:["S921","S926","S928"]
-        };
+  /* ===== TÌM TẤT CẢ MODEL TRONG BẢNG GIÁ ===== */
 
-        const models = map[series[0]];
+  const priceList = searchPriceModel(modelKey);
 
-        if(models){
+  if(priceList && priceList.length){
 
-          priceList = [];
+    let html = `<div class="result-grid">`;
 
-          for(const m of models){
-            const r = searchPriceModel(m);
-            if(r.length) priceList.push(...r);
-          }
+    for(const price of priceList){
 
-        }
+      const modelCode = price.model;
 
-      }
-
-    }
-
-    /* ===== RENDER KẾT QUẢ ===== */
-
-    if(priceList && priceList.length){
-
-      let html = `<div class="result-grid">`;
-
-      for(const price of priceList){
-
-        const modelCode = price.model;
-
-        html += `
+      html += `
 <div class="result-card">
 
 <div class="code-title">
@@ -3631,25 +3597,24 @@ ${MODEL_NAME_MAP[modelCode] || "Samsung " + modelCode + "F"} (${modelCode}F)
 
 </div>
 `;
-      }
-
-      html += `</div>`;
-
-      out.innerHTML = html;
-
-      turboCache.set(q, html);
-
-      return;
-
     }
 
-  }
+    html += `</div>`;
 
-  if(!q){
-    out.innerHTML="";
+    out.innerHTML = html;
+
+    turboCache.set(q, html);
+
     return;
   }
+
 }
+
+if(!q){
+  out.innerHTML="";
+  return;
+}
+
 btn.disabled = true;
 btn.style.opacity = "0.6";
 
