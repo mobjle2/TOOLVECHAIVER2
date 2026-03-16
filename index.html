@@ -1586,7 +1586,22 @@ body::before{
   color:#22c55e;
 }
 
-</style>
+/* ===== MODEL TYPE ===== */
+
+.model-type{
+  margin-top:8px;
+  font-size:13px;
+  color:#94a3b8;
+  background:rgba(255,255,255,0.04);
+  padding:6px 10px;
+  border-radius:8px;
+  display:inline-block;
+}
+
+.model-type b{
+  color:#22c55e;
+  font-weight:600;
+}
   
 </style>
 
@@ -3545,8 +3560,8 @@ ${MODEL_NAME_MAP[modelKey] || "Samsung " + modelKey + "F"} (${modelKey}F)
 </span>
 </div>
 
-<div class="model-row">
-Samsung loại ${price.type || "Không rõ"}
+<div class="model-type">
+  📱 Samsung loại <b>${price.type || "?"}</b>
 </div>
 
 <div class="price-box">
