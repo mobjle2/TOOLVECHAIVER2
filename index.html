@@ -1554,7 +1554,39 @@ body::before{
   padding-left:0;   /* đảm bảo không thụt */
   margin-left:0;    /* đảm bảo không thụt */
 }
+<style>
 
+/* ===== BẢNG GIÁ MODEL ===== */
+
+.price-box{
+  margin-top:12px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.price-title{
+  font-size:13px;
+  font-weight:600;
+  color:#94a3b8;
+  margin-bottom:4px;
+  letter-spacing:.5px;
+}
+
+.price-item{
+  display:flex;
+  justify-content:space-between;
+  background:rgba(255,255,255,0.05);
+  padding:6px 10px;
+  border-radius:8px;
+}
+
+.price-value{
+  font-weight:600;
+  color:#22c55e;
+}
+
+</style>
   
 </style>
 
@@ -3517,10 +3549,25 @@ ${MODEL_NAME_MAP[modelKey] || "Samsung " + modelKey + "F"} (${modelKey}F)
 Samsung loại ${price.type || "Không rõ"}
 </div>
 
-<div style="margin-top:10px;line-height:1.6;">
-<div>📦 Có pin: ${price.pin ? Math.round(price.pin/1000)+"k" : "-"}</div>
-<div>📦 Không pin: ${price.no_pin ? Math.round(price.no_pin/1000)+"k" : "-"}</div>
-<div>📦 Main: ${price.main ? Math.round(price.main/1000)+"k" : "-"}</div>
+<div class="price-box">
+
+  <div class="price-title">💰 BẢNG GIÁ</div>
+
+  <div class="price-item">
+    <span class="price-label">🔋 Có pin</span>
+    <span class="price-value">${price.pin ? Math.round(price.pin/1000)+"k" : "-"}</span>
+  </div>
+
+  <div class="price-item">
+    <span class="price-label">⚡ Không pin</span>
+    <span class="price-value">${price.no_pin ? Math.round(price.no_pin/1000)+"k" : "-"}</span>
+  </div>
+
+  <div class="price-item">
+    <span class="price-label">🧠 Main</span>
+    <span class="price-value">${price.main ? Math.round(price.main/1000)+"k" : "-"}</span>
+  </div>
+
 </div>
 
 </div>
