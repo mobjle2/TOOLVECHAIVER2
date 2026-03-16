@@ -1747,6 +1747,35 @@ function findPriceByModel(input){
 
   return null;
 }
+function searchPriceModel(q){
+
+  q = q.toUpperCase().trim();
+
+  const result = [];
+
+  for(const p of PRICE_TABLE){
+
+    const model = (p.model || "").toUpperCase();
+    const short = (p.short || "").toUpperCase();
+
+    if(
+      model.includes(q) ||
+      short.includes(q)
+    ){
+      result.push({
+        source:"price",
+        model:p.model,
+        type:p.type,
+        pin:p.pin,
+        no_pin:p.no_pin,
+        main:p.main
+      });
+    }
+
+  }
+
+  return result;
+}
 /* ===== SAFE USER MODE DETECT ===== */
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -3431,6 +3460,7 @@ function chuẩnHóaModel(input){
   return input;
 }  
 async function check(){
+const priceResults = searchPriceModel(q);
 
   const out = document.getElementById("out");
   const btn = document.querySelector(".check-btn");
