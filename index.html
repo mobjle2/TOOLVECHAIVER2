@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -2866,28 +2867,33 @@ if(code.startsWith("YMEC") || code.startsWith("YMU")){
 
 function buildHardware(code, data){
 
-  /* ⭐ FIX: nếu là array → lấy phần tử đầu */
-  if(Array.isArray(data)){
-    data = data[0];
-  }
+  /* ===== ƯU TIÊN FIRESTORE ===== */
 
   if(data){
 
     return {
+
       ram: data.ram ?? null,
       rom: data.rom ?? null,
       vip: data.vip ?? null,
+
+      /* ⭐ QUAN TRỌNG */
       storage: data.type ?? data.storage ?? "Manual",
+
       type: data.type ?? null,
       mmc: data.mmc ?? null,
       chip: data.chip ?? null,
-      models: data.models ?? [],
+
       source: "firebase"
     };
   }
 
+  /* ===== FALLBACK DECODER ===== */
+
   const hw = autoDecodeChip(code);
+
   hw.source = "decoder";
+
   return hw;
 }
 
@@ -3535,18 +3541,8 @@ async function check(){
   /* ===== LẤY GIÁ TRỊ TỪ Ô TÌM KIẾM (GET SEARCH INPUT) ===== */
 
   let q = document.getElementById("q")?.value || "";
-
-  // ⭐ FIX INPUT
-  q = q.replace(/^(GO|CHECK|FIND)\s+/i, "");
-  q = q.replace(/\s+/g, "");
-
   q = chuẩnHóaModel(q);
   q = q.toUpperCase();
-
-  if(!q){
-    out.innerHTML="";
-    return;
-  }
 
   const priceResults = searchPriceModel(q);
 
@@ -3584,62 +3580,16 @@ else if(q.startsWith("S24")) q = "S921";
 
 
 /* =================================================
-   🔥 SEARCH CODE (NAND / iPhone)
-================================================= */
-
-const list = CODE_CACHE.get(q) || [];
-
-if(list.length){
-
-  let html = `<div class="result-grid">`;
-
-  list.forEach(d=>{
-
-    const x = buildHardware(q, d);
-
-    html += `
-    <div class="result-card">
-
-      <div class="code-title">
-        <span class="code-badge">${q}</span>
-      </div>
-
-      <div class="badge-row">
-        <span class="ram-badge">${x.rom || "?"}GB</span>
-        <span class="ram-badge">${getMMCLevel(x.rom) || ""}</span>
-      </div>
-
-      ${
-        x.models && x.models.length
-        ? `<div class="model-line">
-            📱 Model iPhone:
-            ${x.models.map(m=>m.model || "").filter(Boolean).join(", ")}
-           </div>`
-        : `<div class="model-placeholder">📱 Chưa có model</div>`
-      }
-
-    </div>
-    `;
-  });
-
-  html += `</div>`;
-
-  out.innerHTML = html;
-  turboCache.set(q, html);
-
-  return;
-}
-
-
-/* =================================================
    TÌM MODEL TỪ CHUỖI NHẬP
 ================================================= */
 
-const modelMatch = chuẩnHóaModel(q).match(/^[A-Z]\d{2,4}[A-Z]?$/);
+const modelMatch = chuẩnHóaModel(q).match(/[A-Z]\d{2,4}[A-Z]?/);
 
 if(modelMatch){
 
   const modelKey = modelMatch[0];
+
+  /* ===== TÌM TẤT CẢ MODEL TRONG BẢNG GIÁ ===== */
 
   const priceList = searchPriceModel(modelKey);
 
@@ -3692,13 +3642,19 @@ ${MODEL_NAME_MAP[modelCode] || "Samsung " + modelCode + "F"} (${modelCode}F)
     html += `</div>`;
 
     out.innerHTML = html;
+
     turboCache.set(q, html);
 
     return;
   }
 
 }
+
+if(!q){
+  out.innerHTML="";
+  return;
 }
+
 btn.disabled = true;
 btn.style.opacity = "0.6";
 
@@ -3931,33 +3887,19 @@ ${decoded.storage || ""}
 
 ${
 Array.isArray(x.models) && x.models.length
-? `<div class="model-line">
-     <span class="model-title">📱 Model iPhone:</span>
-     ${
-       formatSamsungModels(
-         x.models
-         .flatMap(m=>{
-           // ⭐ nếu bị lồng models
-           if(m.models) return m.models;
-
-           return [m];
-         })
-         .map(m=>{
-           if(typeof m === "string") return m;
-
-           if(typeof m === "object" && m !== null){
-             return m.model || "";
-           }
-
-           return "";
-         })
-         .filter(Boolean)
-         .join(", ")
-       )
-     }
-   </div>`
-: `<div class="model-placeholder">📱 Chưa có model</div>`
+? `<div class="model-line">${
+formatSamsungModels(
+x.models.map(m=>{
+if(typeof m === "string") return m;
+if(typeof m === "object" && m !== null)
+return (m.brand || "") + " " + (m.model || "");
+return "";
+}).join(", ")
+)
+}</div>`
+: `<div class="model-placeholder">Chưa có model</div>`
 }
+
 </div>
 `;
 
