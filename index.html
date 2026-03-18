@@ -2866,34 +2866,28 @@ if(code.startsWith("YMEC") || code.startsWith("YMU")){
 
 function buildHardware(code, data){
 
-  /* ===== ƯU TIÊN FIRESTORE ===== */
+  /* ⭐ FIX: nếu là array → lấy phần tử đầu */
+  if(Array.isArray(data)){
+    data = data[0];
+  }
 
   if(data){
 
     return {
-
       ram: data.ram ?? null,
       rom: data.rom ?? null,
       vip: data.vip ?? null,
-
-      /* ⭐ QUAN TRỌNG */
       storage: data.type ?? data.storage ?? "Manual",
-
       type: data.type ?? null,
       mmc: data.mmc ?? null,
       chip: data.chip ?? null,
-        // ⭐ THÊM DÒNG NÀY
-     models: data.models ?? [],
+      models: data.models ?? [],
       source: "firebase"
     };
   }
 
-  /* ===== FALLBACK DECODER ===== */
-
   const hw = autoDecodeChip(code);
-
   hw.source = "decoder";
-
   return hw;
 }
 
