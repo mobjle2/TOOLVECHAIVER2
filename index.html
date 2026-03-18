@@ -3643,7 +3643,53 @@ ${MODEL_NAME_MAP[modelCode] || "Samsung " + modelCode + "F"} (${modelCode}F)
   }
 
 }
+/* =================================================
+   🔥 SEARCH CODE (NAND / iPhone)
+================================================= */
 
+const list = CODE_CACHE.get(q) || [];
+
+if(list.length){
+
+  let html = `<div class="result-grid">`;
+
+  list.forEach(d=>{
+
+    // ⭐ QUAN TRỌNG: build lại hardware
+    const x = buildHardware(q, d);
+
+    html += `
+    <div class="result-card">
+
+      <div class="code-title">
+        <span class="code-badge">${q}</span>
+      </div>
+
+      <div class="badge-row">
+        <span class="ram-badge">${x.rom || "?"}GB</span>
+        <span class="ram-badge">${getMMCLevel(x.rom) || "MMC"}</span>
+      </div>
+
+      <!-- ❌ BỎ UNKNOWN -->
+      ${
+        x.models && x.models.length
+        ? `<div class="model-line">
+            📱 Model iPhone:
+            ${x.models.map(m=>m.model).join(", ")}
+           </div>`
+        : `<div class="model-placeholder">📱 Chưa có model</div>`
+      }
+
+    </div>
+    `;
+  });
+
+  html += `</div>`;
+
+  out.innerHTML = html;
+
+  return;
+}
 if(!q){
   out.innerHTML="";
   return;
