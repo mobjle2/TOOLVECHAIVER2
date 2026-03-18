@@ -3887,26 +3887,33 @@ ${decoded.storage || ""}
 
 ${
 Array.isArray(x.models) && x.models.length
-? `<div class="model-line">${
-formatSamsungModels(
-x.models
-.map(m=>{
-  if(typeof m === "string") return m;
+? `<div class="model-line">
+     <span class="model-title">📱 Model iPhone:</span>
+     ${
+       formatSamsungModels(
+         x.models
+         .flatMap(m=>{
+           // ⭐ nếu bị lồng models
+           if(m.models) return m.models;
 
-  if(typeof m === "object" && m !== null){
-    // ⭐ chỉ lấy model (đẹp hơn)
-    return m.model || "";
-  }
+           return [m];
+         })
+         .map(m=>{
+           if(typeof m === "string") return m;
 
-  return "";
-})
-.filter(Boolean) // ⭐ loại rác/null
-.join(", ")
-)
-}</div>`
-: `<div class="model-placeholder">Chưa có model</div>`
+           if(typeof m === "object" && m !== null){
+             return m.model || "";
+           }
+
+           return "";
+         })
+         .filter(Boolean)
+         .join(", ")
+       )
+     }
+   </div>`
+: `<div class="model-placeholder">📱 Chưa có model</div>`
 }
-
 </div>
 `;
 
