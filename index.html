@@ -2882,7 +2882,8 @@ function buildHardware(code, data){
       type: data.type ?? null,
       mmc: data.mmc ?? null,
       chip: data.chip ?? null,
-
+        // ⭐ THÊM DÒNG NÀY
+     models: data.models ?? [],
       source: "firebase"
     };
   }
@@ -3888,12 +3889,19 @@ ${
 Array.isArray(x.models) && x.models.length
 ? `<div class="model-line">${
 formatSamsungModels(
-x.models.map(m=>{
-if(typeof m === "string") return m;
-if(typeof m === "object" && m !== null)
-return (m.brand || "") + " " + (m.model || "");
-return "";
-}).join(", ")
+x.models
+.map(m=>{
+  if(typeof m === "string") return m;
+
+  if(typeof m === "object" && m !== null){
+    // ⭐ chỉ lấy model (đẹp hơn)
+    return m.model || "";
+  }
+
+  return "";
+})
+.filter(Boolean) // ⭐ loại rác/null
+.join(", ")
 )
 }</div>`
 : `<div class="model-placeholder">Chưa có model</div>`
