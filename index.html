@@ -1,6 +1,4 @@
 
-
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -1588,21 +1586,33 @@ body::before{
   color:#22c55e;
 }
 
-/* ===== MODEL TYPE ===== */
+/* ===== NHÃN HIỂN THỊ LOẠI SAMSUNG ===== */
 
 .model-type{
-  margin-top:8px;
+  margin-top:10px;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+
   font-size:13px;
   color:#94a3b8;
-  background:rgba(255,255,255,0.04);
+
+  background:linear-gradient(
+    135deg,
+    rgba(59,130,246,0.15),
+    rgba(59,130,246,0.05)
+  );
+
+  border:1px solid rgba(59,130,246,0.25);
   padding:6px 10px;
-  border-radius:8px;
-  display:inline-block;
+  border-radius:10px;
+
+  backdrop-filter:blur(6px);
 }
 
 .model-type b{
   color:#22c55e;
-  font-weight:600;
+  font-weight:700;
 }
   
 </style>
@@ -1796,58 +1806,21 @@ function findPriceByModel(input){
 
   return null;
 }
-  
-
-/* =====================================================
-   SEARCH MODEL + SAMSUNG SERIES
-   Fix tìm S21 / S22 / S23
-===================================================== */
-
 function searchPriceModel(q){
 
   q = q.toUpperCase().trim();
 
   const result = [];
 
-  const seriesMap = {
-    "S21":["G991","G996","G998"],
-    "S22":["S901","S906","S908"],
-    "S23":["S911","S916","S918"]
-  };
-
   for(const p of PRICE_TABLE){
 
     const model = (p.model || "").toUpperCase();
     const short = (p.short || "").toUpperCase();
 
-    /* ===== SEARCH SERIES ===== */
-
-    if(seriesMap[q]){
-
-      const codes = seriesMap[q];
-
-      if(codes.some(function(c){
-        return model.includes(c) || short.includes(c);
-      })){
-
-        result.push({
-          source:"price",
-          model:p.model,
-          type:p.type,
-          pin:p.pin,
-          no_pin:p.no_pin,
-          main:p.main
-        });
-
-      }
-
-      continue;
-    }
-
-    /* ===== SEARCH BÌNH THƯỜNG ===== */
-
-    if(model.includes(q) || short.includes(q)){
-
+    if(
+      model.includes(q) ||
+      short.includes(q)
+    ){
       result.push({
         source:"price",
         model:p.model,
@@ -1856,13 +1829,11 @@ function searchPriceModel(q){
         no_pin:p.no_pin,
         main:p.main
       });
-
     }
 
   }
 
   return result;
-
 }
 /* ===== SAFE USER MODE DETECT ===== */
 
@@ -3560,16 +3531,16 @@ else if(q.startsWith("S21")) q = "G991";
 
 /* ===== DÒNG GALAXY S22 ===== */
 
-if(q.startsWith("S22 ULTRA")) q = "G908";
-else if(q.startsWith("S22+")) q = "G906";
-else if(q.startsWith("S22")) q = "G901"
+if(q.startsWith("S22 ULTRA")) q = "S908";
+else if(q.startsWith("S22+")) q = "S906";
+else if(q.startsWith("S22")) q = "S901";
 
 
 /* ===== DÒNG GALAXY S23 ===== */
 
-if(q.startsWith("S23 ULTRA")) q = "G918";
-else if(q.startsWith("S23+")) q = "G916";
-else if(q.startsWith("S23")) q = "G911";
+if(q.startsWith("S23 ULTRA")) q = "S918";
+else if(q.startsWith("S23+")) q = "S916";
+else if(q.startsWith("S23")) q = "S911";
 
 
 /* ===== DÒNG GALAXY S24 ===== */
@@ -3579,9 +3550,7 @@ else if(q.startsWith("S24+")) q = "S926";
 else if(q.startsWith("S24")) q = "S921";
 
 
-/* =================================================
-   TÌM MODEL TỪ CHUỖI NHẬP
-================================================= */
+/* ===== TÌM MODEL TỪ CHUỖI NHẬP ===== */
 
 const modelMatch = chuẩnHóaModel(q).match(/[A-Z]\d{2,4}[A-Z]?/);
 
@@ -3589,57 +3558,48 @@ if(modelMatch){
 
   const modelKey = modelMatch[0];
 
-  /* ===== TÌM TẤT CẢ MODEL TRONG BẢNG GIÁ ===== */
+  const price = findPriceByModel(modelKey);
 
-  const priceList = searchPriceModel(modelKey);
+  if(price){
 
-  if(priceList && priceList.length){
-
-    let html = `<div class="result-grid">`;
-
-    for(const price of priceList){
-
-      const modelCode = price.model;
-
-      html += `
-<div class="result-card">
+    const html = `
+<div class="result-grid">
+  <div class="result-card">
 
 <div class="code-title">
 <span class="code-badge">
-${MODEL_NAME_MAP[modelCode] || "Samsung " + modelCode + "F"} (${modelCode}F)
+${MODEL_NAME_MAP[modelKey] || "Samsung " + modelKey + "F"} (${modelKey}F)
 </span>
 </div>
 
 <div class="model-type">
-📱 Samsung loại <b>${price.type || "?"}</b>
+  📱 Samsung loại <b>${price.type || "?"}</b>
 </div>
 
 <div class="price-box">
 
-<div class="price-title">💰 BẢNG GIÁ</div>
+  <div class="price-title">💰 BẢNG GIÁ</div>
 
-<div class="price-item">
-<span class="price-label">🔋 Có pin</span>
-<span class="price-value">${price.pin ? Math.round(price.pin/1000)+"k" : "-"}</span>
+  <div class="price-item">
+    <span class="price-label">🔋 Có pin</span>
+    <span class="price-value">${price.pin ? Math.round(price.pin/1000)+"k" : "-"}</span>
+  </div>
+
+  <div class="price-item">
+    <span class="price-label">⚡ Không pin</span>
+    <span class="price-value">${price.no_pin ? Math.round(price.no_pin/1000)+"k" : "-"}</span>
+  </div>
+
+  <div class="price-item">
+    <span class="price-label">🧠 Main</span>
+    <span class="price-value">${price.main ? Math.round(price.main/1000)+"k" : "-"}</span>
+  </div>
+
 </div>
 
-<div class="price-item">
-<span class="price-label">⚡ Không pin</span>
-<span class="price-value">${price.no_pin ? Math.round(price.no_pin/1000)+"k" : "-"}</span>
 </div>
-
-<div class="price-item">
-<span class="price-label">🧠 Main</span>
-<span class="price-value">${price.main ? Math.round(price.main/1000)+"k" : "-"}</span>
-</div>
-
-</div>
-
 </div>
 `;
-    }
-
-    html += `</div>`;
 
     out.innerHTML = html;
 
