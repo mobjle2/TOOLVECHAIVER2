@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -1554,7 +1555,54 @@ body::before{
   padding-left:0;   /* đảm bảo không thụt */
   margin-left:0;    /* đảm bảo không thụt */
 }
+<style>
 
+/* ===== BẢNG GIÁ MODEL ===== */
+
+.price-box{
+  margin-top:12px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.price-title{
+  font-size:13px;
+  font-weight:600;
+  color:#94a3b8;
+  margin-bottom:4px;
+  letter-spacing:.5px;
+}
+
+.price-item{
+  display:flex;
+  justify-content:space-between;
+  background:rgba(255,255,255,0.05);
+  padding:6px 10px;
+  border-radius:8px;
+}
+
+.price-value{
+  font-weight:600;
+  color:#22c55e;
+}
+
+/* ===== MODEL TYPE ===== */
+
+.model-type{
+  margin-top:8px;
+  font-size:13px;
+  color:#94a3b8;
+  background:rgba(255,255,255,0.04);
+  padding:6px 10px;
+  border-radius:8px;
+  display:inline-block;
+}
+
+.model-type b{
+  color:#22c55e;
+  font-weight:600;
+}
   
 </style>
 
@@ -1746,6 +1794,71 @@ function findPriceByModel(input){
   }
 
   return null;
+}
+  
+
+===================================================== */
+
+/* =====================================================
+   SEARCH MODEL + SAMSUNG SERIES
+===================================================== */
+
+function searchPriceModel(q){
+
+  q = q.toUpperCase().trim();
+
+  const result = [];
+
+  const seriesMap = {
+    S21:["G991","G996","G998"],
+    S22:["S901","S906","S908"],
+    S23:["S911","S916","S918"]
+  };
+
+  for(const p of PRICE_TABLE){
+
+    const model = (p.model || "").toUpperCase();
+    const short = (p.short || "").toUpperCase();
+
+    /* ===== SEARCH SERIES ===== */
+
+    if(seriesMap[q]){
+
+      const codes = seriesMap[q];
+
+      if(codes.some(c => model.includes(c) || short.includes(c))){
+        result.push({
+          source:"price",
+          model:p.model,
+          type:p.type,
+          pin:p.pin,
+          no_pin:p.no_pin,
+          main:p.main
+        });
+      }
+
+      continue;
+    }
+
+    /* ===== SEARCH BÌNH THƯỜNG ===== */
+
+    if(
+      model.includes(q) ||
+      short.includes(q)
+    ){
+      result.push({
+        source:"price",
+        model:p.model,
+        type:p.type,
+        pin:p.pin,
+        no_pin:p.no_pin,
+        main:p.main
+      });
+    }
+
+  }
+
+  return result;
 }
 /* ===== SAFE USER MODE DETECT ===== */
 
@@ -2038,40 +2151,47 @@ function disableCheckUI(){
   }
 }
 
+/* ===== BẬT LẠI GIAO DIỆN KIỂM TRA ===== */
 function enableCheckUI(){
 
-  // ✅ Đánh dấu link đang hoạt động
+  // ===== ĐÁNH DẤU LINK ĐANG HOẠT ĐỘNG =====
   window.USER_LINK_ACTIVE = true;
 
   const input = document.getElementById("q");
   const btn   = document.querySelector(".check-btn");
 
+  // ===== MỞ KHÓA Ô NHẬP =====
   if(input){
     input.disabled = false;
     input.style.opacity = "1";
   }
 
+  // ===== MỞ KHÓA NÚT KIỂM TRA =====
   if(btn){
     btn.disabled = false;
     btn.style.opacity = "1";
   }
 
-  // ===== HIỆN LẠI THANH SEARCH =====
+  // ===== HIỆN LẠI THANH TÌM KIẾM =====
   const searchBox = document.querySelector(".clean-check");
+
   if(searchBox){
     searchBox.style.display = "flex";
   }
 }
 
-/* ===== GLOBAL ERROR SHIELD ===== */
 
+/* ===== BẮT LỖI TOÀN CỤC ===== */
 window.addEventListener("error",e=>{
-  console.error("GLOBAL ERROR:",e.error);
+  console.error("LỖI HỆ THỐNG:",e.error);
 });
 
-// ===== THÊM HÀM NÀY NẾU CHƯA CÓ =====
+
+/* ===== HIỂN THỊ THÔNG BÁO CHO NGƯỜI DÙNG ===== */
 function showUserMessage(text){
+
   const out = document.getElementById("out");
+
   if(out){
     out.innerHTML = `
       <div style="
@@ -2086,22 +2206,27 @@ function showUserMessage(text){
     `;
   }
 }
+
+
+/* ===== LƯU ALIAS CHO LINK ===== */
 async function saveAlias(id,value){
 
   const ref = db.collection("shareLinks").doc(id);
 
   if(!value || !value.trim()){
+
     await ref.update({
       alias: firebase.firestore.FieldValue.delete()
     });
+
   }else{
+
     await ref.update({
       alias: value.trim()
     });
+
   }
 }
-
-
 function detectChip(code){
 
   if(!code)
@@ -2897,81 +3022,51 @@ if(code.startsWith("WDC")){
     return decodeSamsung(code);
   }
 
-// ===== SK hynix =====
+// ===== SK HYNIX =====
 if(/^H/.test(code)){
 
   const h = decodeHynix(code);
 
-/* ===== SAFE GUARD ===== */
-if(!h){
-  return {
-    ram: null,
-    rom: null,
-    storage: "Unknown",
-    vip: 0
-  };
-}
+  /* ===== BẢO VỆ DỮ LIỆU ===== */
+  if(!h){
+    return {
+      ram:null,
+      rom:null,
+      storage:"Unknown",
+      vip:0
+    };
+  }
 
-  /* ===== NORMALIZE DATA ===== */
+  /* ===== CHUẨN HÓA DỮ LIỆU ===== */
   h.ram = Number(h.ram) || null;
   h.rom = Number(h.rom) || null;
   h.storage = h.storage || "Unknown";
 
-  /* ===== VIP RULE FIX ===== */
+  /* ===== SỬA LẠI QUY TẮC VIP ===== */
 
-  if(h.storage.includes("eMMC") && h.ram<=1)
-      h.vip = 1;
+  if(h.storage.includes("eMMC") && h.ram <= 1)
+    h.vip = 1;
 
-  else if(h.storage.includes("eMMC") && h.ram===2 && h.rom<=8)
-      h.vip = 2;
+  else if(h.storage.includes("eMMC") && h.ram === 2)
+    h.vip = 2;
 
-  else if(h.storage.includes("eMMC") && h.ram<=1 && h.rom===16)
-      h.vip = 3;
-
-  else if(h.storage.includes("eMMC") && h.ram===2 && h.rom===16)
-      h.vip = 4;
-
-  else if(h.storage.includes("eMMC") && h.ram>=2 && h.rom===32)
-      h.vip = 4.5;
-
-  else if(h.storage.includes("UFS") &&
-         ((h.ram===3 && h.rom===32) ||
-          (h.ram===4 && h.rom===32) ||
-          (h.ram===3 && h.rom===64)))
-      h.vip = 5;
-
-  else if(h.storage.includes("eMMC") &&
-         (h.ram===4 || h.ram===6) && h.rom===64)
-      h.vip = 6;
-
-  else if(h.storage.includes("UFS") &&
-         (h.ram===4 || h.ram===6) && h.rom===128)
-      h.vip = 7;
-
-  else if(h.storage.includes("UFS") &&
-         (h.ram===8 || h.ram===10) && h.rom===128)
-      h.vip = 8;
-
-  else if(h.storage.includes("UFS") &&
-         ((h.ram===6 && h.rom===256) ||
-          (h.ram===8 && h.rom===256) ||
-          (h.ram===10 && h.rom===256) ||
-          (h.ram===12 && h.rom===128)))
-      h.vip = 9;
-
-  else if((h.ram===12 && h.rom===256) ||
-          (h.ram===8 && h.rom===512))
-      h.vip = 10;
-
-  else if(h.ram===12 && h.rom===512)
-      h.vip = 11;
-
-  else if(h.ram>=16 && h.rom>=512)
-      h.vip = 12;
+  else if(h.storage.includes("eMMC") && h.ram >= 3)
+    h.vip = calculateVip(h.ram, h.rom);
 
   return h;
 }
+
+/* ===== TRƯỜNG HỢP KHÔNG NHẬN DIỆN ===== */
+return {
+  ram:null,
+  rom:null,
+  storage:"Unknown",
+  vip:0
+};
+
 }
+
+
 /* ===============================
    VIP AUTO BALANCE ENGINE
 ================================ */
@@ -3430,16 +3525,22 @@ function chuẩnHóaModel(input){
 
   return input;
 }  
+/* =================================================
+ENGINE TÌM KIẾM MODEL SAMSUNG
+================================================= */
+
 async function check(){
 
   const out = document.getElementById("out");
   const btn = document.querySelector(".check-btn");
 
-/* ===== LẤY GIÁ TRỊ TỪ Ô TÌM KIẾM (GET SEARCH INPUT) ===== */
+  /* ===== LẤY GIÁ TRỊ TỪ Ô TÌM KIẾM (GET SEARCH INPUT) ===== */
 
-let q = document.getElementById("q")?.value || "";
-q = chuẩnHóaModel(q);
-q = q.toUpperCase();
+  let q = document.getElementById("q")?.value || "";
+  q = chuẩnHóaModel(q);
+  q = q.toUpperCase();
+
+  const priceResults = searchPriceModel(q);
 
 
 /* ===== CHUYỂN MODEL PHỔ BIẾN SANG MÃ CHIP (FORCE MODEL SEARCH) ===== */
@@ -3455,16 +3556,16 @@ else if(q.startsWith("S21")) q = "G991";
 
 /* ===== DÒNG GALAXY S22 ===== */
 
-if(q.startsWith("S22 ULTRA")) q = "S908";
-else if(q.startsWith("S22+")) q = "S906";
-else if(q.startsWith("S22")) q = "S901";
+if(q.startsWith("S22 ULTRA")) q = "G908";
+else if(q.startsWith("S22+")) q = "G906";
+else if(q.startsWith("S22")) q = "G901"
 
 
 /* ===== DÒNG GALAXY S23 ===== */
 
-if(q.startsWith("S23 ULTRA")) q = "S918";
-else if(q.startsWith("S23+")) q = "S916";
-else if(q.startsWith("S23")) q = "S911";
+if(q.startsWith("S23 ULTRA")) q = "G918";
+else if(q.startsWith("S23+")) q = "G916";
+else if(q.startsWith("S23")) q = "G911";
 
 
 /* ===== DÒNG GALAXY S24 ===== */
@@ -3474,67 +3575,101 @@ else if(q.startsWith("S24+")) q = "S926";
 else if(q.startsWith("S24")) q = "S921";
 
 
-/* ===== TÌM MODEL CHIP TỪ CHUỖI (MATCH MODEL CODE) ===== */
+/* =================================================
+   TÌM MODEL TỪ CHUỖI NHẬP
+================================================= */
 
-const modelMatch = chuẩnHóaModel(q).match(/[A-Z]\d{3,4}[A-Z]?/);
+const modelMatch = chuẩnHóaModel(q).match(/[A-Z]\d{2,4}[A-Z]?/);
 
-  if(modelMatch){
-   const key = chuẩnHóaModel(q);
-const price = findPriceByModel(key);
+if(modelMatch){
 
-    if(price){
+  const modelKey = modelMatch[0];
 
-      const html = `
-<div class="result-grid">
-  <div class="result-card">
+  /* ===== TÌM TẤT CẢ MODEL TRONG BẢNG GIÁ ===== */
+
+  const priceList = searchPriceModel(modelKey);
+
+  if(priceList && priceList.length){
+
+    let html = `<div class="result-grid">`;
+
+    for(const price of priceList){
+
+      const modelCode = price.model;
+
+      html += `
+<div class="result-card">
 
 <div class="code-title">
 <span class="code-badge">
-${MODEL_NAME_MAP[modelMatch[0]] || "Samsung " + modelMatch[0] + "F"} (${modelMatch[0]}F)
+${MODEL_NAME_MAP[modelCode] || "Samsung " + modelCode + "F"} (${modelCode}F)
 </span>
 </div>
 
-    <div class="model-row">
-      Samsung loại ${price.type}
-    </div>
+<div class="model-type">
+📱 Samsung loại <b>${price.type || "?"}</b>
+</div>
 
-    <div style="margin-top:10px;line-height:1.6;">
-      <div>📦 Có pin: ${Math.round(price.pin/1000)}k</div>
-      <div>📦 Không pin: ${Math.round(price.no_pin/1000)}k</div>
-      <div>📦 Main: ${Math.round(price.main/1000)}k</div>
-    </div>
+<div class="price-box">
 
-  </div>
+<div class="price-title">💰 BẢNG GIÁ</div>
+
+<div class="price-item">
+<span class="price-label">🔋 Có pin</span>
+<span class="price-value">${price.pin ? Math.round(price.pin/1000)+"k" : "-"}</span>
+</div>
+
+<div class="price-item">
+<span class="price-label">⚡ Không pin</span>
+<span class="price-value">${price.no_pin ? Math.round(price.no_pin/1000)+"k" : "-"}</span>
+</div>
+
+<div class="price-item">
+<span class="price-label">🧠 Main</span>
+<span class="price-value">${price.main ? Math.round(price.main/1000)+"k" : "-"}</span>
+</div>
+
+</div>
+
 </div>
 `;
-
-      out.innerHTML = html;
-      return;
     }
 
-  }
-  if(!q){
-    out.innerHTML="";
+    html += `</div>`;
+
+    out.innerHTML = html;
+
+    turboCache.set(q, html);
+
     return;
   }
 
-  btn.disabled = true;
-  btn.style.opacity = "0.6";
+}
 
-  out.innerHTML = `
+if(!q){
+  out.innerHTML="";
+  return;
+}
+
+btn.disabled = true;
+btn.style.opacity = "0.6";
+
+out.innerHTML = `
 <div style="text-align:center;margin:40px 0;opacity:.8;">
-  🔎 Đang phân tích...
+🔎 Đang phân tích...
 </div>
 `;
 
-  try{
+try{
 
-    if(turboCache.has(q)){
-      out.innerHTML = turboCache.get(q);
-      return;
-    }
+  if(turboCache.has(q)){
+    out.innerHTML = turboCache.get(q);
+    return;
+  }
 
-/* ===== LOAD DATA ===== */
+
+/* ===== TẢI DỮ LIỆU TỪ FIRESTORE ===== */
+
 const snapSearch = await db.collection("codes")
   .orderBy("code")
   .limit(1000)
@@ -3546,9 +3681,12 @@ const snapCode = await db.collection("codes")
   .limit(30)
   .get();
 
+
 const docsMap = new Map();
 
-/* ===== SEARCH TEXT ===== */
+
+/* ===== TÌM KIẾM THEO NỘI DUNG ===== */
+
 snapSearch.forEach(doc=>{
 
   const d = doc.data();
@@ -3577,182 +3715,220 @@ snapSearch.forEach(doc=>{
 
 });
 
-/* ===== LƯU DANH SÁCH CODE PREFIX ===== */
+
+/* ===== LƯU DANH SÁCH CODE THEO PREFIX ===== */
+
 snapCode.forEach(doc=>{
   docsMap.set(doc.id, doc);
 });
 
 
 /* ===== TRƯỜNG HỢP KHÔNG TÌM THẤY TRONG FIRESTORE ===== */
+
 if(docsMap.size === 0){
 
   const key = q.toUpperCase().trim();
 
-  /* ===== MODEL QUICK FIX ===== */
-  const modelMatch = key.match(/[A-Z]\d{3}/);
+  /* ===== KIỂM TRA MODEL TỪ BẢNG GIÁ ===== */
+
+  const modelMatch = key.match(/[A-Z]\d{2,3}/);
 
   if(modelMatch){
 
-    const price = findPriceByModel(modelMatch[0]);
+    const modelKey = modelMatch[0];
+
+    const price = findPriceByModel(modelKey);
 
     if(price){
 
       const html = `
 <div class="result-grid">
-  <div class="result-card">
+<div class="result-card">
 
-    <div class="code-title">
-      <span class="code-badge">${getModelName(modelMatch[0])}</span>
-    </div>
+<div class="code-title">
+<span class="code-badge">${getModelName(modelKey)}</span>
+</div>
 
-    <div class="model-row">
-      Samsung loại ${price.type}
-    </div>
+<div class="model-row">
+Samsung loại ${price.type || "Không rõ"}
+</div>
 
-    <div style="margin-top:10px;line-height:1.6;">
-      <div>📦 Có pin: ${Math.round(price.pin/1000)}k</div>
-      <div>📦 Không pin: ${Math.round(price.no_pin/1000)}k</div>
-      <div>📦 Main: ${Math.round(price.main/1000)}k</div>
-    </div>
+<div style="margin-top:10px;line-height:1.6;">
+<div>📦 Có pin: ${price.pin ? Math.round(price.pin/1000)+"k" : "-"}</div>
+<div>📦 Không pin: ${price.no_pin ? Math.round(price.no_pin/1000)+"k" : "-"}</div>
+<div>📦 Main: ${price.main ? Math.round(price.main/1000)+"k" : "-"}</div>
+</div>
 
-  </div>
+</div>
 </div>
 `;
 
       out.innerHTML = html;
+
+      /* ===== LƯU KẾT QUẢ VÀO CACHE ===== */
+
       turboCache.set(key, html);
+
       return;
     }
   }
 
 }
 
-    let html = `<div class="result-grid">`;
 
-    docsMap.forEach(doc => {
+/* ===== HIỂN THỊ KẾT QUẢ CHIP ===== */
 
-      const x = doc.data();
-      const chip = detectChip(x.code);
+let html = `<div class="result-grid">`;
 
-      let decoded = {
-        ram: null,
-        rom: null,
-        vip: null,
-        storage: null
-      };
+docsMap.forEach(doc => {
 
-      if(x.ram != null) decoded.ram = x.ram;
-      if(x.rom != null) decoded.rom = x.rom;
-      if(x.vip != null) decoded.vip = x.vip;
-      if(x.storage != null) decoded.storage = x.storage;
+  const x = doc.data();
 
-      if(decoded.vip == null && x.type === "VIP" && x.value){
-        decoded.vip = String(x.value).replace("VIP","").trim();
-      }
+  const chip = detectChip(x.code);
 
-      if(decoded.ram == null && decoded.rom == null && x.type === "RAMROM" && x.value){
-        const parts = String(x.value).split("/");
-        if(parts.length === 2){
-          decoded.ram = parts[0];
-          decoded.rom = parts[1];
-        }
-      }
+  let decoded = {
+    ram: null,
+    rom: null,
+    vip: null,
+    storage: null
+  };
 
-      if(!decoded.storage){
-        const hw = autoDecodeChip(x.code,x) || {};
-        decoded.storage = hw.storage ?? null;
-      }
 
-      decoded.ram = Number(decoded.ram) || null;
-      decoded.rom = Number(decoded.rom) || null;
-      decoded.vip = Number(decoded.vip) || 0;
-      decoded.chip = Number(x.chip) || 0;
+  if(x.ram != null) decoded.ram = x.ram;
+  if(x.rom != null) decoded.rom = x.rom;
+  if(x.vip != null) decoded.vip = x.vip;
+  if(x.storage != null) decoded.storage = x.storage;
 
-      const mmcLevel = getMMCLevel(decoded.rom);
 
-      html += `
-      <div class="result-card ${chip.class}">
-        <div class="code-main">${x.code}</div>
-
-        <div class="badge-row">
-          ${
-            decoded.ram > 0 && decoded.rom > 0
-              ? '<div class="ram-badge">' + decoded.ram + '/' + decoded.rom + '</div>'
-              : decoded.rom > 0
-                ? '<div class="ram-badge">' + decoded.rom + 'GB</div>'
-                : decoded.ram > 0
-                  ? '<div class="ram-badge">' + decoded.ram + 'GB RAM</div>'
-                  : ''
-          }
-
-          ${
-            decoded.chip > 0
-              ? '<div class="ram-badge">' + decoded.chip + ' CHIP</div>'
-              :
-            decoded.vip > 0
-              ? '<div class="vip-badge vip-' + String(decoded.vip).replace(".", "-") + '">' +
-                  '<span class="vip-dot"></span> VIP ' + (decoded.vip % 1 ? Math.floor(decoded.vip) + '+' : decoded.vip) +
-                '</div>'
-              : (mmcLevel
-                  ? '<div class="ram-badge mmc-badge">' +
-                      '<span class="mmc-dot"></span> ' + mmcLevel +
-                    '</div>'
-                  : ''
-                )
-          }
-        </div>
-
-        <div class="card-footer">
-          <div class="chip-info" style="color:${chip.color}">
-            <span class="chip-dot" style="background:${chip.color}"></span>
-            ${chip.name}
-            <span style="opacity:.6;">
-              ${decoded.storage || ""}
-            </span>
-          </div>
-        </div>
-
-        ${
-          Array.isArray(x.models) && x.models.length
-            ? `<div class="model-line">${
-                formatSamsungModels(
-                  x.models.map(m=>{
-                    if(typeof m === "string") return m;
-                    if(typeof m === "object" && m !== null)
-                      return (m.brand || "") + " " + (m.model || "");
-                    return "";
-                  }).join(", ")
-                )
-              }</div>`
-            : `<div class="model-placeholder">Chưa có model</div>`
-        }
-
-      </div>
-      `;
-    });
-
-    html += `</div>`;
-
-    turboCache.set(q, html);
-    out.innerHTML = html;
-
+  if(decoded.vip == null && x.type === "VIP" && x.value){
+    decoded.vip = String(x.value).replace("VIP","").trim();
   }
-  catch(err){
 
-    console.error(err);
+  if(decoded.ram == null && decoded.rom == null && x.type === "RAMROM" && x.value){
 
-    out.innerHTML = `
-      <div style="color:#ef4444;text-align:center;">
-        ⚠️ Lỗi hệ thống
-      </div>
-    `;
+    const parts = String(x.value).split("/");
 
+    if(parts.length === 2){
+      decoded.ram = parts[0];
+      decoded.rom = parts[1];
+    }
   }
-  finally{
-    btn.disabled = false;
-    btn.style.opacity = "1";
+
+  if(!decoded.storage){
+
+    const hw = autoDecodeChip(x.code,x) || {};
+
+    decoded.storage = hw.storage ?? null;
   }
+
+  decoded.ram = Number(decoded.ram) || null;
+  decoded.rom = Number(decoded.rom) || null;
+  decoded.vip = Number(decoded.vip) || 0;
+  decoded.chip = Number(x.chip) || 0;
+
+
+  const mmcLevel = getMMCLevel(decoded.rom);
+
+
+  html += `
+<div class="result-card ${chip.class}">
+
+<div class="code-main">${x.code}</div>
+
+<div class="badge-row">
+
+${
+decoded.ram > 0 && decoded.rom > 0
+? '<div class="ram-badge">' + decoded.ram + '/' + decoded.rom + '</div>'
+: decoded.rom > 0
+? '<div class="ram-badge">' + decoded.rom + 'GB</div>'
+: decoded.ram > 0
+? '<div class="ram-badge">' + decoded.ram + 'GB RAM</div>'
+: ''
 }
+
+${
+decoded.chip > 0
+? '<div class="ram-badge">' + decoded.chip + ' CHIP</div>'
+:
+decoded.vip > 0
+? '<div class="vip-badge vip-' + String(decoded.vip).replace(".", "-") + '">' +
+'<span class="vip-dot"></span> VIP ' + (decoded.vip % 1 ? Math.floor(decoded.vip) + '+' : decoded.vip) +
+'</div>'
+:
+(mmcLevel
+? '<div class="ram-badge mmc-badge">' +
+'<span class="mmc-dot"></span> ' + mmcLevel +
+'</div>'
+: ''
+)
+}
+
+</div>
+
+<div class="card-footer">
+
+<div class="chip-info" style="color:${chip.color}">
+<span class="chip-dot" style="background:${chip.color}"></span>
+
+${chip.name}
+
+<span style="opacity:.6;">
+${decoded.storage || ""}
+</span>
+
+</div>
+
+</div>
+
+${
+Array.isArray(x.models) && x.models.length
+? `<div class="model-line">${
+formatSamsungModels(
+x.models.map(m=>{
+if(typeof m === "string") return m;
+if(typeof m === "object" && m !== null)
+return (m.brand || "") + " " + (m.model || "");
+return "";
+}).join(", ")
+)
+}</div>`
+: `<div class="model-placeholder">Chưa có model</div>`
+}
+
+</div>
+`;
+
+});
+
+
+html += `</div>`;
+
+turboCache.set(q, html);
+
+out.innerHTML = html;
+
+}
+catch(err){
+
+console.error(err);
+
+out.innerHTML = `
+<div style="color:#ef4444;text-align:center;">
+⚠️ Lỗi hệ thống
+</div>
+`;
+
+}
+finally{
+
+btn.disabled = false;
+btn.style.opacity = "1";
+
+}
+
+}
+  
 // ===== LOGIN =====
 async function secureLogin(){
   const email = document.getElementById("loginEmail").value.trim();
