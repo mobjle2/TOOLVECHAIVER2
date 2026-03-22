@@ -2875,12 +2875,12 @@ if(code.startsWith("YMEC") || code.startsWith("YMU")){
 }
 
 /* =====================================================
-   🔥 FIREBASE PRIORITY ENGINE
+   XỬ LÝ PHẦN CỨNG (ƯU TIÊN FIRESTORE TRƯỚC)
 ===================================================== */
 
 function buildHardware(code, data){
 
-  /* 🔥 ƯU TIÊN FIRESTORE 100% */
+  /* ===== ƯU TIÊN FIRESTORE ===== */
   if(data){
     return {
       ram: data.ram ?? null,
@@ -2894,8 +2894,8 @@ function buildHardware(code, data){
     };
   }
 
-  /* ===== FALLBACK DECODER ===== */
-  const hw = autoDecodeChip(code);
+  /* ===== DỰ PHÒNG GIẢI MÃ ===== */
+  const hw = buildHardware(code, data);
 
   if(hw){
     hw.source = "decoder";
@@ -2904,7 +2904,6 @@ function buildHardware(code, data){
 
   return null;
 }
-
   
 function decodeMicronOEM(code){
 
