@@ -1604,10 +1604,14 @@ body::before{
   font-weight:600;
 }
 
-/* ===== ẨN ADMIN NGAY KHI VÀO LINK USER MODE (KHÔNG NHÁY) ===== */
-body.user-mode #adminPanel{
+/* ===== ẨN TOÀN BỘ ADMIN NGAY TỨC (KHÔNG NHÁY - BẢN FIX CUỐI) ===== */
+html.user-mode #adminPanel,
+html.user-mode #adminToggle,
+html.user-mode .create-link-btn{
   display:none !important;
-}  
+  visibility:hidden !important;
+  opacity:0 !important;
+}
 
   
 </style>
