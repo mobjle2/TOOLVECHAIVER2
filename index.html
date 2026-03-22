@@ -2846,13 +2846,13 @@ vip
   
   
 /* =====================================================
-   BỘ XỬ LÝ PHẦN CỨNG (ƯU TIÊN FIRESTORE TRƯỚC)
+   XỬ LÝ PHẦN CỨNG (ƯU TIÊN DỮ LIỆU FIRESTORE)
 ===================================================== */
 
-// ===== BỘ GIẢI MÃ CHÍNH =====
+// ===== GIẢI MÃ CHÍNH =====
 function autoDecodeChip(code, dbData){
 
-  // 🔥 ƯU TIÊN DATA TỪ FIRESTORE
+  // 🔥 NẾU CÓ DỮ LIỆU FIRESTORE → DÙNG NGAY
   if(dbData){
     return {
       type: dbData.type || null,
@@ -2864,20 +2864,18 @@ function autoDecodeChip(code, dbData){
     };
   }
 
-  // ❗ nếu không có data → để decoder xử lý tiếp
-  return null;
+  // ❗ KHÔNG RETURN NULL → để decoder phía dưới chạy tiếp
 }
 
 
 /* =====================================================
-   ENGINE ƯU TIÊN FIREBASE + FALLBACK DECODER
+   ƯU TIÊN FIRESTORE + DỰ PHÒNG GIẢI MÃ
 ===================================================== */
 
 function buildHardware(code, data){
 
   /* ===== ƯU TIÊN FIRESTORE ===== */
   if(data){
-
     return {
       ram: data.ram ?? null,
       rom: data.rom ?? null,
@@ -2893,9 +2891,9 @@ function buildHardware(code, data){
     };
   }
 
-  /* ===== FALLBACK DECODER ===== */
+  /* ===== DỰ PHÒNG GIẢI MÃ ===== */
 
-  const hw = autoDecodeChip(code, data); // 🔥 FIX TRUYỀN DATA
+  const hw = autoDecodeChip(code); // ❗ KHÔNG truyền data để tránh lock
 
   if(hw){
     hw.source = "decoder";
@@ -2904,7 +2902,6 @@ function buildHardware(code, data){
 
   return null;
 }
-
   
 function decodeMicronOEM(code){
 
