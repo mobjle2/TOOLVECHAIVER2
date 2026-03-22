@@ -1603,6 +1603,12 @@ body::before{
   color:#22c55e;
   font-weight:600;
 }
+
+/* ===== ẨN ADMIN NGAY KHI VÀO LINK USER MODE (KHÔNG NHÁY) ===== */
+body.user-mode #adminPanel{
+  display:none !important;
+}  
+
   
 </style>
 
@@ -1863,10 +1869,15 @@ function searchPriceModel(q){
   return result;
 
 }
-/* ===== SAFE USER MODE DETECT ===== */
+/* ===== PHÁT HIỆN USER MODE AN TOÀN + ẨN ADMIN NGAY ===== */
 
 const urlParams = new URLSearchParams(window.location.search);
 const isUserMode = urlParams.has("u");
+
+/* 🔥 ẨN ADMIN NGAY TỨC (CHỐNG NHÁY) */
+if(isUserMode){
+  document.documentElement.classList.add("user-mode");
+}
 
 /* ❗ KHÔNG logout ngay nữa */
 /* auth listener phía dưới sẽ xử lý */
@@ -1883,7 +1894,6 @@ if(userParam){
 
     const login=document.getElementById("loginScreen");
     if(login) login.style.display="none";
-
     /* ⭐ LOAD CACHE CHO USER MODE */
     try{
       await preloadCodes();
