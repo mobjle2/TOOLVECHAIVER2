@@ -2276,7 +2276,7 @@ function detectChip(code){
 
 
 /* =====================================================
-   QUICK SHORTCODE DECODE (C6 C7 C8 C9)
+   GIẢI MÃ NHANH CÁC MÃ C (TRẢ VỀ 3 CHIP + DUNG LƯỢNG)
 ===================================================== */
 
 function quickDecodeChip(code){
@@ -2285,20 +2285,21 @@ function quickDecodeChip(code){
 
   code = String(code).toUpperCase().trim();
 
-  if(code === "C6"){
-    return { type:"UFS", storage:"UFS", ram:null, rom:32, vip:5 };
-  }
+  if(/^C[5-9]$/.test(code)){
 
-  if(code === "C7"){
-    return { type:"UFS", storage:"UFS", ram:null, rom:64, vip:6 };
-  }
+    let rom = null;
 
-  if(code === "C8"){
-    return { type:"UFS", storage:"UFS", ram:null, rom:128, vip:7 };
-  }
+    if(code === "C5") rom = 16;
+    if(code === "C6") rom = 32;
+    if(code === "C7") rom = 64;
+    if(code === "C8") rom = 128;
+    if(code === "C9") rom = 256;
 
-  if(code === "C9"){
-    return { type:"UFS", storage:"UFS", ram:null, rom:256, vip:8 };
+    return [
+      { type:"UFS", storage:"UFS", ram:null, rom:rom, vip:null, chip:"Samsung" },
+      { type:"UFS", storage:"UFS", ram:null, rom:rom, vip:null, chip:"Hynix" },
+      { type:"UFS", storage:"UFS", ram:null, rom:rom, vip:null, chip:"YMTC" }
+    ];
   }
 
   return null;
@@ -2845,33 +2846,39 @@ vip
   
   
   
-// ===== MAIN DECODER =====
+// ===== BỘ GIẢI MÃ CHÍNH (ƯU TIÊN SHORTCODE C5→C9) =====
 function autoDecodeChip(code, dbData){
-const quick = quickDecodeChip(code);
-if(quick) return quick;
+
+  const quick = quickDecodeChip(code);
+
+  // 🔥 HỖ TRỢ TRẢ VỀ 3 CHIP (ARRAY)
+  if(Array.isArray(quick)) return quick;
+
+  if(quick) return quick;
 
   code = code.toUpperCase().trim();
+
   // ===== YMTC / YMEC ENGINE =====
-if(code.startsWith("YMEC") || code.startsWith("YMU")){
+  if(code.startsWith("YMEC") || code.startsWith("YMU")){
 
-  let rom = null;
+    let rom = null;
 
-  if(code.includes("C6")) rom = 32;
-  if(code.includes("C7")) rom = 64;
-  if(code.includes("C8")) rom = 128;
-  if(code.includes("C9")) rom = 256;
+    if(code.includes("C6")) rom = 32;
+    if(code.includes("C7")) rom = 64;
+    if(code.includes("C8")) rom = 128;
+    if(code.includes("C9")) rom = 256;
 
-  return {
-    type: "UFS",
-    storage: "UFS",
-    ram: null,
-    rom: rom,
-    vip: rom === 32 ? 5 :
-         rom === 64 ? 6 :
-         rom === 128 ? 7 :
-         rom === 256 ? 8 : null
-  };
-}
+    return {
+      type: "UFS",
+      storage: "UFS",
+      ram: null,
+      rom: rom,
+      vip: rom === 32 ? 5 :
+           rom === 64 ? 6 :
+           rom === 128 ? 7 :
+           rom === 256 ? 8 : null
+    };
+  }
 
 /* =====================================================
    🔥 FIREBASE PRIORITY ENGINE
