@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -2276,7 +2277,7 @@ function detectChip(code){
 
 
 /* =====================================================
-   GIẢI MÃ NHANH CÁC MÃ C (TRẢ VỀ 3 CHIP + DUNG LƯỢNG)
+   QUICK SHORTCODE DECODE (C6 C7 C8 C9)
 ===================================================== */
 
 function quickDecodeChip(code){
@@ -2285,21 +2286,20 @@ function quickDecodeChip(code){
 
   code = String(code).toUpperCase().trim();
 
-  if(/^C[5-9]$/.test(code)){
+  if(code === "C6"){
+    return { type:"UFS", storage:"UFS", ram:null, rom:32, vip:5 };
+  }
 
-    let rom = null;
+  if(code === "C7"){
+    return { type:"UFS", storage:"UFS", ram:null, rom:64, vip:6 };
+  }
 
-    if(code === "C5") rom = 16;
-    if(code === "C6") rom = 32;
-    if(code === "C7") rom = 64;
-    if(code === "C8") rom = 128;
-    if(code === "C9") rom = 256;
+  if(code === "C8"){
+    return { type:"UFS", storage:"UFS", ram:null, rom:128, vip:7 };
+  }
 
-    return [
-      { type:"UFS", storage:"UFS", ram:null, rom:rom, vip:null, chip:"Samsung" },
-      { type:"UFS", storage:"UFS", ram:null, rom:rom, vip:null, chip:"Hynix" },
-      { type:"UFS", storage:"UFS", ram:null, rom:rom, vip:null, chip:"YMTC" }
-    ];
+  if(code === "C9"){
+    return { type:"UFS", storage:"UFS", ram:null, rom:256, vip:8 };
   }
 
   return null;
@@ -2845,58 +2845,71 @@ vip
 }
   
   
-/* ===== GIẢI MÃ CHÍNH (AN TOÀN) ===== */
+  
+// ===== MAIN DECODER =====
 function autoDecodeChip(code, dbData){
+const quick = quickDecodeChip(code);
+if(quick) return quick;
 
-  if(dbData){
-    return {
-      type: dbData.type || null,
-      storage: dbData.type || null,
-      ram: dbData.ram ?? null,
-      rom: dbData.rom ?? null,
-      vip: dbData.vip ?? null,
-      chip: dbData.chip ?? null
-    };
-  }
+  code = code.toUpperCase().trim();
+  // ===== YMTC / YMEC ENGINE =====
+if(code.startsWith("YMEC") || code.startsWith("YMU")){
 
-  // ===== MICRON CHECK FIRST =====
-  const micron = decodeMicronOEM(code);
-  if(micron) return micron;
+  let rom = null;
 
-  return null;
+  if(code.includes("C6")) rom = 32;
+  if(code.includes("C7")) rom = 64;
+  if(code.includes("C8")) rom = 128;
+  if(code.includes("C9")) rom = 256;
+
+  return {
+    type: "UFS",
+    storage: "UFS",
+    ram: null,
+    rom: rom,
+    vip: rom === 32 ? 5 :
+         rom === 64 ? 6 :
+         rom === 128 ? 7 :
+         rom === 256 ? 8 : null
+  };
 }
 
-
 /* =====================================================
-   ƯU TIÊN FIRESTORE + DỰ PHÒNG GIẢI MÃ
+   🔥 FIREBASE PRIORITY ENGINE
 ===================================================== */
 
 function buildHardware(code, data){
 
-  // ===== ƯU TIÊN FIRESTORE =====
+  /* ===== ƯU TIÊN FIRESTORE ===== */
+
   if(data){
+
     return {
+
       ram: data.ram ?? null,
       rom: data.rom ?? null,
       vip: data.vip ?? null,
+
+      /* ⭐ QUAN TRỌNG */
       storage: data.type ?? data.storage ?? "Manual",
+
       type: data.type ?? null,
       mmc: data.mmc ?? null,
       chip: data.chip ?? null,
+
       source: "firebase"
     };
   }
 
-  // ===== DỰ PHÒNG GIẢI MÃ =====
+  /* ===== FALLBACK DECODER ===== */
+
   const hw = autoDecodeChip(code);
 
-  if(hw){
-    hw.source = "decoder";
-    return hw;
-  }
+  hw.source = "decoder";
 
-  return null;
+  return hw;
 }
+
   
 function decodeMicronOEM(code){
 
@@ -2991,7 +3004,9 @@ function decodeMicronOEM(code){
 
   return null;
 }
-
+  // ===== MICRON CHECK FIRST =====
+  const micron = decodeMicronOEM(code);
+  if(micron) return micron;
   /* ===============================
    SANDISK / WD eMMC FIX
 ================================ */
