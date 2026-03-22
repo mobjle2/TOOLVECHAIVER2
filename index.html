@@ -2845,7 +2845,11 @@ vip
 }
   
   
-// ===== BỘ GIẢI MÃ CHÍNH (ƯU TIÊN FIRESTORE) =====
+/* =====================================================
+   BỘ XỬ LÝ PHẦN CỨNG (ƯU TIÊN FIRESTORE TRƯỚC)
+===================================================== */
+
+// ===== BỘ GIẢI MÃ CHÍNH =====
 function autoDecodeChip(code, dbData){
 
   // 🔥 ƯU TIÊN DATA TỪ FIRESTORE
@@ -2859,23 +2863,26 @@ function autoDecodeChip(code, dbData){
       chip: dbData.chip ?? null
     };
   }
+
+  // ❗ nếu không có data → để decoder xử lý tiếp
+  return null;
+}
+
+
 /* =====================================================
-   🔥 FIREBASE PRIORITY ENGINE
+   ENGINE ƯU TIÊN FIREBASE + FALLBACK DECODER
 ===================================================== */
 
 function buildHardware(code, data){
 
   /* ===== ƯU TIÊN FIRESTORE ===== */
-
   if(data){
 
     return {
-
       ram: data.ram ?? null,
       rom: data.rom ?? null,
       vip: data.vip ?? null,
 
-      /* ⭐ QUAN TRỌNG */
       storage: data.type ?? data.storage ?? "Manual",
 
       type: data.type ?? null,
@@ -2888,11 +2895,14 @@ function buildHardware(code, data){
 
   /* ===== FALLBACK DECODER ===== */
 
-  const hw = autoDecodeChip(code);
+  const hw = autoDecodeChip(code, data); // 🔥 FIX TRUYỀN DATA
 
-  hw.source = "decoder";
+  if(hw){
+    hw.source = "decoder";
+    return hw;
+  }
 
-  return hw;
+  return null;
 }
 
   
