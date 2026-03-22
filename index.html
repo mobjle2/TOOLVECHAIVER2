@@ -2852,7 +2852,7 @@ vip
 // ===== GIẢI MÃ CHÍNH =====
 function autoDecodeChip(code, dbData){
 
-  // 🔥 NẾU CÓ DỮ LIỆU FIRESTORE → DÙNG NGAY
+  // 🔥 NẾU CÓ DATA FIRESTORE → DÙNG NGAY
   if(dbData){
     return {
       type: dbData.type || null,
@@ -2864,7 +2864,7 @@ function autoDecodeChip(code, dbData){
     };
   }
 
-  // ❗ KHÔNG RETURN NULL → để decoder phía dưới chạy tiếp
+  // ❗ KHÔNG return ở đây → để code cũ phía dưới chạy tiếp
 }
 
 
@@ -2874,26 +2874,22 @@ function autoDecodeChip(code, dbData){
 
 function buildHardware(code, data){
 
-  /* ===== ƯU TIÊN FIRESTORE ===== */
+  // ===== ƯU TIÊN FIRESTORE =====
   if(data){
     return {
       ram: data.ram ?? null,
       rom: data.rom ?? null,
       vip: data.vip ?? null,
-
       storage: data.type ?? data.storage ?? "Manual",
-
       type: data.type ?? null,
       mmc: data.mmc ?? null,
       chip: data.chip ?? null,
-
       source: "firebase"
     };
   }
 
-  /* ===== DỰ PHÒNG GIẢI MÃ ===== */
-
-  const hw = autoDecodeChip(code); // ❗ KHÔNG truyền data để tránh lock
+  // ===== DỰ PHÒNG GIẢI MÃ =====
+  const hw = autoDecodeChip(code);
 
   if(hw){
     hw.source = "decoder";
