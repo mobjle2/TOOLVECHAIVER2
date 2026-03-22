@@ -2845,44 +2845,18 @@ vip
 }
   
   
-// ===== BỘ GIẢI MÃ CHÍNH (HỖ TRỢ YMEC-C7 → C7) =====
+// ===== BỘ GIẢI MÃ CHÍNH (ƯU TIÊN FIRESTORE) =====
 function autoDecodeChip(code, dbData){
 
-  code = code.toUpperCase().trim();
-
-  /* 🔥 FIX CHUẨN: LẤY C5→C9 TRONG CHUỖI */
-  let shortCode = null;
-
-  const match = code.match(/C[5-9]/);
-  if(match){
-    shortCode = match[0];
-  }
-
-  const quick = quickDecodeChip(shortCode);
-
-  if(Array.isArray(quick)) return quick;
-
-  if(quick) return quick;
-
-  // ===== YMTC / YMEC ENGINE =====
-  if(code.startsWith("YMEC") || code.startsWith("YMU")){
-
-    let rom = null;
-
-    if(code.includes("C6")) rom = 32;
-    if(code.includes("C7")) rom = 64;
-    if(code.includes("C8")) rom = 128;
-    if(code.includes("C9")) rom = 256;
-
+  // 🔥 ƯU TIÊN DATA TỪ FIRESTORE
+  if(dbData){
     return {
-      type: "UFS",
-      storage: "UFS",
-      ram: null,
-      rom: rom,
-      vip: rom === 32 ? 5 :
-           rom === 64 ? 6 :
-           rom === 128 ? 7 :
-           rom === 256 ? 8 : null
+      type: dbData.type || null,
+      storage: dbData.type || null,
+      ram: dbData.ram ?? null,
+      rom: dbData.rom ?? null,
+      vip: dbData.vip ?? null,
+      chip: dbData.chip ?? null
     };
   }
 /* =====================================================
