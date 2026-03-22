@@ -2845,17 +2845,21 @@ vip
 }
   
   
-// ===== BỘ GIẢI MÃ CHÍNH (ƯU TIÊN SHORTCODE C5→C9) =====
+// ===== BỘ GIẢI MÃ CHÍNH (HỖ TRỢ YMEC-C7 → C7) =====
 function autoDecodeChip(code, dbData){
 
   code = code.toUpperCase().trim();
 
-  /* 🔥 FIX: CẮT YMEC-C7 → C7 */
-  const shortCode = code.replace(/^YMEC-|^YMU-/, "");
+  /* 🔥 FIX CHUẨN: LẤY C5→C9 TRONG CHUỖI */
+  let shortCode = null;
+
+  const match = code.match(/C[5-9]/);
+  if(match){
+    shortCode = match[0];
+  }
 
   const quick = quickDecodeChip(shortCode);
 
-  // 🔥 TRẢ 3 CHIP
   if(Array.isArray(quick)) return quick;
 
   if(quick) return quick;
@@ -2881,7 +2885,7 @@ function autoDecodeChip(code, dbData){
            rom === 256 ? 8 : null
     };
   }
-
+}
 /* =====================================================
    🔥 FIREBASE PRIORITY ENGINE
 ===================================================== */
