@@ -2845,18 +2845,20 @@ vip
 }
   
   
-  
 // ===== BỘ GIẢI MÃ CHÍNH (ƯU TIÊN SHORTCODE C5→C9) =====
 function autoDecodeChip(code, dbData){
 
-  const quick = quickDecodeChip(code);
+  code = code.toUpperCase().trim();
 
-  // 🔥 HỖ TRỢ TRẢ VỀ 3 CHIP (ARRAY)
+  /* 🔥 FIX: CẮT YMEC-C7 → C7 */
+  const shortCode = code.replace(/^YMEC-|^YMU-/, "");
+
+  const quick = quickDecodeChip(shortCode);
+
+  // 🔥 TRẢ 3 CHIP
   if(Array.isArray(quick)) return quick;
 
   if(quick) return quick;
-
-  code = code.toUpperCase().trim();
 
   // ===== YMTC / YMEC ENGINE =====
   if(code.startsWith("YMEC") || code.startsWith("YMU")){
