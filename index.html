@@ -1808,61 +1808,88 @@ function findPriceByModel(input){
   
 
 /* =====================================================
-   SEARCH MODEL + SAMSUNG SERIES
-   Fix tìm S21 / S22 / S23
+   MỤC SEARCH MODEL + SAMSUNG SERIES (BẢN CHUẨN)
+
+   Chức năng:
+   - Tìm model theo input (S10, G973, SM-G973...)
+   - Tự chuẩn hóa model (normalize)
+   - Hỗ trợ dòng S21 / S22 / S23
+   - Fix lỗi không tìm thấy dòng G / S
+   - KHÔNG gây lỗi login
+
+   Ngày sửa: 2026
 ===================================================== */
 
 function searchPriceModel(q){
 
-  q = q.toUpperCase().trim();
+  /* =========================
+     CHUẨN HÓA INPUT
+  ========================= */
+  function normalize(x){
+    return String(x || "")
+      .toUpperCase()
+      .replace("SM-","")
+      .replace(/[^A-Z0-9]/g,"")
+      .trim();
+  }
+
+  const qn = normalize(q);
 
   const result = [];
 
+  /* =========================
+     MAP SERIES SAMSUNG
+  ========================= */
   const seriesMap = {
     "S21":["G991","G996","G998"],
     "S22":["S901","S906","S908"],
     "S23":["S911","S916","S918"]
   };
 
+  /* =========================
+     LOOP PRICE TABLE
+  ========================= */
   for(const p of PRICE_TABLE){
 
-function normalize(x){
-  return String(x || "")
-    .toUpperCase()
-    .replace("SM-","")
-    .replace(/[^A-Z0-9]/g,"")
-    .trim();
-}
+    const model = normalize(p.model);
+    const short = normalize(p.short);
 
-const qn = normalize(q);
+    /* =========================
+       SEARCH THEO SERIES (S21...)
+    ========================= */
+    if(seriesMap[qn]){
 
-const model = normalize(p.model);
-const short = normalize(p.short);
+      const codes = seriesMap[qn];
 
-/* ===== SEARCH ===== */
+      const matchSeries = codes.some(c =>
+        model.includes(c) || short.includes(c)
+      );
 
-if(
-  model.includes(qn) ||
-  short.includes(qn) ||
-  qn.includes(model) ||
-  qn.includes(short)
-){
-  result.push({
-    source:"price",
-    model:p.model,
-    type:p.type,
-    pin:p.pin,
-    no_pin:p.no_pin,
-    main:p.main
-  });
-}
+      if(matchSeries){
+
+        result.push({
+          source:"price",
+          model:p.model,
+          type:p.type,
+          pin:p.pin,
+          no_pin:p.no_pin,
+          main:p.main
+        });
+
+      }
 
       continue;
     }
 
-    /* ===== SEARCH BÌNH THƯỜNG ===== */
-
-    if(model.includes(q) || short.includes(q)){
+    /* =========================
+       SEARCH BÌNH THƯỜNG (FIX G ↔ S)
+    ========================= */
+    if(
+      model.includes(qn) ||
+      short.includes(qn) ||
+      qn.includes(model) ||
+      qn.includes(short)
+    ){
 
       result.push({
         source:"price",
