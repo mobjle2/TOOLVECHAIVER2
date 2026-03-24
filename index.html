@@ -1826,29 +1826,36 @@ function searchPriceModel(q){
 
   for(const p of PRICE_TABLE){
 
-    const model = (p.model || "").toUpperCase();
-    const short = (p.short || "").toUpperCase();
+function normalize(x){
+  return String(x || "")
+    .toUpperCase()
+    .replace("SM-","")
+    .replace(/[^A-Z0-9]/g,"")
+    .trim();
+}
 
-    /* ===== SEARCH SERIES ===== */
+const qn = normalize(q);
 
-    if(seriesMap[q]){
+const model = normalize(p.model);
+const short = normalize(p.short);
 
-      const codes = seriesMap[q];
+/* ===== SEARCH ===== */
 
-      if(codes.some(function(c){
-        return model.includes(c) || short.includes(c);
-      })){
-
-        result.push({
-          source:"price",
-          model:p.model,
-          type:p.type,
-          pin:p.pin,
-          no_pin:p.no_pin,
-          main:p.main
-        });
-
-      }
+if(
+  model.includes(qn) ||
+  short.includes(qn) ||
+  qn.includes(model) ||
+  qn.includes(short)
+){
+  result.push({
+    source:"price",
+    model:p.model,
+    type:p.type,
+    pin:p.pin,
+    no_pin:p.no_pin,
+    main:p.main
+  });
+}
 
       continue;
     }
