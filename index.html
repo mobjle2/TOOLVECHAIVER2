@@ -1835,44 +1835,53 @@ function searchPriceModel(q){
 
   const result = [];
 
-  /* ===== MAP SERIES ===== */
-  const seriesMap = {
-    "S21":["G991","G996","G998"],
-    "S22":["S901","S906","S908"],
-    "S23":["S911","S916","S918"]
-  };
+/* =====================================================
+   MỤC MAP DÒNG SAMSUNG (S21 / S22 / S23)
+   - Dùng để tìm nhanh theo series
+===================================================== */
+const seriesMap = {
+  "S21":["G991","G996","G998"],
+  "S22":["S901","S906","S908"],
+  "S23":["S911","S916","S918"]
+};
 
-  /* ===== LOOP ===== */
-  for(const p of PRICE_TABLE){
 
-    const model = normalize(p.model);
-    const short = normalize(p.short);
+/* =====================================================
+   MỤC DUYỆT TOÀN BỘ PRICE_TABLE
+===================================================== */
+for(const p of PRICE_TABLE){
 
-    /* ===== SEARCH SERIES ===== */
-    if(seriesMap[qn]){
-      const codes = seriesMap[qn];
+  /* =====================================================
+     TÁCH MODEL CHUẨN TỪ DỮ LIỆU (FIX LỖI G973)
+     Ví dụ:
+     "Samsung S10 (G973)" → G973
+===================================================== */
+  let raw = String(p.model || "").toUpperCase();
 
-      if(codes.some(c => model.includes(c))){
-        result.push({
-          source:"price",
-          model:p.model,
-          type:p.type,
-          pin:p.pin,
-          no_pin:p.no_pin,
-          main:p.main
-        });
-      }
+  let match = raw.match(/\(([^)]+)\)/);
 
-      continue;
-    }
+  let extracted = match
+    ? match[1]
+    : raw.replace("SM-","");
 
-    /* ===== SEARCH CHUẨN ===== */
-    if(
-      model.includes(qn) ||
-      short.includes(qn) ||
-      qn.includes(model) ||
-      qn.includes(short)
-    ){
+  /* =====================================================
+     CHUẨN HÓA MODEL
+===================================================== */
+  const model = normalize(extracted);
+  const short = normalize(p.short);
+
+
+  /* =====================================================
+     SEARCH THEO SERIES (S21 / S22 / S23)
+===================================================== */
+  if(seriesMap[qn]){
+
+    const codes = seriesMap[qn];
+
+    if(codes.some(c =>
+      model.includes(c) ||
+      short.includes(c)
+    )){
       result.push({
         source:"price",
         model:p.model,
@@ -1883,10 +1892,33 @@ function searchPriceModel(q){
       });
     }
 
+    continue;
   }
 
-  return result;
+
+  /* =====================================================
+     SEARCH THƯỜNG (FIX G ↔ S + normalize)
+===================================================== */
+  if(
+    model.includes(qn) ||
+    short.includes(qn) ||
+
+    qn.includes(model) ||
+    qn.includes(short)
+  ){
+    result.push({
+      source:"price",
+      model:p.model,
+      type:p.type,
+      pin:p.pin,
+      no_pin:p.no_pin,
+      main:p.main
+    });
+  }
+
 }
+
+return result;
 /* ===== PHÁT HIỆN USER MODE AN TOÀN + ẨN ADMIN NGAY ===== */
 
 const urlParams = new URLSearchParams(window.location.search);
