@@ -2924,46 +2924,25 @@ const quick = quickDecodeChip(code);
 if(quick) return quick;
 
   code = code.toUpperCase().trim();
-// ======================================================
-// 🔧 GIẢI MÃ YMTC / YMEC / YMUS (CHUẨN)
-// ======================================================
-if(code.startsWith("YMEC") || code.startsWith("YMES") || code.startsWith("YMUS")){
+  // ===== YMTC / YMEC ENGINE =====
+if(code.startsWith("YMEC") || code.startsWith("YMU")){
 
   let rom = null;
-  let ram = null;
-  let type = "eMMC";
-  let storage = "eMMC";
 
-  // ===== LẤY SỐ DUNG LƯỢNG (YMEC6 / 7 / 8 / 9) =====
-  const match = code.match(/^YME[CSU]?(\d)/);
-
-  if(match){
-    const n = match[1];
-
-    if(n === "6") rom = 32;
-    if(n === "7") rom = 64;
-    if(n === "8") rom = 128;
-    if(n === "9") rom = 256;
-  }
-
-  // ===== YMUS = COMBO (có RAM) =====
-  if(code.startsWith("YMUS")){
-
-    type = "eMCP";
-
-    if(code.includes("A1")) ram = 1;
-    else if(code.includes("A2")) ram = 2;
-    else if(code.includes("A3")) ram = 3;
-    else if(code.includes("A4")) ram = 4;
-  }
+  if(code.includes("C6")) rom = 32;
+  if(code.includes("C7")) rom = 64;
+  if(code.includes("C8")) rom = 128;
+  if(code.includes("C9")) rom = 256;
 
   return {
-    vendor: "YMTC",
-    type: type,
-    storage: storage,
-    ram: ram,
+    type: "UFS",
+    storage: "UFS",
+    ram: null,
     rom: rom,
-    vip: calculateVip(ram, rom)
+    vip: rom === 32 ? 5 :
+         rom === 64 ? 6 :
+         rom === 128 ? 7 :
+         rom === 256 ? 8 : null
   };
 }
 
@@ -3867,56 +3846,6 @@ snapCode.forEach(doc=>{
 if(docsMap.size === 0){
 
   const key = q.toUpperCase().trim();
-
-  // ===== AUTO DECODE FULL =====
-  const hw = autoDecodeChip(key);
-
-  if(hw){
-
-    const chip = detectChip(key);
-
-    const html = `
-<div class="result-grid">
-<div class="result-card ${chip.class}">
-
-<div class="code-main">${key}</div>
-
-<div class="badge-row">
-
-${
-hw.ram && hw.rom
-? '<div class="ram-badge">' + hw.ram + '/' + hw.rom + '</div>'
-: hw.rom
-? '<div class="ram-badge">' + hw.rom + 'GB</div>'
-: ''
-}
-
-${
-hw.vip
-? '<div class="vip-badge">VIP ' + hw.vip + '</div>'
-: ''
-}
-
-</div>
-
-<div class="card-footer">
-  <div class="chip-info" style="color:${chip.color}">
-    ${chip.name} ${hw.storage || ""}
-  </div>
-</div>
-
-</div>
-</div>
-`;
-
-    out.innerHTML = html;
-    turboCache.set(key, html);
-    return;
-  }
-
-}
-
-  // ===== CODE CŨ CỦA BẠN (GIỮ NGUYÊN) =====
 
   /* ===== KIỂM TRA MODEL TỪ BẢNG GIÁ ===== */
 
