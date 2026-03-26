@@ -2872,56 +2872,58 @@ vip
   
   
   
-// ===== MAIN DECODER =====
-function autoDecodeChip(code, dbData){
-const quick = quickDecodeChip(code);
-if(quick) return quick;
-
-  code = code.toUpperCase().trim();
-  // ===== YMTC / YMEC ENGINE =====
-if(code.startsWith("YMEC") || code.startsWith("YMU")){
-
-  let rom = null;
-
-  if(code.includes("C6")) rom = 32;
-  if(code.includes("C7")) rom = 64;
-  if(code.includes("C8")) rom = 128;
-  if(code.includes("C9")) rom = 256;
-
-  return {
-    type: "UFS",
-    storage: "UFS",
-    ram: null,
-    rom: rom,
-    vip: rom === 32 ? 5 :
-         rom === 64 ? 6 :
-         rom === 128 ? 7 :
-         rom === 256 ? 8 : null
-  };
-}
-
 /* =====================================================
-   XỬ LÝ PHẦN CỨNG (ƯU TIÊN FIRESTORE TRƯỚC)
+   BỘ GIẢI MÃ CHÍNH (ƯU TIÊN FIRESTORE TRƯỚC)
 ===================================================== */
 
-function buildHardware(code, data){
+function autoDecodeChip(code, dbData){
+
+  const quick = quickDecodeChip(code);
+  if(quick) return quick;
+
+  code = code.toUpperCase().trim();
 
   /* ===== ƯU TIÊN FIRESTORE ===== */
-  if(data){
+  if(dbData){
     return {
-      ram: data.ram ?? null,
-      rom: data.rom ?? null,
-      vip: data.vip ?? null,
-      storage: data.type ?? data.storage ?? "Manual",
-      type: data.type ?? null,
-      mmc: data.mmc ?? null,
-      chip: data.chip ?? null,
+      type: dbData.type ?? null,
+      storage: dbData.type ?? dbData.storage ?? "Manual",
+      ram: dbData.ram ?? null,
+      rom: dbData.rom ?? null,
+      vip: dbData.vip ?? null,
+      mmc: dbData.mmc ?? null,
+      chip: dbData.chip ?? null,
       source: "firebase"
     };
   }
 
+  // ===== YMTC / YMEC ENGINE =====
+  if(code.startsWith("YMEC") || code.startsWith("YMU")){
+
+    let rom = null;
+
+    if(code.includes("C6")) rom = 32;
+    if(code.includes("C7")) rom = 64;
+    if(code.includes("C8")) rom = 128;
+    if(code.includes("C9")) rom = 256;
+
+    return {
+      type: "UFS",
+      storage: "UFS",
+      ram: null,
+      rom: rom,
+      vip: rom === 32 ? 5 :
+           rom === 64 ? 6 :
+           rom === 128 ? 7 :
+           rom === 256 ? 8 : null
+    };
+  }
+
+  return decodeSamsung(code);
+}
+
   /* ===== DỰ PHÒNG GIẢI MÃ ===== */
-  const hw = buildHardware(code, data);
+  const hw = autoDecodeChip(code);
 
   if(hw){
     hw.source = "decoder";
