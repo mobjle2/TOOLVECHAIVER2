@@ -2285,8 +2285,22 @@ function detectChip(code){
   };
 }
 
-  if(/^K/.test(code))
-    return {name:"Samsung",color:"#22c55e",class:"brand-samsung"};
+// ===== APPLE NAND (KIC) =====
+if(/^KIC/i.test(code)){
+  return {
+    name:"Apple NAND",
+    color:"#38bdf8",
+    class:"brand-apple"
+  };
+}
+
+// ===== SAMSUNG =====
+if(/^K/.test(code))
+  return {
+    name:"Samsung",
+    color:"#22c55e",
+    class:"brand-samsung"
+  };
 
   if(/^(H9|H26|H27)/.test(code))
     return {name:"SK hynix",color:"#a855f7",class:"brand-hynix"};
