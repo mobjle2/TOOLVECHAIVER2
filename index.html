@@ -2872,59 +2872,32 @@ vip
   
   
   
-/* =====================================================
-   BỘ GIẢI MÃ CHÍNH (ƯU TIÊN FIRESTORE TRƯỚC)
-===================================================== */
-
+// ===== MAIN DECODER =====
 function autoDecodeChip(code, dbData){
-
-  const quick = quickDecodeChip(code);
-  if(quick) return quick;
+const quick = quickDecodeChip(code);
+if(quick) return quick;
 
   code = code.toUpperCase().trim();
+  // ===== YMTC / YMEC ENGINE =====
+if(code.startsWith("YMEC") || code.startsWith("YMU")){
 
-  /* ===== ƯU TIÊN FIRESTORE ===== */
-  if(dbData){
-    return {
-      type: dbData.type ?? null,
-      storage: dbData.type ?? dbData.storage ?? "Manual",
-      ram: dbData.ram ?? null,
-      rom: dbData.rom ?? null,
-      vip: dbData.vip ?? null,
-      mmc: dbData.mmc ?? null,
-      chip: dbData.chip ?? null,
-      source: "firebase"
-    };
-  }
+  let rom = null;
 
-  /* ===== MICRON ƯU TIÊN ===== */
-  const micron = decodeMicronOEM(code);
-  if(micron) return micron;
+  if(code.includes("C6")) rom = 32;
+  if(code.includes("C7")) rom = 64;
+  if(code.includes("C8")) rom = 128;
+  if(code.includes("C9")) rom = 256;
 
-  /* ===== YMTC / YMEC ===== */
-  if(code.startsWith("YMEC") || code.startsWith("YMU")){
-
-    let rom = null;
-
-    if(code.includes("C6")) rom = 32;
-    if(code.includes("C7")) rom = 64;
-    if(code.includes("C8")) rom = 128;
-    if(code.includes("C9")) rom = 256;
-
-    return {
-      type: "UFS",
-      storage: "UFS",
-      ram: null,
-      rom: rom,
-      vip: rom === 32 ? 5 :
-           rom === 64 ? 6 :
-           rom === 128 ? 7 :
-           rom === 256 ? 8 : null
-    };
-  }
-
-  /* ===== FALLBACK SAMSUNG ===== */
-  return decodeSamsung(code);
+  return {
+    type: "UFS",
+    storage: "UFS",
+    ram: null,
+    rom: rom,
+    vip: rom === 32 ? 5 :
+         rom === 64 ? 6 :
+         rom === 128 ? 7 :
+         rom === 256 ? 8 : null
+  };
 }
 
 /* =====================================================
