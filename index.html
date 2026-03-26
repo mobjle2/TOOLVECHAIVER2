@@ -1,7 +1,6 @@
 
 
 
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -2901,30 +2900,28 @@ if(code.startsWith("YMEC") || code.startsWith("YMU")){
   };
 }
 
+/* =====================================================
+   XỬ LÝ PHẦN CỨNG (ƯU TIÊN FIRESTORE TRƯỚC)
+===================================================== */
+
 function buildHardware(code, data){
 
+  /* ===== ƯU TIÊN FIRESTORE ===== */
   if(data){
-
-    const storage = data.storage || data.type || "Manual";
-
     return {
       ram: data.ram ?? null,
       rom: data.rom ?? null,
       vip: data.vip ?? null,
-
-      storage: storage,
+      storage: data.type ?? data.storage ?? "Manual",
       type: data.type ?? null,
-
-      mmc: (storage === "NAND" || storage === "APPLE_NAND")
-        ? null
-        : data.mmc ?? null,
-
+      mmc: data.mmc ?? null,
       chip: data.chip ?? null,
       source: "firebase"
     };
   }
 
-  const hw = autoDecodeChip(code);
+  /* ===== DỰ PHÒNG GIẢI MÃ ===== */
+  const hw = buildHardware(code, data);
 
   if(hw){
     hw.source = "decoder";
