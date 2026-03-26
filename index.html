@@ -3868,34 +3868,40 @@ if(docsMap.size === 0){
 
   const key = q.toUpperCase().trim();
 
-  // ===== THÊM ĐOẠN NÀY (QUAN TRỌNG) =====
+  // ===== AUTO DECODE FULL =====
   const hw = autoDecodeChip(key);
 
   if(hw){
 
+    const chip = detectChip(key);
+
     const html = `
 <div class="result-grid">
-<div class="result-card">
+<div class="result-card ${chip.class}">
 
 <div class="code-main">${key}</div>
 
 <div class="badge-row">
-  ${
-    hw.rom
-    ? '<div class="ram-badge">' + hw.rom + 'GB</div>'
-    : ''
-  }
 
-  ${
-    hw.vip
-    ? '<div class="vip-badge">VIP ' + hw.vip + '</div>'
-    : ''
-  }
+${
+hw.ram && hw.rom
+? '<div class="ram-badge">' + hw.ram + '/' + hw.rom + '</div>'
+: hw.rom
+? '<div class="ram-badge">' + hw.rom + 'GB</div>'
+: ''
+}
+
+${
+hw.vip
+? '<div class="vip-badge">VIP ' + hw.vip + '</div>'
+: ''
+}
+
 </div>
 
 <div class="card-footer">
-  <div class="chip-info">
-    YMTC ${hw.storage || ""}
+  <div class="chip-info" style="color:${chip.color}">
+    ${chip.name} ${hw.storage || ""}
   </div>
 </div>
 
@@ -3907,6 +3913,8 @@ if(docsMap.size === 0){
     turboCache.set(key, html);
     return;
   }
+
+}
 
   // ===== CODE CŨ CỦA BẠN (GIỮ NGUYÊN) =====
 
