@@ -1,6 +1,5 @@
 
 
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -1604,15 +1603,6 @@ body::before{
   color:#22c55e;
   font-weight:600;
 }
-
-/* ===== ẨN PHẦN QUẢN LÝ ADMIN NHƯNG GIỮ KHUNG CHECK ===== */
-html.user-mode #adminContent,
-html.user-mode #linkList,
-html.user-mode #adminToggle,
-html.user-mode .create-link-btn{
-  display:none !important;
-}
-
   
 </style>
 
@@ -1873,15 +1863,10 @@ function searchPriceModel(q){
   return result;
 
 }
-/* ===== PHÁT HIỆN USER MODE AN TOÀN + ẨN ADMIN NGAY ===== */
+/* ===== SAFE USER MODE DETECT ===== */
 
 const urlParams = new URLSearchParams(window.location.search);
 const isUserMode = urlParams.has("u");
-
-/* 🔥 ẨN ADMIN NGAY TỨC (CHỐNG NHÁY) */
-if(isUserMode){
-  document.documentElement.classList.add("user-mode");
-}
 
 /* ❗ KHÔNG logout ngay nữa */
 /* auth listener phía dưới sẽ xử lý */
@@ -1898,6 +1883,7 @@ if(userParam){
 
     const login=document.getElementById("loginScreen");
     if(login) login.style.display="none";
+
     /* ⭐ LOAD CACHE CHO USER MODE */
     try{
       await preloadCodes();
@@ -2875,35 +2861,41 @@ if(code.startsWith("YMEC") || code.startsWith("YMU")){
 }
 
 /* =====================================================
-   XỬ LÝ PHẦN CỨNG (ƯU TIÊN FIRESTORE TRƯỚC)
+   🔥 FIREBASE PRIORITY ENGINE
 ===================================================== */
 
 function buildHardware(code, data){
 
   /* ===== ƯU TIÊN FIRESTORE ===== */
+
   if(data){
+
     return {
+
       ram: data.ram ?? null,
       rom: data.rom ?? null,
       vip: data.vip ?? null,
+
+      /* ⭐ QUAN TRỌNG */
       storage: data.type ?? data.storage ?? "Manual",
+
       type: data.type ?? null,
       mmc: data.mmc ?? null,
       chip: data.chip ?? null,
+
       source: "firebase"
     };
   }
 
-  /* ===== DỰ PHÒNG GIẢI MÃ ===== */
-  const hw = buildHardware(code, data);
+  /* ===== FALLBACK DECODER ===== */
 
-  if(hw){
-    hw.source = "decoder";
-    return hw;
-  }
+  const hw = autoDecodeChip(code);
 
-  return null;
+  hw.source = "decoder";
+
+  return hw;
 }
+
   
 function decodeMicronOEM(code){
 
