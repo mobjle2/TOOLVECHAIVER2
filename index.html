@@ -2874,32 +2874,38 @@ vip
   
 // ===== MAIN DECODER =====
 function autoDecodeChip(code, dbData){
-const quick = quickDecodeChip(code);
-if(quick) return quick;
+
+  const quick = quickDecodeChip(code);
+  if(quick) return quick;
 
   code = code.toUpperCase().trim();
+
   // ===== YMTC / YMEC ENGINE =====
-if(code.startsWith("YMEC") || code.startsWith("YMU")){
+  if(code.startsWith("YMEC") || code.startsWith("YMU")){
 
-  let rom = null;
+    let rom = null;
 
-  if(code.includes("C6")) rom = 32;
-  if(code.includes("C7")) rom = 64;
-  if(code.includes("C8")) rom = 128;
-  if(code.includes("C9")) rom = 256;
+    if(code.includes("C6")) rom = 32;
+    if(code.includes("C7")) rom = 64;
+    if(code.includes("C8")) rom = 128;
+    if(code.includes("C9")) rom = 256;
 
-  return {
-    type: "UFS",
-    storage: "UFS",
-    ram: null,
-    rom: rom,
-    vip: rom === 32 ? 5 :
-         rom === 64 ? 6 :
-         rom === 128 ? 7 :
-         rom === 256 ? 8 : null
-  };
+    return {
+      type: "UFS",
+      storage: "UFS",
+      ram: null,
+      rom: rom,
+      vip: rom === 32 ? 5 :
+           rom === 64 ? 6 :
+           rom === 128 ? 7 :
+           rom === 256 ? 8 : null
+    };
+  }
+
+  // 👉 KHÔNG CÓ GỌI LẠI autoDecodeChip Ở ĐÂY
+
+  return null;
 }
-
 function buildHardware(code, data){
 
   if(data){
@@ -2932,7 +2938,6 @@ function buildHardware(code, data){
 
   return null;
 }
-  
 function decodeMicronOEM(code){
 
   code = code.toUpperCase().trim();
