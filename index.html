@@ -2902,24 +2902,27 @@ if(code.startsWith("YMEC") || code.startsWith("YMU")){
 
 function buildHardware(code, data){
 
-  /* ===== ƯU TIÊN FIRESTORE ===== */
   if(data){
+
+    const storage = data.storage || data.type || "Manual";
+
     return {
       ram: data.ram ?? null,
       rom: data.rom ?? null,
       vip: data.vip ?? null,
 
-      // 🔥 FIX QUAN TRỌNG
-      storage: data.storage || data.type || "Manual",
-
+      storage: storage,
       type: data.type ?? null,
-      mmc: data.mmc ?? null,
+
+      mmc: (storage === "NAND" || storage === "APPLE_NAND")
+        ? null
+        : data.mmc ?? null,
+
       chip: data.chip ?? null,
       source: "firebase"
     };
   }
 
-  /* ===== DỰ PHÒNG ===== */
   const hw = autoDecodeChip(code);
 
   if(hw){
