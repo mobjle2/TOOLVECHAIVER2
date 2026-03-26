@@ -1,6 +1,3 @@
-
-
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -1808,63 +1805,37 @@ function findPriceByModel(input){
   
 
 /* =====================================================
-   MỤC SEARCH MODEL (FIX FULL S10 / G973 KHÔNG HIỆN)
-
-   Chức năng:
-   - Fix lỗi gõ S10 không ra
-   - Fix lỗi G973 không ra
-   - Normalize toàn bộ model (SM-, F, ký tự rác)
-   - Không phá login
-   - Không ảnh hưởng dòng A
-
-   Ngày sửa: 2026
+   SEARCH MODEL + SAMSUNG SERIES
+   Fix tìm S21 / S22 / S23
 ===================================================== */
 
 function searchPriceModel(q){
 
-  /* ===== CHUẨN HÓA ===== */
-  function normalize(x){
-    return String(x || "")
-      .toUpperCase()
-      .replace("SM-","")
-      .replace(/[^A-Z0-9]/g,"")
-      .trim();
-  }
-
-  const qn = normalize(q);
+  q = q.toUpperCase().trim();
 
   const result = [];
 
-  /* ===== MAP SERIES ===== */
   const seriesMap = {
     "S21":["G991","G996","G998"],
     "S22":["S901","S906","S908"],
     "S23":["S911","S916","S918"]
   };
 
-  /* ===== LOOP ===== */
   for(const p of PRICE_TABLE){
 
-    /* ===== TÁCH MODEL CHUẨN ===== */
-    let raw = String(p.model || "").toUpperCase();
-    let match = raw.match(/\(([^)]+)\)/);
-
-    let extracted = match
-      ? match[1]
-      : raw.replace("SM-","");
-
-    /* ===== NORMALIZE ===== */
-    const model = normalize(extracted);
-    const short = normalize(p.short);
+    const model = (p.model || "").toUpperCase();
+    const short = (p.short || "").toUpperCase();
 
     /* ===== SEARCH SERIES ===== */
-    if(seriesMap[qn]){
-      const codes = seriesMap[qn];
 
-      if(codes.some(c =>
-        model.includes(c) ||
-        short.includes(c)
-      )){
+    if(seriesMap[q]){
+
+      const codes = seriesMap[q];
+
+      if(codes.some(function(c){
+        return model.includes(c) || short.includes(c);
+      })){
+
         result.push({
           source:"price",
           model:p.model,
@@ -1873,18 +1844,16 @@ function searchPriceModel(q){
           no_pin:p.no_pin,
           main:p.main
         });
+
       }
 
       continue;
     }
 
-    /* ===== SEARCH THƯỜNG ===== */
-    if(
-      model.includes(qn) ||
-      short.includes(qn) ||
-      qn.includes(model) ||
-      qn.includes(short)
-    ){
+    /* ===== SEARCH BÌNH THƯỜNG ===== */
+
+    if(model.includes(q) || short.includes(q)){
+
       result.push({
         source:"price",
         model:p.model,
@@ -1893,11 +1862,13 @@ function searchPriceModel(q){
         no_pin:p.no_pin,
         main:p.main
       });
+
     }
 
   }
 
   return result;
+
 }
 /* ===== PHÁT HIỆN USER MODE AN TOÀN + ẨN ADMIN NGAY ===== */
 
