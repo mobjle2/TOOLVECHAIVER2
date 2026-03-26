@@ -2905,26 +2905,25 @@ if(code.startsWith("YMEC") || code.startsWith("YMU")){
 
 function buildHardware(code, data){
 
-  if(data){
+  const storage = data.storage || data.type || "Manual";
 
-    const storage = data.storage || data.type || "Manual";
+  return {
+    ram: data.ram ?? null,
+    rom: data.rom ?? null,
+    vip: data.vip ?? null,
 
-    return {
-      ram: data.ram ?? null,
-      rom: data.rom ?? null,
-      vip: data.vip ?? null,
+    storage: storage,
+    type: data.type ?? null,
 
-      storage: storage,
-      type: data.type ?? null,
+    // ✅ FIX Ở ĐÂY
+    mmc: (storage === "NAND" || storage === "APPLE_NAND")
+      ? null
+      : data.mmc ?? getMMCLevel(data.rom),
 
-      mmc: (storage === "NAND" || storage === "APPLE_NAND")
-        ? null
-        : data.mmc ?? null,
-
-      chip: data.chip ?? null,
-      source: "firebase"
-    };
-  }
+    chip: data.chip ?? null,
+    source: "firebase"
+  };
+}
 
   const hw = autoDecodeChip(code);
 
