@@ -1,6 +1,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -2872,48 +2873,34 @@ vip
   
   
   
-// ======================================================
-// 🔧 GIẢI MÃ CHIP CHÍNH (MAIN DECODER)
-// ======================================================
+// ===== MAIN DECODER =====
 function autoDecodeChip(code, dbData){
+const quick = quickDecodeChip(code);
+if(quick) return quick;
 
-  // ===== ƯU TIÊN DECODE NHANH =====
-  const quick = quickDecodeChip(code);
-  if(quick) return quick;
+  code = code.toUpperCase().trim();
+  // ===== YMTC / YMEC ENGINE =====
+if(code.startsWith("YMEC") || code.startsWith("YMU")){
 
-  // ===== CHUẨN HÓA MÃ =====
-  code = (code || "").toUpperCase().trim();
+  let rom = null;
 
-  // ======================================================
-  // 🔹 ENGINE YMTC / YMEC (UFS)
-  // ======================================================
-  if(code.startsWith("YMEC") || code.startsWith("YMU")){
+  if(code.includes("C6")) rom = 32;
+  if(code.includes("C7")) rom = 64;
+  if(code.includes("C8")) rom = 128;
+  if(code.includes("C9")) rom = 256;
 
-    let rom = null;
-
-    if(code.includes("C6")) rom = 32;
-    else if(code.includes("C7")) rom = 64;
-    else if(code.includes("C8")) rom = 128;
-    else if(code.includes("C9")) rom = 256;
-
-    return {
-      type: "UFS",
-      storage: "UFS",
-      ram: null,
-      rom: rom,
-      vip:
-        rom === 32 ? 5 :
-        rom === 64 ? 6 :
-        rom === 128 ? 7 :
-        rom === 256 ? 8 : null
-    };
-  }
-
-  // ======================================================
-  // ❌ KHÔNG NHẬN DIỆN ĐƯỢC
-  // ======================================================
-  return null;
+  return {
+    type: "UFS",
+    storage: "UFS",
+    ram: null,
+    rom: rom,
+    vip: rom === 32 ? 5 :
+         rom === 64 ? 6 :
+         rom === 128 ? 7 :
+         rom === 256 ? 8 : null
+  };
 }
+
 function buildHardware(code, data){
 
   if(data){
@@ -2946,6 +2933,7 @@ function buildHardware(code, data){
 
   return null;
 }
+  
 function decodeMicronOEM(code){
 
   code = code.toUpperCase().trim();
