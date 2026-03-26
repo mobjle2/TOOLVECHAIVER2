@@ -2897,7 +2897,11 @@ function autoDecodeChip(code, dbData){
     };
   }
 
-  // ===== YMTC / YMEC =====
+  /* ===== MICRON ƯU TIÊN ===== */
+  const micron = decodeMicronOEM(code);
+  if(micron) return micron;
+
+  /* ===== YMTC / YMEC ===== */
   if(code.startsWith("YMEC") || code.startsWith("YMU")){
 
     let rom = null;
@@ -2919,7 +2923,7 @@ function autoDecodeChip(code, dbData){
     };
   }
 
-  // ===== FALLBACK =====
+  /* ===== FALLBACK SAMSUNG ===== */
   return decodeSamsung(code);
 }
 
