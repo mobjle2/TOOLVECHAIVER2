@@ -2285,8 +2285,8 @@ function detectChip(code){
   };
 }
 
-// ===== APPLE NAND (KIC) =====
-if(/^KIC/i.test(code)){
+// ===== APPLE NAND (K-series) =====
+if(/^(H23|KIC|KLAD|KLU|KLM)/i.test(code)){
   return {
     name:"🍏 Apple NAND",
     color:"#38bdf8",
