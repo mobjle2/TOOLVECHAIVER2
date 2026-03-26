@@ -2921,7 +2921,7 @@ function buildHardware(code, data){
   }
 
   /* ===== DỰ PHÒNG GIẢI MÃ ===== */
-  const hw = buildHardware(code, data);
+  const hw = autoDecodeChip(code); // ✅ FIX DUY NHẤT
 
   if(hw){
     hw.source = "decoder";
