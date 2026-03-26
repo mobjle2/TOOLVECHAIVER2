@@ -2921,18 +2921,6 @@ function autoDecodeChip(code, dbData){
 
   return decodeSamsung(code);
 }
-
-  /* ===== DỰ PHÒNG GIẢI MÃ ===== */
-  const hw = autoDecodeChip(code);
-
-  if(hw){
-    hw.source = "decoder";
-    return hw;
-  }
-
-  return null;
-}
-  
 function decodeMicronOEM(code){
 
   code = code.toUpperCase().trim();
