@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -182,14 +180,18 @@ font-weight:500;
   font-weight:500;
 }
 
-/* ===== MODEL LINE ===== */
+/* ===== MODEL LINE PRO ===== */
 .model-line{
-  margin-top:14px;
-  padding-top:12px;
-  border-top:1px solid rgba(255,255,255,0.06);
-  font-size:13px;
-  line-height:1.6;
-  opacity:0.85;
+  margin-top:12px;
+  padding-top:10px;
+  border-top:1px solid rgba(255,255,255,0.08);
+
+  font-size:14px;          /* 🔥 to hơn */
+  font-weight:600;         /* 🔥 rõ hơn */
+  line-height:1.7;
+
+  color:#e2e8f0;           /* 🔥 sáng hơn */
+  letter-spacing:0.3px;
 }
 
 .model-icon{
@@ -1603,6 +1605,15 @@ body::before{
   color:#22c55e;
   font-weight:600;
 }
+
+/* ===== ẨN PHẦN QUẢN LÝ ADMIN NHƯNG GIỮ KHUNG CHECK ===== */
+html.user-mode #adminContent,
+html.user-mode #linkList,
+html.user-mode #adminToggle,
+html.user-mode .create-link-btn{
+  display:none !important;
+}
+
   
 </style>
 
@@ -1798,37 +1809,63 @@ function findPriceByModel(input){
   
 
 /* =====================================================
-   SEARCH MODEL + SAMSUNG SERIES
-   Fix tìm S21 / S22 / S23
+   MỤC SEARCH MODEL (FIX FULL S10 / G973 KHÔNG HIỆN)
+
+   Chức năng:
+   - Fix lỗi gõ S10 không ra
+   - Fix lỗi G973 không ra
+   - Normalize toàn bộ model (SM-, F, ký tự rác)
+   - Không phá login
+   - Không ảnh hưởng dòng A
+
+   Ngày sửa: 2026
 ===================================================== */
 
 function searchPriceModel(q){
 
-  q = q.toUpperCase().trim();
+  /* ===== CHUẨN HÓA ===== */
+  function normalize(x){
+    return String(x || "")
+      .toUpperCase()
+      .replace("SM-","")
+      .replace(/[^A-Z0-9]/g,"")
+      .trim();
+  }
+
+  const qn = normalize(q);
 
   const result = [];
 
+  /* ===== MAP SERIES ===== */
   const seriesMap = {
     "S21":["G991","G996","G998"],
     "S22":["S901","S906","S908"],
     "S23":["S911","S916","S918"]
   };
 
+  /* ===== LOOP ===== */
   for(const p of PRICE_TABLE){
 
-    const model = (p.model || "").toUpperCase();
-    const short = (p.short || "").toUpperCase();
+    /* ===== TÁCH MODEL CHUẨN ===== */
+    let raw = String(p.model || "").toUpperCase();
+    let match = raw.match(/\(([^)]+)\)/);
+
+    let extracted = match
+      ? match[1]
+      : raw.replace("SM-","");
+
+    /* ===== NORMALIZE ===== */
+    const model = normalize(extracted);
+    const short = normalize(p.short);
 
     /* ===== SEARCH SERIES ===== */
+    if(seriesMap[qn]){
+      const codes = seriesMap[qn];
 
-    if(seriesMap[q]){
-
-      const codes = seriesMap[q];
-
-      if(codes.some(function(c){
-        return model.includes(c) || short.includes(c);
-      })){
-
+      if(codes.some(c =>
+        model.includes(c) ||
+        short.includes(c)
+      )){
         result.push({
           source:"price",
           model:p.model,
@@ -1837,16 +1874,18 @@ function searchPriceModel(q){
           no_pin:p.no_pin,
           main:p.main
         });
-
       }
 
       continue;
     }
 
-    /* ===== SEARCH BÌNH THƯỜNG ===== */
-
-    if(model.includes(q) || short.includes(q)){
-
+    /* ===== SEARCH THƯỜNG ===== */
+    if(
+      model.includes(qn) ||
+      short.includes(qn) ||
+      qn.includes(model) ||
+      qn.includes(short)
+    ){
       result.push({
         source:"price",
         model:p.model,
@@ -1855,18 +1894,21 @@ function searchPriceModel(q){
         no_pin:p.no_pin,
         main:p.main
       });
-
     }
 
   }
 
   return result;
-
 }
-/* ===== SAFE USER MODE DETECT ===== */
+/* ===== PHÁT HIỆN USER MODE AN TOÀN + ẨN ADMIN NGAY ===== */
 
 const urlParams = new URLSearchParams(window.location.search);
 const isUserMode = urlParams.has("u");
+
+/* 🔥 ẨN ADMIN NGAY TỨC (CHỐNG NHÁY) */
+if(isUserMode){
+  document.documentElement.classList.add("user-mode");
+}
 
 /* ❗ KHÔNG logout ngay nữa */
 /* auth listener phía dưới sẽ xử lý */
@@ -1883,7 +1925,6 @@ if(userParam){
 
     const login=document.getElementById("loginScreen");
     if(login) login.style.display="none";
-
     /* ⭐ LOAD CACHE CHO USER MODE */
     try{
       await preloadCodes();
@@ -2236,9 +2277,30 @@ function detectChip(code){
     return {name:"UNKNOWN",color:"#6b7280",class:"brand-unknown"};
 
   code = code.toUpperCase().trim();
+  if(/^H23/.test(code)){
+  return {
+    name:"Apple NAND",
+    color:"#38bdf8",
+    class:"brand-apple"
+  };
+}
 
-  if(/^K/.test(code))
-    return {name:"Samsung",color:"#22c55e",class:"brand-samsung"};
+// ===== APPLE NAND (K-series) =====
+if(/^(H23|KIC|KLAD|KLU|KLM)/i.test(code)){
+  return {
+    name:"🍏 Apple NAND",
+    color:"#38bdf8",
+    class:"brand-apple"
+  };
+}
+
+// ===== SAMSUNG =====
+if(/^K/.test(code))
+  return {
+    name:"Samsung",
+    color:"#22c55e",
+    class:"brand-samsung"
+  };
 
   if(/^(H9|H26|H27)/.test(code))
     return {name:"SK hynix",color:"#a855f7",class:"brand-hynix"};
@@ -2397,11 +2459,36 @@ function calculateVip(ram, rom){
   // =========================
   return 0;
 }
+/* ===============================
+   NAND MAP (IPHONE)
+================================ */
+const NAND_MAP = {
+  "KIC5223": { rom:128, model:"iPhone 7 / 7 Plus / iPhone 8" },
+  "KLADG8VWAD": { rom:128, model:"iPhone 7 / 7 Plus / iPhone 8" },
+  "H23QFG82D6ADJ": { rom:64, model:"iPhone 6s / 6s Plus" },
+  "H23QFG82D6ADY": { rom:64, model:"iPhone 6s / 6s Plus" },
+};
 
+/* ===============================
+   DETECT IPHONE FROM NAND
+================================ */
+function detectIphoneFromNAND(code){
+  const key = code?.toUpperCase().trim();
+  return NAND_MAP[key] || null;
+}
 /* ===============================
    MMC LEVEL ENGINE
 ================================ */
-function getMMCLevel(rom){
+function getMMCLevel(rom, storage, type){
+
+  const s = (storage || "").toUpperCase();
+  const t = (type || "").toUpperCase();
+
+  // 🔥 CHẶN FULL
+  if(
+    s.includes("NAND") ||
+    t.includes("APPLE")
+  ) return null;
 
   rom = Number(rom);
 
@@ -2416,7 +2503,6 @@ function getMMCLevel(rom){
 
   return "MMC";
 }
-
 function decodeSamsung(code){
 
 const r={
@@ -2838,64 +2924,81 @@ const quick = quickDecodeChip(code);
 if(quick) return quick;
 
   code = code.toUpperCase().trim();
-  // ===== YMTC / YMEC ENGINE =====
-if(code.startsWith("YMEC") || code.startsWith("YMU")){
+// ======================================================
+// 🔧 GIẢI MÃ YMTC / YMEC / YMUS (CHUẨN)
+// ======================================================
+if(code.startsWith("YMEC") || code.startsWith("YMES") || code.startsWith("YMUS")){
 
   let rom = null;
+  let ram = null;
+  let type = "eMMC";
+  let storage = "eMMC";
 
-  if(code.includes("C6")) rom = 32;
-  if(code.includes("C7")) rom = 64;
-  if(code.includes("C8")) rom = 128;
-  if(code.includes("C9")) rom = 256;
+  // ===== LẤY SỐ DUNG LƯỢNG (YMEC6 / 7 / 8 / 9) =====
+  const match = code.match(/^YME[CSU]?(\d)/);
+
+  if(match){
+    const n = match[1];
+
+    if(n === "6") rom = 32;
+    if(n === "7") rom = 64;
+    if(n === "8") rom = 128;
+    if(n === "9") rom = 256;
+  }
+
+  // ===== YMUS = COMBO (có RAM) =====
+  if(code.startsWith("YMUS")){
+
+    type = "eMCP";
+
+    if(code.includes("A1")) ram = 1;
+    else if(code.includes("A2")) ram = 2;
+    else if(code.includes("A3")) ram = 3;
+    else if(code.includes("A4")) ram = 4;
+  }
 
   return {
-    type: "UFS",
-    storage: "UFS",
-    ram: null,
+    vendor: "YMTC",
+    type: type,
+    storage: storage,
+    ram: ram,
     rom: rom,
-    vip: rom === 32 ? 5 :
-         rom === 64 ? 6 :
-         rom === 128 ? 7 :
-         rom === 256 ? 8 : null
+    vip: calculateVip(ram, rom)
   };
 }
 
-/* =====================================================
-   🔥 FIREBASE PRIORITY ENGINE
-===================================================== */
-
 function buildHardware(code, data){
-
-  /* ===== ƯU TIÊN FIRESTORE ===== */
 
   if(data){
 
-    return {
+    const storage = data.storage || data.type || "Manual";
 
+    return {
       ram: data.ram ?? null,
       rom: data.rom ?? null,
       vip: data.vip ?? null,
 
-      /* ⭐ QUAN TRỌNG */
-      storage: data.type ?? data.storage ?? "Manual",
-
+      storage: storage,
       type: data.type ?? null,
-      mmc: data.mmc ?? null,
-      chip: data.chip ?? null,
 
+      mmc: (storage === "NAND" || storage === "APPLE_NAND")
+        ? null
+        : data.mmc ?? null,
+
+      chip: data.chip ?? null,
       source: "firebase"
     };
   }
 
-  /* ===== FALLBACK DECODER ===== */
-
   const hw = autoDecodeChip(code);
 
-  hw.source = "decoder";
+  if(hw){
+    hw.source = "decoder";
+    return hw;
+  }
 
-  return hw;
+  return null;
 }
-
   
 function decodeMicronOEM(code){
 
@@ -3300,7 +3403,14 @@ if(t.includes("tecno")) return "TECNO";
 if(t.includes("infinix")) return "INFINIX";
 if(t.includes("itel")) return "ITEL";
     // Samsung chỉ khi có từ khóa thật
-   if(t.includes("samsung") || t.includes("galaxy")) return "SAMSUNG";
+// ✅ nhận cả mã SM-
+if(
+  t.includes("samsung") ||
+  t.includes("galaxy") ||
+  /^sm-/i.test(m)
+){
+  return "SAMSUNG";
+}
 
     return "Other";
   };
@@ -3327,7 +3437,33 @@ const cleanModel = m
     grouped[brand].push(cleanModel);
 
 });
+  
+// ===== XỬ LÝ GỘP DÒNG SAMSUNG CAO CẤP =====
+  if(grouped["SAMSUNG"]){
 
+  const list = grouped["SAMSUNG"].join(",");
+
+  // ===== S10 =====
+  if(/G973|G975|G970/.test(list)){
+    return "Galaxy S10 • S10+ • S10e";
+  }
+
+  // ===== NOTE 10 =====
+  if(/N970|N975/.test(list)){
+    return "Galaxy Note10 • Note10+";
+  }
+
+  // ===== S20 =====
+  if(/G980|G985|G988/.test(list)){
+    return "Galaxy S20 • S20+ • S20 Ultra";
+  }
+
+  // ===== S21 =====
+  if(/G991|G996|G998/.test(list)){
+    return "Galaxy S21 • S21+ • S21 Ultra";
+  }
+
+}
 const order = [
 "SAMSUNG",
 "OPPO",
@@ -3732,6 +3868,48 @@ if(docsMap.size === 0){
 
   const key = q.toUpperCase().trim();
 
+  // ===== THÊM ĐOẠN NÀY (QUAN TRỌNG) =====
+  const hw = autoDecodeChip(key);
+
+  if(hw){
+
+    const html = `
+<div class="result-grid">
+<div class="result-card">
+
+<div class="code-main">${key}</div>
+
+<div class="badge-row">
+  ${
+    hw.rom
+    ? '<div class="ram-badge">' + hw.rom + 'GB</div>'
+    : ''
+  }
+
+  ${
+    hw.vip
+    ? '<div class="vip-badge">VIP ' + hw.vip + '</div>'
+    : ''
+  }
+</div>
+
+<div class="card-footer">
+  <div class="chip-info">
+    YMTC ${hw.storage || ""}
+  </div>
+</div>
+
+</div>
+</div>
+`;
+
+    out.innerHTML = html;
+    turboCache.set(key, html);
+    return;
+  }
+
+  // ===== CODE CŨ CỦA BẠN (GIỮ NGUYÊN) =====
+
   /* ===== KIỂM TRA MODEL TỪ BẢNG GIÁ ===== */
 
   const modelMatch = key.match(/[A-Z]\d{2,3}/);
@@ -3801,6 +3979,7 @@ docsMap.forEach(doc => {
   if(x.rom != null) decoded.rom = x.rom;
   if(x.vip != null) decoded.vip = x.vip;
   if(x.storage != null) decoded.storage = x.storage;
+  decoded.type = x.type || null;
 
 
   if(decoded.vip == null && x.type === "VIP" && x.value){
@@ -3828,9 +4007,19 @@ docsMap.forEach(doc => {
   decoded.rom = Number(decoded.rom) || null;
   decoded.vip = Number(decoded.vip) || 0;
   decoded.chip = Number(x.chip) || 0;
+  const iphone = detectIphoneFromNAND(x.code);
+
+if(iphone){
+decoded.rom = iphone.rom;
+decoded.rom = iphone.rom;
+}
 
 
-  const mmcLevel = getMMCLevel(decoded.rom);
+ const mmcLevel = getMMCLevel(
+  decoded.rom,
+  decoded.storage,
+  x.type
+);
 
 
   html += `
@@ -3874,11 +4063,15 @@ decoded.vip > 0
 <div class="chip-info" style="color:${chip.color}">
 <span class="chip-dot" style="background:${chip.color}"></span>
 
-${chip.name}
+${chip.name === "Apple NAND" ? "🍏 Apple NAND" : chip.name}
 
-<span style="opacity:.6;">
-${decoded.storage || ""}
-</span>
+${
+decoded.storage && chip.name !== "Apple NAND"
+? `<span style="opacity:.6;">${decoded.storage}</span>`
+: chip.name === "Apple NAND"
+? `<span style="opacity:.6;">iPhone Storage</span>`
+: ""
+}
 
 </div>
 
@@ -3887,14 +4080,21 @@ ${decoded.storage || ""}
 ${
 Array.isArray(x.models) && x.models.length
 ? `<div class="model-line">${
-formatSamsungModels(
-x.models.map(m=>{
-if(typeof m === "string") return m;
-if(typeof m === "object" && m !== null)
-return (m.brand || "") + " " + (m.model || "");
-return "";
-}).join(", ")
-)
+  chip.name === "Samsung"
+  ? formatSamsungModels(
+      x.models.map(m=>{
+        if(typeof m === "string") return m;
+        if(typeof m === "object" && m !== null)
+          return (m.brand || "") + " " + (m.model || "");
+        return "";
+      }).join(", ")
+    )
+  : x.models.map(m=>{
+      if(typeof m === "string") return m;
+      if(typeof m === "object" && m !== null)
+        return (m.model || "");
+      return "";
+    }).join(" • ")
 }</div>`
 : `<div class="model-placeholder">Chưa có model</div>`
 }
