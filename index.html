@@ -3840,6 +3840,7 @@ docsMap.forEach(doc => {
   if(x.rom != null) decoded.rom = x.rom;
   if(x.vip != null) decoded.vip = x.vip;
   if(x.storage != null) decoded.storage = x.storage;
+  decoded.type = x.type || null;
 
 
   if(decoded.vip == null && x.type === "VIP" && x.value){
@@ -3869,7 +3870,11 @@ docsMap.forEach(doc => {
   decoded.chip = Number(x.chip) || 0;
 
 
-  const mmcLevel = getMMCLevel(decoded.rom);
+ const mmcLevel = getMMCLevel(
+  decoded.rom,
+  decoded.storage,
+  x.type
+);
 
 
   html += `
