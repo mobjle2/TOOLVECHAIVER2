@@ -3346,7 +3346,14 @@ if(t.includes("tecno")) return "TECNO";
 if(t.includes("infinix")) return "INFINIX";
 if(t.includes("itel")) return "ITEL";
     // Samsung chỉ khi có từ khóa thật
-   if(t.includes("samsung") || t.includes("galaxy")) return "SAMSUNG";
+// ✅ nhận cả mã SM-
+if(
+  t.includes("samsung") ||
+  t.includes("galaxy") ||
+  /^sm-/i.test(m)
+){
+  return "SAMSUNG";
+}
 
     return "Other";
   };
@@ -3373,7 +3380,33 @@ const cleanModel = m
     grouped[brand].push(cleanModel);
 
 });
+  
+// ===== XỬ LÝ GỘP DÒNG SAMSUNG CAO CẤP =====
+  if(grouped["SAMSUNG"]){
 
+  const list = grouped["SAMSUNG"].join(",");
+
+  // ===== S10 =====
+  if(/G973|G975|G970/.test(list)){
+    return "Galaxy S10 • S10+ • S10e";
+  }
+
+  // ===== NOTE 10 =====
+  if(/N970|N975/.test(list)){
+    return "Galaxy Note10 • Note10+";
+  }
+
+  // ===== S20 =====
+  if(/G980|G985|G988/.test(list)){
+    return "Galaxy S20 • S20+ • S20 Ultra";
+  }
+
+  // ===== S21 =====
+  if(/G991|G996|G998/.test(list)){
+    return "Galaxy S21 • S21+ • S21 Ultra";
+  }
+
+}
 const order = [
 "SAMSUNG",
 "OPPO",
