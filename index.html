@@ -2924,25 +2924,46 @@ const quick = quickDecodeChip(code);
 if(quick) return quick;
 
   code = code.toUpperCase().trim();
-  // ===== YMTC / YMEC ENGINE =====
-if(code.startsWith("YMEC") || code.startsWith("YMU")){
+// ======================================================
+// 🔧 GIẢI MÃ YMTC / YMEC / YMUS (CHUẨN)
+// ======================================================
+if(code.startsWith("YMEC") || code.startsWith("YMES") || code.startsWith("YMUS")){
 
   let rom = null;
+  let ram = null;
+  let type = "eMMC";
+  let storage = "eMMC";
 
-  if(code.includes("C6")) rom = 32;
-  if(code.includes("C7")) rom = 64;
-  if(code.includes("C8")) rom = 128;
-  if(code.includes("C9")) rom = 256;
+  // ===== LẤY SỐ DUNG LƯỢNG (YMEC6 / 7 / 8 / 9) =====
+  const match = code.match(/^YME[CSU]?(\d)/);
+
+  if(match){
+    const n = match[1];
+
+    if(n === "6") rom = 32;
+    if(n === "7") rom = 64;
+    if(n === "8") rom = 128;
+    if(n === "9") rom = 256;
+  }
+
+  // ===== YMUS = COMBO (có RAM) =====
+  if(code.startsWith("YMUS")){
+
+    type = "eMCP";
+
+    if(code.includes("A1")) ram = 1;
+    else if(code.includes("A2")) ram = 2;
+    else if(code.includes("A3")) ram = 3;
+    else if(code.includes("A4")) ram = 4;
+  }
 
   return {
-    type: "UFS",
-    storage: "UFS",
-    ram: null,
+    vendor: "YMTC",
+    type: type,
+    storage: storage,
+    ram: ram,
     rom: rom,
-    vip: rom === 32 ? 5 :
-         rom === 64 ? 6 :
-         rom === 128 ? 7 :
-         rom === 256 ? 8 : null
+    vip: calculateVip(ram, rom)
   };
 }
 
