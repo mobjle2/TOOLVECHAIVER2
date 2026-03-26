@@ -2444,7 +2444,6 @@ function calculateVip(ram, rom){
 ================================ */
 function getMMCLevel(rom, storage){
 
-  // 🔥 CHẶN NAND
   if(storage === "NAND" || storage === "APPLE_NAND") return null;
 
   rom = Number(rom);
