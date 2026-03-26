@@ -2900,10 +2900,6 @@ if(code.startsWith("YMEC") || code.startsWith("YMU")){
   };
 }
 
-/* =====================================================
-   XỬ LÝ PHẦN CỨNG (ƯU TIÊN FIRESTORE TRƯỚC)
-===================================================== */
-
 function buildHardware(code, data){
 
   /* ===== ƯU TIÊN FIRESTORE ===== */
@@ -2912,7 +2908,10 @@ function buildHardware(code, data){
       ram: data.ram ?? null,
       rom: data.rom ?? null,
       vip: data.vip ?? null,
-      storage: data.type ?? data.storage ?? "Manual",
+
+      // 🔥 FIX QUAN TRỌNG
+      storage: data.storage || data.type || "Manual",
+
       type: data.type ?? null,
       mmc: data.mmc ?? null,
       chip: data.chip ?? null,
@@ -2920,8 +2919,8 @@ function buildHardware(code, data){
     };
   }
 
-  /* ===== DỰ PHÒNG GIẢI MÃ ===== */
-  const hw = autoDecodeChip(code); // ✅ FIX DUY NHẤT
+  /* ===== DỰ PHÒNG ===== */
+  const hw = autoDecodeChip(code);
 
   if(hw){
     hw.source = "decoder";
