@@ -1,3 +1,7 @@
+
+
+
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -180,18 +184,14 @@ font-weight:500;
   font-weight:500;
 }
 
-/* ===== MODEL LINE PRO ===== */
+/* ===== MODEL LINE ===== */
 .model-line{
-  margin-top:12px;
-  padding-top:10px;
-  border-top:1px solid rgba(255,255,255,0.08);
-
-  font-size:14px;          /* 🔥 to hơn */
-  font-weight:600;         /* 🔥 rõ hơn */
-  line-height:1.7;
-
-  color:#e2e8f0;           /* 🔥 sáng hơn */
-  letter-spacing:0.3px;
+  margin-top:14px;
+  padding-top:12px;
+  border-top:1px solid rgba(255,255,255,0.06);
+  font-size:13px;
+  line-height:1.6;
+  opacity:0.85;
 }
 
 .model-icon{
@@ -2277,30 +2277,9 @@ function detectChip(code){
     return {name:"UNKNOWN",color:"#6b7280",class:"brand-unknown"};
 
   code = code.toUpperCase().trim();
-  if(/^H23/.test(code)){
-  return {
-    name:"Apple NAND",
-    color:"#38bdf8",
-    class:"brand-apple"
-  };
-}
 
-// ===== APPLE NAND (K-series) =====
-if(/^(H23|KIC|KLAD|KLU|KLM)/i.test(code)){
-  return {
-    name:"🍏 Apple NAND",
-    color:"#38bdf8",
-    class:"brand-apple"
-  };
-}
-
-// ===== SAMSUNG =====
-if(/^K/.test(code))
-  return {
-    name:"Samsung",
-    color:"#22c55e",
-    class:"brand-samsung"
-  };
+  if(/^K/.test(code))
+    return {name:"Samsung",color:"#22c55e",class:"brand-samsung"};
 
   if(/^(H9|H26|H27)/.test(code))
     return {name:"SK hynix",color:"#a855f7",class:"brand-hynix"};
@@ -2459,36 +2438,11 @@ function calculateVip(ram, rom){
   // =========================
   return 0;
 }
-/* ===============================
-   NAND MAP (IPHONE)
-================================ */
-const NAND_MAP = {
-  "KIC5223": { rom:128, model:"iPhone 7 / 7 Plus / iPhone 8" },
-  "KLADG8VWAD": { rom:128, model:"iPhone 7 / 7 Plus / iPhone 8" },
-  "H23QFG82D6ADJ": { rom:64, model:"iPhone 6s / 6s Plus" },
-  "H23QFG82D6ADY": { rom:64, model:"iPhone 6s / 6s Plus" },
-};
 
-/* ===============================
-   DETECT IPHONE FROM NAND
-================================ */
-function detectIphoneFromNAND(code){
-  const key = code?.toUpperCase().trim();
-  return NAND_MAP[key] || null;
-}
 /* ===============================
    MMC LEVEL ENGINE
 ================================ */
-function getMMCLevel(rom, storage, type){
-
-  const s = (storage || "").toUpperCase();
-  const t = (type || "").toUpperCase();
-
-  // 🔥 CHẶN FULL
-  if(
-    s.includes("NAND") ||
-    t.includes("APPLE")
-  ) return null;
+function getMMCLevel(rom){
 
   rom = Number(rom);
 
@@ -2503,6 +2457,7 @@ function getMMCLevel(rom, storage, type){
 
   return "MMC";
 }
+
 function decodeSamsung(code){
 
 const r={
@@ -3382,14 +3337,7 @@ if(t.includes("tecno")) return "TECNO";
 if(t.includes("infinix")) return "INFINIX";
 if(t.includes("itel")) return "ITEL";
     // Samsung chỉ khi có từ khóa thật
-// ✅ nhận cả mã SM-
-if(
-  t.includes("samsung") ||
-  t.includes("galaxy") ||
-  /^sm-/i.test(m)
-){
-  return "SAMSUNG";
-}
+   if(t.includes("samsung") || t.includes("galaxy")) return "SAMSUNG";
 
     return "Other";
   };
@@ -3416,33 +3364,7 @@ const cleanModel = m
     grouped[brand].push(cleanModel);
 
 });
-  
-// ===== XỬ LÝ GỘP DÒNG SAMSUNG CAO CẤP =====
-  if(grouped["SAMSUNG"]){
 
-  const list = grouped["SAMSUNG"].join(",");
-
-  // ===== S10 =====
-  if(/G973|G975|G970/.test(list)){
-    return "Galaxy S10 • S10+ • S10e";
-  }
-
-  // ===== NOTE 10 =====
-  if(/N970|N975/.test(list)){
-    return "Galaxy Note10 • Note10+";
-  }
-
-  // ===== S20 =====
-  if(/G980|G985|G988/.test(list)){
-    return "Galaxy S20 • S20+ • S20 Ultra";
-  }
-
-  // ===== S21 =====
-  if(/G991|G996|G998/.test(list)){
-    return "Galaxy S21 • S21+ • S21 Ultra";
-  }
-
-}
 const order = [
 "SAMSUNG",
 "OPPO",
@@ -3916,7 +3838,6 @@ docsMap.forEach(doc => {
   if(x.rom != null) decoded.rom = x.rom;
   if(x.vip != null) decoded.vip = x.vip;
   if(x.storage != null) decoded.storage = x.storage;
-  decoded.type = x.type || null;
 
 
   if(decoded.vip == null && x.type === "VIP" && x.value){
@@ -3944,19 +3865,9 @@ docsMap.forEach(doc => {
   decoded.rom = Number(decoded.rom) || null;
   decoded.vip = Number(decoded.vip) || 0;
   decoded.chip = Number(x.chip) || 0;
-  const iphone = detectIphoneFromNAND(x.code);
-
-if(iphone){
-decoded.rom = iphone.rom;
-decoded.rom = iphone.rom;
-}
 
 
- const mmcLevel = getMMCLevel(
-  decoded.rom,
-  decoded.storage,
-  x.type
-);
+  const mmcLevel = getMMCLevel(decoded.rom);
 
 
   html += `
@@ -4000,15 +3911,11 @@ decoded.vip > 0
 <div class="chip-info" style="color:${chip.color}">
 <span class="chip-dot" style="background:${chip.color}"></span>
 
-${chip.name === "Apple NAND" ? "🍏 Apple NAND" : chip.name}
+${chip.name}
 
-${
-decoded.storage && chip.name !== "Apple NAND"
-? `<span style="opacity:.6;">${decoded.storage}</span>`
-: chip.name === "Apple NAND"
-? `<span style="opacity:.6;">iPhone Storage</span>`
-: ""
-}
+<span style="opacity:.6;">
+${decoded.storage || ""}
+</span>
 
 </div>
 
@@ -4017,21 +3924,14 @@ decoded.storage && chip.name !== "Apple NAND"
 ${
 Array.isArray(x.models) && x.models.length
 ? `<div class="model-line">${
-  chip.name === "Samsung"
-  ? formatSamsungModels(
-      x.models.map(m=>{
-        if(typeof m === "string") return m;
-        if(typeof m === "object" && m !== null)
-          return (m.brand || "") + " " + (m.model || "");
-        return "";
-      }).join(", ")
-    )
-  : x.models.map(m=>{
-      if(typeof m === "string") return m;
-      if(typeof m === "object" && m !== null)
-        return (m.model || "");
-      return "";
-    }).join(" • ")
+formatSamsungModels(
+x.models.map(m=>{
+if(typeof m === "string") return m;
+if(typeof m === "object" && m !== null)
+return (m.brand || "") + " " + (m.model || "");
+return "";
+}).join(", ")
+)
 }</div>`
 : `<div class="model-placeholder">Chưa có model</div>`
 }
