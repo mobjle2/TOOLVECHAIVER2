@@ -3925,11 +3925,15 @@ decoded.vip > 0
 <div class="chip-info" style="color:${chip.color}">
 <span class="chip-dot" style="background:${chip.color}"></span>
 
-${chip.name}
+${chip.name === "Apple NAND" ? "🍏 Apple NAND" : chip.name}
 
-<span style="opacity:.6;">
-${decoded.storage || ""}
-</span>
+${
+decoded.storage && chip.name !== "Apple NAND"
+? `<span style="opacity:.6;">${decoded.storage}</span>`
+: chip.name === "Apple NAND"
+? `<span style="opacity:.6;">iPhone Storage</span>`
+: ""
+}
 
 </div>
 
