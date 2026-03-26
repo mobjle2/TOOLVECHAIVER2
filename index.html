@@ -2872,38 +2872,46 @@ vip
   
   
   
-// ===== MAIN DECODER =====
+// ======================================================
+// 🔧 GIẢI MÃ CHIP CHÍNH (MAIN DECODER)
+// ======================================================
 function autoDecodeChip(code, dbData){
 
+  // ===== ƯU TIÊN DECODE NHANH =====
   const quick = quickDecodeChip(code);
   if(quick) return quick;
 
-  code = code.toUpperCase().trim();
+  // ===== CHUẨN HÓA MÃ =====
+  code = (code || "").toUpperCase().trim();
 
-  // ===== YMTC / YMEC ENGINE =====
+  // ======================================================
+  // 🔹 ENGINE YMTC / YMEC (UFS)
+  // ======================================================
   if(code.startsWith("YMEC") || code.startsWith("YMU")){
 
     let rom = null;
 
     if(code.includes("C6")) rom = 32;
-    if(code.includes("C7")) rom = 64;
-    if(code.includes("C8")) rom = 128;
-    if(code.includes("C9")) rom = 256;
+    else if(code.includes("C7")) rom = 64;
+    else if(code.includes("C8")) rom = 128;
+    else if(code.includes("C9")) rom = 256;
 
     return {
       type: "UFS",
       storage: "UFS",
       ram: null,
       rom: rom,
-      vip: rom === 32 ? 5 :
-           rom === 64 ? 6 :
-           rom === 128 ? 7 :
-           rom === 256 ? 8 : null
+      vip:
+        rom === 32 ? 5 :
+        rom === 64 ? 6 :
+        rom === 128 ? 7 :
+        rom === 256 ? 8 : null
     };
   }
 
-  // 👉 KHÔNG CÓ GỌI LẠI autoDecodeChip Ở ĐÂY
-
+  // ======================================================
+  // ❌ KHÔNG NHẬN DIỆN ĐƯỢC
+  // ======================================================
   return null;
 }
 function buildHardware(code, data){
