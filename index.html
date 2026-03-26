@@ -3868,6 +3868,48 @@ if(docsMap.size === 0){
 
   const key = q.toUpperCase().trim();
 
+  // ===== THÊM ĐOẠN NÀY (QUAN TRỌNG) =====
+  const hw = autoDecodeChip(key);
+
+  if(hw){
+
+    const html = `
+<div class="result-grid">
+<div class="result-card">
+
+<div class="code-main">${key}</div>
+
+<div class="badge-row">
+  ${
+    hw.rom
+    ? '<div class="ram-badge">' + hw.rom + 'GB</div>'
+    : ''
+  }
+
+  ${
+    hw.vip
+    ? '<div class="vip-badge">VIP ' + hw.vip + '</div>'
+    : ''
+  }
+</div>
+
+<div class="card-footer">
+  <div class="chip-info">
+    YMTC ${hw.storage || ""}
+  </div>
+</div>
+
+</div>
+</div>
+`;
+
+    out.innerHTML = html;
+    turboCache.set(key, html);
+    return;
+  }
+
+  // ===== CODE CŨ CỦA BẠN (GIỮ NGUYÊN) =====
+
   /* ===== KIỂM TRA MODEL TỪ BẢNG GIÁ ===== */
 
   const modelMatch = key.match(/[A-Z]\d{2,3}/);
