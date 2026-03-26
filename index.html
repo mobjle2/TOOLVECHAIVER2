@@ -2459,16 +2459,35 @@ function calculateVip(ram, rom){
   // =========================
   return 0;
 }
+/* ===============================
+   NAND MAP (IPHONE)
+================================ */
+const NAND_MAP = {
+  "KIC5223": { rom:128, model:"iPhone 7 / 7 Plus / iPhone 8" },
+  "KLADG8VWAD": { rom:128, model:"iPhone 7 / 7 Plus / iPhone 8" },
+  "H23QFG82D6ADJ": { rom:64, model:"iPhone 6s / 6s Plus" },
+  "H23QFG82D6ADY": { rom:64, model:"iPhone 6s / 6s Plus" },
+};
 
+/* ===============================
+   DETECT IPHONE FROM NAND
+================================ */
+function detectIphoneFromNAND(code){
+  const key = code?.toUpperCase().trim();
+  return NAND_MAP[key] || null;
+}
 /* ===============================
    MMC LEVEL ENGINE
 ================================ */
 function getMMCLevel(rom, storage, type){
 
+  const s = (storage || "").toUpperCase();
+  const t = (type || "").toUpperCase();
+
   // 🔥 CHẶN FULL
   if(
-    storage === "NAND" ||
-    type === "APPLE_NAND"
+    s.includes("NAND") ||
+    t.includes("APPLE")
   ) return null;
 
   rom = Number(rom);
@@ -2484,7 +2503,6 @@ function getMMCLevel(rom, storage, type){
 
   return "MMC";
 }
-
 function decodeSamsung(code){
 
 const r={
@@ -3926,6 +3944,12 @@ docsMap.forEach(doc => {
   decoded.rom = Number(decoded.rom) || null;
   decoded.vip = Number(decoded.vip) || 0;
   decoded.chip = Number(x.chip) || 0;
+  const iphone = detectIphoneFromNAND(x.code);
+
+if(iphone){
+decoded.rom = iphone.rom;
+decoded.rom = iphone.rom;
+}
 
 
  const mmcLevel = getMMCLevel(
