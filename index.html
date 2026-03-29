@@ -1940,14 +1940,14 @@ for(const p of PRICE_TABLE){
       modelParts.some(m => m.includes(c)) ||
       short.includes(c)
     )){
-      result.push({
-        source:"price",
-        model:p.model,
-        type:p.type,
-        pin:p.pin,
-        no_pin:p.no_pin,
-        main:p.main
-      });
+result.push({
+  model: p.model,
+  short: p.short || modelParts.join(" / "), // 🔥 FIX CHÍNH
+  type: p.type,
+  pin: p.pin,
+  no_pin: p.no_pin,
+  main: p.main
+});;
     }
 
     continue;
