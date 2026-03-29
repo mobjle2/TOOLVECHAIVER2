@@ -3818,12 +3818,17 @@ html += `
 <span class="code-badge">
 ${
   (price.model || "")
-    .replace(/^Samsung\s+/i,"Samsung ")   // tránh Samsung Samsung
+    .replace(/^Samsung\s+/i,"")        // bỏ Samsung thừa
     .trim()
+    ? "Samsung " + (price.model || "").replace(/^Samsung\s+/i,"").trim()
+    : ""
 }
 ${
   price.short
-    ? " (" + price.short.replace(/F$/,"") + ")"
+    ? " (" + price.short
+        .replace(/F$/,"")              // bỏ F
+        .replace(/\//g," • ")          // đẹp hơn nếu nhiều mã
+      + ")"
     : ""
 }
 </span>
