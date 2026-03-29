@@ -1601,6 +1601,18 @@ body::before{
   top:-1px;                   /* 🔥 chỉnh lệch nhẹ */
 }
 
+/* ===== FIX VỊ TRÍ MODEL TYPE ===== */
+.result-card{
+  display:flex;
+  flex-direction:column;
+}
+
+.model-type{
+  order:-1;
+  margin-top:0;
+  margin-bottom:6px;
+}  
+
 /* ===== ẨN PHẦN QUẢN LÝ ADMIN NHƯNG GIỮ KHUNG CHECK ===== */
 html.user-mode #adminContent,
 html.user-mode #linkList,
@@ -3837,10 +3849,11 @@ html += `
 ${cleanModel ? "Samsung " + cleanModel : ""}
 ${cleanShort ? " (" + cleanShort + ")" : ""}
 </span>
-</div>
 
 <div class="model-type">
 📱 <b>${price.type || "Samsung loại ?"}</b>
+</div>
+
 </div>
 
 <div class="price-box">
@@ -4007,8 +4020,6 @@ if(docsMap.size === 0){
     turboCache.set(key, html);
     return;
   }
-
-  // ===== CODE CŨ CỦA BẠN (GIỮ NGUYÊN) =====
 
   /* ===== KIỂM TRA MODEL TỪ BẢNG GIÁ ===== */
 
