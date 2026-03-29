@@ -1911,61 +1911,35 @@ function searchPriceModel(q){
     "GRANDPRIME":["G530","G531"]
   };
 
-  /* ===== XÁC ĐỊNH DÒNG MÁY ===== */
-  const key = Object.keys(seriesMap).find(k => qn.includes(k));
+/* ===== XÁC ĐỊNH DÒNG MÁY ===== */
+const key = Object.keys(seriesMap).find(k => qn.includes(k));
 
-  for(const p of PRICE_TABLE){
+for(const p of PRICE_TABLE){
 
-    let raw = String(p.model || "").toUpperCase();
+  let raw = String(p.model || "").toUpperCase();
 
-    let match = raw.match(/\(([^)]+)\)/);
+  let match = raw.match(/\(([^)]+)\)/);
 
-    let extracted = match
-      ? match[1]
-      : raw;
+  let extracted = match
+    ? match[1]
+    : raw;
 
-const modelParts = extracted.split("/").map(x => normalize(x));
-const short = normalize(p.short);
+  // 🔥 TÁCH MODEL NHIỀU BIẾN THỂ (G920F/G920I)
+  const modelParts = extracted
+    .split("/")
+    .map(x => normalize(x));
 
-    /* ===== TRA THEO DÒNG (S / NOTE / J...) ===== */
-let extracted = match
-  ? match[1]
-  : raw;
+  const short = normalize(p.short);
 
-const modelParts = extracted
-  .split("/")
-  .map(x => normalize(x));
+  /* ===== TRA THEO DÒNG (S / NOTE / J...) ===== */
+  if(key){
 
-const short = normalize(p.short);
+    const codes = seriesMap[key];
 
-if(key){
-
-  const codes = seriesMap[key];
-
-  if(codes.some(c =>
-    modelParts.some(m => m.includes(c)) ||   // 🔥 FIX CHÍNH
-    short.includes(c)
-  )){
-    result.push({
-      source:"price",
-      model:p.model,
-      type:p.type,
-      pin:p.pin,
-      no_pin:p.no_pin,
-      main:p.main
-    });
-  }
-
-  continue;
-}
-
-    /* ===== TRA TRỰC TIẾP ===== */
-    if(
-      model.includes(qn) ||
-      qn.includes(model) ||
-      short.includes(qn) ||
-      qn.includes(short)
-    ){
+    if(codes.some(c =>
+      modelParts.some(m => m.includes(c)) ||
+      short.includes(c)
+    )){
       result.push({
         source:"price",
         model:p.model,
@@ -1976,7 +1950,27 @@ if(key){
       });
     }
 
+    continue;
   }
+
+  /* ===== TRA TRỰC TIẾP ===== */
+  if(
+    modelParts.some(m => m.includes(qn)) ||
+    qn.includes(modelParts[0]) ||
+    short.includes(qn) ||
+    qn.includes(short)
+  ){
+    result.push({
+      source:"price",
+      model:p.model,
+      type:p.type,
+      pin:p.pin,
+      no_pin:p.no_pin,
+      main:p.main
+    });
+  }
+
+}
 
   return result;
 }
