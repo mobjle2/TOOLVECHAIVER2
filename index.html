@@ -3811,17 +3811,31 @@ if(modelMatch){
 
       const modelCode = price.model;
 
-      html += `
+html += `
 <div class="result-card">
 
 <div class="code-title">
 <span class="code-badge">
-${MODEL_NAME_MAP[modelCode] || "Samsung " + modelCode + "F"} (${modelCode}F)
+${
+  (price.model || "")
+    .replace(/^Samsung\s+/i,"Samsung ")   // tránh Samsung Samsung
+    .trim()
+}
+${
+  price.short
+    ? " (" + price.short.replace(/F$/,"") + ")"
+    : ""
+}
 </span>
 </div>
 
 <div class="model-type">
-📱 Samsung loại <b>${price.type || "?"}</b>
+📱 <b>${
+  (price.type || "?")
+    .replace(/Samsung\s*loại\s*/i,"")     // tránh lặp
+    ? "Samsung loại " + (price.type || "").replace(/Samsung\s*loại\s*/i,"").trim()
+    : "Samsung loại ?"
+}</b>
 </div>
 
 <div class="price-box">
@@ -3830,17 +3844,23 @@ ${MODEL_NAME_MAP[modelCode] || "Samsung " + modelCode + "F"} (${modelCode}F)
 
 <div class="price-item">
 <span class="price-label">🔋 Có pin</span>
-<span class="price-value">${price.pin ? Math.round(price.pin/1000)+"k" : "-"}</span>
+<span class="price-value">${
+  price.pin ? Math.round(price.pin/1000)+"k" : "-"
+}</span>
 </div>
 
 <div class="price-item">
 <span class="price-label">⚡ Không pin</span>
-<span class="price-value">${price.no_pin ? Math.round(price.no_pin/1000)+"k" : "-"}</span>
+<span class="price-value">${
+  price.no_pin ? Math.round(price.no_pin/1000)+"k" : "-"
+}</span>
 </div>
 
 <div class="price-item">
 <span class="price-label">🧠 Main</span>
-<span class="price-value">${price.main ? Math.round(price.main/1000)+"k" : "-"}</span>
+<span class="price-value">${
+  price.main ? Math.round(price.main/1000)+"k" : "-"
+}</span>
 </div>
 
 </div>
