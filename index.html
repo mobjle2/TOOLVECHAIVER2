@@ -3810,7 +3810,10 @@ if(modelMatch){
     for(const price of priceList){
 
       const modelCode = price.model;
-
+const short =
+  price.short ||
+  (price.model.match(/\(([^)]+)\)/)?.[1]) ||
+  "";
 html += `
 <div class="result-card">
 
@@ -3818,21 +3821,22 @@ html += `
 <span class="code-badge">
 ${
   (price.model || "")
-    .replace(/^Samsung\s+/i,"")        // bỏ Samsung thừa
+    .replace(/^Samsung\s+/i,"")
     .trim()
     ? "Samsung " + (price.model || "").replace(/^Samsung\s+/i,"").trim()
     : ""
 }
 ${
-  price.short
-    ? " (" + price.short
-        .replace(/F$/,"")              // bỏ F
-        .replace(/\//g," • ")          // đẹp hơn nếu nhiều mã
+  short
+    ? " (" + short
+        .replace(/F$/,"")
+        .replace(/\//g," • ")
       + ")"
     : ""
 }
 </span>
 </div>
+`
 
 <div class="model-type">
 📱 <b>${
