@@ -1588,12 +1588,17 @@ body::before{
   background:rgba(255,255,255,0.04);
   padding:6px 10px;
   border-radius:8px;
-  display:inline-block;
+
+  display:inline-flex;        /* 🔥 đổi từ inline-block */
+  align-items:center;         /* 🔥 căn giữa dọc */
+  gap:6px;                    /* 🔥 khoảng cách icon */
 }
 
 .model-type b{
   color:#22c55e;
   font-weight:600;
+  position:relative;
+  top:-1px;                   /* 🔥 chỉnh lệch nhẹ */
 }
 
 /* ===== ẨN PHẦN QUẢN LÝ ADMIN NHƯNG GIỮ KHUNG CHECK ===== */
