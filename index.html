@@ -1587,30 +1587,43 @@ body::before{
 
 /* ===== BADGE LOẠI SAMSUNG ===== */
 .model-type{
-  margin-left:auto;         /* 🔥 quan trọng nhất */
+  margin-left:auto;
+
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+
+  height:28px;
+  line-height:1;
+
   font-size:13px;
+  padding:0 12px;
 
   color:#22c55e;
   background:rgba(34,197,94,0.12);
   border:1px solid rgba(34,197,94,0.35);
-
-  padding:4px 12px;
   border-radius:999px;
 
-  display:inline-flex;
-  align-items:center;
   gap:6px;
-
   white-space:nowrap;
+
+  font-family:system-ui, -apple-system, sans-serif; /* 🔥 fix luôn emoji */
 }
 
+/* icon 📱 */
+.model-type::before{
+  content:"📱";
+  display:flex;
+  align-items:center;
+}
+
+/* chữ */
 .model-type b{
   color:#22c55e;
   font-weight:600;
   position:relative;
-  top:-1px;
+  top:0;
 }
-
 /* ===== ẨN PHẦN QUẢN LÝ ADMIN NHƯNG GIỮ KHUNG CHECK ===== */
 html.user-mode #adminContent,
 html.user-mode #linkList,
