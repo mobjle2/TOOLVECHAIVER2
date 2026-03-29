@@ -3807,35 +3807,34 @@ if(modelMatch){
 
     let html = `<div class="result-grid">`;
 
-    for(const price of priceList){
+for(const price of priceList){
 
-      const modelCode = price.model;
-const short =
-  price.short ||
-  (price.model.match(/\(([^)]+)\)/)?.[1]) ||
-  "";
-html += `
+  const modelCode = price.model;
+
+  // 🔥 xử lý trước (KHÔNG viết trong template nữa)
+  const cleanModel = (price.model || "")
+    .replace(/^Samsung\s+/i,"")
+    .trim();
+
+  const short =
+    price.short ||
+    modelKey || ""; // fallback chắc chắn có
+
+  const cleanShort = short
+    .replace(/F$/,"")
+    .replace(/\//g," • ");
+
+  html += `
 <div class="result-card">
 
 <div class="code-title">
 <span class="code-badge">
-${
-  (price.model || "")
-    .replace(/^Samsung\s+/i,"")
-    .trim()
-    ? "Samsung " + (price.model || "").replace(/^Samsung\s+/i,"").trim()
-    : ""
-}
-${
-  short
-    ? " (" + short
-        .replace(/F$/,"")
-        .replace(/\//g," • ")
-      + ")"
-    : ""
-}
+${cleanModel ? "Samsung " + cleanModel : ""}
+${cleanShort ? " (" + cleanShort + ")" : ""}
 </span>
 </div>
+`;
+
 `
 
 <div class="model-type">
