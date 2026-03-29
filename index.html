@@ -1578,32 +1578,30 @@ body::before{
   font-weight:600;
   color:#22c55e;
 }
-
-/* ===== LOẠI SAMSUNG (HIỂN THỊ BÊN PHẢI TIÊU ĐỀ) ===== */
-
+/* ===== HEADER CARD (TIÊU ĐỀ + LOẠI) ===== */
 .code-title{
   display:flex;
   align-items:center;
-  justify-content:space-between; /* 🔥 đẩy 2 bên */
   gap:10px;
 }
 
+/* ===== BADGE LOẠI SAMSUNG ===== */
 .model-type{
-  margin:0;                 /* bỏ margin cũ */
+  margin-left:auto;         /* 🔥 quan trọng nhất */
   font-size:13px;
-  color:#22c55e;
 
+  color:#22c55e;
   background:rgba(34,197,94,0.12);
   border:1px solid rgba(34,197,94,0.35);
 
-  padding:4px 10px;
+  padding:4px 12px;
   border-radius:999px;
 
   display:inline-flex;
   align-items:center;
   gap:6px;
 
-  white-space:nowrap;       /* 🔥 không xuống dòng */
+  white-space:nowrap;
 }
 
 .model-type b{
