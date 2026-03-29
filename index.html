@@ -1924,30 +1924,40 @@ function searchPriceModel(q){
       ? match[1]
       : raw;
 
-    const model = normalize(extracted);
-    const short = normalize(p.short);
+const modelParts = extracted.split("/").map(x => normalize(x));
+const short = normalize(p.short);
 
     /* ===== TRA THEO DÒNG (S / NOTE / J...) ===== */
-    if(key){
+let extracted = match
+  ? match[1]
+  : raw;
 
-      const codes = seriesMap[key];
+const modelParts = extracted
+  .split("/")
+  .map(x => normalize(x));
 
-      if(codes.some(c =>
-        model.includes(c) ||
-        short.includes(c)
-      )){
-        result.push({
-          source:"price",
-          model:p.model,
-          type:p.type,
-          pin:p.pin,
-          no_pin:p.no_pin,
-          main:p.main
-        });
-      }
+const short = normalize(p.short);
 
-      continue;
-    }
+if(key){
+
+  const codes = seriesMap[key];
+
+  if(codes.some(c =>
+    modelParts.some(m => m.includes(c)) ||   // 🔥 FIX CHÍNH
+    short.includes(c)
+  )){
+    result.push({
+      source:"price",
+      model:p.model,
+      type:p.type,
+      pin:p.pin,
+      no_pin:p.no_pin,
+      main:p.main
+    });
+  }
+
+  continue;
+}
 
     /* ===== TRA TRỰC TIẾP ===== */
     if(
