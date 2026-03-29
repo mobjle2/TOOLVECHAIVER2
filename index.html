@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+                                                   <!DOCTYPE html>
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
@@ -3824,7 +3824,7 @@ for(const price of priceList){
     .replace(/F$/,"")
     .replace(/\//g," • ");
 
-  html += `
+html += `
 <div class="result-card">
 
 <div class="code-title">
@@ -3833,17 +3833,9 @@ ${cleanModel ? "Samsung " + cleanModel : ""}
 ${cleanShort ? " (" + cleanShort + ")" : ""}
 </span>
 </div>
-`;
-
-`
 
 <div class="model-type">
-📱 <b>${
-  (price.type || "?")
-    .replace(/Samsung\s*loại\s*/i,"")     // tránh lặp
-    ? "Samsung loại " + (price.type || "").replace(/Samsung\s*loại\s*/i,"").trim()
-    : "Samsung loại ?"
-}</b>
+📱 <b>${price.type || "Samsung loại ?"}</b>
 </div>
 
 <div class="price-box">
@@ -3852,23 +3844,23 @@ ${cleanShort ? " (" + cleanShort + ")" : ""}
 
 <div class="price-item">
 <span class="price-label">🔋 Có pin</span>
-<span class="price-value">${
-  price.pin ? Math.round(price.pin/1000)+"k" : "-"
-}</span>
+<span class="price-value">
+${price.pin ? Math.round(price.pin/1000)+"k" : "-"}
+</span>
 </div>
 
 <div class="price-item">
 <span class="price-label">⚡ Không pin</span>
-<span class="price-value">${
-  price.no_pin ? Math.round(price.no_pin/1000)+"k" : "-"
-}</span>
+<span class="price-value">
+${price.no_pin ? Math.round(price.no_pin/1000)+"k" : "-"}
+</span>
 </div>
 
 <div class="price-item">
 <span class="price-label">🧠 Main</span>
-<span class="price-value">${
-  price.main ? Math.round(price.main/1000)+"k" : "-"
-}</span>
+<span class="price-value">
+${price.main ? Math.round(price.main/1000)+"k" : "-"}
+</span>
 </div>
 
 </div>
