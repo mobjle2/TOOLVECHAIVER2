@@ -1579,39 +1579,39 @@ body::before{
   color:#22c55e;
 }
 
-/* ===== MODEL TYPE ===== */
+/* ===== LOẠI SAMSUNG (HIỂN THỊ BÊN PHẢI TIÊU ĐỀ) ===== */
+
+.code-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between; /* 🔥 đẩy 2 bên */
+  gap:10px;
+}
 
 .model-type{
-  margin-top:8px;
+  margin:0;                 /* bỏ margin cũ */
   font-size:13px;
-  color:#94a3b8;
-  background:rgba(255,255,255,0.04);
-  padding:6px 10px;
-  border-radius:8px;
+  color:#22c55e;
 
-  display:inline-flex;        /* 🔥 đổi từ inline-block */
-  align-items:center;         /* 🔥 căn giữa dọc */
-  gap:6px;                    /* 🔥 khoảng cách icon */
+  background:rgba(34,197,94,0.12);
+  border:1px solid rgba(34,197,94,0.35);
+
+  padding:4px 10px;
+  border-radius:999px;
+
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+
+  white-space:nowrap;       /* 🔥 không xuống dòng */
 }
 
 .model-type b{
   color:#22c55e;
   font-weight:600;
   position:relative;
-  top:-1px;                   /* 🔥 chỉnh lệch nhẹ */
+  top:-1px;
 }
-
-/* ===== FIX VỊ TRÍ MODEL TYPE ===== */
-.result-card{
-  display:flex;
-  flex-direction:column;
-}
-
-.model-type{
-  order:-1;
-  margin-top:0;
-  margin-bottom:6px;
-}  
 
 /* ===== ẨN PHẦN QUẢN LÝ ADMIN NHƯNG GIỮ KHUNG CHECK ===== */
 html.user-mode #adminContent,
