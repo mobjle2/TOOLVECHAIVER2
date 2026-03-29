@@ -1756,7 +1756,36 @@ async function preloadCodes(){
   console.log("CACHE READY:",CODE_CACHE.size);
 
 }
-/* ================= PRICE TABLE CACHE ================= */
+
+/* ================= BỘ NHỚ ĐỆM CODE ================= */
+
+async function preloadCodes(){
+
+  console.log("Loading code cache...");
+
+  const snap = await db.collection("codes").get();
+
+  snap.forEach(doc=>{
+
+    const d = doc.data();
+
+    if(!d.code) return;
+
+    const key = String(d.code).toUpperCase().trim();
+
+    if(!CODE_CACHE.has(key))
+      CODE_CACHE.set(key,[]);
+
+    CODE_CACHE.get(key).push(d);
+
+  });
+
+  console.log("CACHE READY:",CODE_CACHE.size);
+
+}
+
+
+/* ================= BỘ NHỚ ĐỆM BẢNG GIÁ ================= */
 
 async function preloadPriceTable(){
 
@@ -1774,186 +1803,134 @@ async function preloadPriceTable(){
 
 }
 
+
 /* ================= TÌM GIÁ THEO MODEL ================= */
 
 function findPriceByModel(input){
 
   if(!input) return null;
 
-  const key = input.toUpperCase().replace("SM-","").replace("F","");
+  const key = String(input)
+    .toUpperCase()
+    .replace("SM-","")
+    .replace(/F/g,"")
+    .replace(/[^A-Z0-9]/g,"");
 
   for(const p of PRICE_TABLE){
 
-    let pm = String(p.model || "").toUpperCase();
+    let pm = String(p.model || "")
+      .toUpperCase()
+      .replace("SM-","")
+      .replace(/F/g,"")
+      .replace(/[^A-Z0-9]/g,"");
 
-    pm = pm.replace("SM-","").replace("F","");
+    if(
+      pm.includes(key) ||
+      key.includes(pm)
+    ){
+      return p;
+    }
 
-if(pm === key)
   }
 
   return null;
 }
-  
+
 
 /* =====================================================
-   MỤC SEARCH MODEL (FIX FULL S10 / G973 KHÔNG HIỆN)
-
-   Chức năng:
-   - Fix lỗi gõ S10 không ra
-   - Fix lỗi G973 không ra
-   - Normalize toàn bộ model (SM-, F, ký tự rác)
-   - Không phá login
-   - Không ảnh hưởng dòng A
-
-   Ngày sửa: 2026
+   TRA CỨU MODEL (ĐÃ FIX FULL)
+   - Fix S10 không ra
+   - Fix G973 không ra
+   - Chuẩn hóa toàn bộ model
 ===================================================== */
 
 function searchPriceModel(q){
 
-  /* ===== CHUẨN HÓA ===== */
-function normalize(x){
-  return String(x || "")
-    .toUpperCase()
-    .replace("SM-","")
-    .replace(/[^A-Z0-9]/g,"") // 🔥 quan trọng
-    .trim();
-}
+  function normalize(x){
+    return String(x || "")
+      .toUpperCase()
+      .replace("SM-","")
+      .replace(/F/g,"")
+      .replace(/[^A-Z0-9]/g,"")
+      .trim();
+  }
 
-  const qn = normalize(q);
+  let qn = normalize(q)
+    .replace("+","PLUS")
+    .replace(/\s+/g,"");
 
   const result = [];
 
-  /* ===== MAP SERIES ===== */
-const seriesMap = {
+  /* ===== BẢNG MAP DÒNG MÁY ===== */
+  const seriesMap = {
 
-  // ===== S SERIES =====
-  "S6":["G920"],
-  "S6EDGE":["G925"],
-  "S6EDGE+":["G928"],
-  "S6ACTIVE":["G890"],
+    "S6":["G920"],
+    "S6EDGE":["G925"],
+    "S6EDGEPLUS":["G928"],
 
-  "S7":["G930"],
-  "S7EDGE":["G935"],
-  "S7ACTIVE":["G891"],
+    "S7":["G930"],
+    "S7EDGE":["G935"],
 
-  "S8":["G950"],
-  "S8+":["G955"],
+    "S8":["G950"],
+    "S8PLUS":["G955"],
 
-  "S9":["G960"],
-  "S9+":["G965"],
+    "S9":["G960"],
+    "S9PLUS":["G965"],
 
-  "S10":["G973"],
-  "S10+":["G975"],
-  "S10LITE":["G770"],
+    "S10":["G973"],
+    "S10PLUS":["G975"],
+    "S10LITE":["G770"],
 
-  "S20":["G980","G981"],
-  "S20+":["G985"],
-  "S20ULTRA":["G988"],
+    "S20":["G980","G981"],
+    "S20PLUS":["G985"],
+    "S20ULTRA":["G988"],
 
-  "S21":["G991"],
-  "S21+":["G996"],
-  "S21ULTRA":["G998"],
+    "S21":["G991"],
+    "S21PLUS":["G996"],
+    "S21ULTRA":["G998"],
 
-  "S22":["G901"],
-  "S22ULTRA":["G908"],
+    "S22":["G901"],
+    "S22ULTRA":["G908"],
 
-  "S23":["G911"],
-  "S23ULTRA":["G918"],
+    "S23":["G911"],
+    "S23ULTRA":["G918"],
 
+    "NOTE5":["N920"],
+    "NOTE7":["N930"],
+    "NOTEFE":["N935"],
+    "NOTE8":["N950"],
+    "NOTE9":["N960"],
+    "NOTE10":["N970"],
+    "NOTE20":["N980"],
+    "NOTE20ULTRA":["N986"],
 
-  // ===== NOTE SERIES =====
-  "NOTE1":["N7000"],
-  "NOTE2":["N7100"],
-  "NOTE3":["N900"],
+    "J2PRIME":["G532"],
+    "J5":["J500","J530"],
+    "J7":["J700","J710","J730"],
 
-  "NOTE5":["N920"],
-  "NOTE7":["N930"],
-  "NOTEFE":["N935"],
+    "GRANDPRIME":["G530","G531"]
+  };
 
-  "NOTE8":["N950"],
-  "NOTE9":["N960"],
+  /* ===== XÁC ĐỊNH DÒNG MÁY ===== */
+  const key = Object.keys(seriesMap).find(k => qn.includes(k));
 
-  "NOTE10":["N970"],
-  "NOTE20":["N980"],
-  "NOTE20ULTRA":["N986"],
-
-
-  // ===== A SERIES =====
-  "A3":["A300"],
-  "A32017":["A320"],
-  "A52016":["A510"],
-  "A52017":["A520"],
-  "A62018":["A600"],
-  "A72016":["A710"],
-  "A72017":["A720"],
-  "A72018":["A750"],
-  "A82016":["A810"],
-  "A82018":["A530"],
-  "A9PRO":["A910"],
-
-  "A10":["A105"],
-  "A20":["A205"],
-  "A30":["A305"],
-  "A50":["A505"],
-  "A50S":["A507"],
-  "A51":["A515"],
-
-
-  // ===== J SERIES =====
-  "J1":["J120"],
-  "J2":["J200"],
-  "J2CORE":["J260"],
-  "J2PRIME":["G532"],
-  "J2PRO":["J250"],
-
-  "J3":["J320"],
-  "J5":["J500"],
-  "J52017":["J530"],
-
-  "J6":["J600"],
-
-  "J7":["J700"],
-  "J72016":["J710"],
-  "J72018":["J737"],
-  "J7PRO":["J730"],
-  "J7PRIME":["G610"],
-
-
-  // ===== M SERIES =====
-  "M20":["M205"],
-  "M30":["M305"],
-  "M30S":["M307"],
-
-
-  // ===== KHÁC =====
-  "GRANDPRIME":["G530","G531"],
-  "GRANDON":["G550"],
-  "GRAND3":["G7200"],
-  "ON7":["G6000"],
-  "E5":["E500"],
-  "C9PRO":["C900"]
-
-};
-
-  /* ===== LOOP ===== */
   for(const p of PRICE_TABLE){
 
-    /* ===== TÁCH MODEL CHUẨN ===== */
     let raw = String(p.model || "").toUpperCase();
+
     let match = raw.match(/\(([^)]+)\)/);
 
     let extracted = match
       ? match[1]
-      : raw.replace("SM-","");
+      : raw;
 
-    /* ===== NORMALIZE ===== */
     const model = normalize(extracted);
     const short = normalize(p.short);
 
-    /* ===== SEARCH SERIES ===== */
-const key = Object.keys(seriesMap).find(k => qn.includes(k));
-if(key){
-  const codes = seriesMap[key];
+    /* ===== TRA THEO DÒNG (S / NOTE / J...) ===== */
+    if(key){
+
+      const codes = seriesMap[key];
 
       if(codes.some(c =>
         model.includes(c) ||
@@ -1972,27 +1949,28 @@ if(key){
       continue;
     }
 
-    /* ===== SEARCH THƯỜNG ===== */
-if(
-  model.includes(qn) ||
-  qn.includes(model) ||
-  short.includes(qn) ||
-  qn.includes(short)
-){
-  result.push({
-    source:"price",
-    model:p.model,
-    type:p.type,
-    pin:p.pin,
-    no_pin:p.no_pin,
-    main:p.main
-  });
-}
+    /* ===== TRA TRỰC TIẾP ===== */
+    if(
+      model.includes(qn) ||
+      qn.includes(model) ||
+      short.includes(qn) ||
+      qn.includes(short)
+    ){
+      result.push({
+        source:"price",
+        model:p.model,
+        type:p.type,
+        pin:p.pin,
+        no_pin:p.no_pin,
+        main:p.main
+      });
+    }
 
   }
 
   return result;
 }
+  
 /* ===== PHÁT HIỆN USER MODE AN TOÀN + ẨN ADMIN NGAY ===== */
 
 const urlParams = new URLSearchParams(window.location.search);
