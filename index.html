@@ -4159,16 +4159,23 @@ ${
 decoded.chip > 0
 ? '<div class="ram-badge">' + decoded.chip + ' CHIP</div>'
 :
-decoded.vip > 0
-? '<div class="vip-badge vip-' + String(decoded.vip).replace(".", "-") + '">' +
-'<span class="vip-dot"></span> VIP ' + (decoded.vip % 1 ? Math.floor(decoded.vip) + '+' : decoded.vip) +
-'</div>'
+(decoded.vip === "?" || decoded.vip > 0)
+? '<div class="vip-badge ' +
+    (decoded.vip === "?" ? '' : 'vip-' + String(decoded.vip).replace(".", "-")) +
+  '">' +
+  '<span class="vip-dot"></span> VIP ' +
+  (decoded.vip === "?"
+    ? "?"
+    : (decoded.vip % 1 ? Math.floor(decoded.vip) + '+' : decoded.vip)
+  ) +
+  '</div>'
 :
-(mmcLevel
-? '<div class="ram-badge mmc-badge">' +
-'<span class="mmc-dot"></span> ' + mmcLevel +
-'</div>'
-: ''
+(
+  mmcLevel
+  ? '<div class="ram-badge mmc-badge">' +
+      '<span class="mmc-dot"></span> ' + mmcLevel +
+    '</div>'
+  : ''
 )
 }
 
