@@ -4248,7 +4248,7 @@ decoded.chip > 0
   decoded.vip > 0
 )
 ? '<div class="vip-badge ' +
-    (decoded.vip === "?" 
+   (typeof decoded.vip === "string" && decoded.vip.includes("?") 
       ? 'vip-unknown' 
       : 'vip-' + String(decoded.vip).replace(".", "-")
     ) +
