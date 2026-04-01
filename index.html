@@ -275,6 +275,51 @@ font-weight:500;
 .result-card:hover .ram-badge{
   box-shadow:0 0 22px rgba(0,194,255,.45);
 }
+/* ================= MMC LEVEL ================= */
+
+/* base giữ style giống RAM nhưng khác màu */
+.mmc-badge{
+  color:#e5e7eb;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.12);
+}
+
+/* dot */
+.mmc-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:currentColor;
+  box-shadow:0 0 6px currentColor;
+}
+
+/* ===== LEVEL ===== */
+
+/* MMC1 - yếu */
+.mmc-1{
+  color:#6b7280;
+}
+
+/* MMC2 */
+.mmc-2{
+  color:#3b82f6;
+}
+
+/* MMC3 */
+.mmc-3{
+  color:#10b981;
+}
+
+/* MMC4 (đang dùng nhiều) */
+.mmc-4{
+  color:#8b5cf6;
+}
+
+/* MMC5 - cao cấp */
+.mmc-5{
+  color:#f59e0b;
+  text-shadow:0 0 6px rgba(245,158,11,.6);
+}
 
 /* ================= VIP BASE ================= */
 
@@ -336,6 +381,7 @@ font-weight:500;
  color:#facc15;
  text-shadow:0 0 14px rgba(250,204,21,.9);
 }
+
 /* ================= GIAO DIỆN ĐĂNG NHẬP ================= */
 
 .login-wrapper{
@@ -4202,11 +4248,11 @@ decoded.chip > 0
   '</div>'
 :
 (
-  mmcLevel
-  ? '<div class="ram-badge mmc-badge">' +
-      '<span class="mmc-dot"></span> ' + mmcLevel +
-    '</div>'
-  : ''
+mmcLevel
+? '<div class="ram-badge mmc-badge mmc-' + mmcLevel.replace("MMC","") + '">' +
+    '<span class="mmc-dot"></span> ' + mmcLevel +
+  '</div>'
+: '''
 )
 }
 </div>
