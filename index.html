@@ -4248,14 +4248,15 @@ decoded.chip > 0
   decoded.vip > 0
 )
 ? '<div class="vip-badge ' +
-   (typeof decoded.vip === "string" && decoded.vip.includes("?") 
-      ? 'vip-unknown' 
+    (
+      (typeof decoded.vip === "string" && decoded.vip.includes("?"))
+      ? 'vip-unknown'
       : 'vip-' + String(decoded.vip).replace(".", "-")
     ) +
   '">' +
   '<span class="vip-dot"></span> VIP ' +
   (
-    decoded.vip === "?"
+    (typeof decoded.vip === "string" && decoded.vip.includes("?"))
     ? "?"
     : (decoded.vip % 1 ? Math.floor(decoded.vip) + '+' : decoded.vip)
   ) +
