@@ -4170,15 +4170,13 @@ decoded.chip > 0
   ) +
   '</div>'
 :
-(
-  mmcLevel
-  ? '<div class="ram-badge mmc-badge">' +
-      '<span class="mmc-dot"></span> ' + mmcLevel +
-    '</div>'
-  : ''
+(mmcLevel
+? '<div class="ram-badge mmc-badge">' +
+  '<span class="mmc-dot"></span> ' + mmcLevel +
+  '</div>'
+: ''
 )
 }
-
 </div>
 
 <div class="card-footer">
