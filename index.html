@@ -4150,7 +4150,9 @@ docsMap.forEach(doc => {
 
   if(x.ram != null) decoded.ram = x.ram;
   if(x.rom != null) decoded.rom = x.rom;
-  if(x.vip != null) decoded.vip = x.vip;
+  if(x.vip != null){
+  decoded.vip = typeof x.vip === "string" ? x.vip.trim() : x.vip;
+}
   if(x.storage != null) decoded.storage = x.storage;
   decoded.type = x.type || null;
 
