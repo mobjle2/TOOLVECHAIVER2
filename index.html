@@ -1,4 +1,4 @@
-                                                   <!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
@@ -4119,11 +4119,28 @@ docsMap.forEach(doc => {
     decoded.storage = hw.storage ?? null;
   }
 
-  decoded.ram = Number(decoded.ram) || null;
-  decoded.rom = Number(decoded.rom) || null;
-  decoded.vip = Number(decoded.vip) || 0;
-  decoded.chip = Number(x.chip) || 0;
-  const iphone = detectIphoneFromNAND(x.code);
+// RAM
+const ramNum = Number(decoded.ram);
+decoded.ram = !isNaN(ramNum) && ramNum > 0 ? ramNum : null;
+
+// ROM
+const romNum = Number(decoded.rom);
+decoded.rom = !isNaN(romNum) && romNum > 0 ? romNum : null;
+
+// VIP (QUAN TRỌNG)
+if(typeof decoded.vip === "string" && decoded.vip.trim() === "?"){
+  decoded.vip = "?";
+}else{
+  const vipNum = Number(decoded.vip);
+  decoded.vip = !isNaN(vipNum) && vipNum > 0 ? vipNum : 0;
+}
+
+// CHIP
+const chipNum = Number(x.chip);
+decoded.chip = !isNaN(chipNum) && chipNum > 0 ? chipNum : 0;
+
+// iPhone detect
+const iphone = detectIphoneFromNAND(x.code);
 
 if(iphone){
 decoded.rom = iphone.rom;
