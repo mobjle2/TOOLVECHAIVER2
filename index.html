@@ -4186,12 +4186,20 @@ decoded.ram = !isNaN(ramNum) && ramNum > 0 ? ramNum : null;
 const romNum = Number(decoded.rom);
 decoded.rom = !isNaN(romNum) && romNum > 0 ? romNum : null;
 
-// VIP (QUAN TRỌNG)
-if(typeof decoded.vip === "string" && decoded.vip.trim() === "?"){
-  decoded.vip = "?";
+// VIP (FIX CHUẨN)
+if(typeof decoded.vip === "string"){
+  const v = decoded.vip.trim();
+
+  if(v.includes("?")){
+    decoded.vip = "?";
+  }else{
+    const num = Number(v);
+    decoded.vip = !isNaN(num) && num > 0 ? num : 0;
+  }
+
 }else{
-  const vipNum = Number(decoded.vip);
-  decoded.vip = !isNaN(vipNum) && vipNum > 0 ? vipNum : 0;
+  const num = Number(decoded.vip);
+  decoded.vip = !isNaN(num) && num > 0 ? num : 0;
 }
 
 // CHIP
