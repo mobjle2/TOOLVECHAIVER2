@@ -4249,11 +4249,11 @@ decoded.chip > 0
   '</div>'
 :
 (
-mmcLevel
-? '<div class="ram-badge mmc-badge mmc-' + mmcLevel.replace("MMC","") + '">' +
-    '<span class="mmc-dot"></span> ' + mmcLevel +
-  '</div>'
-: ''   // ✅ FIX CHỖ NÀY
+  mmcLevel
+  ? '<div class="ram-badge mmc-badge mmc-' + mmcLevel.replace("MMC","") + '">' +
+      '<span class="mmc-dot"></span> ' + mmcLevel +
+    '</div>'
+  : ''
 )
 }
 </div>
