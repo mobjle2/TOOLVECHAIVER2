@@ -4243,7 +4243,10 @@ ${
 decoded.chip > 0
 ? '<div class="ram-badge">' + decoded.chip + ' CHIP</div>'
 :
-(decoded.vip === "?" || decoded.vip > 0)
+(
+  (typeof decoded.vip === "string" && decoded.vip.includes("?")) ||
+  decoded.vip > 0
+)
 ? '<div class="vip-badge ' +
     (decoded.vip === "?" 
       ? 'vip-unknown' 
