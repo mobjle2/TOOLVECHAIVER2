@@ -4292,22 +4292,86 @@ decoded.storage && chip.name !== "Apple NAND"
 ${
 Array.isArray(x.models) && x.models.length
 ? `<div class="model-line">${
-  chip.name === "Samsung"
-  ? formatSamsungModels(
-      x.models.map(m=>{
-        if(typeof m === "string") return m;
-        if(typeof m === "object" && m !== null)
-          return (m.brand || "") + " " + (m.model || "");
-        return "";
-      }).join(", ")
-    )
-  : x.models.map(m=>{
-      if(typeof m === "string") return m;
-      if(typeof m === "object" && m !== null)
-        return (m.model || "");
-      return "";
-    }).join(" • ")
+    chip.name === "Samsung"
+
+    ? formatSamsungModels(
+
+        x.models.map(m=>{
+
+          if(typeof m === "string"){
+            return m;
+          }
+
+          if(typeof m === "object" && m !== null){
+            return (m.brand || "") + " " + (m.model || "");
+          }
+
+          return "";
+
+        }).join(", ")
+
+      )
+
+    : (()=>{
+
+        const grouped = {};
+
+        x.models.forEach(m=>{
+
+          /* ===== STRING ===== */
+
+          if(typeof m === "string"){
+
+            if(!grouped["OTHER"]){
+              grouped["OTHER"] = [];
+            }
+
+            grouped["OTHER"].push(m);
+
+            return;
+          }
+
+          /* ===== OBJECT ===== */
+
+          if(typeof m === "object" && m !== null){
+
+            const brand = (m.brand || "OTHER")
+              .toUpperCase()
+              .trim();
+
+            const model = (m.model || "")
+              .toUpperCase()
+              .trim();
+
+            if(!grouped[brand]){
+              grouped[brand] = [];
+            }
+
+            if(model){
+              grouped[brand].push(model);
+            }
+
+          }
+
+        });
+
+        return Object.entries(grouped)
+
+          .filter(([brand,list])=>
+            brand &&
+            list.length
+          )
+
+          .map(([brand,list])=>
+            `${brand} : ${list.join(" / ")}`
+          )
+
+          .join("<br>");
+
+      })()
+
 }</div>`
+
 : `<div class="model-placeholder">Chưa có model</div>`
 }
 
@@ -4326,24 +4390,23 @@ out.innerHTML = html;
 }
 catch(err){
 
-console.error(err);
+  console.error(err);
 
-out.innerHTML = `
-<div style="color:#ef4444;text-align:center;">
-⚠️ Lỗi hệ thống
-</div>
-`;
+  out.innerHTML = `
+  <div style="color:#ef4444;text-align:center;">
+    ⚠️ Lỗi hệ thống
+  </div>
+  `;
 
 }
 finally{
 
-btn.disabled = false;
-btn.style.opacity = "1";
+  btn.disabled = false;
+  btn.style.opacity = "1";
 
 }
 
 }
-  
 // ===== LOGIN =====
 async function secureLogin(){
   const email = document.getElementById("loginEmail").value.trim();
