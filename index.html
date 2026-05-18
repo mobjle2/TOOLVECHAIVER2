@@ -3527,47 +3527,45 @@ function formatSamsungModels(text){
     .filter(Boolean);
 
   // ===== BRAND DETECT (SAFE VERSION) =====
-  const detectBrand = (m)=>{
+const detectBrand = (m)=>{
 
-    const t = m.toLowerCase();
+  const t = m.toLowerCase();
 
-    // Ưu tiên detect hãng rõ ràng trước
-    if(t.includes("oppo")) return "OPPO";
-    if(t.includes("vivo")) return "VIVO";
-    if(t.includes("xiaomi") || t.includes("redmi") || t.includes("poco")) return "Xiaomi";
-    if(t.includes("realme")) return "Realme";
-    if(t.includes("vsmart")) return "VSMART";
-    if(t.includes("huawei")) return "HUAWEI";
-if(t.includes("honor")) return "HONOR";
-if(t.includes("meizu")) return "MEIZU";
-if(t.includes("oneplus")) return "ONEPLUS";
-if(t.includes("lenovo")) return "LENOVO";
-if(t.includes("zte")) return "ZTE";
-if(t.includes("nubia")) return "NUBIA";
+  if(t.includes("oppo")) return "OPPO";
+  if(t.includes("vivo")) return "VIVO";
+  if(t.includes("xiaomi") || t.includes("redmi") || t.includes("poco")) return "XIAOMI";
+  if(t.includes("realme")) return "REALME";
+  if(t.includes("vsmart")) return "VSMART";
+  if(t.includes("huawei")) return "HUAWEI";
+  if(t.includes("honor")) return "HONOR";
+  if(t.includes("meizu")) return "MEIZU";
+  if(t.includes("oneplus")) return "ONEPLUS";
+  if(t.includes("lenovo")) return "LENOVO";
+  if(t.includes("zte")) return "ZTE";
+  if(t.includes("nubia")) return "NUBIA";
 
-if(t.includes("masstel")) return "MASSTEL";
-if(t.includes("mobell")) return "MOBELL";
-if(t.includes("mobiistar")) return "MOBIISTAR";
-if(t.includes("bkav") || t.includes("bphone")) return "BKAV";
+  if(t.includes("masstel")) return "MASSTEL";
+  if(t.includes("mobell")) return "MOBELL";
+  if(t.includes("mobiistar")) return "MOBIISTAR";
+  if(t.includes("bkav") || t.includes("bphone")) return "BKAV";
 
-if(t.includes("nokia")) return "NOKIA";
-if(t.includes("sony")) return "SONY";
-if(t.includes("asus")) return "ASUS";
-if(t.includes("tecno")) return "TECNO";
-if(t.includes("infinix")) return "INFINIX";
-if(t.includes("itel")) return "ITEL";
-    // Samsung chỉ khi có từ khóa thật
-// ✅ nhận cả mã SM-
-if(
-  t.includes("samsung") ||
-  t.includes("galaxy") ||
-  /^sm-/i.test(m)
-){
-  return "SAMSUNG";
-}
+  if(t.includes("nokia")) return "NOKIA";
+  if(t.includes("sony")) return "SONY";
+  if(t.includes("asus")) return "ASUS";
+  if(t.includes("tecno")) return "TECNO";
+  if(t.includes("infinix")) return "INFINIX";
+  if(t.includes("itel")) return "ITEL";
 
-    return "Other";
-  };
+  if(
+    t.includes("samsung") ||
+    t.includes("galaxy") ||
+    /^sm-/i.test(m)
+  ){
+    return "SAMSUNG";
+  }
+
+  return "OTHER";
+};
 
   const grouped = {};
 
@@ -3637,7 +3635,7 @@ const order = [
 ];
 
 return Object.entries(grouped)
-  .filter(([brand]) => brand !== "Other")
+  .filter(([brand]) => brand !== "OTHER")
   .sort((a,b)=>order.indexOf(a[0]) - order.indexOf(b[0]))
   .map(([brand,list])=>`${brand} : ${list.join(" / ")}`)
   .join("<br>");
