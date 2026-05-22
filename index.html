@@ -5049,10 +5049,31 @@ function startRename(id){
   });
 }
 
-document.getElementById("q").addEventListener("keydown",function(e){
-  if(e.key==="Enter"){
+const qInput = document.getElementById("q");
+
+qInput.addEventListener("keydown", function(e){
+  if(e.key === "Enter"){
     check();
   }
+});
+
+/* 🔥 AUTO SEARCH REALTIME */
+let autoTimer;
+
+qInput.addEventListener("input", function(){
+
+  clearTimeout(autoTimer);
+
+  autoTimer = setTimeout(()=>{
+
+    const v = qInput.value.trim();
+
+    if(v.length >= 3){
+      check();
+    }
+
+  },120);
+
 });
 function toggleAdmin(){
 
