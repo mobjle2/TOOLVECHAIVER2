@@ -4021,9 +4021,14 @@ snapSearch.forEach(doc=>{
 
   const text = (code + " " + models).toUpperCase();
 
-const cleanCode  = code.replace(/[^A-Z0-9]/g,"");
-const cleanText  = text.replace(/[^A-Z0-9]/g,"");
-const cleanQ     = q.replace(/[^A-Z0-9]/g,"");
+const cleanCode = String(code || "")
+  .replace(/[^A-Z0-9]/g,"");
+
+const cleanText = String(text || "")
+  .replace(/[^A-Z0-9]/g,"");
+
+const cleanQ = String(q || "")
+  .replace(/[^A-Z0-9]/g,"");
 
 if(
 
