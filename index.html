@@ -4021,12 +4021,21 @@ snapSearch.forEach(doc=>{
 
   const text = (code + " " + models).toUpperCase();
 
-  if(text.includes(q)){
-    docsMap.set(doc.id, doc);
-  }
+const cleanCode  = code.replace(/[^A-Z0-9]/g,"");
+const cleanText  = text.replace(/[^A-Z0-9]/g,"");
+const cleanQ     = q.replace(/[^A-Z0-9]/g,"");
 
-});
+if(
 
+  cleanCode.startsWith(cleanQ) ||
+
+  cleanText.startsWith(cleanQ) ||
+
+  cleanText.includes(cleanQ)
+
+){
+  docsMap.set(doc.id, doc);
+}
 
 /* ===== LƯU DANH SÁCH CODE THEO PREFIX ===== */
 
