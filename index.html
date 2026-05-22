@@ -4082,11 +4082,14 @@ if(docsMap.size === 0){
 
 <div class="card-footer">
   <div class="chip-info">
-    YMTC ${hw.storage || ""}
-  </div>
-</div>
 
-</div>
+    ${
+      hw.storage && hw.storage !== "Unknown"
+      ? hw.storage
+      : L("code_not_found")
+    }
+
+  </div>
 </div>
 `;
 
