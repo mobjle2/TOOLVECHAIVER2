@@ -4662,23 +4662,15 @@ async function secureLogin(){
 
     ADMIN_MODE = true;
 
-    /* ===== RENDER LẠI ===== */
+    /* ===== RENDER LẠI NẾU ĐANG CÓ KẾT QUẢ ===== */
 
-    check();
+    const out = document.getElementById("out");
 
-  }
-  catch(e){
+    if(out.innerHTML.trim()){
 
-    err.style.display = "block";
+      check();
 
-    err.innerText =
-      "Sai tài khoản hoặc mật khẩu!";
-
-    return;
-
-  }
-
-}
+    }
 
 
 // ===== TOGGLE PASSWORD =====
