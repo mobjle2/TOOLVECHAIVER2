@@ -5294,25 +5294,55 @@ qInput.addEventListener("input", function(){
   },120);
 
 });
+/* ===== TOGGLE ADMIN ===== */
+
 function toggleAdmin(){
 
-  const content = document.getElementById("adminContent");
-  const toggleBtn = document.getElementById("adminToggle");
-  const createBtn = document.querySelector(".create-link-btn");
+  const content =
+    document.getElementById("adminContent");
+
+  const toggleBtn =
+    document.getElementById("adminToggle");
+
+  const createBtn =
+    document.querySelector(".create-link-btn");
 
   if(!content) return;
 
-  const isOpen = content.classList.contains("open");
+  const isOpen =
+    content.classList.contains("open");
+
+  /* ===== CLOSE ADMIN ===== */
 
   if(isOpen){
+
     content.classList.remove("open");
+
     toggleBtn?.classList.remove("active");
+
     createBtn?.classList.remove("show");
-  } else {
-    content.classList.add("open");
-    toggleBtn?.classList.add("active");
-    createBtn?.classList.add("show");
+
+    ADMIN_MODE = false;
+
   }
+
+  /* ===== OPEN ADMIN ===== */
+
+  else{
+
+    content.classList.add("open");
+
+    toggleBtn?.classList.add("active");
+
+    createBtn?.classList.add("show");
+
+    ADMIN_MODE = true;
+
+  }
+
+  /* ===== RENDER LẠI ===== */
+
+  check();
 
 }
 function getBrandLogo(name){
@@ -5479,7 +5509,7 @@ function getSamsungName(code){
 }
 /* ===== ADMIN MODE ===== */
 
-let ADMIN_MODE = true;
+let ADMIN_MODE = false;
 
 
 /* ===== FULL CARD CMS EDITOR ===== */
