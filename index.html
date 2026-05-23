@@ -4064,68 +4064,82 @@ if(docsMap.size === 0){
 
   const key = q.toUpperCase().trim();
 
-  // ===== THÊM ĐOẠN NÀY (QUAN TRỌNG) =====
+  /* ===== AUTO PHÂN TÍCH CHIP ===== */
+
   const hw = autoDecodeChip(key);
 
   if(hw){
 
-<div class="result-card">
+    /* ===== RENDER CARD KẾT QUẢ ===== */
 
-${
-ADMIN_MODE
-? `
-<div class="admin-tools">
+    const html = `
+    <div class="result-grid">
 
-  <button
-    class="admin-btn"
-    onclick="editCode('${x._id || x.code}')"
-  >
-    ✏️
-  </button>
+      <div class="result-card">
 
-</div>
-`
-: ""
-}
+        ${
+        ADMIN_MODE
+        ? `
+        <div class="admin-tools">
 
-<div class="code-main">${x.code}</div>
+          <button
+            class="admin-btn"
+            onclick="editCode('${key}')"
+          >
+            ✏️
+          </button>
 
-<div class="code-main">${key}</div>
+        </div>
+        `
+        : ""
+        }
 
-<div class="badge-row">
-  ${
-    hw.rom
-    ? '<div class="ram-badge">' + hw.rom + 'GB</div>'
-    : ''
-  }
+        <div class="code-main">${key}</div>
 
-  ${
-    hw.vip
-    ? '<div class="vip-badge">VIP ' + hw.vip + '</div>'
-    : ''
-  }
-</div>
+        <div class="badge-row">
 
-<div class="card-footer">
-  <div class="chip-info">
+          ${
+          hw.rom
+          ? '<div class="ram-badge">' + hw.rom + '/' + hw.rom + '</div>'
+          : ''
+          }
 
-    ${
-      hw.storage && hw.storage !== "Unknown"
-      ? hw.storage
-      : L("code_not_found")
-    }
+          ${
+          hw.vip
+          ? '<div class="vip-badge">VIP ' + hw.vip + '</div>'
+          : ''
+          }
 
-  </div>
-</div>
+        </div>
 
-</div>
-</div>
-`;
+        <div class="card-footer">
+
+          <div class="chip-info">
+
+            ${
+            hw.storage && hw.storage !== "Unknown"
+            ? hw.storage
+            : L("code_not_found")
+            }
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+    `;
 
     out.innerHTML = html;
+
     turboCache.set(key, html);
+
     return;
+
   }
+
+}
 
   /* ===== KIỂM TRA MODEL TỪ BẢNG GIÁ ===== */
 
