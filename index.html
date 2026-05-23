@@ -4632,23 +4632,53 @@ finally{
 
 }
 // ===== LOGIN =====
+
 async function secureLogin(){
-  const email = document.getElementById("loginEmail").value.trim();
-  const pass = document.getElementById("loginPass").value.trim();
-  const err = document.getElementById("loginError");
+
+  const email = document
+    .getElementById("loginEmail")
+    .value
+    .trim();
+
+  const pass = document
+    .getElementById("loginPass")
+    .value
+    .trim();
+
+  const err = document
+    .getElementById("loginError");
 
   err.style.display = "none";
 
   try{
-    await auth.signInWithEmailAndPassword(email, pass);
-    // KHÔNG làm gì thêm
-  }catch(e){
-    err.style.display = "block";
-    err.innerText = "Sai tài khoản hoặc mật khẩu!";
-    return; // QUAN TRỌNG
-  }
-}
 
+    await auth
+      .signInWithEmailAndPassword(
+        email,
+        pass
+      );
+
+    /* ===== ENABLE ADMIN ===== */
+
+    ADMIN_MODE = true;
+
+    /* ===== RENDER LẠI ===== */
+
+    check();
+
+  }
+  catch(e){
+
+    err.style.display = "block";
+
+    err.innerText =
+      "Sai tài khoản hoặc mật khẩu!";
+
+    return;
+
+  }
+
+}
 
 
 // ===== TOGGLE PASSWORD =====
