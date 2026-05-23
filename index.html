@@ -4632,45 +4632,23 @@ finally{
 
 }
 // ===== LOGIN =====
-
 async function secureLogin(){
-
-  const email = document
-    .getElementById("loginEmail")
-    .value
-    .trim();
-
-  const pass = document
-    .getElementById("loginPass")
-    .value
-    .trim();
-
-  const err = document
-    .getElementById("loginError");
+  const email = document.getElementById("loginEmail").value.trim();
+  const pass = document.getElementById("loginPass").value.trim();
+  const err = document.getElementById("loginError");
 
   err.style.display = "none";
 
   try{
+    await auth.signInWithEmailAndPassword(email, pass);
+    // KHÔNG làm gì thêm
+  }catch(e){
+    err.style.display = "block";
+    err.innerText = "Sai tài khoản hoặc mật khẩu!";
+    return; // QUAN TRỌNG
+  }
+}
 
-    await auth
-      .signInWithEmailAndPassword(
-        email,
-        pass
-      );
-
-    /* ===== ENABLE ADMIN ===== */
-
-    ADMIN_MODE = true;
-
-    /* ===== RENDER LẠI NẾU ĐANG CÓ KẾT QUẢ ===== */
-
-    const out = document.getElementById("out");
-
-    if(out.innerHTML.trim()){
-
-      check();
-
-    }
 
 
 // ===== TOGGLE PASSWORD =====
@@ -5499,10 +5477,9 @@ function getSamsungName(code){
   return code;
 
 }
-
 /* ===== ADMIN MODE ===== */
 
-let ADMIN_MODE = false;
+let ADMIN_MODE = true;
 
 
 /* ===== FULL CARD CMS EDITOR ===== */
