@@ -5432,30 +5432,14 @@ function editCode(id){
 
     try{
 
-      /* ===== TÌM DOC ===== */
+/* ===== UPDATE FIRESTORE ===== */
 
-      const snap = await db
-        .collection("codes")
-        .where("code","==",id)
-        .get();
-
-      if(snap.empty){
-
-        alert("Không tìm thấy mã");
-
-        return;
-      }
-
-      /* ===== UPDATE FIRESTORE ===== */
-
-      const docId = snap.docs[0].id;
-
-      await db
-        .collection("codes")
-        .doc(docId)
-        .update({
-          code:newCode
-        });
+await db
+  .collection("codes")
+  .doc(id)
+  .update({
+    code:newCode
+  });
 
       /* ===== UPDATE UI ===== */
 
