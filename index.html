@@ -1498,12 +1498,14 @@ body::before{
     width:100%;
   }
 
-  .clean-check input{
-    height:44px;
-    font-size:14px;
-    padding:0 48px 0 14px;
-    border-radius:12px;
-  }
+.clean-check input{
+  height:44px;
+  font-size:14px;
+  padding:0 48px 0 14px;
+  border-radius:12px;
+
+  text-transform:uppercase;
+}
 
   .clean-check .check-btn{
     height:34px;
@@ -5053,6 +5055,15 @@ function startRename(id){
 }
 
 const qInput = document.getElementById("q");
+qInput.addEventListener("input", function(){
+
+  const pos = this.selectionStart;
+
+  this.value = this.value.toUpperCase();
+
+  this.setSelectionRange(pos, pos);
+
+});
 
 qInput.addEventListener("keydown", function(e){
   if(e.key === "Enter"){
