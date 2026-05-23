@@ -2069,7 +2069,7 @@ if(userParam){
     if(login) login.style.display="none";
     /* ⭐ LOAD CACHE CHO USER MODE */
     try{
-      await preloadCodes();
+      await preloadCodesRealtime();
       await preloadPriceTable();
     }catch(e){
       console.error("Cache load error:",e);
@@ -4477,7 +4477,7 @@ auth.onAuthStateChanged(async (user) => {
     // Login thành công
     document.getElementById("loginScreen").style.display = "none";
     document.getElementById("adminPanel").style.display = "block";
-    preloadCodes();   // ⭐ THÊM DÒNG NÀY
+    preloadCodesRealtime();   // ⭐ THÊM DÒNG NÀY
     preloadPriceTable();
     loadLinks();
 
