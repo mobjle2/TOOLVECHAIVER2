@@ -4233,7 +4233,10 @@ let html = `<div class="result-grid">`;
 
 docsMap.forEach(doc => {
 
-  const x = doc.data();
+  const x = {
+  _id: doc.id,
+  ...doc.data()
+};
 
   const chip = detectChip(x.code);
 
@@ -4331,7 +4334,7 @@ ADMIN_MODE
 
   <button
     class="admin-btn"
-    onclick="editCode('${x.code}')"
+    onclick="editCode('${x._id}')"
   >
     ✏️
   </button>
