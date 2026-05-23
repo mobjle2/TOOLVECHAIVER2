@@ -927,8 +927,30 @@ CARD QUẢN LÝ (ADMIN)
 
 /* Card full width chuẩn */
 .result-card{
+  position:relative;
+  overflow:hidden;
+
   width:100%;
   box-sizing:border-box;
+}
+
+/* ===== ADMIN TOOLS ===== */
+.admin-tools{
+  position:absolute;
+  top:10px;
+  right:10px;
+  z-index:999;
+}
+
+.admin-btn{
+  width:32px;
+  height:32px;
+  border:none;
+  border-radius:10px;
+  background:#111827;
+  color:#fff;
+  cursor:pointer;
+  font-size:14px;
 }
 
 /* ===== MÀU THEO CẤP MMC ===== */
@@ -956,7 +978,6 @@ CARD QUẢN LÝ (ADMIN)
   background:currentColor;
   box-shadow:0 0 6px currentColor;
 }
-
 
 .model-placeholder{
   margin-top:14px;
@@ -4048,9 +4069,27 @@ if(docsMap.size === 0){
 
   if(hw){
 
-    const html = `
+const html = `
 <div class="result-grid">
+
 <div class="result-card">
+
+${
+ADMIN_MODE
+? `
+<div class="admin-tools">
+
+  <button
+    class="admin-btn"
+    onclick="editCode('${key}')"
+  >
+    ✏️
+  </button>
+
+</div>
+`
+: ""
+}
 
 <div class="code-main">${key}</div>
 
@@ -5259,7 +5298,11 @@ function getSamsungName(code){
 
 }
   
-  
+function editCode(id){
+
+  alert("EDIT: " + id);
+
+}  
 </script>
 </body>
 </html>
