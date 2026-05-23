@@ -4069,9 +4069,6 @@ if(docsMap.size === 0){
 
   if(hw){
 
-const html = `
-<div class="result-grid">
-
 <div class="result-card">
 
 ${
@@ -4081,7 +4078,7 @@ ADMIN_MODE
 
   <button
     class="admin-btn"
-    onclick="editCode('${key}')"
+    onclick="editCode('${x._id || x.code}')"
   >
     ✏️
   </button>
@@ -4090,6 +4087,8 @@ ADMIN_MODE
 `
 : ""
 }
+
+<div class="code-main">${x.code}</div>
 
 <div class="code-main">${key}</div>
 
