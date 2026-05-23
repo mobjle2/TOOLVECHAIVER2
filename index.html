@@ -5372,12 +5372,104 @@ function getSamsungName(code){
   return code;
 
 }
-let ADMIN_MODE = true; 
+/* ===== ADMIN MODE ===== */
+
+let ADMIN_MODE = true;
+
+
+/* ===== INLINE EDIT CODE ===== */
+
 function editCode(id){
 
-  alert("EDIT: " + id);
+  const card = event.target.closest(".result-card");
 
-}  
+  if(!card) return;
+
+  const title = card.querySelector(".code-main");
+
+  if(!title) return;
+
+  const old = title.innerText.trim();
+
+  title.innerHTML = `
+    <input
+      id="edit-input"
+      value="${old}"
+      style="
+        width:100%;
+        background:#0f172a;
+        border:1px solid #334155;
+        color:#fff;
+        padding:8px 10px;
+        border-radius:10px;
+        font-size:20px;
+        font-weight:700;
+        outline:none;
+      "
+    >
+  `;
+
+  const input = document.getElementById("edit-input");
+
+  input.focus();
+
+  input.select();
+
+  /* ===== ENTER = SAVE ===== */
+
+  input.addEventListener("keydown", async e=>{
+
+    if(e.key !== "Enter") return;
+
+    const newCode = input.value
+      .trim()
+      .toUpperCase();
+
+    if(!newCode) return;
+
+    try{
+
+      /* ===== TÌM DOC ===== */
+
+      const snap = await db
+        .collection("codes")
+        .where("code","==",id)
+        .get();
+
+      if(snap.empty){
+
+        alert("Không tìm thấy mã");
+
+        return;
+      }
+
+      /* ===== UPDATE FIRESTORE ===== */
+
+      const docId = snap.docs[0].id;
+
+      await db
+        .collection("codes")
+        .doc(docId)
+        .update({
+          code:newCode
+        });
+
+      /* ===== UPDATE UI ===== */
+
+      title.innerHTML = newCode;
+
+    }
+    catch(err){
+
+      console.error(err);
+
+      alert("Lỗi update");
+
+    }
+
+  });
+
+}
 </script>
 </body>
 </html>
