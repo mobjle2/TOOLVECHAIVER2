@@ -5380,81 +5380,222 @@ function getSamsungName(code){
 let ADMIN_MODE = true;
 
 
-/* ===== INLINE EDIT CODE ===== */
+/* ===== FULL CARD CMS EDITOR ===== */
 
-function editCode(id){
+async function editCode(id){
 
-  const card = event.target.closest(".result-card");
+  try{
 
-  if(!card) return;
+    /* ===== LOAD FIRESTORE ===== */
 
-  const title = card.querySelector(".code-main");
+    const snap = await db
+      .collection("codes")
+      .doc(id)
+      .get();
 
-  if(!title) return;
+    if(!snap.exists){
 
-  const old = title.innerText.trim();
+      alert("Không tìm thấy data");
 
-  title.innerHTML = `
-    <input
-      id="edit-input"
-      value="${old}"
-      style="
-        width:100%;
-        background:#0f172a;
-        border:1px solid #334155;
-        color:#fff;
-        padding:8px 10px;
-        border-radius:10px;
-        font-size:20px;
-        font-weight:700;
-        outline:none;
-      "
-    >
-  `;
+      return;
+    }
 
-  const input = document.getElementById("edit-input");
+    const x = snap.data();
 
-  input.focus();
+    /* ===== MODEL TEXT ===== */
 
-  input.select();
+    const modelText = Array.isArray(x.models)
 
-  /* ===== ENTER = SAVE ===== */
+      ? x.models.map(m=>{
 
-  input.addEventListener("keydown", async e=>{
+          if(typeof m === "string"){
+            return m;
+          }
 
-    if(e.key !== "Enter") return;
+          return `${m.brand || ""}:${m.model || ""}`;
 
-    const newCode = input.value
+        }).join("\n")
+
+      : "";
+
+    /* ===== HTML EDITOR ===== */
+
+    const html = `
+    <div class="cms-overlay" id="cmsOverlay">
+
+      <div class="cms-box">
+
+        <div class="cms-title">
+          ✏️ EDITOR FULL CARD PRO
+        </div>
+
+        <input
+          id="e_code"
+          value="${x.code || ""}"
+          placeholder="CODE"
+        >
+
+        <input
+          id="e_ram"
+          value="${x.ram || ""}"
+          placeholder="RAM"
+        >
+
+        <input
+          id="e_rom"
+          value="${x.rom || ""}"
+          placeholder="ROM"
+        >
+
+        <input
+          id="e_vip"
+          value="${x.vip || ""}"
+          placeholder="VIP"
+        >
+
+        <input
+          id="e_storage"
+          value="${x.storage || ""}"
+          placeholder="STORAGE"
+        >
+
+        <textarea
+          id="e_models"
+          placeholder="OPPO:A5S"
+        >${modelText}</textarea>
+
+        <div class="cms-actions">
+
+          <button
+            class="cms-save"
+            onclick="saveCode('${id}')"
+          >
+            💾 SAVE
+          </button>
+
+          <button
+            class="cms-close"
+            onclick="closeEditor()"
+          >
+            ❌ CLOSE
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+    `;
+
+    document.body.insertAdjacentHTML(
+      "beforeend",
+      html
+    );
+
+  }
+  catch(err){
+
+    console.error(err);
+
+    alert("Lỗi editor");
+
+  }
+
+}
+
+
+/* ===== ĐÓNG EDITOR ===== */
+
+function closeEditor(){
+
+  document
+    .getElementById("cmsOverlay")
+    ?.remove();
+
+}
+
+
+/* ===== SAVE FIRESTORE ===== */
+
+async function saveCode(id){
+
+  try{
+
+    /* ===== LẤY DATA ===== */
+
+    const code = document
+      .getElementById("e_code")
+      .value
       .trim()
       .toUpperCase();
 
-    if(!newCode) return;
+    const ram = parseInt(
+      document.getElementById("e_ram").value
+    ) || 0;
 
-    try{
+    const rom = parseInt(
+      document.getElementById("e_rom").value
+    ) || 0;
 
-/* ===== UPDATE FIRESTORE ===== */
+    const vip = parseFloat(
+      document.getElementById("e_vip").value
+    ) || 0;
 
-await db
-  .collection("codes")
-  .doc(id)
-  .update({
-    code:newCode
-  });
+    const storage = document
+      .getElementById("e_storage")
+      .value
+      .trim();
 
-      /* ===== UPDATE UI ===== */
+    /* ===== MODELS ===== */
 
-      title.innerHTML = newCode;
+    const modelsRaw = document
+      .getElementById("e_models")
+      .value
+      .trim();
 
-    }
-    catch(err){
+    const models = modelsRaw
+      .split("\n")
+      .map(v=>v.trim())
+      .filter(Boolean)
+      .map(v=>{
 
-      console.error(err);
+        const sp = v.split(":");
 
-      alert("Lỗi update");
+        return {
+          brand:(sp[0] || "").trim(),
+          model:(sp[1] || "").trim()
+        };
 
-    }
+      });
 
-  });
+    /* ===== UPDATE FIRESTORE ===== */
+
+    await db
+      .collection("codes")
+      .doc(id)
+      .update({
+
+        code,
+        ram,
+        rom,
+        vip,
+        storage,
+        models
+
+      });
+
+    alert("Đã lưu");
+
+    closeEditor();
+
+  }
+  catch(err){
+
+    console.error(err);
+
+    alert("Lỗi save");
+
+  }
 
 }
 </script>
