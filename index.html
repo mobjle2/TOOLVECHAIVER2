@@ -1813,58 +1813,44 @@ let PRICE_TABLE = [];
 
 /* ================= TURBO CACHE ENGINE ================= */
 
-async function preloadCodes(){
+function preloadCodesRealtime(){
 
-  console.log("Loading code cache...");
+  console.log("Realtime cache loading...");
 
-  const snap = await db.collection("codes").get();
+  db.collection("codes")
+  .onSnapshot((snap)=>{
 
-  snap.forEach(doc=>{
+    CODE_CACHE.clear();
 
-    const d = doc.data();
+    snap.forEach(doc=>{
 
-    if(!d.code) return;
+      const d = doc.data();
 
-    const key = d.code.toUpperCase();
+      if(!d.code) return;
 
-    if(!CODE_CACHE.has(key))
-      CODE_CACHE.set(key,[]);
+      const key = String(d.code)
+        .toUpperCase()
+        .trim();
 
-    CODE_CACHE.get(key).push(d);
+      if(!CODE_CACHE.has(key)){
+        CODE_CACHE.set(key,[]);
+      }
 
-  });
+      CODE_CACHE.get(key).push({
+        ...d,
+        _id: doc.id
+      });
 
-  console.log("CACHE READY:",CODE_CACHE.size);
+    });
 
-}
-
-/* ================= BỘ NHỚ ĐỆM CODE ================= */
-
-async function preloadCodes(){
-
-  console.log("Loading code cache...");
-
-  const snap = await db.collection("codes").get();
-
-  snap.forEach(doc=>{
-
-    const d = doc.data();
-
-    if(!d.code) return;
-
-    const key = String(d.code).toUpperCase().trim();
-
-    if(!CODE_CACHE.has(key))
-      CODE_CACHE.set(key,[]);
-
-    CODE_CACHE.get(key).push(d);
+    console.log(
+      "Realtime cache updated:",
+      CODE_CACHE.size
+    );
 
   });
 
-  console.log("CACHE READY:",CODE_CACHE.size);
-
 }
-
 
 /* ================= BỘ NHỚ ĐỆM BẢNG GIÁ ================= */
 
