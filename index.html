@@ -4319,8 +4319,27 @@ decoded.rom = iphone.rom;
 );
 
 
-  html += `
+/* ===== RENDER KẾT QUẢ CHIP ===== */
+
+html += `
 <div class="result-card ${chip.class}">
+
+${
+ADMIN_MODE
+? `
+<div class="admin-tools">
+
+  <button
+    class="admin-btn"
+    onclick="editCode('${x.code}')"
+  >
+    ✏️
+  </button>
+
+</div>
+`
+: ""
+}
 
 <div class="code-main">${x.code}</div>
 
@@ -4367,6 +4386,7 @@ decoded.chip > 0
   : ''
 )
 }
+
 </div>
 
 <div class="card-footer">
