@@ -1,5750 +1,2829 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title> TOOLVECHAIVER2</title>
 
-<link rel="icon" href="/TOOLVECHAIVER2/favicon.ico">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
+<title>POS PRO CLOUD</title>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<link
+href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+rel="stylesheet">
 
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<!--
 
-  
+TODO:
+
+[ ] Fix DOM historyPage
+[ ] Toast thông báo
+[ ] Xem chi tiết phiếu
+[ ] Nhà cung cấp
+[ ] Khách hàng
+[ ] Hóa đơn bán
+[ ] Firebase auth
+[ ] Tách module
+
+-->
 <style>
 
-
-
-/* ÉP 1 CỘT TRÊN MOBILE */
-@media (max-width:768px){
-  .result-grid{
-    grid-template-columns:1fr!important;
-  }
-}
-
-.result-card:hover{
-  border-color:#facc15;
-  transform:translateY(-4px);
-}
-
-/* ===== THANH PHÂN CÁCH HÃNG (STYLE SAMSUNG) ===== */
-.brand{
-  margin-top:14px;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:10px;
-
-  font-size:14px;
-  font-weight:600;
-  letter-spacing:0.4px;
-
-  color:#38bdf8;
-
-  text-shadow:
-    0 0 6px rgba(56,189,248,.6),
-    0 0 14px rgba(56,189,248,.35);
-}
-
-.brand::before,
-.brand::after{
-  content:"";
-  flex:1;
-  height:1px;
-
-  background:linear-gradient(
-    to right,
-    transparent,
-    rgba(56,189,248,.35),
-    transparent
-  );
-}
-
-
-  
-
-.link-id{
-  font-weight:600;
-  font-size:14px;
-}
-.chip-brand{
-  font-weight:500;
-  font-size:13.5px;
-  opacity:0.9;
-}
-
-.link-status{
-  margin-top:6px;
-  font-size:12px;
-  padding:4px 10px;
-  border-radius:999px;
-  display:inline-block;
-}
-
-.link-status.open{
-  background:#16a34a22;
-  color:#22c55e;
-}
-
-.link-status.lock{
-  background:#facc1522;
-  color:#facc15;
-}
-
-.link-actions{
-  display:flex;
-  gap:8px;
-}
-
-.icon-btn{
-  border:none;
-  background:#1f1f1f;
-  padding:8px 10px;
-  border-radius:10px;
-  cursor:pointer;
-  transition:0.2s;
-}
-
-.icon-btn:hover{
-  background:#2563eb;
-  color:white;
-}
-
-.icon-btn.delete:hover{
-  background:#dc2626;
-}
-
-
-/* ================= BỐ CỤC GRID CHUẨN ================= */
-
-/* Container ngoài */
-
-
-
-
-
-/* Tablet */
-@media(max-width:1200px){
-  .result-grid{
-    grid-template-columns:repeat(2,1fr);
-  }
-  #linkList{
-    grid-template-columns:repeat(2,1fr);
-  }
-}
-
-/* Mobile */
-@media(max-width:768px){
-  .result-grid{
-    grid-template-columns:1fr;
-    gap:25px;
-  }
-  #linkList{
-    grid-template-columns:1fr;
-  }
-}
-
-
-/* ================= GIAO DIỆN CARD ================= */
-
-
-
-
-.result-card:hover{
-  transform:translateY(-8px);
-  border-color:#facc15;
-  box-shadow:0 25px 60px rgba(250,204,21,0.25);
-}
-/* ===== DÒNG THÔNG TIN CHIP ===== */
-.chip-line{
-  display:flex;
-  align-items:center;
-  gap:18px;
-  margin-top:10px;
-font-size:14px;
-font-weight:500;
-
-}
-
-.chip-item{
-  display:flex;
-  align-items:center;
-  gap:6px;
-  font-size:14px;
-  font-weight:500;
-}
-
-/* ===== DÒNG THÔNG TIN MODEL (NÂNG CAO) ===== */
-.model-line{
-  margin-top:12px;
-  padding-top:10px;
-  border-top:1px solid rgba(255,255,255,0.08);
-
-  font-size:14px;          /* 🔥 to hơn */
-  font-weight:600;         /* 🔥 rõ hơn */
-  line-height:1.7;
-
-  color:#e2e8f0;           /* 🔥 sáng hơn */
-  letter-spacing:0.3px;
-}
-
-.model-icon{
-  font-size:12px;
-  opacity:0.6;
-  margin-right:6px;
-}
-
-.model-brand{
-  font-weight:500;
-  opacity:0.75;
-  letter-spacing:0.3px;
-}
-
-.model-sep{
-  margin:0 6px;
-  opacity:0.4;
-}
-
-.model-list{
-  font-weight:500;
-  color:#e2e8f0;
-}
-.admin-panel{
-  max-width:1150px;
-  margin:40px auto;
-}
-
-.main-title{
-  text-align:center;
-  margin-top:10px;
-  font-size:34px;
-  font-weight:800;
-  letter-spacing:2px;
-  color:#f1f5f9;
-  text-shadow:0 0 20px rgba(59,130,246,0.25);
-}
-
-
-.sub-title{
-  text-align:center;
-  margin-top:5px;
-  font-size:14px;
-  opacity:0.75;
-  letter-spacing:3px;
-  color:#94a3b8;
-}
-
-
-
-/* =====================================================
-   ⭐ CLEAN BADGE SYSTEM (RAM = VIP SAME SIZE)
-===================================================== */
-
-.ram-badge,
-.vip-badge{
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-
-  padding:5px 16px;
-  border-radius:999px;
-
-  font-size:13px;
-  font-weight:700;
-  letter-spacing:.4px;
-
-  backdrop-filter:blur(6px);
-  transition:.25s ease;
-}
-
-/* ================= RAM (Samsung Blue) ================= */
-
-.ram-badge{
-  color:#38E1FF;
-  background:rgba(0,194,255,.10);
-  border:1px solid rgba(56,225,255,.55);
-  box-shadow:0 0 14px rgba(0,194,255,.30);
-}
-
-.result-card:hover .ram-badge{
-  box-shadow:0 0 22px rgba(0,194,255,.45);
-}
-/* ================= MMC LEVEL ================= */
-
-/* base giữ style giống RAM nhưng khác màu */
-.mmc-badge{
-  color:#e5e7eb;
-  background:rgba(255,255,255,.05);
-  border:1px solid rgba(255,255,255,.12);
-}
-
-/* dot */
-.mmc-dot{
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  background:currentColor;
-  box-shadow:0 0 6px currentColor;
-}
-/* ===== CMS EDITOR ===== */
-
-.cms-overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.7);
-  z-index:99999;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-}
-
-.cms-box{
-  width:100%;
-  max-width:520px;
-  background:#0f172a;
-  border:1px solid #334155;
-  border-radius:18px;
-  padding:18px;
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-}
-
-.cms-title{
-  color:#fff;
-  font-size:20px;
-  font-weight:700;
-  margin-bottom:8px;
-}
-
-.cms-box input,
-.cms-box textarea{
-  width:100%;
-  background:#020617;
-  border:1px solid #334155;
-  color:#fff;
-  border-radius:12px;
-  padding:12px;
-  font-size:15px;
-  box-sizing:border-box;
-}
-
-.cms-box textarea{
-  min-height:140px;
-  resize:vertical;
-}
-
-.cms-actions{
-  display:flex;
-  gap:10px;
-}
-
-.cms-save,
-.cms-close{
-  flex:1;
-  border:none;
-  border-radius:12px;
-  padding:12px;
-  font-size:15px;
-  font-weight:700;
-  cursor:pointer;
-}
-
-.cms-save{
-  background:#22c55e;
-  color:#fff;
-}
-
-.cms-close{
-  background:#ef4444;
-  color:#fff;
-}
-/* ===== SAVE TOAST ===== */
-
-.save-toast{
-  position:fixed;
-  top:20px;
-  right:20px;
-  background:#22c55e;
-  color:#fff;
-  padding:12px 18px;
-  border-radius:12px;
-  font-weight:700;
-  z-index:999999;
-  box-shadow:0 10px 30px rgba(0,0,0,.3);
-  animation:toastIn .25s ease;
-}
-
-@keyframes toastIn{
-
-  from{
-    opacity:0;
-    transform:translateY(-10px);
-  }
-
-  to{
-    opacity:1;
-    transform:translateY(0);
-  }
-
-}
-/* ===== LEVEL ===== */
-
-/* MMC1 - yếu */
-.mmc-1{
-  color:#6b7280;
-}
-
-/* MMC2 */
-.mmc-2{
-  color:#3b82f6;
-}
-
-/* MMC3 */
-.mmc-3{
-  color:#10b981;
-}
-
-/* MMC4 (đang dùng nhiều) */
-.mmc-4{
-  color:#8b5cf6;
-}
-
-/* MMC5 - cao cấp */
-.mmc-5{
-  color:#f59e0b;
-  text-shadow:0 0 6px rgba(245,158,11,.6);
-}
-
-/* ================= VIP BASE ================= */
-
-.vip-badge{
-  background:rgba(255,255,255,.05);
-  border:1px solid rgba(255,255,255,.12);
-}
-.vip-unknown{
-  --c: #94a3b8;
-
-  color: var(--c);
-  background: linear-gradient(135deg, #1f2937, #475569);
-  box-shadow: 0 0 10px rgba(148,163,184,.3);
-}
-
-.vip-unknown .vip-dot{
-  background: var(--c);
-  box-shadow: 0 0 6px var(--c);
-}
-.vip-dot{
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  background:currentColor;
-  box-shadow:0 0 8px currentColor;
-}
-
-/* =====================================================
-   ⭐ NEW VIP COLOR SYSTEM (NO PURPLE)
-   1–4: Nhẹ
-   5+: Đẹp dần
-===================================================== */
-
-/* ===== 1–4 (NHẸ, DỊU) ===== */
-.vip-1{ color:#64748b; }   /* xám xanh */
-.vip-2{ color:#475569; }   /* xám đậm */
-.vip-3{ color:#0ea5e9; }   /* xanh dương nhẹ */
-.vip-4{ color:#06b6d4; }   /* cyan nhẹ */
-
-/* ===== 5–7 (BẮT ĐẦU ĐẸP) ===== */
-.vip-5{ color:#22c55e; }   /* xanh lá sáng */
-.vip-6{ color:#10b981; }   /* emerald */
-.vip-7{ color:#f59e0b; }   /* vàng cam */
-
-/* ===== 8–9 (NỔI BẬT) ===== */
-.vip-8{ color:#f97316; }   /* cam mạnh */
-.vip-9{ color:#ef4444; }   /* đỏ */
-
-/* ===== 10 (CAO NHẤT) ===== */
-.vip-10{
-  color:#facc15;           /* vàng gold */
-  text-shadow:0 0 8px rgba(250,204,21,.6);
-}
-.vip-11{
- color:#fde047;
- text-shadow:0 0 12px rgba(253,224,71,.9);
-}
-
-.vip-12{
- color:#facc15;
- text-shadow:0 0 14px rgba(250,204,21,.9);
-}
-
-/* ================= GIAO DIỆN ĐĂNG NHẬP ================= */
-
-.login-wrapper{
-  position:fixed;
-  inset:0;
-  z-index:9999;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  padding:20px;
-
-  background:
-    radial-gradient(circle at 15% 20%, rgba(59,130,246,0.25), transparent 40%),
-    radial-gradient(circle at 85% 80%, rgba(139,92,246,0.25), transparent 40%),
-    linear-gradient(160deg,#020617,#0f172a);
-
-  overflow:auto;
-}
-
-.login-box{
-  width:100%;
-  max-width:420px;
-  margin:auto;
-  padding:45px 35px;
-
-  border-radius:24px;
-  background:rgba(15,23,42,0.9);
-  backdrop-filter:blur(20px);
-  border:1px solid rgba(255,255,255,0.05);
-  box-shadow:0 50px 120px rgba(0,0,0,0.8);
-  text-align:center;
-}
-
-.login-title{
-  font-family:'Cinzel', serif;
-  font-size:52px;
-  font-weight:700;
-  letter-spacing:6px;
-  text-align:center;
-  margin-bottom:40px;
-
-  background:linear-gradient(180deg,#ffffff,#cbd5e1);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  text-shadow:0 0 20px rgba(255,255,255,0.2);
-}
-
-
-
-/* INPUT */
-.input-group{
-  position:relative;
-  margin-bottom:25px;
-}
-
-.input-group input{
-  width:100%;
-  height:56px;
-  padding:0 55px;
-  border-radius:16px;
-  border:1px solid rgba(255,255,255,0.08);
-  background:#0b1220;
-  color:white;
-  font-size:15px;
-  box-sizing:border-box;
-  transition:0.3s ease;
-}
-
-.input-group input::placeholder{
-  color:#64748b;
-}
-
-.input-group input:focus{
-  border-color:#2563eb;
-  box-shadow:0 0 0 3px rgba(37,99,235,0.25);
-  outline:none;
-}
-
-/* ICON LEFT */
-.input-icon{
-  position:absolute;
-  left:18px;
-  top:50%;
-  transform:translateY(-50%);
-  font-size:18px;
-  color:#facc15;
-}
-
-/* ICON RIGHT */
-.toggle-pass{
-  position:absolute;
-  right:18px;
-  top:50%;
-  transform:translateY(-50%);
-  cursor:pointer;
-  font-size:18px;
-  color:#cbd5e1;
-  transition:0.2s ease;
-}
-
-.toggle-pass:hover{
-  color:#facc15;
-  transform:translateY(-50%) scale(1.1);
-}
-
-/* BUTTON */
-.login-box button{
-  width:100%;
-  height:56px;
-  border:none;
-  border-radius:16px;
-  background:linear-gradient(90deg,#2563eb,#3b82f6);
-  font-weight:700;
-  font-size:16px;
-  cursor:pointer;
-  transition:0.3s ease;
-  box-shadow:0 15px 35px rgba(37,99,235,0.4);
-}
-
-.login-box button:hover{
-  transform:translateY(-3px);
-  box-shadow:0 20px 45px rgba(37,99,235,0.6);
-}
-
-/* ERROR */
-.login-error{
-  margin-top:15px;
-  color:#f87171;
-  font-weight:600;
-  display:none;
-}
-
-
-/* ===== CARD FOOTER GỌN ĐẸP ===== */
-
-.card-footer{
-  margin-top:14px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.chip-info{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  font-size:14px;
-  font-weight:500;
-  color:#22c55e;
-}
-
-.chip-dot{
-  width:8px;
-  height:8px;
-  border-radius:50%;
-}
-
-/* ===== NHÃN MÃ CHIP ===== */
-.code-title{
-  margin-bottom:12px;
-}
-
-.code-badge{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  padding:6px 14px;
-  border-radius:14px;
-  background:rgba(255,255,255,0.05);
-  border:1px solid rgba(255,255,255,0.08);
-  font-size:15px;
-  font-weight:600;
-}
-
-
-/* ===== NHÃN VIP ===== */
-.vip-badge{
-  margin:6px 0 10px 0;
-  letter-spacing:0.5px;
-  font-size:14px;
-  font-weight:700;
-}
-
-
-
-.chip-vip-line{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-}
-
-
-
-/* ================= TỐI ƯU GIAO DIỆN MOBILE ================= */
-
-
-  /* Main container */
-  .main-container{
-    padding:20px 15px !important;
-  }
-/* ===== CENTER HEADER + INPUT ===== */
-
-.title{
-  text-align:center;
-  margin-top:40px;
-}
-
-.clean-check{
-  max-width:1000px;
-  margin:25px auto 0 auto;
-}
-
-  /* Login box */
-  .login-box{
-    width:90%;
-    padding:30px 20px;
-    border-radius:18px;
-  }
-
-  .login-title{
-    font-size:26px;
-    margin-bottom:20px;
-  }
-
-  .login-box input{
-    height:46px;
-    font-size:14px;
-  }
-
-  .login-box button{
-    height:46px;
-    font-size:14px;
-  }
-
-  /* Dashboard cards */
-  .result-grid{
-    grid-template-columns:repeat(2,1fr);
-    gap:10px;
-  }
-
-  .result-card{
-    padding:14px;
-    border-radius:16px;
-  }
-
-  .code-title{
-    font-size:14px;
-  }
-
-  .chip-vip-line{
-    font-size:13px;
-    gap:10px;
-  }
-
-  .vip-badge{
-    font-size:12px;
-    padding:3px 8px;
-  }
-
-}
-/* Desktop container */
-.main-container{
-  padding:5px 20px 15px;
-  max-width:1150px;
-  margin:0 auto;
-}
-
-
- /* ===== NÚT TẠO LIÊN KẾT ===== */
-
-.create-link-btn{
-  display:none;
-  padding:8px 18px;
-  border-radius:999px;
-  border:1px solid rgba(34,197,94,0.4);
-  background:rgba(34,197,94,0.15);
-  color:#22c55e;
-  font-size:14px;
-  font-weight:600;
-  cursor:pointer;
-  transition:0.3s ease;
-}
-
-.create-link-btn.show{
-  display:inline-block;
-}
-
-
-
-.create-link-btn:hover{
-  background:#22c55e;
-  color:black;
-  box-shadow:0 8px 20px rgba(34,197,94,0.4);
-}
- 
-/* ===== Ô TÌM KIẾM + NÚT KIỂM TRA ===== */
-
-.check-group{
-  position:relative;
-  margin-top:15px;
-}
-
-.check-group input{
-  width:100%;
-  height:56px;
-  padding:0 120px 0 20px;
-  border-radius:14px;
-  border:1px solid #222;
-  background:#0f0f0f;
-  color:white;
-  font-size:15px;
-  box-sizing:border-box;
-  transition:0.3s;
-}
-
-.check-group input:focus{
-  border-color:#2563eb;
-  box-shadow:0 0 0 3px rgba(37,99,235,0.25);
-  outline:none;
-}
-
-.check-group button{
-  position:absolute;
-  right:6px;
-  top:50%;
-  transform:translateY(-50%);
-  height:44px;
-  padding:0 25px;
-  border:none;
-  border-radius:10px;
-  background:linear-gradient(90deg,#2563eb,#3b82f6);
-  color:white;
-  font-weight:700;
-  cursor:pointer;
-  transition:0.3s;
-}
-
-.check-group button:hover{
-  transform:translateY(-50%) scale(1.05);
-  box-shadow:0 8px 20px rgba(37,99,235,0.4);
-}
-
-/* ===== THÊM NGAY DƯỚI ĐÂY (ICON ✏️) ===== */
-
-.link-id-row{
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-
-
-/* ===== THANH TÌM KIẾM ===== */
-.clean-check{
-  position:relative;
-  margin-top:25px;
-}
-.clean-check input{
-  width:100%;
-  height:54px;
-  padding:0 60px 0 20px;
-  border-radius:16px;
-  border:1px solid rgba(255,255,255,0.08);
-  background:#0b1220;
-  color:white;
-  font-size:15px;
-  transition:all 0.25s ease;
-}
-
-/* Hover nhẹ */
-.clean-check input:hover{
-  border-color:#1d4ed8;
-  box-shadow:0 0 15px rgba(37,99,235,0.2);
-  background:#0e1628;
-}
-
-/* Focus Glow PRO */
-.clean-check input:focus{
-  border-color:#2563eb;
-  box-shadow:
-    0 0 0 3px rgba(37,99,235,0.25),
-    0 0 25px rgba(37,99,235,0.35);
-  outline:none;
-  background:#0f172a;
-}
-
-.clean-check .check-btn{
-  position:absolute;
-  right:8px;
-  top:50%;
-  transform:translateY(-50%);
-  height:42px;
-  width:42px;
-  border:none;
-  border-radius:12px;
-  background:#1f2937;
-  color:#94a3b8;
-  font-size:16px;
-  cursor:pointer;
-  transition:all 0.25s ease;
-}
-
-/* Hover nút search */
-.clean-check .check-btn:hover{
-  background:#2563eb;
-  color:white;
-  box-shadow:0 0 15px rgba(37,99,235,0.4);
-}
-
-/* Khi input focus thì nút cũng sáng */
-.clean-check input:focus + .check-btn{
-  background:#2563eb;
-  color:white;
-}
-
-
-/* =====================================================
-CARD QUẢN LÝ (ADMIN)
-===================================================== */
-
-.link-card{
-  background:linear-gradient(
-    145deg,
-    rgba(15,23,42,.95),
-    rgba(2,6,23,.9)
-  );
-
-  border:1px solid rgba(255,255,255,.06);
-  border-radius:16px;
-
-  padding:14px 16px;
-
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-
-  min-height:105px;
-
-  transition:.25s ease;
-
-  box-shadow:
-    0 8px 25px rgba(0,0,0,.6);
-}
-
-.link-card:hover{
-  transform:translateY(-2px);
-
-  border-color:#38bdf8;
-
-  box-shadow:
-    0 15px 35px rgba(0,0,0,.75),
-    0 0 10px rgba(56,189,248,.25);
-}
-
-
-/* ===== LEFT INFO ===== */
-
-.link-left{
-  display:flex;
-  flex-direction:column;
-
-  gap:4px;
-
-  font-size:13px;
-  line-height:1.3;
-}
-
-
-/* ===== ACTION ICON ===== */
-
-.link-actions{
-  display:flex;
-  gap:8px;
-}
-
-.icon-btn{
-  width:34px;
-  height:34px;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  border-radius:9px;
-
-  border:1px solid rgba(255,255,255,.05);
-
-  background:#1f2937;
-
-  cursor:pointer;
-
-  transition:.2s;
-}
-
-.icon-btn:hover{
-  background:#2563eb;
-  color:white;
-}
-
-.icon-btn.delete:hover{
-  background:#dc2626;
-}
-
-
-/* ===== RESULT GRID FINAL (FIX ĐÈ CARD) ===== */
-
-#out{
-  margin-top:30px;
-}
-
-/* ===== LƯỚI HIỂN THỊ KẾT QUẢ ===== */
-.result-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:30px;
-  max-width:1150px;
-  margin:0 auto;
-}
-
-/* Tablet */
-@media(max-width:1200px){
-  .result-grid{
-    grid-template-columns:repeat(2,1fr);
-  }
-}
-
-/* Mobile */
-@media(max-width:768px){
-  .result-grid{
-    grid-template-columns:1fr;
-  }
-}
-
-/* ===== ADMIN GRID (LUÔN 3 CỘT DESKTOP) ===== */
-#linkList{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:25px;
-  max-width:1150px;  /* đổi từ 1050 thành 1100 */
-  margin:0 auto;
-}
-
-
-/* Card full width chuẩn */
-.result-card{
-  position:relative;
-  overflow:hidden;
-
-  width:100%;
-  box-sizing:border-box;
-}
-
-/* ===== ADMIN TOOLS ===== */
-.admin-tools{
-  position:absolute;
-  top:10px;
-  right:10px;
-  z-index:999;
-}
-
-.admin-btn{
-  width:32px;
-  height:32px;
-  border:none;
-  border-radius:10px;
-  background:#111827;
-  color:#fff;
-  cursor:pointer;
-  font-size:14px;
-}
-
-/* ===== MÀU THEO CẤP MMC ===== */
-.mmc-1{ color:#22d3ee; }
-.mmc-2{ color:#34d399; }
-.mmc-3{ color:#60a5fa; }
-.mmc-4{ color:#f59e0b; }
-.mmc-5{ color:#f97316; }
-.mmc-6{ color:#ef4444; }
-
-
-/* ===== MMC DOT ===== */
-.mmc-dot{
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  background:currentColor;
-  box-shadow:0 0 10px currentColor;
-}
-
-.pro-dot{
-  width:7px;
-  height:7px;
-  border-radius:50%;
-  background:currentColor;
-  box-shadow:0 0 6px currentColor;
-}
-
-.model-placeholder{
-  margin-top:14px;
-  font-size:13px;
-  opacity:0.7;
-  font-style:italic;
-  display:flex;
-  align-items:center;
-  gap:8px;
-  letter-spacing:0.3px;
-  color:#cbd5e1;
-}
-.chip-item{
-  font-weight:500;
-  font-size:14px;
-  letter-spacing:0.3px;
-}
-
-.model-line{
-  margin-top:14px;
-  font-size:13px;
-  line-height:1.7;
-}
-
-.model-icon{
-  font-size:12px;
-  opacity:0.6;
-  margin-right:6px;
-}
-
-.model-brand{
-  font-weight:500;
-  opacity:0.75;
-  letter-spacing:0.3px;
-}
-
-.model-sep{
-  margin:0 6px;
-  opacity:0.4;
-}
-
-.model-list{
-  font-weight:500;
-  color:#e2e8f0;
-}
-
-
-/* ===== THANH TRÊN ADMIN ===== */
-.admin-top-bar{
-  display:flex;
-  align-items:center;
-  gap:15px;
-
-  width:100%;
-  max-width:1150px;   /* ⭐ BẰNG #linkList */
-  margin:25px auto 0 auto;
-}
-
-/* ===== SEARCH FULL WIDTH ===== */
-.clean-check{
-  flex:1;
-  width:100%;
-}
-
-/* ===== NÚT BẬT/TẮT ADMIN ===== */
-
-.admin-toggle-btn{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:10px 22px;
-  border-radius:999px;
-  border:1px solid rgba(255,255,255,0.1);
-  background:rgba(255,255,255,0.04);
-  backdrop-filter:blur(10px);
-  color:#e2e8f0;
-  font-weight:600;
-  letter-spacing:0.5px;
-  cursor:pointer;
-  transition:all 0.35s cubic-bezier(.4,0,.2,1);
-  position:relative;
-  overflow:hidden;
-}
-
-/* Gradient glow nền */
-.admin-toggle-btn::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:linear-gradient(90deg,#2563eb,#3b82f6,#06b6d4);
-  opacity:0;
-  transition:0.4s;
-  z-index:0;
-}
-
-.admin-toggle-btn span{
-  position:relative;
-  z-index:1;
-}
-
-/* Hover */
-.admin-toggle-btn:hover{
-  transform:translateY(-2px);
-  box-shadow:0 12px 30px rgba(37,99,235,0.3);
-}
-
-/* Active state */
-.admin-toggle-btn.active{
-  color:white;
-  border-color:transparent;
-  box-shadow:0 15px 40px rgba(37,99,235,0.5);
-}
-
-.admin-toggle-btn.active::before{
-  opacity:1;
-}
-
-/* Icon xoay */
-.admin-icon{
-  transition:transform 0.4s ease;
-}
-
-.admin-toggle-btn.active .admin-icon{
-  transform:rotate(180deg);
-}
-
-/* Mũi tên dropdown */
-.admin-arrow{
-  margin-left:auto;
-  transition:transform 0.4s ease;
-}
-
-.admin-toggle-btn.active .admin-arrow{
-  transform:rotate(180deg);
-}
-
-/* ===== CREATE LINK BUTTON ===== */
-.create-link-btn.small{
-  padding:8px 18px;
-  font-size:13px;
-  border-radius:999px;
-  border:1px solid rgba(34,197,94,0.4);
-  background:rgba(34,197,94,0.15);
-  color:#22c55e;
-  font-weight:600;
-  transition:all 0.3s ease;
-}
-/* ===== CREATE LINK AUTO HIDE ===== */
-
-.create-link-btn{
-  opacity:0;
-  transform:translateY(-5px);
-  pointer-events:none;
-  transition:all 0.3s ease;
-}
-
-.create-link-btn.show{
-  opacity:1;
-  transform:translateY(0);
-  pointer-events:auto;
-}
-
-.create-link-btn.small:hover{
-  background:#22c55e;
-  color:black;
-  box-shadow:0 8px 20px rgba(34,197,94,0.4);
-}
-
-/* ===== NỘI DUNG ADMIN (ẨN/HIỆN) ===== */
-
-#adminContent{
-  max-height:0;
-  overflow:hidden;
-  opacity:0;
-  transform:translateY(-8px);
-  transition:
-    max-height 0.45s cubic-bezier(.4,0,.2,1),
-    opacity 0.35s ease,
-    transform 0.35s ease;
-}
-
-#adminContent.open{
-  max-height:3000px; /* đủ lớn để không bị cắt */
-  opacity:1;
-  transform:translateY(0);
-}
-@media (max-width: 768px) {
-
-  body {
-    padding-top: 20px;
-  }
-
-  .search-bar,
-  .input-wrapper,
-  .search-container {
-    margin-top: 20px !important;
-  }
-
-}
-/* ===== NHÓM HIỂN THỊ MODEL ===== */
-
-.model-row{
-  margin-top:6px;
-  font-size:14px;
-  line-height:1.6;
-  opacity:0.9;
-}
-
-.model-row .brand{
-  color:#4ade80;
-  font-weight:600;
-  letter-spacing:0.3px;
-}
-
-.model-row .model-list{
-  color:#e2e8f0;
-  font-weight:500;
-}
-/* ===== THANH TIẾN TRÌNH ===== */
-.progress-wrapper{
-  margin-top:20px;
-  padding:20px;
-  background:rgba(255,255,255,0.03);
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,0.08);
-}
-
-.progress-title{
-  font-size:14px;
-  margin-bottom:10px;
-  opacity:0.8;
-}
-
-.progress-bar{
-  width:100%;
-  height:10px;
-  background:rgba(255,255,255,0.08);
-  border-radius:10px;
-  overflow:hidden;
-  position:relative;
-}
-
-.progress-fill{
-  height:100%;
-  width:0%;
-  background:linear-gradient(90deg,#00f5a0,#00d9ff);
-  border-radius:10px;
-  transition:width 0.3s ease;
-}
-
-.progress-percent{
-  margin-top:8px;
-  font-size:13px;
-  opacity:0.7;
-  text-align:right;
-}
-
-/* =====================================================
-🔬 CHẾ ĐỘ LAB — GIAO DIỆN TOOL NỘI BỘ
-===================================================== */
-
-/* ===== LAB BACKGROUND ===== */
-body{
-  background:
-    radial-gradient(circle at 85% 20%, rgba(37,99,235,.35), transparent 45%),
-    radial-gradient(circle at 10% 90%, rgba(59,130,246,.25), transparent 50%),
-    linear-gradient(160deg,#020617,#020617,#010409);
-
-  color:#e5e7eb;
-}
-
-/* PCB GRID EFFECT */
-body::before{
-  content:"";
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  background:
-    repeating-linear-gradient(
-      90deg,
-      transparent,
-      transparent 120px,
-      rgba(56,189,248,.04) 121px,
-      transparent 122px
-    );
-}
-
-/* ===== RESULT CARD HARDWARE STYLE — PRO FIX ===== */
-.result-card{
-
-  /* nền glass thật */
-  background:
-    linear-gradient(145deg,
-      rgba(11,18,32,.85),
-      rgba(2,6,23,.75)
-    );
-
-  border-radius:22px;
-
-  /* viền mềm hơn */
-  border:1px solid rgba(255,255,255,.08);
-
-  /* ⭐ DÒNG QUAN TRỌNG NHẤT */
-  backdrop-filter:blur(14px);
-
-  /* depth thật */
-  box-shadow:
-    0 20px 60px rgba(0,0,0,.85),
-    inset 0 0 25px rgba(255,255,255,.03);
-
-  transition:.35s cubic-bezier(.4,0,.2,1);
-  position:relative;
-  overflow:hidden;
-}
-
-/* CHIP SCAN LIGHT */
-.result-card::after{
-  content:"";
-  position:absolute;
-  top:0;
-  left:-130%;
-  width:130%;
-  height:100%;
-  background:linear-gradient(
-    120deg,
-    transparent,
-    rgba(56,189,248,.25),
-    transparent
-  );
-  transition:1.1s ease;
-}
-
-.result-card:hover::after{
-  left:130%;
-}
-
-/* ⭐ HOVER PRO FEEL */
-.result-card:hover{
-  transform:translateY(-6px) scale(1.015);
-  border-color:#38bdf8;
-
-  box-shadow:
-    0 35px 90px rgba(0,0,0,.95),
-    0 0 25px rgba(56,189,248,.18);
-}
-
-/* ===== CARD APPEAR ANIMATION ===== */
-.result-card{
-  animation:labCardIn .5s ease forwards;
-  opacity:0;
-}
-
-@keyframes labCardIn{
-  from{
-    transform:translateY(20px);
-    opacity:0;
-  }
-  to{
-    transform:translateY(0);
-    opacity:1;
-  }
-}
-
-/* ===== SAMSUNG VIP GLASS ===== */
-.vip-badge{
-  background:rgba(255,255,255,.05);
-  border:1px solid rgba(255,255,255,.12);
-  backdrop-filter:blur(12px);
-
-  color:#e2e8f0;
-
-  box-shadow:
-    inset 0 0 10px rgba(255,255,255,.05),
-    0 8px 25px rgba(0,0,0,.5);
-}
-
-/* ===== BRAND COLOR ===== */
-.brand{
-  color:#9fb3c8;
-  font-weight:500;
-}
-
-/* ===== SEARCH AI GLOW ===== */
-.clean-check input:focus{
-  border-color:#38bdf8;
-  box-shadow:
-    0 0 0 3px rgba(56,189,248,.25),
-    0 0 30px rgba(56,189,248,.35);
-}
-
-/* FORCE LIGHT TEXT */
-.result-card,
-.result-card *{
-  color:#e2e8f0;
-}
-/* =====================================================
-⭐ HỆ THỐNG VIP (1 → 10)
-===================================================== */
-
-/* =====================================================
-   1 → 4 (NO GLOW – LIGHT LEVEL)
-===================================================== */
-
-.vip-1{
-  color:#94a3b8;   /* light gray */
-}
-
-.vip-2{
-  color:#60a5fa;   /* soft blue */
-}
-
-.vip-3{
-  color:#38bdf8;   /* bright sky */
-}
-
-.vip-4{
-  color:#22d3ee;   /* cyan */
-}
-
-/* =====================================================
-   BASE STYLE FOR GLOW LEVELS (5+)
-===================================================== */
-
-.vip-5,
-.vip-6,
-.vip-7,
-.vip-8,
-.vip-9,
-.vip-10,
-.vip-4-5,
-.vip-6-5,
-.vip-8-5,
-.vip-9-5{
-  position:relative;
-  z-index:1;
-  transition:all .35s ease;
-}
-
-/* =====================================================
-   GLOW LAYER
-===================================================== */
-
-.vip-5::after,
-.vip-6::after,
-.vip-7::after,
-.vip-8::after,
-.vip-9::after,
-.vip-10::after,
-.vip-4-5::after,
-.vip-6-5::after,
-.vip-8-5::after,
-.vip-9-5::after{
-  content:"";
-  position:absolute;
-  inset:-7px;
-  border-radius:999px;
-  filter:blur(18px);
-  opacity:.45;
-  z-index:-1;
-  transition:all .35s ease;
-}
-
-/* =====================================================
-   5 → 10 MAIN LEVEL (BRIGHT SCALE)
-===================================================== */
-
-.vip-5{ color:#34d399; }
-.vip-6{ color:#2dd4bf; }
-.vip-7{ color:#fbbf24; }
-.vip-8{ color:#fb923c; }
-.vip-9{ color:#f87171; }
-.vip-10{
-  color:#fde047;
-  text-shadow:0 0 10px rgba(253,224,71,.7);
-}
-
-/* glow colors */
-.vip-5::after{ background:#34d399; }
-.vip-6::after{ background:#2dd4bf; }
-.vip-7::after{ background:#fbbf24; }
-.vip-8::after{ background:#fb923c; }
-.vip-9::after{ background:#f87171; }
-.vip-10::after{ background:#fde047; }
-
-/* =====================================================
-   PLUS LEVELS (x.5)
-===================================================== */
-
-.vip-4-5{ color:#0ea5e9; }   /* deeper blue */
-.vip-6-5{ color:#10b981; }
-.vip-8-5{ color:#ea580c; }
-.vip-9-5{ color:#dc2626; }
-
-.vip-4-5::after{ background:#0ea5e9; }
-.vip-6-5::after{ background:#10b981; }
-.vip-8-5::after{ background:#ea580c; }
-.vip-9-5::after{ background:#dc2626; }
-
-/* =====================================================
-   HOVER BOOST
-===================================================== */
-
-.result-card:hover .vip-5::after,
-.result-card:hover .vip-6::after,
-.result-card:hover .vip-7::after,
-.result-card:hover .vip-8::after,
-.result-card:hover .vip-9::after,
-.result-card:hover .vip-10::after,
-.result-card:hover .vip-4-5::after,
-.result-card:hover .vip-6-5::after,
-.result-card:hover .vip-8-5::after,
-.result-card:hover .vip-9-5::after{
-  opacity:.85;
-  filter:blur(24px);
-}
-
-/* VIP 10 extra premium */
-.result-card:hover .vip-10{
-  text-shadow:
-    0 0 12px rgba(253,224,71,.9),
-    0 0 25px rgba(253,224,71,.6);
-}
-
-/* =====================================================
-📱 GIAO DIỆN ADMIN TRÊN MOBILE
-===================================================== */
-@media (max-width:768px){
-
-  /* ===== TOP BAR ===== */
-  .admin-top-bar{
-    flex-direction:column;
-    align-items:stretch;
-    gap:12px;
-    margin-top:15px !important;
-  }
-
-  /* ===== SEARCH FULL WIDTH ===== */
-  .clean-check{
-    width:100%;
-  }
-
-.clean-check input{
-  height:44px;
-  font-size:14px;
-  padding:0 48px 0 14px;
-  border-radius:12px;
-
-  text-transform:uppercase;
-}
-
-  .clean-check .check-btn{
-    height:34px;
-    width:34px;
-    font-size:14px;
-    right:6px;
-  }
-
-  /* =================================================
-     ⚙ ADMIN FLOAT BUTTON
-  =================================================*/
-  .admin-text{
-    display:none; /* ẩn chữ Admin */
-  }
-
-  .admin-toggle-btn{
-    position:fixed;
-    bottom:22px;
-    right:18px;
-
-    width:52px;
-    height:52px;
+*{
+    margin:0;
     padding:0;
+    box-sizing:border-box;
+    font-family:'Inter',sans-serif;
+}
 
-    border-radius:50%;
-    justify-content:center;
+body{
+    background:#f4f7fb;
+    color:#111827;
+}
 
-    font-size:20px;
-    z-index:9999;
+.app{
+    display:flex;
+    min-height:100vh;
+}
 
-    background:linear-gradient(135deg,#2563eb,#3b82f6);
+/* ====== SIDEBAR ====== */
+
+.sidebar{
+    width:220px;
+    background:#0f172a;
     color:white;
+    position:fixed;
+    top:0;
+    left:0;
+    bottom:0;
+    padding:18px 0;
+    z-index:100;
+    transition:left .25s ease;
+}
+
+.logo{
+    padding:0 18px 18px;
+    font-size:22px;
+    font-weight:800;
+}
+
+.menu button{
+    width:calc(100% - 12px);
+    margin-left:6px;
+    border:none;
+    background:none;
+    color:white;
+    text-align:left;
+    padding:12px 14px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:12px;
+}
+
+.menu button.active,
+.menu button:hover{
+    background:#13203a;
+}
+
+/* ====== MAIN ====== */
+
+.main{
+    flex:1;
+    margin-left:220px;
+}
+
+.header{
+    background:white;
+    border-bottom:1px solid #e2e8f0;
+    padding:14px 16px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+}
+
+.header-left{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.page-title{
+    font-size:18px;
+    font-weight:800;
+}
+
+.search{
+    width:280px;
+    border:1px solid #dbe2ea;
+    padding:10px 14px;
+    border-radius:8px;
+    outline:none;
+    font-size:12px;
+}
+
+.content{
+    padding:14px;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:14px;
+}
+
+.card{
+    background:white;
+    padding:18px;
+    border-radius:12px;
+}
+
+.card-title{
+    color:#64748b;
+    font-size:12px;
+}
+
+.card-value{
+    font-size:28px;
+    font-weight:800;
+    margin-top:10px;
+}
+    
+/* ====== BẢNG ====== */
+
+.table-wrap{
+    background:white;
+    border:1px solid #e2e8f0;
+    overflow:auto;
+    margin-top:14px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    table-layout:fixed;
+}
+
+th{
+    background:#f8fafc;
+    border-bottom:1px solid #e2e8f0;
+    padding:10px;
+    text-align:left;
+    font-size:12px;
+    white-space:nowrap;
+}
+
+td{
+    border-bottom:1px solid #edf2f7;
+    padding:8px 10px;
+    font-size:12px;
+}
+
+/* ====== NHẬP HÀNG ====== */
+
+#nhapTable td{
+    padding:0 !important;
+}
+
+#nhapTable tr{
+    height:44px;
+}
+
+#nhapTable input{
+    width:100%;
+    height:44px;
+    border:none;
+    border-right:1px solid #e2e8f0;
+    outline:none;
+    padding:0 10px;
+    font-size:12px;
+}
+
+/* ====== NÚT ====== */
+
+.btn{
+    border:none;
+    border-radius:8px;
+    padding:9px 12px;
+    font-size:12px;
+    font-weight:700;
+    cursor:pointer;
+}
+
+.btn-blue{
+    background:#2563eb;
+    color:white;
+}
+
+.btn-green{
+    background:#16a34a;
+    color:white;
+}
+
+.btn-red{
+    background:#dc2626;
+    color:white;
+}
+
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:10px;
+    margin-bottom:14px;
+}
+
+/* ====== TỔNG TIỀN ====== */
+
+.total-box{
+    background:white;
+    border:1px solid #e2e8f0;
+    margin-top:14px;
+    padding:18px;
+}
+
+.total-big{
+    font-size:28px;
+    font-weight:800;
+    color:#2563eb;
+    margin:10px 0;
+}
+
+.save-btn{
+    width:100%;
+}
+/* ====== AUTOCOMPLETE ====== */
+
+.auto-wrap{
+    position:relative;
+}
+
+.auto-list{
+    position:absolute;
+    top:100%;
+    left:0;
+    right:0;
+    background:white;
+    border:1px solid #dbe2ea;
+    border-top:none;
+    max-height:220px;
+    overflow:auto;
+    z-index:50;
+}
+
+.auto-item{
+    padding:10px;
+    cursor:pointer;
+    border-bottom:1px solid #f1f5f9;
+    font-size:12px;
+}
+
+.auto-item:hover{
+    background:#eff6ff;
+}
+/* ====== MODAL ====== */
+
+.modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.4);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:500;
+}
+
+.modal-box{
+    width:100%;
+    max-width:260px;
+    background:white;
+    padding:20px;
+    border-radius:12px;
+}
+
+.modal-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:16px;
+}
+
+.close-btn{
+    width:34px;
+    height:34px;
+    border:none;
+    border-radius:8px;
+    background:#ef4444;
+    color:white;
+    cursor:pointer;
+}
+
+.form-group{
+    margin-bottom:12px;
+}
+
+.form-group input{
+    width:100%;
+    border:1px solid #dbe2ea;
+    padding:11px 12px;
+    border-radius:8px;
+    outline:none;
+    font-size:12px;
+}
+
+.full-btn{
+    width:100%;
+}
+
+/* ====== MOBILE ====== */
+
+.mobile-toggle{
+    display:none;
+}
+
+@media(max-width:900px){
+
+/* ====== THANH BÊN MOBILE ====== */
+
+.sidebar{
+
+    left:-220px;
+
+    width:220px;
+
+}
+
+.sidebar.show{
+
+    left:0;
+
+}
+
+.main{
+
+    margin-left:0;
+
+    width:100%;
+
+}
+
+/* ====== ĐẦU TRANG MOBILE ====== */
+
+.header{
+
+    padding:10px;
+
+    flex-direction:column;
+
+    align-items:stretch;
+
+    gap:10px;
+
+}
+
+.header-left{
+
+    width:100%;
+
+    justify-content:space-between;
+
+}
+
+.page-title{
+
+    font-size:16px;
+
+}
+
+.search{
+
+    width:100%;
+
+}
+
+/* ====== NỘI DUNG MOBILE ====== */
+
+.content{
+
+    padding:10px;
+
+}
+
+/* ====== NÚT MOBILE ====== */
+
+.btn{
+
+    padding:8px 10px;
+
+    font-size:11px;
+
+}
+
+/* ====== THANH TRÊN MOBILE ====== */
+
+.topbar{
+
+    flex-wrap:wrap;
+
+    justify-content:flex-start;
+
+}
+
+/* ====== THẺ MOBILE ====== */
+
+.cards{
+
+    grid-template-columns:1fr;
+
+}
+
+.card{
+
+    padding:14px;
+
+}
+
+.card-value{
+
+    font-size:22px;
+
+}
+
+/* ====== BẢNG MOBILE ====== */
+
+.table-wrap{
+
+    overflow-x:auto;
+
+}
+
+table{
+
+    min-width:900px;
+
+}
+
+/* ====== BẢNG MOBILE ====== */
+
+#nhapTable input{
+
+    min-width:70px;
+
+    font-size:11px;
+
+}
+
+/* ====== MODAL MOBILE ====== */
+
+.modal-box{
+
+    width:calc(100% - 20px);
+
+    max-width:none;
+
+    padding:16px;
+
+}
+
+/* ====== NÚT MENU MOBILE ====== */
+
+.mobile-toggle{
+
+    display:block;
+
     border:none;
 
-    box-shadow:
-      0 12px 30px rgba(37,99,235,.6);
-  }
+    background:#2563eb;
 
-  .admin-toggle-btn:hover{
-    transform:scale(1.08);
-  }
+    color:white;
 
-  /* ===== HIDE CREATE LINK (mobile dùng admin panel) ===== */
-  .create-link-btn{
-    display:none !important;
-  }
+    padding:8px 12px;
 
-  /* ===== CARD GRID MOBILE ===== */
-  #linkList{
-    grid-template-columns:1fr;
-    gap:14px;
-    padding:0 10px;
-  }
-
-  /* ===== RESULT CARD GỌN ===== */
-  .result-card{
-    padding:14px;
-    border-radius:16px;
-  }
-
-  /* ===== FIX HEADER SPACE ===== */
-  .main-title{
-    font-size:22px;
-  }
-
-  .sub-title{
-    font-size:12px;
-    letter-spacing:2px;
-  }
+    border-radius:8px;
 
 }
-/* ===== LANGUAGE SWITCH ===== */
-.lang-switch{
-  margin-top:10px;
-  text-align:center;
+
+}
+    
+/* ====== ẨN ====== */
+    
+.hidden{
+    display:none;
 }
 
-.lang-switch button{
-  border:none;
-  background:#1f2937;
-  color:white;
-  padding:6px 10px;
-  margin:0 4px;
-  border-radius:8px;
-  cursor:pointer;
-  font-size:16px;
-  transition:.25s;
-}
-
-.lang-switch button:hover{
-  background:#2563eb;
-}
-.badge-row{
-  display:flex;
-  gap:10px;
-  margin-top:12px;
-  align-items:center;
-  padding-left:0;   /* đảm bảo không thụt */
-  margin-left:0;    /* đảm bảo không thụt */
-}
-<style>
-
-/* ===== BẢNG GIÁ THEO MODEL ===== */
-
-.price-box{
-  margin-top:12px;
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-}
-
-.price-title{
-  font-size:13px;
-  font-weight:600;
-  color:#94a3b8;
-  margin-bottom:4px;
-  letter-spacing:.5px;
-}
-
-.price-item{
-  display:flex;
-  justify-content:space-between;
-  background:rgba(255,255,255,0.05);
-  padding:6px 10px;
-  border-radius:8px;
-}
-
-.price-value{
-  font-weight:600;
-  color:#22c55e;
-}
-/* ===== HEADER CARD (TITLE + LOẠI) ===== */
-.code-title{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
-/* ===== BADGE LOẠI SAMSUNG (FINAL PRO) ===== */
-.model-type{
-  margin-left:auto;
-
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-
-  height:28px;
-  padding:0 12px;
-
-  font-family:'Poppins', sans-serif;
-  font-weight:600;
-  font-size:13px;
-  letter-spacing:0.3px;
-  line-height:1;
-
-  color:#22c55e;
-  background:rgba(34,197,94,0.12);
-  border:1px solid rgba(34,197,94,0.35);
-  border-radius:999px;
-
-  box-shadow:0 0 12px rgba(34,197,94,0.25);
-
-  gap:6px;
-  white-space:nowrap;
-}
-
-/* text bên trong */
-.model-type b{
-  font-weight:600;
-  color:#22c55e;
-}
-/* ===== ẨN PHẦN QUẢN LÝ ADMIN NHƯNG GIỮ KHUNG CHECK ===== */
-html.user-mode #adminContent,
-html.user-mode #linkList,
-html.user-mode #adminToggle,
-html.user-mode .create-link-btn{
-  display:none !important;
-}
-
-  
 </style>
-
 
 </head>
 
 <body>
-<!-- =====================================================
-ADMIN UI STABLE BUILD — READ BEFORE EDIT
-Layout đã ổn định.
-Không sửa grid hoặc .link-card.
-Chỉ nâng cấp logic JS hoặc màu sắc.
-===================================================== -->
 
-<!-- LOGIN SCREEN -->
-<div id="loginScreen" class="login-wrapper">
-  <div class="login-box">
-    <h1 class="login-title">TOOLVECHAI</h1>
+<div class="app">
 
-    <!-- USER -->
-    <div class="input-group">
-      <span class="input-icon">👤</span>
-      <input id="loginEmail" type="email" placeholder="USER">
-    </div>
+    <!-- SIDEBAR -->
 
-    <!-- PASS -->
-    <div class="input-group">
-      <span class="input-icon">🔒</span>
-      <input id="loginPass" type="password" placeholder="PASS">
-      <span class="toggle-pass" onclick="togglePassword()">👁</span>
-    </div>
+    <aside class="sidebar"
+    id="sidebar">
 
-    <button onclick="secureLogin()" data-i18n="login">
-ĐĂNG NHẬP
+        <div class="logo">
+
+            POS PRO
+
+        </div>
+
+        <div class="menu">
+
+            <button id="btnDashboard">
+                Dashboard
+            </button>
+
+            <button
+            id="btnProducts"
+            class="active">
+
+                Sản phẩm
+
+            </button>
+
+            <button id="btnNhap">
+                Nhập hàng
+            </button>
+        <button id="btnHistory">
+    Lịch sử nhập
 </button>
-    <div id="loginError" class="login-error">Sai tài khoản!</div>
-  </div>
+        </div>
+
+    </aside>
+
+    <!-- MAIN -->
+
+    <main class="main">
+
+        <div class="header">
+
+            <div class="header-left">
+
+                <button
+                class="mobile-toggle"
+                onclick="toggleSidebar()">
+
+                    ☰
+
+                </button>
+
+                <div class="page-title"
+                id="pageTitle">
+
+                    Sản phẩm
+
+                </div>
+
+            </div>
+
+            <input
+            type="text"
+            class="search"
+            id="searchInput"
+            placeholder="Tìm sản phẩm..."
+            oninput="renderProducts()">
+
+        </div>
+
+        <div class="content">
+            <!-- DASHBOARD -->
+
+            <div id="dashboardPage"
+            class="hidden">
+
+                <div class="cards">
+
+                    <div class="card">
+
+                        <div class="card-title">
+                            Tổng sản phẩm
+                        </div>
+
+                        <div class="card-value"
+                        id="totalProducts">
+                            0
+                        </div>
+
+                    </div>
+
+                    <div class="card">
+
+                        <div class="card-title">
+                            Tổng tồn kho
+                        </div>
+
+                        <div class="card-value"
+                        id="totalStock">
+                            0
+                        </div>
+
+                    </div>
+
+                    <div class="card">
+
+                        <div class="card-title">
+                            Tổng giá trị
+                        </div>
+
+                        <div class="card-value"
+                        id="totalValue">
+                            0đ
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- PRODUCTS -->
+
+            <div id="productsPage">
+
+                <div class="topbar">
+
+                    <button
+                    class="btn btn-green"
+                    onclick="excelFile.click()">
+
+                        Import Excel
+
+                    </button>
+
+                    <button
+                    class="btn btn-blue"
+                    onclick="exportExcel()">
+
+                        Xuất Excel
+
+                    </button>
+
+                    <button
+                    class="btn btn-blue"
+                    onclick="openModal()">
+
+                        Thêm sản phẩm
+
+                    </button>
+
+                    <input
+                    type="file"
+                    id="excelFile"
+                    hidden
+                    accept=".xlsx,.xls">
+
+                </div>
+
+                <div class="table-wrap">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>Mã</th>
+                                <th>Tên</th>
+                                <th>Giá nhập</th>
+                                <th>Giá bán</th>
+                                <th>Giá sỉ</th>
+                                <th>Tồn</th>
+                                <th>Thao tác</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="productTable">
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+<!-- NHẬP HÀNG -->
+
+<div id="nhapPage" class="hidden">
+
+    <!-- PHIẾU NHẬP KHO -->
+
+    <div style="
+    background:white;
+    border:1px solid #e2e8f0;
+    padding:16px;
+    margin-bottom:14px;
+    ">
+
+        <!-- TIÊU ĐỀ -->
+
+        <div style="
+        text-align:center;
+        margin-bottom:26px;
+        ">
+
+            <div style="
+            font-size:20px;
+            font-weight:700;
+            letter-spacing:1px;
+            ">
+
+                PHIẾU NHẬP KHO
+
+            </div>
+
+            <div style="
+            margin-top:10px;
+            font-size:13px;
+            color:#64748b;
+            ">
+
+                Ngày:
+                <span id="timeInput"></span>
+
+            </div>
+
+        </div>
+
+        <!-- THÔNG TIN -->
+
+<div style="
+display:grid;
+grid-template-columns:110px 220px;
+row-gap:14px;
+column-gap:14px;
+align-items:center;
+max-width:1000px;
+">
+
+    <!-- NHÀ CUNG CẤP -->
+
+    <div style="
+    font-weight:600;
+    font-size:13px;
+    ">
+
+        Nhà cung cấp:
+
+    </div>
+
+    <input
+    type="text"
+    id="supplierInput"
+    placeholder=""
+    style="
+    border:none;
+    border-bottom:1px solid #cbd5e1;
+    padding:2px 2px;
+    max-width:320px;
+    outline:none;
+    background:none;
+    font-size:13px;
+    ">
+
+    <!-- SỐ ĐIỆN THOẠI -->
+
+    <div style="
+    font-weight:600;
+    font-size:13px;
+    ">
+
+        Số điện thoại:
+
+    </div>
+
+    <input
+    type="text"
+    id="supplierPhone"
+    placeholder=""
+    style="
+    border:none;
+    border-bottom:1px solid #cbd5e1;
+    padding:4px 2px;
+    outline:none;
+    background:none;
+    font-size:13px;
+    ">
+
+    <!-- ĐỊA CHỈ -->
+
+    <div style="
+    font-weight:600;
+    font-size:13px;
+    ">
+
+        Địa chỉ:
+
+    </div>
+
+    <input
+    type="text"
+    id="supplierAddress"
+    placeholder=""
+    style="
+    border:none;
+    border-bottom:1px solid #cbd5e1;
+    padding:4px 2px;
+    outline:none;
+    background:none;
+    font-size:13px;
+    ">
+
+    <!-- GHI CHÚ -->
+
+    <div style="
+    font-weight:600;
+    font-size:13px;
+    ">
+
+        Ghi chú:
+
+    </div>
+
+    <input
+    type="text"
+    id="noteInput"
+    placeholder=""
+    style="
+    border:none;
+    border-bottom:1px solid #cbd5e1;
+    padding:4px 2px;
+    outline:none;
+    background:none;
+    font-size:13px;
+    ">
+
 </div>
 
+        </div>
 
-<!-- MAIN -->
-<div class="main-container">
+    </div>
 
-  <h2 class="main-title">TOOLVECHAIVER2</h2>
+    <!-- BẢNG NHẬP -->
 
-  <div class="sub-title">
-    VIP • MMC • Model
-  </div>
+    <div class="table-wrap">
 
-  <!-- 🌍 LANGUAGE SWITCH -->
-  <div class="lang-switch">
-    <button onclick="Lang.set('vi')">🇻🇳</button>
-    <button onclick="Lang.set('en')">🇺🇸</button>
-  </div>
+        <table>
 
-</div>
+            <thead>
 
-<!-- ===== ADMIN PANEL ===== -->
-<div id="adminPanel" class="admin-panel">
+                <tr>
 
-  <div class="admin-top-bar">
+                    <th>Mã hàng</th>
 
-    <!-- BÊN TRÁI: ADMIN -->
-    <button class="admin-toggle-btn" id="adminToggle" onclick="toggleAdmin()">
-      <span class="admin-icon">⚙</span>
-     <span class="admin-text" data-i18n="admin">Admin</span>
+                    <th>Tên sản phẩm</th>
+
+                    <th>Số lượng</th>
+
+                    <th>Giá nhập</th>
+
+                    <th>Giá bán</th>
+
+                    <th>Thành tiền</th>
+
+                    <th style="
+                    width:90px;
+                    ">
+
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody id="nhapTable">
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <!-- TỔNG TIỀN -->
+
+<div style="
+background:white;
+border:1px solid #e2e8f0;
+margin-top:14px;
+padding:16px;
+">
+
+    <!-- TỔNG -->
+
+    <div style="
+    text-align:right;
+    margin-bottom:14px;
+    ">
+
+        <div style="
+        color:#64748b;
+        font-size:13px;
+        margin-bottom:4px;
+        ">
+
+            Tổng tiền phiếu nhập
+
+        </div>
+
+        <div
+        class="total-big"
+        id="tongTien">
+
+            0đ
+
+        </div>
+
+    </div>
+
+    <!-- NÚT LƯU -->
+
+    <button
+    class="btn btn-blue"
+    style="
+    width:100%;
+    height:44px;
+    font-size:13px;
+    "
+    onclick="saveNhap()">
+
+        Lưu phiếu nhập
+
     </button>
 
-    <!-- Ở GIỮA: INPUT -->
-<div class="check-group clean-check" style="flex:1;margin:0;">
-  <input id="q"
-         data-i18n-placeholder="search"
-         placeholder="Nhập mã hoặc model cần kiểm tra"
-         autocomplete="off">
-
-  <button class="check-btn" onclick="check()">🔍</button>
 </div>
-    <!-- BÊN PHẢI: TẠO LINK -->
-    <button class="create-link-btn small" onclick="createLink()">
-      ＋ Tạo liên kết
-    </button>
-
-  </div>
-
-  <div id="adminContent">
-    <div id="linkList"></div>
-  </div>
 
 </div>
 
-
-
-<!-- ===== KẾT QUẢ ===== -->
-<div id="out" style="margin-top:20px;"></div>
 
 <script>
 
+/* ====== THỜI GIAN ====== */
 
-/* ===== SAFE FIREBASE INIT ===== */
+window.updateTime = function(){
+
+    const now = new Date()
+
+    timeInput.innerText =
+    now.toLocaleString(
+        "vi-VN",
+        {
+
+            hour12:false,
+
+            year:"numeric",
+
+            month:"2-digit",
+
+            day:"2-digit",
+
+            hour:"2-digit",
+
+            minute:"2-digit"
+
+        }
+
+    )
+
+}
+
+setInterval(updateTime,1000)
+
+updateTime()
+
+</script>
+
+
+
+            <!-- LỊCH SỬ NHẬP -->
+
+            <div id="historyPage"
+            class="hidden">
+
+                <div class="table-wrap">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Mã phiếu</th>
+                                <th>Nhà cung cấp</th>
+                                <th>Thời gian</th>
+                                
+                                <th>Tổng tiền</th>
+
+                                <th>Số SP</th>
+                                <th>Xem</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="historyTable">
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+<!-- MODAL CHI TIẾT PHIẾU -->
+
+<div class="modal"
+id="viewOrderModal">
+
+    <div class="modal-box"
+    style="
+    max-width:900px;
+    ">
+
+        <div class="modal-header">
+
+            <h2>
+
+                Chi tiết phiếu nhập
+
+            </h2>
+
+            <button
+            class="close-btn"
+            onclick="closeViewOrder()">
+
+                ✕
+
+            </button>
+
+        </div>
+
+        <div class="table-wrap">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Mã</th>
+
+                        <th>Tên</th>
+
+                        <th>Số lượng</th>
+
+                        <th>Giá nhập</th>
+
+                        <th>Giá bán</th>
+
+                        <th>Thành tiền</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="viewOrderTable">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+<!-- MODAL -->
+
+<div class="modal"
+id="modal">
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <h2 id="modalTitle">
+
+                Sản phẩm
+
+            </h2>
+
+            <button
+            class="close-btn"
+            onclick="closeModal()">
+
+                ✕
+
+            </button>
+
+        </div>
+
+        <div class="form-group">
+
+            <input
+            type="text"
+            id="ma"
+            placeholder="Mã hàng">
+
+        </div>
+
+        <div class="form-group">
+
+            <input
+            type="text"
+            id="ten"
+            placeholder="Tên hàng">
+
+        </div>
+
+        <div class="form-group">
+
+            <input
+            type="number"
+            id="giaNhap"
+            placeholder="Giá nhập">
+
+        </div>
+
+        <div class="form-group">
+
+            <input
+            type="number"
+            id="giaBan"
+            placeholder="Giá bán">
+
+        </div>
+
+        <div class="form-group">
+
+            <input
+            type="number"
+            id="giaSi"
+            placeholder="Giá sỉ">
+
+        </div>
+
+        <div class="form-group">
+
+            <input
+            type="number"
+            id="ton"
+            placeholder="Tồn kho">
+
+        </div>
+
+        <button
+        class="btn btn-blue full-btn"
+        onclick="saveProduct()">
+
+            Lưu sản phẩm
+
+        </button>
+
+    </div>
+
+</div>
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+    getDatabase,
+    ref,
+    push,
+    onValue,
+    remove,
+    update
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+/* ====== FIREBASE ====== */
 
 const firebaseConfig = {
-  apiKey: "AIzaSyClXx0V66GQHKGO0EwQc0nYNguFLc705A0",
-  authDomain: "toolvechaiver2.firebaseapp.com",
-  projectId: "toolvechaiver2",
-  storageBucket: "toolvechaiver2.firebasestorage.app",
-  messagingSenderId: "855001765940",
-  appId: "1:855001765940:web:0a562c54618377aaae5261"
-};
 
-firebase.initializeApp(firebaseConfig);
+    apiKey:
+    "AIzaSyBdUaWQRCplxX5bG64gBYqLNPGFoRN5DoE",
 
-const auth = firebase.auth();
+    authDomain:
+    "quanlybanhangtn.firebaseapp.com",
 
-/* ⭐ QUAN TRỌNG */
-const db = firebase.firestore(firebase.app());
+    databaseURL:
+    "https://quanlybanhangtn-default-rtdb.asia-southeast1.firebasedatabase.app/",
 
-auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+    projectId:
+    "quanlybanhangtn",
 
-/* 🚀 TURBO CACHE */
-const turboCache = new Map();
+    storageBucket:
+    "quanlybanhangtn.firebasestorage.app",
 
-/* ===== RAM DATABASE ===== */
-const CODE_CACHE = new Map();
-/* ===== PRICE TABLE ===== */
-let PRICE_TABLE = [];
+    messagingSenderId:
+    "627580656858",
 
-/* ================= TURBO CACHE ENGINE ================= */
-
-function preloadCodesRealtime(){
-
-  console.log("Realtime cache loading...");
-
-  db.collection("codes")
-  .onSnapshot((snap)=>{
-
-    CODE_CACHE.clear();
-
-    snap.forEach(doc=>{
-
-      const d = doc.data();
-
-      if(!d.code) return;
-
-      const key = String(d.code)
-        .toUpperCase()
-        .trim();
-
-      if(!CODE_CACHE.has(key)){
-        CODE_CACHE.set(key,[]);
-      }
-
-      CODE_CACHE.get(key).push({
-        ...d,
-        _id: doc.id
-      });
-
-    });
-
-    console.log(
-      "Realtime cache updated:",
-      CODE_CACHE.size
-    );
-
-  });
+    appId:
+    "1:627580656858:web:e1cbc69055b78afb0cd9e3"
 
 }
 
-/* ================= BỘ NHỚ ĐỆM BẢNG GIÁ ================= */
+const app =
+initializeApp(firebaseConfig)
 
-async function preloadPriceTable(){
+const db =
+getDatabase(app)
 
-  console.log("Loading price table...");
+const productsRef =
+ref(db,"products")
+const importOrdersRef =
+ref(db,"import_orders")
+let importOrders = []
+    
+/* ====== DATA ====== */
 
-  const snap = await db.collection("price_table").get();
+let products = []
 
-  PRICE_TABLE = [];
+let nhapRows = []
 
-  snap.forEach(doc=>{
-    PRICE_TABLE.push(doc.data());
-  });
+let editId = null
+    
+/* ====== REALTIME ====== */
 
-  console.log("PRICE TABLE READY:",PRICE_TABLE.length);
+onValue(productsRef,(snapshot)=>{
 
-}
+    products = []
 
+    snapshot.forEach(child=>{
 
-/* ================= TÌM GIÁ THEO MODEL ================= */
+        products.push({
 
-function findPriceByModel(input){
+            id:child.key,
 
-  if(!input) return null;
+            ...child.val()
 
-  const key = String(input)
-    .toUpperCase()
-    .replace("SM-","")
-    .replace(/F/g,"")
-    .replace(/[^A-Z0-9]/g,"");
+        })
 
-  for(const p of PRICE_TABLE){
+    })
 
-    let pm = String(p.model || "")
-      .toUpperCase()
-      .replace("SM-","")
-      .replace(/F/g,"")
-      .replace(/[^A-Z0-9]/g,"");
+    renderProducts()
 
-    if(
-      pm.includes(key) ||
-      key.includes(pm)
-    ){
-      return p;
+    renderDashboard()
+
+})
+
+/* ====== REALTIME PHIẾU NHẬP ====== */
+
+onValue(importOrdersRef,(snapshot)=>{
+
+    importOrders = []
+
+    snapshot.forEach(child=>{
+
+        importOrders.push({
+
+            id:child.key,
+
+            ...child.val()
+
+        })
+
+    })
+
+    if(historyTable){
+
+        renderHistory()
+
     }
 
-  }
+})
+    
+/* ====== MENU MOBILE ====== */
 
-  return null;
+window.toggleSidebar = function(){
+
+    sidebar.classList.toggle("show")
+
 }
 
+/* ====== CHUYỂN TRANG ====== */
 
-/* =====================================================
-   TRA CỨU MODEL (ĐÃ FIX FULL)
-   - Fix S10 không ra
-   - Fix G973 không ra
-   - Chuẩn hóa toàn bộ model
-===================================================== */
+window.showPage = function(page){
+    
 
-function searchPriceModel(q){
+    dashboardPage.classList.add("hidden")
 
-  function normalize(x){
-    return String(x || "")
-      .toUpperCase()
-      .replace("SM-","")
-      .replace(/F/g,"")
-      .replace(/[^A-Z0-9]/g,"")
-      .trim();
-  }
+    productsPage.classList.add("hidden")
 
-  let qn = normalize(q)
-    .replace("+","PLUS")
-    .replace(/\s+/g,"");
+    nhapPage.classList.add("hidden")
+    historyPage.classList.add("hidden")
 
-  const result = [];
+    document
+    .querySelectorAll(".menu button")
+    .forEach(btn=>{
 
-  /* ===== BẢNG MAP DÒNG MÁY ===== */
-  const seriesMap = {
+        btn.classList.remove("active")
 
-    "S6":["G920"],
-    "S6EDGE":["G925"],
-    "S6EDGEPLUS":["G928"],
+    })
 
-    "S7":["G930"],
-    "S7EDGE":["G935"],
+ /* ====== BẢNG ĐIỀU KHIỂN ====== */
 
-    "S8":["G950"],
-    "S8PLUS":["G955"],
+    if(page === "dashboard"){
 
-    "S9":["G960"],
-    "S9PLUS":["G965"],
+        dashboardPage.classList.remove("hidden")
 
-    "S10":["G973"],
-    "S10PLUS":["G975"],
-    "S10LITE":["G770"],
+        btnDashboard.classList.add("active")
 
-    "S20":["G980","G981"],
-    "S20PLUS":["G985"],
-    "S20ULTRA":["G988"],
+        pageTitle.innerText =
+        "Dashboard"
 
-    "S21":["G991"],
-    "S21PLUS":["G996"],
-    "S21ULTRA":["G998"],
+        searchInput.style.display =
+        "none"
 
-    "S22":["G901"],
-    "S22ULTRA":["G908"],
-
-    "S23":["G911"],
-    "S23ULTRA":["G918"],
-
-    "NOTE5":["N920"],
-    "NOTE7":["N930"],
-    "NOTEFE":["N935"],
-    "NOTE8":["N950"],
-    "NOTE9":["N960"],
-    "NOTE10":["N970"],
-    "NOTE20":["N980"],
-    "NOTE20ULTRA":["N986"],
-
-    "J2PRIME":["G532"],
-    "J5":["J500","J530"],
-    "J7":["J700","J710","J730"],
-
-    "GRANDPRIME":["G530","G531"]
-  };
-
-/* ===== XÁC ĐỊNH DÒNG MÁY ===== */
-const key = Object.keys(seriesMap).find(k => qn.includes(k));
-
-for(const p of PRICE_TABLE){
-
-  let raw = String(p.model || "").toUpperCase();
-
-  let match = raw.match(/\(([^)]+)\)/);
-
-  let extracted = match
-    ? match[1]
-    : raw;
-
-  // 🔥 TÁCH MODEL NHIỀU BIẾN THỂ (G920F/G920I)
-  const modelParts = extracted
-    .split("/")
-    .map(x => normalize(x));
-
-  const short = normalize(p.short);
-
-  /* ===== TRA THEO DÒNG (S / NOTE / J...) ===== */
-  if(key){
-
-    const codes = seriesMap[key];
-
-    if(codes.some(c =>
-      modelParts.some(m => m.includes(c)) ||
-      short.includes(c)
-    )){
-result.push({
-  model: p.model,
-  short: p.short || modelParts.join(" / "), // 🔥 FIX CHÍNH
-  type: p.type,
-  pin: p.pin,
-  no_pin: p.no_pin,
-  main: p.main
-});;
     }
 
-    continue;
-  }
+ /* ====== SẢN PHẨM ====== */
 
-  /* ===== TRA TRỰC TIẾP ===== */
-  if(
-    modelParts.some(m => m.includes(qn)) ||
-    qn.includes(modelParts[0]) ||
-    short.includes(qn) ||
-    qn.includes(short)
-  ){
-    result.push({
-      source:"price",
-      model:p.model,
-      type:p.type,
-      pin:p.pin,
-      no_pin:p.no_pin,
-      main:p.main
-    });
-  }
+    else if(page === "products"){
 
-}
+        productsPage.classList.remove("hidden")
 
-  return result;
-}
-  
-/* ===== PHÁT HIỆN USER MODE AN TOÀN + ẨN ADMIN NGAY ===== */
+        btnProducts.classList.add("active")
 
-const urlParams = new URLSearchParams(window.location.search);
-const isUserMode = urlParams.has("u");
+        pageTitle.innerText =
+        "Sản phẩm"
 
-/* 🔥 ẨN ADMIN NGAY TỨC (CHỐNG NHÁY) */
-if(isUserMode){
-  document.documentElement.classList.add("user-mode");
-}
+        searchInput.style.display =
+        "block"
 
-/* ❗ KHÔNG logout ngay nữa */
-/* auth listener phía dưới sẽ xử lý */
-
-window.USER_LINK_ACTIVE = true;
-/* ===== USER MODE (?u=) ===== */
-
-const params = new URLSearchParams(window.location.search);
-const userParam = params.get("u");
-
-if(userParam){
-
-  window.addEventListener("DOMContentLoaded", async ()=>{
-
-    const login=document.getElementById("loginScreen");
-    if(login) login.style.display="none";
-    /* ⭐ LOAD CACHE CHO USER MODE */
-    try{
-      await preloadCodesRealtime();
-      await preloadPriceTable();
-    }catch(e){
-      console.error("Cache load error:",e);
     }
 
-    runUserMode(userParam);
+/* ====== NHẬP HÀNG ====== */
 
-  });
+else if(page === "nhap"){
 
-}
+    pageTitle.innerText = ""
 
+    searchInput.style.display =
+    "none"
 
-/* ===== USER MODE ENGINE (REALTIME VERSION) ===== */
+    searchInput.value = ""
 
-async function runUserMode(id){
+    dashboardPage.classList.add("hidden")
 
-  try{
+    productsPage.classList.add("hidden")
 
-    // ===== ẨN ADMIN UI =====
-    document.getElementById("loginScreen")?.remove();
-    document.getElementById("adminToggle")?.remove();
-    document.querySelector(".create-link-btn")?.remove();
-    document.getElementById("adminContent")?.remove();
+    historyPage.classList.add("hidden")
 
-    const ref = db.collection("shareLinks").doc(id);
+    nhapPage.classList.remove("hidden")
 
-    let countdownInterval = null;
+    btnNhap.classList.add("active")
 
-// ===== REALTIME LISTENER =====
-ref.onSnapshot(async (doc)=>{
+    if(nhapRows.length === 0){
 
-  // ===== LINK BỊ XÓA =====
-  if(!doc.exists){
-    showUserMessage(L("link_not_found"));
-    disableCheckUI();
-    return;
-  }
+        addNhapRow()
 
- const data = doc.data();
-
-
-  
-
-  // ===== LINK BỊ KHÓA =====
-  if(!data.active){
-    showUserMessage(L("link_locked"));
-    disableCheckUI();
-    return;
-  }
-
-// ===== LINK HẾT HẠN =====
-if(data.expiresAt && data.expiresAt.toDate() < new Date()){
-
-  ref.update({ active:false }).catch(()=>{});
-
-  if(out){
-    out.innerHTML = `
-      <div style="text-align:center;padding:40px 20px;">
-        <div style="font-size:18px;margin-bottom:12px;">
-          ${L("link_expired")}
-        </div>
-        <div style="font-size:14px;margin-top:8px;">
-          <a href="https://t.me/MobIje2" target="_blank"
-             style="color:#38bdf8;text-decoration:none;font-weight:600;">
-            📩 @MobIje2
-          </a>
-        </div>
-      </div>
-    `;
-  }
-
-  disableCheckUI();
-  return;
-}
-
-// ===== LINK HỢP LỆ =====
-enableCheckUI();
-
-// ===== TĂNG VIEW (CHỈ TĂNG 1 LẦN) =====
-if(!window._viewCounted){
-
-  const visitKey = "visit_" + id;
-
-  // nếu chưa từng mở link này trên thiết bị
-  if(!localStorage.getItem(visitKey)){
-
-    localStorage.setItem(visitKey, true);
-
-    await ref.update({
-      views: firebase.firestore.FieldValue.increment(1)
-    });
-
-// ===== DETECT COUNTRY =====
-let country = "unknown";
-let countryName = "";
-let city = "";
-let flag = "";
-let isp = "";
-
-try{
-
-  const geo = await fetch("https://ipwho.is/");
-  const g = await geo.json();
-
-  if(g.success){
-
-    country = g.country_code || "unknown";
-    countryName = g.country || "";
-    city = g.city || "";
-    flag = g.flag?.emoji || "";
-    isp = g.connection?.isp || "";
-
-  }
-
-}catch(e){
-  console.warn("Geo detect failed:", e);
-}
-
-
-// ===== SAVE VISIT =====
-try{
-
-await db.collection("link_visits").add({
-
-  linkId: id,
-
-  time: firebase.firestore.FieldValue.serverTimestamp(),
-
-  device: /mobile|android|iphone/i.test(navigator.userAgent)
-    ? "mobile"
-    : "desktop",
-
-  browser: navigator.userAgent.includes("Chrome")
-    ? "chrome"
-    : "other",
-
-  referrer: document.referrer || "direct",
-
-  country: country,
-  countryName: countryName,
-  city: city,
-  flag: flag,
-  isp: isp
-
-});
-
-}catch(err){
-  console.error("Visit save error:",err);
-}
-
-  } // đóng if localStorage
-
-  window._viewCounted = true;
-
-} // đóng if _viewCounted
-
-// ===== COUNTDOWN =====
-if(data.expiresAt){
-
-  let box = document.getElementById("countdownBox");
-
-  if(!box){
-    box = document.createElement("div");
-    box.id = "countdownBox";
-
-    Object.assign(box.style,{
-      position:"fixed",
-      top:"12px",
-      right:"16px",
-      background:"rgba(15,23,42,0.9)",
-      border:"1px solid #334155",
-      borderRadius:"10px",
-      padding:"8px 14px",
-      fontSize:"14px",
-      fontWeight:"600",
-      color:"#facc15",
-      zIndex:"9999"
-    });
-
-    document.body.appendChild(box);
-  }
-
-  const end = data.expiresAt.toDate();
-
-  if(countdownInterval){
-    clearInterval(countdownInterval);
-  }
-
-  // ===== HIỂN THỊ NGAY =====
-  const diffNow = end - new Date();
-
-  if(diffNow > 0){
-    const d = Math.floor(diffNow / 86400000);
-    const h = Math.floor((diffNow / 3600000) % 24);
-    const m = Math.floor((diffNow / 60000) % 60);
-    const s = Math.floor((diffNow / 1000) % 60);
-
-    box.innerText = L("countdown")
-      .replace("{d}", d)
-      .replace("{h}", h)
-      .replace("{m}", m)
-      .replace("{s}", s);
-  }
-
-  countdownInterval = setInterval(async()=>{
-
-    const diff = end - new Date();
-
-    if(diff <= 0){
-      clearInterval(countdownInterval);
-      await ref.update({ active:false });
-      box.innerText = L("link_expired");
-      disableCheckUI();
-      return;
     }
 
-    const d = Math.floor(diff / 86400000);
-    const h = Math.floor((diff / 3600000) % 24);
-    const m = Math.floor((diff / 60000) % 60);
-    const s = Math.floor((diff / 1000) % 60);
+    renderNhap()
 
-    box.innerText = L("countdown")
-      .replace("{d}", d)
-      .replace("{h}", h)
-      .replace("{m}", m)
-      .replace("{s}", s);
-
-  },1000);
 }
-    });
+/* ====== LỊCH SỬ ====== */
 
-  }catch(e){
-    console.error(e);
-    showUserMessage(L("access_error"));
-    disableCheckUI();
-  }
-}
-function disableCheckUI(){
+else if(page === "history"){
 
-  // 🔒 Đánh dấu link không còn hợp lệ
-  window.USER_LINK_ACTIVE = false;
+    historyPage.classList.remove("hidden")
 
-  const input = document.getElementById("q");
-  const btn   = document.querySelector(".check-btn");
-  const mainContainer = document.querySelector(".main-container");
-  const adminPanel = document.getElementById("adminPanel");
+    btnHistory.classList.add("active")
 
-  if(input){
-    input.disabled = true;
-    input.style.opacity = "0.6";
-  }
+    pageTitle.innerText =
+    "Lịch sử nhập"
 
-  if(btn){
-    btn.disabled = true;
-    btn.style.opacity = "0.6";
-  }
+    searchInput.style.display =
+    "none"
 
-  // ===== ẨN TOÀN BỘ GIAO DIỆN =====
-  if(mainContainer){
-    mainContainer.style.display = "none";
-  }
-
-  if(adminPanel){
-    adminPanel.style.display = "none";
-  }
-}
-
-/* ===== BẬT LẠI GIAO DIỆN KIỂM TRA ===== */
-function enableCheckUI(){
-
-  // ===== ĐÁNH DẤU LINK ĐANG HOẠT ĐỘNG =====
-  window.USER_LINK_ACTIVE = true;
-
-  const input = document.getElementById("q");
-  const btn   = document.querySelector(".check-btn");
-
-  // ===== MỞ KHÓA Ô NHẬP =====
-  if(input){
-    input.disabled = false;
-    input.style.opacity = "1";
-  }
-
-  // ===== MỞ KHÓA NÚT KIỂM TRA =====
-  if(btn){
-    btn.disabled = false;
-    btn.style.opacity = "1";
-  }
-
-  // ===== HIỆN LẠI THANH TÌM KIẾM =====
-  const searchBox = document.querySelector(".clean-check");
-
-  if(searchBox){
-    searchBox.style.display = "flex";
-  }
-}
-
-
-/* ===== BẮT LỖI TOÀN CỤC ===== */
-window.addEventListener("error",e=>{
-  console.error("LỖI HỆ THỐNG:",e.error);
-});
-
-
-/* ===== HIỂN THỊ THÔNG BÁO CHO NGƯỜI DÙNG ===== */
-function showUserMessage(text){
-
-  const out = document.getElementById("out");
-
-  if(out){
-    out.innerHTML = `
-      <div style="
-        margin-top:40px;
-        text-align:center;
-        font-size:18px;
-        font-weight:600;
-        color:#f87171;
-      ">
-        ${text}
-      </div>
-    `;
-  }
-}
-
-
-/* ===== LƯU ALIAS CHO LINK ===== */
-async function saveAlias(id,value){
-
-  const ref = db.collection("shareLinks").doc(id);
-
-  if(!value || !value.trim()){
-
-    await ref.update({
-      alias: firebase.firestore.FieldValue.delete()
-    });
-
-  }else{
-
-    await ref.update({
-      alias: value.trim()
-    });
-
-  }
-}
-function detectChip(code){
-
-  if(!code)
-    return {name:"UNKNOWN",color:"#6b7280",class:"brand-unknown"};
-
-  code = code.toUpperCase().trim();
-  if(/^H23/.test(code)){
-  return {
-    name:"Apple NAND",
-    color:"#38bdf8",
-    class:"brand-apple"
-  };
-}
-
-// ===== APPLE NAND (K-series) =====
-if(/^(H23|KIC|KLAD|KLU|KLM)/i.test(code)){
-  return {
-    name:"🍏 Apple NAND",
-    color:"#38bdf8",
-    class:"brand-apple"
-  };
-}
-
-// ===== SAMSUNG =====
-if(/^K/.test(code))
-  return {
-    name:"Samsung",
-    color:"#22c55e",
-    class:"brand-samsung"
-  };
-
-  if(/^(H9|H26|H27)/.test(code))
-    return {name:"SK hynix",color:"#a855f7",class:"brand-hynix"};
-
-  if(/^(MT|NW|JY|JZ|PA)/.test(code))
-    return {name:"Micron",color:"#0ea5e9",class:"brand-micron"};
-
-  if(/^(TH|TC|TY)/.test(code))
-    return {name:"Kioxia",color:"#f97316",class:"brand-kioxia"};
-
-  if(/^(SD|SDIN|WDC)/.test(code))
-    return {name:"SanDisk / WD",color:"#ef4444",class:"brand-wd"};
-
-  if(/^(YM|YMEC)/.test(code))
-    return {name:"YMTC",color:"#06b6d4",class:"brand-ymtc"};
-
-  if(/^FS/.test(code))
-    return {name:"FORESEE",color:"#10b981",class:"brand-foresee"};
-
-  return {name:"UNKNOWN",color:"#6b7280",class:"brand-unknown"};
-}
-
-
-/* =====================================================
-   QUICK SHORTCODE DECODE (C6 C7 C8 C9)
-===================================================== */
-
-function quickDecodeChip(code){
-
-  if(!code) return null;
-
-  code = String(code).toUpperCase().trim();
-
-  if(code === "C6"){
-    return { type:"UFS", storage:"UFS", ram:null, rom:32, vip:5 };
-  }
-
-  if(code === "C7"){
-    return { type:"UFS", storage:"UFS", ram:null, rom:64, vip:6 };
-  }
-
-  if(code === "C8"){
-    return { type:"UFS", storage:"UFS", ram:null, rom:128, vip:7 };
-  }
-
-  if(code === "C9"){
-    return { type:"UFS", storage:"UFS", ram:null, rom:256, vip:8 };
-  }
-
-  return null;
-}
-
-// ===== VIP RULE =====
-function calculateVip(ram, rom){
-  // =========================
-  // SAFE TYPE
-  // =========================
-  ram = Number(ram);
-  rom = Number(rom);
-
-  if (isNaN(ram) || isNaN(rom) || ram <= 0 || rom <= 0)
-    return 0;
-
-  // =========================
-  // VIP 12 — FLAGSHIP MAX
-  // =========================
-  if (ram >= 16 && rom >= 512)
-    return 12;
-
-  // =========================
-  // VIP 11 — UFS 3.x HIGH
-  // =========================
-  if (ram === 12 && rom === 512)
-    return 11;
-
-  // =========================
-  // VIP 10 — UFS 2.2
-  // =========================
-  if (ram === 12 && rom === 256)
-    return 10;
-
-  if (ram === 8 && rom === 512)
-    return 10;
-
-  // =========================
-  // VIP 9 — UFS 2.1 HIGH
-  // =========================
-  if ([6,8,10,12].includes(ram) && rom === 256)
-    return 9;
-
-  if (ram === 12 && rom === 128)
-    return 9;
-
-  // =========================
-  // VIP 8 — UFS 2.1 MID+
-  // =========================
-  if ([8,10].includes(ram) && rom === 128)
-    return 8;
-
-  // =========================
-  // VIP 7 — UFS MID
-  // =========================
-  if ([4,6].includes(ram) && rom === 128)
-    return 7;
-  // =========================
-  // VIP 6+
-  if (ram === 6 && rom === 64)
-   return 6.5;
-  // =========================
-  // VIP 6 — eMMC MID
-  // =========================
-  if ([4,6].includes(ram) && rom === 64)
-    return 6;
-
-  // =========================
-  // VIP 5 — UFS ENTRY
-  // =========================
-  if ([3,4].includes(ram) && rom === 32)
-    return 5;
-
-  if (ram === 3 && rom === 64)
-    return 5;
-
-  // =========================
-  // VIP 4+ — eMMC 5.1 EXTENDED
-  // =========================
-  if (ram === 2 && rom === 32)
-    return 4.5;
-
-  // =========================
-  // VIP 4 — eMMC BASIC
-  // =========================
-  if (ram === 2 && rom === 16)
-    return 4;
-
-  // =========================
-  // VIP 3 — eMCP BASIC
-  // =========================
-  if (ram === 1 && rom === 16)
-    return 3;
-
-  // =========================
-  // VIP 2 — eMCP ENTRY
-  // =========================
-  if (ram === 2 && rom === 8)
-    return 2;
-
-  // =========================
-  // VIP 1 — LEGACY
-  // =========================
-  if (ram === 1 && rom === 8)
-    return 1;
-
-  // =========================
-  // FALLBACK
-  // =========================
-  return 0;
-}
-/* ===============================
-   NAND MAP (IPHONE)
-================================ */
-const NAND_MAP = {
-  "KIC5223": { rom:128, model:"iPhone 7 / 7 Plus / iPhone 8" },
-  "KLADG8VWAD": { rom:128, model:"iPhone 7 / 7 Plus / iPhone 8" },
-  "H23QFG82D6ADJ": { rom:64, model:"iPhone 6s / 6s Plus" },
-  "H23QFG82D6ADY": { rom:64, model:"iPhone 6s / 6s Plus" },
-};
-
-/* ===============================
-   DETECT IPHONE FROM NAND
-================================ */
-function detectIphoneFromNAND(code){
-  const key = code?.toUpperCase().trim();
-  return NAND_MAP[key] || null;
-}
-/* ===============================
-   MMC LEVEL ENGINE
-================================ */
-function getMMCLevel(rom, storage, type){
-
-  const s = (storage || "").toUpperCase();
-  const t = (type || "").toUpperCase();
-
-  // 🔥 CHẶN FULL
-  if(
-    s.includes("NAND") ||
-    t.includes("APPLE")
-  ) return null;
-
-  rom = Number(rom);
-
-  if(!rom) return null;
-
-  if(rom <= 16) return "MMC1";
-  if(rom === 32) return "MMC2";
-  if(rom === 64) return "MMC3";
-  if(rom === 128) return "MMC4";
-  if(rom === 256) return "MMC5";
-  if(rom >= 512) return "MMC6";
-
-  return "MMC";
-}
-function decodeSamsung(code){
-
-const r={
-vendor:"Samsung",
-type:"Unknown",
-ram:null,
-rom:null,
-storage:"Unknown",
-version:null,
-vip:0
-};
-
-if(!code) return r;
-
-const main = code.toUpperCase().split("-")[0];
-
-
-/* ======================================
-   EMMC SERIES (KLM / KLU)
-====================================== */
-
-if(main.startsWith("KLM") || main.startsWith("KLU")){
-
-r.type="eMMC";
-r.storage="eMMC";
-r.version="eMMC 5.1";
-
-const emmcMap={
-
-"1J":16,
-"2G":32,
-"2J":32,
-"4G":64,
-"4J":64,
-"8G":128,
-"8J":128,
-"A1":256,
-"AJ":256
-
-};
-
-for(const k in emmcMap){
-
-if(main.includes(k)){
-r.rom=emmcMap[k];
-break;
-}
+    renderHistory()
 
 }
 
-}
+ /* ====== TỰ ĐÓNG MOBILE ====== */
 
+    if(window.innerWidth <= 900){
 
-/* ======================================
-   UFS / uMCP SERIES (KM)
-====================================== */
+        sidebar.classList.remove("show")
 
-if(main.startsWith("KM")){
-
-r.type="uMCP";
-
-/* ===== UFS VERSION ===== */
-
-if(main.includes("9001")){
-r.storage="UFS 3.x";
-r.version="UFS 3.x";
-}
-
-else if(main.includes("8001")){
-r.storage="UFS 2.2";
-r.version="UFS 2.2";
-}
-
-else if(main.includes("7001") || main.includes("6001")){
-r.storage="UFS 2.1";
-r.version="UFS 2.1";
-}
-
-
-/* ===== ROM MAP ===== */
-
-const romPrefix={
-
-KM2B:256,
-KM2H:128,
-KM2V:128,
-
-KM3H:64,
-KM3V:64,
-
-KM4X:32,
-
-KM5C:64,
-KM5H:64,
-KM5P:64,
-KM5V:128,
-
-KM8V:128,
-KM8F:256,
-KM8L:256,
-KM8B:256
-
-};
-
-for(const p in romPrefix){
-
-if(main.startsWith(p)){
-r.rom=romPrefix[p];
-break;
-}
-
-}
-
-
-/* ===== RAM SUFFIX ===== */
-
-const suffix = main.slice(-2);
-
-const ramMap={
-
-DM:4,
-CM:6,
-JM:8,
-MM:12,
-RM:12,
-SM:16,
-PM:8
-
-};
-
-if(ramMap[suffix])
-r.ram=ramMap[suffix];
-
-}
-
-
-/* ======================================
-   SPECIAL 6001 eMCP SERIES
-====================================== */
-
-if(main.includes("6001")){
-
-if(main.startsWith("KMDH") || main.startsWith("KM3H")){
-r.type="eMCP";
-r.storage="eMMC 5.1";
-r.ram=6;
-r.rom=64;
-}
-
-if(main.startsWith("KMDP") || main.startsWith("KMDD")){
-r.type="eMCP";
-r.storage="eMMC 5.1";
-r.ram=3;
-r.rom=32;
-}
-
-if(main.startsWith("KMDV") || main.startsWith("KM3V")){
-r.type="uMCP";
-r.storage="UFS 2.1";
-r.ram=6;
-r.rom=64;
-}
-
-}
-
-
-/* ======================================
-   VIP
-====================================== */
-
-if(typeof calculateVip==="function")
-r.vip=calculateVip(r.ram,r.rom);
-
-return r;
-
-}
-  
-// ======================================================
-// SK HYNIX FULL ENGINE (FINAL - USER VIP STANDARD)
-// ======================================================
-
-// ======================================================
-// SK HYNIX FULL DECODER (STABLE)
-// ======================================================
-
-function decodeHynix(code){
-
-code = (code || "").toUpperCase().trim();
-const raw = code.split("-")[0];
-
-let arch="UNKNOWN";
-let storage="Unknown";
-let ram=null;
-let rom=null;
-let vip=0;
-
-
-// ======================================================
-// ARCH DETECT
-// ======================================================
-
-if(raw.startsWith("H9TQ") || raw.startsWith("H9T")){
-    arch="eMCP";
-    storage="eMMC 5.1";
-}
-
-else if(raw.startsWith("H9HP")){
-    arch="eMCP";
-    storage="eMMC 5.1";
-}
-
-else if(raw.startsWith("H9AG")){
-    arch="eMCP";
-    storage="eMMC 5.1";
-}
-
-else if(raw.startsWith("H9HQ")){
-    arch="UFS";
-    storage="UFS 2.1";
-}
-
-else if(raw.startsWith("H9QT")){
-    arch="uMCP";
-    storage="UFS 3.1";
-}
-
-else if(raw.startsWith("H9RT")){
-    arch="UFS";
-    storage="UFS 4.0";
-}
-
-else if(raw.startsWith("H26M")){
-    arch="eMMC";
-    storage="eMMC";
-}
-
-else if(raw.startsWith("H28U")){
-    arch="UFS";
-    storage="UFS";
-}
-
-
-// ======================================================
-// ROM MAP
-// ======================================================
-
-const romMap={
-"17":16,
-"18":16,
-"19":16,
-"26":32,
-"27":32,
-"52":64,
-"53":64,
-"15":128,
-"16":128,
-"21":256,
-"22":256,
-"64":512
-};
-
-
-// ======================================================
-// RAM MAP (eMCP)
-// ======================================================
-
-const emcpRamMap={
-"A8":1,
-"AAE":1,
-"ABJ":2,
-"ADF":2,
-"ACL":3,
-"AC":3,
-"AD":4,
-"AE":6,
-"AEJ":6,
-"AF":8,
-"AFJ":8,
-"AG":12,
-"AH":16
-};
-
-
-// ======================================================
-// H9TQ / H9HP PARSE
-// ======================================================
-
-if(arch==="eMCP"){
-
-rom = romMap[raw.substring(4,6)] ?? null;
-
-const ramCode3 = raw.substring(6,9);
-const ramCode2 = raw.substring(6,8);
-
-ram = emcpRamMap[ramCode3] ?? emcpRamMap[ramCode2] ?? null;
-
-}
-
-
-// ======================================================
-// H9HQ UFS
-// ======================================================
-
-if(arch==="UFS" && raw.startsWith("H9HQ")){
-
-rom = romMap[raw.substring(4,6)] ?? null;
-
-const ramCode = raw.substring(6,8);
-
-const ufsRamMap={
-"AC":3,
-"AD":4,
-"AE":6,
-"AF":8,
-"AG":12,
-"AH":16
-};
-
-ram = ufsRamMap[ramCode] ?? null;
-
-if(rom>=256)
-storage="UFS 2.1 HIGH";
-
-}
-
-
-// ======================================================
-// H9AG SERIES
-// ======================================================
-
-if(raw.startsWith("H9AG")){
-
-arch="eMCP";
-storage="eMMC 5.1";
-
-if(raw.includes("6G")) rom=16;
-else if(raw.includes("8G")) rom=32;
-else if(raw.includes("9G")) rom=64;
-
-if(raw.includes("CM")) ram=2;
-else if(raw.includes("DM")) ram=3;
-else if(raw.includes("EM")) ram=4;
-else if(raw.includes("FM")) ram=6;
-
-}
-
-
-// ======================================================
-// H9QT (UFS 3.1)
-// ======================================================
-
-if(raw.startsWith("H9QT")){
-
-storage="UFS 3.1";
-
-if(raw.includes("0G6")) rom=128;
-if(raw.includes("1G6")) rom=256;
-
-if(raw.includes("CN")) ram=6;
-else if(raw.includes("DN")) ram=8;
-else if(raw.includes("EN")) ram=12;
-
-}
-
-
-// ======================================================
-// H9RT (UFS 4.0)
-// ======================================================
-
-if(raw.startsWith("H9RT")){
-
-storage="UFS 4.0";
-
-if(raw.includes("1GG")) rom=256;
-if(raw.includes("2GG")) rom=512;
-
-if(raw.includes("M6")) ram=12;
-if(raw.includes("N6")) ram=16;
-
-}
-
-
-// ======================================================
-// VIP ENGINE
-// ======================================================
-
-if(ram===1 && rom===8) vip=1;
-else if(ram===2 && rom===8) vip=2;
-else if(ram===1 && rom===16) vip=3;
-else if(ram===2 && rom===16) vip=4;
-else if(ram===2 && rom===32) vip=4.5;
-else if((ram===3||ram===4)&&rom===32) vip=5;
-else if((ram===4||ram===6)&&rom===64) vip=6;
-else if((ram===4||ram===6)&&rom===128) vip=7;
-else if((ram===8||ram===10)&&rom===128) vip=8;
-else if((ram>=6)&&rom===256) vip=9;
-else if((ram===12&&rom===256)||(ram===8&&rom===512)) vip=10;
-else if(ram===12&&rom===512) vip=11;
-else if(ram>=16&&rom>=512) vip=12;
-
-
-// ======================================================
-
-return{
-arch,
-storage,
-ram,
-rom,
-vip
-};
-
-}
-  
-  
-  
-// ===== MAIN DECODER =====
-function autoDecodeChip(code, dbData){
-const quick = quickDecodeChip(code);
-if(quick) return quick;
-
-  code = code.toUpperCase().trim();
-// ======================================================
-// 🔧 GIẢI MÃ YMTC / YMEC / YMUS (CHUẨN)
-// ======================================================
-if(code.startsWith("YMEC") || code.startsWith("YMES") || code.startsWith("YMUS")){
-
-  let rom = null;
-  let ram = null;
-  let type = "eMMC";
-  let storage = "eMMC";
-
-  // ===== LẤY SỐ DUNG LƯỢNG (YMEC6 / 7 / 8 / 9) =====
-  const match = code.match(/^YME[CSU]?(\d)/);
-
-  if(match){
-    const n = match[1];
-
-    if(n === "6") rom = 32;
-    if(n === "7") rom = 64;
-    if(n === "8") rom = 128;
-    if(n === "9") rom = 256;
-  }
-
-  // ===== YMUS = COMBO (có RAM) =====
-  if(code.startsWith("YMUS")){
-
-    type = "eMCP";
-
-    if(code.includes("A1")) ram = 1;
-    else if(code.includes("A2")) ram = 2;
-    else if(code.includes("A3")) ram = 3;
-    else if(code.includes("A4")) ram = 4;
-  }
-
-  return {
-    vendor: "YMTC",
-    type: type,
-    storage: storage,
-    ram: ram,
-    rom: rom,
-    vip: calculateVip(ram, rom)
-  };
-}
-
-function buildHardware(code, data){
-
-  if(data){
-
-    const storage = data.storage || data.type || "Manual";
-
-    return {
-      ram: data.ram ?? null,
-      rom: data.rom ?? null,
-      vip: data.vip ?? null,
-
-      storage: storage,
-      type: data.type ?? null,
-
-      mmc: (storage === "NAND" || storage === "APPLE_NAND")
-        ? null
-        : data.mmc ?? null,
-
-      chip: data.chip ?? null,
-      source: "firebase"
-    };
-  }
-
-  const hw = autoDecodeChip(code);
-
-  if(hw){
-    hw.source = "decoder";
-    return hw;
-  }
-
-  return null;
-}
-  
-function decodeMicronOEM(code){
-
-  code = code.toUpperCase().trim();
-
-  /* ===============================
-     VIP MANUAL TABLE (NO RAM / ROM)
-  =============================== */
-
-  const VIP_TABLE = {
-
-    // ===== VIP 1 =====
-    "JY974":1,
-
-    // ===== VIP 3 =====
-    "JZ008":3,
-    "JZ011":3,
-    "JZ089":3,
-    "PA072":3,
-
-    // ===== VIP 4 =====
-    "JY932":4,
-    "JY950":4,
-
-    // ===== VIP 4+ =====
-    "JZ050":4.5,
-    "JZ013":4.5,
-    "JZ108":4.5,
-    "JZ090":4.5,
-
-    // ===== VIP 5 =====
-    "JZ049":5,
-    "JZ053":5,
-    "JZ109":5,
-    "JZ481":5,
-    "PA093":5,
-    "JZ025":5,
-    "PA073":5,
-
-    // ===== VIP 6 =====
-    "JZ177":6,
-    "JZ186":6,
-    "JZ128":6,
-    "JZ479":6,
-
-    // ===== VIP 7 =====
-    "JZ152":7,
-    "JZ199":7,
-    "JZ187":7,
-    "JZ396":7,
-    "JZ100":7,
-    "JZ266":7,
-    "JZ188":7,
-    "JZ150":7,
-    "JZ151":7,
-    "JZ153":7,
-    "JZ385":7,
-    "JZ386":7,
-    "JZ178":7,
-    "JZ103":7
-  };
-
-  /* ===== MATCH EXACT CODE ===== */
-  if(VIP_TABLE[code] !== undefined){
-    return {
-      ram:null,
-      rom:null,
-      storage:"eMMC",
-      vip:VIP_TABLE[code]
-    };
-  }
-
-  /* ===== DEFAULT JY ===== */
-  if(code.startsWith("JY")){
-    return {
-      ram:null,
-      rom:null,
-      storage:"eMMC",
-      vip:1
-    };
-  }
-
-  /* ===== DEFAULT JZ / PA ===== */
-  if(code.startsWith("JZ") || code.startsWith("PA")){
-    return {
-      ram:null,
-      rom:null,
-      storage:"eMMC",
-      vip:3
-    };
-  }
-
-  return null;
-}
-  // ===== MICRON CHECK FIRST =====
-  const micron = decodeMicronOEM(code);
-  if(micron) return micron;
-  /* ===============================
-   SANDISK / WD eMMC FIX
-================================ */
-if(code.startsWith("SDIN")){
-
-  const size = code.match(/(\d{2,3})G/i);
-
-  return {
-    type:"eMMC",
-    storage:"eMMC 5.1",
-    ram:null,
-    rom:size ? Number(size[1]) : null,
-    vip:null
-  };
-}
-if(code.startsWith("WDC")){
-  const size = code.match(/(\d{2,3})G/i);
-  return {
-    type:"eMMC",
-    storage:"eMMC 5.1",
-    ram:null,
-    rom:size ? Number(size[1]) : null,
-    vip:null
-  };
-}
-
-
-  // ===== Samsung =====
-  if(/^K/.test(code)){
-    return decodeSamsung(code);
-  }
-
-// ===== SK HYNIX =====
-if(/^H/.test(code)){
-
-  const h = decodeHynix(code);
-
-  /* ===== BẢO VỆ DỮ LIỆU ===== */
-  if(!h){
-    return {
-      ram:null,
-      rom:null,
-      storage:"Unknown",
-      vip:0
-    };
-  }
-
-  /* ===== CHUẨN HÓA DỮ LIỆU ===== */
-  h.ram = Number(h.ram) || null;
-  h.rom = Number(h.rom) || null;
-  h.storage = h.storage || "Unknown";
-
-  /* ===== SỬA LẠI QUY TẮC VIP ===== */
-
-  if(h.storage.includes("eMMC") && h.ram <= 1)
-    h.vip = 1;
-
-  else if(h.storage.includes("eMMC") && h.ram === 2)
-    h.vip = 2;
-
-  else if(h.storage.includes("eMMC") && h.ram >= 3)
-    h.vip = calculateVip(h.ram, h.rom);
-
-  return h;
-}
-
-/* ===== TRƯỜNG HỢP KHÔNG NHẬN DIỆN ===== */
-return {
-  ram:null,
-  rom:null,
-  storage:"Unknown",
-  vip:0
-};
-
-}
-
-
-/* ===============================
-   VIP AUTO BALANCE ENGINE
-================================ */
-
-function VIP_ENGINE(hw){
-
-  const ram = Number(hw.ram)||0;
-  const rom = Number(hw.rom)||0;
-
-  let vip = 0;
-
-  /* ===== VIP 12 ===== */
-  if(ram===16 && rom===512) vip=12;
-
-  /* ===== VIP 11 ===== */
-  else if(ram===12 && rom===512) vip=11;
-
-  /* ===== VIP 10 ===== */
-  else if(
-      (ram===12 && rom===256) ||
-      (ram===8 && rom===512)
-  ) vip=10;
-
-  /* ===== VIP 9 ===== */
-  else if(
-      (ram===6 && rom===256) ||
-      (ram===12 && rom===128) ||
-      (ram===8 && rom===256) ||
-      (ram===10 && rom===256)
-  ) vip=9;
-
-  /* ===== VIP 8 ===== */
-  else if(
-      (ram===8 && rom===128) ||
-      (ram===10 && rom===128)
-  ) vip=8;
-
-  /* ===== VIP 7 ===== */
-  else if(
-      (ram===4 && rom===128) ||
-      (ram===6 && rom===128)
-  ) vip=7;
-
-  /* ===== VIP 6 ===== */
-  else if(
-      (ram===4 && rom===64) ||
-      (ram===6 && rom===64)
-  ) vip=6;
-
-  /* ===== VIP 5 ===== */
-  else if(
-      (ram===3 && rom===32) ||
-      (ram===4 && rom===32) ||
-      (ram===3 && rom===64)
-  ) vip=5;
-
-  /* ===== VIP 4+ ===== */
-  else if(ram===2 && rom===32) vip=4.5;
-
-  /* ===== VIP 4 ===== */
-  else if(ram===2 && rom===16) vip=4;
-
-  /* ===== VIP 3 ===== */
-  else if(ram===1 && rom===16) vip=3;
-
-  /* ===== VIP 2 ===== */
-  else if(ram===2 && rom===8) vip=2;
-
-  /* ===== VIP 1 ===== */
-  else if(ram===1 && rom===8) vip=1;
-
-  hw.vip = vip;
-
-  return hw;
-}
-
-
-/* ===== GLOBAL CACHE (KHÔNG DECLARE LẠI) ===== */
-window.VIP_AI_CACHE = window.VIP_AI_CACHE || null;
-
-
-/* ===== LOAD AI DATABASE (LOAD 1 LẦN DUY NHẤT) ===== */
-async function LOAD_AI_CACHE(){
-
-  if(window.VIP_AI_CACHE)
-    return window.VIP_AI_CACHE;
-
-  try{
-
-    const snap = await db.collection("vip_learning")
-      .limit(500)
-      .get();
-
-    window.VIP_AI_CACHE = snap.docs.map(d=>d.data());
-
-    console.log(
-      "AI cache loaded:",
-      window.VIP_AI_CACHE.length
-    );
-
-    return window.VIP_AI_CACHE;
-
-  }catch(e){
-
-    console.warn("AI cache load fail", e);
-
-    window.VIP_AI_CACHE = [];
-
-    return window.VIP_AI_CACHE;
-  }
-}
-
-/* ===== FAST AI VIP PREDICT ===== */
-function AI_VIP_PREDICT(hw, cache){
-
-  if(!Array.isArray(cache) || cache.length === 0)
-    return null;
-
-  const ram = Number(hw?.ram);
-  const rom = Number(hw?.rom);
-
-  if(!ram || !rom) return null;
-
-  let total = 0;
-  let count = 0;
-
-  for(const item of cache){
-
-    if(
-      Number(item.ram) === ram &&
-      Number(item.rom) === rom &&
-      item.vip != null
-    ){
-      total += Number(item.vip);
-      count++;
     }
-  }
-
-  if(count === 0) return null;
-
-  return Number((total / count).toFixed(1));
-}
-
-
-/* ===============================
-   SAVE EXPERIENCE
-================================ */
-function learnFromRealData(hw){
-
-  if(!hw?.ram || !hw?.rom || !hw?.vip) return;
-
-  db.collection("vip_learning").add({
-    ram: hw.ram,
-    rom: hw.rom,
-    storage: hw.storage,
-    vip: hw.vip,
-    score: hw.performanceScore || 0,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  });
-}
-
-
-let VIP_AI_CACHE = null;
-
-
-/* ===============================
-   LOAD AI LEARNING
-================================ */
-async function loadVIPLearning(){
-
-  if(VIP_AI_CACHE) return VIP_AI_CACHE;
-
-  const snap = await db.collection("vip_learning")
-    .limit(500)
-    .get();
-
-  VIP_AI_CACHE = [];
-
-  snap.forEach(d=>{
-    VIP_AI_CACHE.push(d.data());
-  });
-
-  return VIP_AI_CACHE;
-}
-
-
-/* ===============================
-   FORMAT PHONE MODELS CLEAN (FIXED)
-================================ */
-function formatSamsungModels(text){
-
-  if(!text) return "";
-
-  const models = text
-    .replace(/32GB|64GB|128GB|256GB|512GB/gi,"")
-    .split(",")
-    .map(m=>m.trim())
-    .filter(Boolean);
-
-  // ===== BRAND DETECT (SAFE VERSION) =====
-const detectBrand = (m)=>{
-
-  const t = m.toLowerCase();
-
-  if(t.includes("oppo")) return "OPPO";
-  if(t.includes("vivo")) return "VIVO";
-  if(t.includes("xiaomi") || t.includes("redmi") || t.includes("poco")) return "XIAOMI";
-  if(t.includes("realme")) return "REALME";
-  if(t.includes("vsmart")) return "VSMART";
-  if(t.includes("huawei")) return "HUAWEI";
-  if(t.includes("honor")) return "HONOR";
-  if(t.includes("meizu")) return "MEIZU";
-  if(t.includes("oneplus")) return "ONEPLUS";
-  if(t.includes("lenovo")) return "LENOVO";
-  if(t.includes("zte")) return "ZTE";
-  if(t.includes("nubia")) return "NUBIA";
-
-  if(t.includes("masstel")) return "MASSTEL";
-  if(t.includes("mobell")) return "MOBELL";
-  if(t.includes("mobiistar")) return "MOBIISTAR";
-  if(t.includes("bkav") || t.includes("bphone")) return "BKAV";
-
-  if(t.includes("nokia")) return "NOKIA";
-  if(t.includes("sony")) return "SONY";
-  if(t.includes("asus")) return "ASUS";
-  if(t.includes("tecno")) return "TECNO";
-  if(t.includes("infinix")) return "INFINIX";
-  if(t.includes("itel")) return "ITEL";
-
-  if(
-    t.includes("samsung") ||
-    t.includes("galaxy") ||
-    /^sm-/i.test(m)
-  ){
-    return "SAMSUNG";
-  }
-
-  return "OTHER";
-};
-
-  const grouped = {};
-
-  
-
-models.forEach(m=>{
-
-  const brand = detectBrand(m);
-
-  // Xoá tên hãng khỏi model để hiển thị gọn
-const cleanModel = m
- .replace(/(samsung|galaxy|oppo|vivo|xiaomi|redmi|poco|realme|vsmart|honor|huawei|nokia|sony|asus|lenovo|zte|nubia|meizu|oneplus|tecno|infinix|itel|masstel|mobell|mobiistar|bkav)/gi,"")
-    .replace(/\s+/g," ")
-    .trim();
-
-  if(!cleanModel) return;
-
-  if(!grouped[brand]) grouped[brand] = [];
-
-  if(!grouped[brand].includes(cleanModel))
-    grouped[brand].push(cleanModel);
-
-});
-  
-// ===== XỬ LÝ GỘP DÒNG SAMSUNG CAO CẤP =====
-  if(grouped["SAMSUNG"]){
-
-  const list = grouped["SAMSUNG"].join(",");
-
-  // ===== S10 =====
-  if(/G973|G975|G970/.test(list)){
-    return "Galaxy S10 • S10+ • S10e";
-  }
-
-  // ===== NOTE 10 =====
-  if(/N970|N975/.test(list)){
-    return "Galaxy Note10 • Note10+";
-  }
-
-  // ===== S20 =====
-  if(/G980|G985|G988/.test(list)){
-    return "Galaxy S20 • S20+ • S20 Ultra";
-  }
-
-  // ===== S21 =====
-  if(/G991|G996|G998/.test(list)){
-    return "Galaxy S21 • S21+ • S21 Ultra";
-  }
 
 }
-const order = [
-"SAMSUNG",
-"OPPO",
-"REALME",
-"VIVO",
-"XIAOMI",
-"HONOR",
-"HUAWEI",
-"VSMART",
-"MASSTEL",
-"MOBELL",
-"MOBIISTAR",
-"BKAV",
-"NOKIA",
-"SONY",
-"ASUS"
-];
 
-return Object.entries(grouped)
-  .filter(([brand]) => brand !== "OTHER")
-  .sort((a,b)=>order.indexOf(a[0]) - order.indexOf(b[0]))
-  .map(([brand,list])=>`${brand} : ${list.join(" / ")}`)
-  .join("<br>");
-}
-/* ===============================
-   MMC SIZE DETECT
-================================ */
-function extractMMCSize(code){
+/* ====== DASHBOARD ====== */
 
-  code = (code || "").toUpperCase();
+window.renderDashboard = function(){
 
-  if(code.includes("G1")) return 16;
-  if(code.includes("G2")) return 32;
-  if(code.includes("G3")) return 64;
-  if(code.includes("G4")) return 128;
-  if(code.includes("G5")) return 256;
+    totalProducts.innerText =
+    products.length
 
-  return null;
+    let stock = 0
+
+    let value = 0
+
+    products.forEach(p=>{
+
+        stock += Number(p.ton)
+
+        value +=
+        Number(p.ton) *
+        Number(p.gia_nhap)
+
+    })
+
+    totalStock.innerText =
+    stock.toLocaleString()
+
+    totalValue.innerText =
+    value.toLocaleString() + "đ"
+
 }
 
-const MODEL_NAME_MAP = {
-/* ===== J SERIES ===== */
-G530: "Samsung J2",
-G531: "Samsung J2",
-G532: "Samsung J2 Prime",
-G550: "Samsung On5",
-G570: "Samsung J5 Prime",
-G600: "Samsung On7",
-G610: "Samsung J7 Prime",
-J200: "Samsung J2",
-J210: "Samsung J2",
-J250: "Samsung J2 Pro",
-J260: "Samsung J2 Core",
-J320: "Samsung J3",
-J330: "Samsung J3 Pro",
-J400: "Samsung J4",
-J410: "Samsung J4 Core",
-J415: "Samsung J4+",
-J500: "Samsung J5",
-J510: "Samsung J5 (2016)",
-J530: "Samsung J5 Pro",
-J600: "Samsung J6",
-J610: "Samsung J6+",
-J700: "Samsung J7",
-J710: "Samsung J7 (2016)",
-J730: "Samsung J7 Pro",
-J810: "Samsung J8",
-  /* ===== S SERIES ===== */
-  G920: "Samsung S6",
-  G925: "Samsung S6 Edge",
-  G928: "Samsung S6 Edge+",
-  G930: "Samsung S7",
-  G935: "Samsung S7 Edge",
-  G950: "Samsung S8",
-  G955: "Samsung S8+",
-  G960: "Samsung S9",
-  G965: "Samsung S9+",
-  G970: "Samsung S10e",
-  G973: "Samsung S10",
-  G975: "Samsung S10+",
-  G977: "Samsung S10 5G",
-  G980: "Samsung S20",
-  G981: "Samsung S20 5G",
-  G985: "Samsung S20+",
-  G986: "Samsung S20+ 5G",
-  G988: "Samsung S20 Ultra",
-  G990: "Samsung S21 FE",
-  G991: "Samsung S21",
-  G996: "Samsung S21+",
-  G998: "Samsung S21 Ultra",
-  S901: "Samsung S22",
-  S906: "Samsung S22+",
-  S908: "Samsung S22 Ultra",
-  S911: "Samsung S23",
-  S916: "Samsung S23+",
-  S918: "Samsung S23 Ultra",
-  S921: "Samsung S24",
-  S926: "Samsung S24+",
-  S928: "Samsung S24 Ultra",
+/* ====== HIỂN THỊ SẢN PHẨM ====== */
+    
+window.renderProducts = function(){
 
-  /* ===== NOTE SERIES ===== */
-  N900: "Samsung Note 3",
-  N910: "Samsung Note 4",
-  N915: "Samsung Note Edge",
-  N920: "Samsung Note 5",
-  N930: "Samsung Note 7",
-  N935: "Samsung Note FE",
-  N950: "Samsung Note 8",
-  N960: "Samsung Note 9",
-  N970: "Samsung Note 10",
-  N975: "Samsung Note 10+",
-  N976: "Samsung Note 10+ 5G",
-  N980: "Samsung Note 20",
-  N985: "Samsung Note 20 Ultra",
-
-  /* ===== A SERIES ===== */
-  A105: "Samsung A10",
-  A107: "Samsung A10s",
-  A205: "Samsung A20",
-  A207: "Samsung A20s",
-  A305: "Samsung A30",
-  A307: "Samsung A30s",
-  A405: "Samsung A40",
-  A505: "Samsung A50",
-  A507: "Samsung A50s",
-  A515: "Samsung A51",
-  A516: "Samsung A51 5G",
-  A525: "Samsung A52",
-  A526: "Samsung A52 5G",
-  A528: "Samsung A52s",
-  A530: "Samsung A8 (2018)",
-  A705: "Samsung A70",
-  A707: "Samsung A70s",
-  A715: "Samsung A71",
-  A716: "Samsung A71 5G",
-  A725: "Samsung A72",
-  A325: "Samsung A32",
-  A326: "Samsung A32 5G",
-  A335: "Samsung A33",
-  A336: "Samsung A33 5G",
-  A345: "Samsung A34",
-  A346: "Samsung A34 5G",
-  A505: "Samsung A50",
-  A515: "Samsung A51",
-  A525: "Samsung A52",
-  A536: "Samsung A53",
-  A546: "Samsung A54",
-  A556: "Samsung A55",
-
-  /* ===== M SERIES ===== */
-  M105: "Samsung M10",
-  M205: "Samsung M20",
-  M305: "Samsung M30",
-  M307: "Samsung M30s",
-  M315: "Samsung M31",
-  M317: "Samsung M31s",
-  M325: "Samsung M32",
-  M326: "Samsung M32 5G",
-  M335: "Samsung M33",
-  M336: "Samsung M33 5G",
-  M515: "Samsung M51",
-  M525: "Samsung M52",
-  M526: "Samsung M52 5G",
-
-  /* ===== FOLD / FLIP ===== */
-  F900: "Samsung Fold",
-  F907: "Samsung Fold 5G",
-  F916: "Samsung Z Fold2",
-  F926: "Samsung Z Fold3",
-  F936: "Samsung Z Fold4",
-  F946: "Samsung Z Fold5",
-  F700: "Samsung Z Flip",
-  F707: "Samsung Z Flip 5G",
-  F711: "Samsung Z Flip3",
-  F721: "Samsung Z Flip4",
-  F731: "Samsung Z Flip5"
-};
-/* =================================================
-ENGINE TÌM KIẾM MODEL SAMSUNG
-================================================= */
-
-function chuẩnHóaModel(input){
-
-  input = String(input || "")
-    .toUpperCase()
+    const keyword =
+    (searchInput.value || "")
+    .toLowerCase()
     .trim()
-    .replace("SM-","");
 
-  /* A50 (A505) */
-  const ngoặc = input.match(/\(([^)]+)\)/);
-  if(ngoặc) return ngoặc[1];
+    let html = ""
 
-  /* A51 -> A515 */
-  const m = input.match(/^([A-Z])(\d{2})$/);
-  if(m){
-    return m[1] + m[2] + "5";
-  }
+    products.forEach((p,index)=>{
 
-  return input;
-}  
-/* =================================================
-ENGINE TÌM KIẾM MODEL SAMSUNG
-================================================= */
+        const ten =
+        (p.ten || "")
+        .toLowerCase()
 
-async function check(){
+        const ma =
+        (p.ma || "")
+        .toLowerCase()
 
-  const out = document.getElementById("out");
-  const btn = document.querySelector(".check-btn");
+        const words =
+        keyword
+        .split(" ")
+        .filter(Boolean)   
 
-  /* ===== LẤY GIÁ TRỊ TỪ Ô TÌM KIẾM (GET SEARCH INPUT) ===== */
+        const match =
+        words.every(w=>
 
-  let q = document.getElementById("q")?.value || "";
-  q = chuẩnHóaModel(q);
-  q = q.toUpperCase();
+            ten.includes(w)
+            ||
+            ma.includes(w)
 
-  const priceResults = searchPriceModel(q);
+        )
 
+        if(match){
 
-/* ===== CHUYỂN MODEL PHỔ BIẾN SANG MÃ CHIP (FORCE MODEL SEARCH) ===== */
+            html += `
+            <tr>
 
-if(q.startsWith("S8")) q = "G950";
+                <td>
+                    ${p.ma || ""}
+                </td>
 
-if(q.startsWith("S20 ULTRA")) q = "G988";
-else if(q.startsWith("S20")) q = "G980";
+                <td>
+                    ${p.ten || ""}
+                </td>
 
-if(q.startsWith("S21 ULTRA")) q = "G998";
-else if(q.startsWith("S21")) q = "G991";
+                <td>
+                    ${(Number(p.gia_nhap)||0)
+                    .toLocaleString()}đ
+                </td>
 
+                <td style="
+                color:#2563eb;
+                font-weight:700;
+                ">
+                    ${(Number(p.gia_ban)||0)
+                    .toLocaleString()}đ
+                </td>
 
-/* ===== DÒNG GALAXY S22 ===== */
+                <td>
+                    ${(Number(p.gia_si)||0)
+                    .toLocaleString()}đ
+                </td>
 
-if(q.startsWith("S22 ULTRA")) q = "G908";
-else if(q.startsWith("S22+")) q = "G906";
-else if(q.startsWith("S22")) q = "G901"
+                <td>
 
+                    <div style="
+                    background:#eff6ff;
+                    color:#2563eb;
+                    padding:6px 10px;
+                    border-radius:6px;
+                    text-align:center;
+                    font-weight:700;
+                    ">
 
-/* ===== DÒNG GALAXY S23 ===== */
+                        ${p.ton || 0}
 
-if(q.startsWith("S23 ULTRA")) q = "G918";
-else if(q.startsWith("S23+")) q = "G916";
-else if(q.startsWith("S23")) q = "G911";
+                    </div>
 
+                </td>
 
-/* ===== DÒNG GALAXY S24 ===== */
+                <td>
 
-if(q.startsWith("S24 ULTRA")) q = "S928";
-else if(q.startsWith("S24+")) q = "S926";
-else if(q.startsWith("S24")) q = "S921";
+                    <div style="
+                    display:flex;
+                    gap:6px;
+                    ">
 
+                        <button
+                        class="btn btn-blue"
+                        onclick="editProduct(${index})">
 
-/* =================================================
-   TÌM MODEL TỪ CHUỖI NHẬP
-================================================= */
+                            Sửa
 
-const modelMatch = chuẩnHóaModel(q).match(/[A-Z]\d{2,4}[A-Z]?/);
+                        </button>
 
-if(modelMatch){
+                        <button
+                        class="btn btn-red"
+                        onclick="deleteProduct(${index})">
 
-  const modelKey = modelMatch[0];
+                            Xóa
 
-  /* ===== TÌM TẤT CẢ MODEL TRONG BẢNG GIÁ ===== */
+                        </button>
 
-  const priceList = searchPriceModel(modelKey);
+                    </div>
 
-  if(priceList && priceList.length){
+                </td>
 
-    let html = `<div class="result-grid">`;
+            </tr>
+            `
 
-for(const price of priceList){
+        }
 
-  const modelCode = price.model;
+    })
 
-  // 🔥 xử lý trước (KHÔNG viết trong template nữa)
-  const cleanModel = (price.model || "")
-    .replace(/^Samsung\s+/i,"")
-    .trim();
-
-  const short =
-    price.short ||
-    modelKey || ""; // fallback chắc chắn có
-
-  const cleanShort = short
-    .replace(/F$/,"")
-    .replace(/\//g," • ");
-
-/* ===== RENDER CARD GIÁ SAMSUNG ===== */
-
-html += `
-<div class="result-card">
-
-  ${
-  ADMIN_MODE
-  ? `
-  <div class="admin-tools">
-
-    <button
-      class="admin-btn"
-      onclick="editCode('${cleanModel || q}')"
-    >
-      ✏️
-    </button>
-
-  </div>
-  `
-  : ""
-  }
-
-  <div class="code-title">
-
-    <span class="code-badge">
-      ${cleanModel ? "Samsung " + cleanModel : ""}
-      ${cleanShort ? " (" + cleanShort + ")" : ""}
-    </span>
-
-    <div class="model-type">
-      📱 <b>${price.type || "Samsung loại ?"}</b>
-    </div>
-
-  </div>
-
-  <div class="price-box">
-
-    <div class="price-title">
-      💰 Giá tham khảo
-    </div>
-
-    <div class="price-item">
-
-      <span class="price-label">
-        🔋 Có pin
-      </span>
-
-      <span class="price-value">
-        ${price.pin ? Math.round(price.pin/1000)+"k" : "-"}
-      </span>
-
-    </div>
-
-    <div class="price-item">
-
-      <span class="price-label">
-        ⚡ Không pin
-      </span>
-
-      <span class="price-value">
-        ${price.no_pin ? Math.round(price.no_pin/1000)+"k" : "-"}
-      </span>
-
-    </div>
-
-    <div class="price-item">
-
-      <span class="price-label">
-        🧠 Main
-      </span>
-
-      <span class="price-value">
-        ${price.main ? Math.round(price.main/1000)+"k" : "-"}
-      </span>
-
-    </div>
-
-  </div>
-
-</div>
-`;
+    productTable.innerHTML = html
 
 }
 
-/* ===== HOÀN TẤT RENDER ===== */
+/* ====== XUẤT EXCEL ====== */
 
-html += `</div>`;
+window.exportExcel = function(){
 
-out.innerHTML = html;
+    const data =
+    products.map(p=>({
 
-turboCache.set(q, html);
+        "Mã hàng":p.ma,
 
-return;
+        "Tên hàng":p.ten,
+
+        "Giá nhập":p.gia_nhap,
+
+        "Giá bán":p.gia_ban,
+
+        "Giá sỉ":p.gia_si,
+
+        "Tồn kho":p.ton
+
+    }))
+
+    const worksheet =
+    XLSX.utils.json_to_sheet(data)
+
+    const workbook =
+    XLSX.utils.book_new()
+
+    XLSX.utils.book_append_sheet(
+
+        workbook,
+        worksheet,
+        "SanPham"
+
+    )
+
+    XLSX.writeFile(
+
+        workbook,
+        "POS_PRO.xlsx"
+
+    )
+
+}
+    
+/* ====== MỞ MODAL ====== */
+
+window.openModal = function(){
+
+    editId = null
+
+    modalTitle.innerText =
+    "Thêm sản phẩm"
+
+    ma.value = ""
+    ten.value = ""
+    giaNhap.value = ""
+    giaBan.value = ""
+    giaSi.value = ""
+    ton.value = ""
+
+    modal.style.display =
+    "flex"
 
 }
 
+/* ====== ĐÓNG MODAL ====== */
+
+window.closeModal = function(){
+
+    modal.style.display =
+    "none"
+
 }
 
-if(!q){
-  out.innerHTML="";
-  return;
+/* ====== SỬA SẢN PHẨM ====== */
+
+window.editProduct = function(index){
+
+    const p = products[index]
+
+    editId = p.id
+
+    ma.value = p.ma
+
+    ten.value = p.ten
+
+    giaNhap.value = p.gia_nhap
+
+    giaBan.value = p.gia_ban
+
+    giaSi.value = p.gia_si
+
+    ton.value = p.ton
+
+    modalTitle.innerText =
+    "Sửa sản phẩm"
+
+    modal.style.display =
+    "flex"
+
 }
 
-btn.disabled = true;
-btn.style.opacity = "0.6";
+/* ====== LƯU SẢN PHẨM ====== */
 
-out.innerHTML = `
-<div style="text-align:center;margin:40px 0;opacity:.8;">
-🔎 Đang phân tích...
-</div>
-`;
-
-try{
-
-  if(turboCache.has(q)){
-    out.innerHTML = turboCache.get(q);
-    return;
-  }
-
-
-/* ===== TẢI DỮ LIỆU TỪ FIRESTORE ===== */
-
-const snapSearch = await db.collection("codes")
-  .orderBy("code")
-  .limit(1000)
-  .get();
-
-const snapCode = await db.collection("codes")
-  .where("code", ">=", q)
-  .where("code", "<=", q + "\uf8ff")
-  .limit(30)
-  .get();
-
-
-const docsMap = new Map();
-
-
-/* ===== TÌM KIẾM THEO NỘI DUNG ===== */
-
-snapSearch.forEach(doc=>{
-
-  const d = doc.data();
-
-  const code = (d.code || "").toUpperCase();
-
-  let models = "";
-
-  if(Array.isArray(d.models)){
-    models = d.models.map(m=>{
-      if(typeof m === "string") return m;
-      if(typeof m === "object" && m)
-        return (m.brand || "") + " " + (m.model || "");
-      return "";
-    }).join(" ");
-  }
-  else if(d.model){
-    models = d.model;
-  }
-
-  const text = (code + " " + models).toUpperCase();
-
-const cleanCode = String(code || "")
-  .replace(/[^A-Z0-9]/g,"");
-
-const cleanText = String(text || "")
-  .replace(/[^A-Z0-9]/g,"");
-
-const cleanQ = String(q || "")
-  .replace(/[^A-Z0-9]/g,"");
+window.saveProduct = function(){
 
 if(
 
-  cleanCode.startsWith(cleanQ) ||
-
-  cleanText.startsWith(cleanQ) ||
-
-  cleanText.includes(cleanQ)
+    !ma.value.trim()
+    ||
+    !ten.value.trim()
 
 ){
-  docsMap.set(doc.id, doc);
+
+    alert("Nhập mã và tên")
+
+    return
+
 }
-});
-/* ===== LƯU DANH SÁCH CODE THEO PREFIX ===== */
+if(
 
-snapCode.forEach(doc=>{
-  docsMap.set(doc.id, doc);
-});
+    Number(giaNhap.value) < 0
+    ||
+    Number(giaBan.value) < 0
+    ||
+    Number(giaSi.value) < 0
+    ||
+    Number(ton.value) < 0
 
+){
 
-/* ===== TRƯỜNG HỢP KHÔNG TÌM THẤY TRONG FIRESTORE ===== */
+    alert("Không được nhập số âm")
 
-if(docsMap.size === 0){
+    return
 
-  const key = q.toUpperCase().trim();
+}
+    const data = {
 
-  /* ===== AUTO PHÂN TÍCH CHIP ===== */
+        ma:ma.value,
 
-  const hw = autoDecodeChip(key);
+        ten:ten.value,
 
-  if(hw){
+        gia_nhap:Number(giaNhap.value),
 
-    /* ===== RENDER CARD KẾT QUẢ ===== */
+        gia_ban:Number(giaBan.value),
 
-    const html = `
-    <div class="result-grid">
+        gia_si:Number(giaSi.value),
 
-      <div class="result-card">
+        ton:Number(ton.value)
 
-        ${
-        ADMIN_MODE
-        ? `
-        <div class="admin-tools">
+    }
 
-          <button
-            class="admin-btn"
-            onclick="editCode('${key}')"
-          >
-            ✏️
-          </button>
+    /* SỬA */
+
+    if(editId){
+
+        update(
+
+            ref(
+                db,
+                "products/" + editId
+            ),
+
+            data
+
+        )
+
+    }
+
+    /* THÊM */
+
+    else{
+
+        push(
+            productsRef,
+            data
+        )
+
+    }
+
+    closeModal()
+
+}
+
+/* ====== XÓA SẢN PHẨM ====== */
+
+window.deleteProduct = function(index){
+
+    if(confirm("Xóa sản phẩm?")){
+
+        remove(
+
+            ref(
+                db,
+                "products/" + products[index].id
+            )
+
+        )
+
+    }
+
+}
+
+/* ====== IMPORT EXCEL ====== */
+
+excelFile.addEventListener(
+"change",
+e=>{
+
+    const file =
+    e.target.files[0]
+
+    if(!file) return
+
+    const reader =
+    new FileReader()
+
+    reader.onload = evt=>{
+
+        const data =
+        new Uint8Array(
+            evt.target.result
+        )
+
+        const workbook =
+        XLSX.read(
+            data,
+            {type:"array"}
+        )
+
+        const sheet =
+        workbook.Sheets[
+            workbook.SheetNames[0]
+        ]
+
+        const json =
+        XLSX.utils.sheet_to_json(sheet)
+
+        json.forEach(row=>{
+        if(!row["Mã hàng"]) return
+
+            /* ====== KIỂM TRA TRÙNG MÃ ====== */
+
+            const exists =
+            products.find(
+                p=>p.ma===row["Mã hàng"]
+            )
+
+            if(exists) return
+
+            /* ====== THÊM SẢN PHẨM ====== */
+
+            push(productsRef,{
+
+                ma:
+                row["Mã hàng"] || "",
+
+                ten:
+                row["Tên hàng"] || "",
+
+                gia_nhap:Number(
+                    row["Giá nhập"] || 0
+                ),
+
+                gia_ban:Number(
+                    row["Giá bán"] || 0
+                ),
+
+                gia_si:Number(
+                    row["Giá sỉ"] || 0
+                ),
+
+                ton:Number(
+                    row["Tồn kho"] || 0
+                )
+
+            })
+
+        })
+
+        alert("Import thành công")
+
+    }
+
+    reader.readAsArrayBuffer(file)
+
+})
+/* ====== THÊM DÒNG NHẬP ====== */
+
+window.addNhapRow = function(){
+
+    nhapRows.push({
+
+        ma:"",
+        ten:"",
+        sl:"",
+        gia:0,
+        giaBan:0
+
+    })
+
+    renderNhap()
+
+}
+    
+/* ====== RENDER NHẬP HÀNG ====== */
+
+window.renderNhap = function(){
+
+    let html = ""
+
+    let tong = 0
+
+    nhapRows.forEach((r,index)=>{
+
+        const found =
+        products.find(
+            p=>p.ma===r.ma
+        )
+
+        const tenSP =
+        found
+        ? found.ten
+        : (r.ten || "")
+
+        tong +=
+        Number(r.sl) *
+        Number(r.gia)
+
+        html += `
+        <tr>
+
+            <!-- MÃ -->
+
+            <td style="
+            width:140px;
+            min-width:140px;
+            ">
+
+                <div class="auto-wrap">
+
+                    <input
+                    type="text"
+                    value="${r.ma}"
+                    id="maInput${index}"
+                    oninput="
+                    searchMa(
+                        ${index},
+                        this.value
+                    )
+                    "
+                    onkeydown="
+                    handleMaEnter(
+                        event,
+                        ${index}
+                    )
+                    "
+                    placeholder="Mã hàng"
+                    autocomplete="off">
+
+                    <div
+                    class="auto-list"
+                    id="autoList${index}">
+
+                    </div>
+
+                </div>
+
+            </td>
+
+            <!-- TÊN -->
+
+            <td style="
+            min-width:260px;
+            ">
+
+                <input
+                type="text"
+                id="tenInput${index}"
+                value="${tenSP}"
+                onchange="
+                changeTen(
+                    ${index},
+                    this.value
+                )
+                "
+                onkeydown="
+                focusNextNhap(
+                    event,
+                    'slInput${index}'
+                )
+                "
+                placeholder="Tên sản phẩm">
+
+            </td>
+
+            <!-- SỐ LƯỢNG -->
+
+            <td style="
+            width:90px;
+            min-width:90px;
+            ">
+
+                <input
+                type="number"
+                id="slInput${index}"
+                value="${r.sl}"
+                oninput="
+changeSl(
+    ${index},
+    this.value
+)
+"
+                onkeydown="
+                focusNextNhap(
+                    event,
+                    'giaInput${index}'
+                )
+                "
+                style="
+                text-align:center;
+                ">
+
+            </td>
+
+            <!-- GIÁ NHẬP -->
+
+            <td style="
+            width:120px;
+            min-width:120px;
+            ">
+
+                <input
+                type="number"
+                id="giaInput${index}"
+                onfocus="this.select()"
+                value="${r.gia || ''}"
+                oninput="
+changeGia(
+    ${index},
+    this.value
+)
+"
+                onkeydown="
+                focusNextNhap(
+                    event,
+                    'giaBanInput${index}'
+                )
+                ">
+
+            </td>
+
+            <!-- GIÁ BÁN -->
+
+            <td style="
+            width:120px;
+            min-width:120px;
+            ">
+
+                <input
+                type="number"
+                id="giaBanInput${index}"
+                onfocus="this.select()"
+                value="${r.giaBan || ''}"
+                onchange="
+                changeGiaBan(
+                    ${index},
+                    this.value
+                )
+                "
+                onkeydown="
+                handleGiaBanEnter(
+                    event,
+                    ${index}
+                )
+                ">
+
+            </td>
+
+            <!-- THÀNH TIỀN -->
+
+            <td style="
+            width:140px;
+            min-width:140px;
+            ">
+
+                <div style="
+                height:44px;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                background:#f8fafc;
+                color:#2563eb;
+                font-weight:700;
+                border-right:1px solid #e2e8f0;
+                ">
+
+                    ${(
+                        Number(r.sl) *
+                        Number(r.gia)
+                    ).toLocaleString()}đ
+
+                </div>
+
+            </td>
+
+            <!-- THAO TÁC -->
+
+            <td style="
+            width:90px;
+            min-width:90px;
+            padding:0;
+            ">
+
+                <div style="
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                gap:4px;
+                height:44px;
+                ">
+
+                    <button
+                    onclick="addNhapRow()"
+                    style="
+                    width:30px;
+                    height:30px;
+                    border:none;
+                    border-radius:6px;
+                    background:#2563eb;
+                    color:white;
+                    font-size:18px;
+                    cursor:pointer;
+                    ">
+
+                        +
+
+                    </button>
+
+                    <button
+                    onclick="
+                    removeNhap(${index})
+                    "
+                    style="
+                    width:30px;
+                    height:30px;
+                    border:none;
+                    border-radius:6px;
+                    background:#ef4444;
+                    color:white;
+                    font-size:18px;
+                    cursor:pointer;
+                    ">
+
+                        ×
+
+                    </button>
+
+                </div>
+
+            </td>
+
+        </tr>
+        `
+
+    })
+
+    nhapTable.innerHTML = html
+
+    tongTien.innerText =
+    tong.toLocaleString() + "đ"
+
+}
+/* ====== TÌM MÃ ====== */
+
+window.searchMa = function(index,val){
+
+    nhapRows[index].ma = val
+
+    const list =
+    document.getElementById(
+        "autoList" + index
+    )
+
+    if(!val){
+
+        list.innerHTML = ""
+
+        return
+
+    }
+
+    const keyword =
+    val.toLowerCase()
+
+const result =
+products.filter(p=>
+
+    (p.ma || "")
+    .toLowerCase()
+    .includes(keyword)
+
+    ||
+
+    (p.ten || "")
+    .toLowerCase()
+    .includes(keyword)
+
+)
+.slice(0,8)
+
+    let html = ""
+
+    result.forEach(p=>{
+
+        html += `
+        <div
+        class="auto-item"
+        onclick="
+        selectMa(
+            ${index},
+            '${p.ma}'
+        )
+        ">
+
+            ${p.ma}
+            -
+            ${p.ten}
 
         </div>
         `
-        : ""
-        }
 
-        <div class="code-main">${key}</div>
+    })
 
-        <div class="badge-row">
-
-          ${
-          hw.rom
-          ? '<div class="ram-badge">' + hw.rom + '/' + hw.rom + '</div>'
-          : ''
-          }
-
-          ${
-          hw.vip
-          ? '<div class="vip-badge">VIP ' + hw.vip + '</div>'
-          : ''
-          }
-
-        </div>
-
-        <div class="card-footer">
-
-          <div class="chip-info">
-
-            ${
-            hw.storage && hw.storage !== "Unknown"
-            ? hw.storage
-            : L("code_not_found")
-            }
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-    `;
-
-    out.innerHTML = html;
-
-    turboCache.set(key, html);
-
-    return;
-
-  }
-
-  /* ===== KIỂM TRA MODEL TỪ BẢNG GIÁ ===== */
-
-  const modelMatch = key.match(/[A-Z]\d{2,3}/);
-
-  if(modelMatch){
-
-    const modelKey = modelMatch[0];
-
-    const price = findPriceByModel(modelKey);
-
-    if(price){
-
-      const html = `
-<div class="result-grid">
-<div class="result-card">
-
-<div class="code-title">
-<span class="code-badge">${getModelName(modelKey)}</span>
-</div>
-
-<div class="model-row">
-Samsung loại ${price.type || "Không rõ"}
-</div>
-
-<div style="margin-top:10px;line-height:1.6;">
-<div>📦 Có pin: ${price.pin ? Math.round(price.pin/1000)+"k" : "-"}</div>
-<div>📦 Không pin: ${price.no_pin ? Math.round(price.no_pin/1000)+"k" : "-"}</div>
-<div>📦 Main: ${price.main ? Math.round(price.main/1000)+"k" : "-"}</div>
-</div>
-
-</div>
-</div>
-`;
-
-      out.innerHTML = html;
-
-      /* ===== LƯU KẾT QUẢ VÀO CACHE ===== */
-
-      turboCache.set(key, html);
-
-      return;
-    }
-  }
+    list.innerHTML = html
 
 }
 
+/* ====== ENTER CHỌN MÃ ====== */
 
-/* ===== HIỂN THỊ KẾT QUẢ CHIP ===== */
+window.handleMaEnter = function(e,index){
 
-let html = `<div class="result-grid">`;
+    if(e.key !== "Enter")
+    return
 
-docsMap.forEach(doc => {
+    e.preventDefault()
 
-  const x = {
-  _id: doc.id,
-  ...doc.data()
-};
+    const keyword =
+    document
+    .getElementById(
+        `maInput${index}`
+    )
+    .value
+    .trim()
 
-  const chip = detectChip(x.code);
+    if(!keyword) return
 
-  let decoded = {
-    ram: null,
-    rom: null,
-    vip: null,
-    storage: null
-  };
+    const found =
+    products.find(p=>
 
+        (p.ma || "")
+        .toLowerCase()
+        ===
+        keyword.toLowerCase()
 
-  if(x.ram != null) decoded.ram = x.ram;
-  if(x.rom != null) decoded.rom = x.rom;
-  if(x.vip != null){
-  decoded.vip = typeof x.vip === "string" ? x.vip.trim() : x.vip;
-}
-  if(x.storage != null) decoded.storage = x.storage;
-  decoded.type = x.type || null;
+    )
 
+    /* CÓ TRONG KHO */
 
-  if(decoded.vip == null && x.type === "VIP" && x.value){
-    decoded.vip = String(x.value).replace("VIP","").trim();
-  }
+    if(found){
 
-  if(decoded.ram == null && decoded.rom == null && x.type === "RAMROM" && x.value){
+        selectMa(
+            index,
+            found.ma
+        )
 
-    const parts = String(x.value).split("/");
-
-    if(parts.length === 2){
-      decoded.ram = parts[0];
-      decoded.rom = parts[1];
-    }
-  }
-
-  if(!decoded.storage){
-
-    const hw = autoDecodeChip(x.code,x) || {};
-
-    decoded.storage = hw.storage ?? null;
-  }
-
-// RAM
-const ramNum = Number(decoded.ram);
-decoded.ram = !isNaN(ramNum) && ramNum > 0 ? ramNum : null;
-
-// ROM
-const romNum = Number(decoded.rom);
-decoded.rom = !isNaN(romNum) && romNum > 0 ? romNum : null;
-
-// VIP (FIX CHUẨN)
-if(typeof decoded.vip === "string"){
-  const v = decoded.vip.trim();
-
-  if(v.includes("?")){
-    decoded.vip = "?";
-  }else{
-    const num = Number(v);
-    decoded.vip = !isNaN(num) && num > 0 ? num : 0;
-  }
-
-}else{
-  const num = Number(decoded.vip);
-  decoded.vip = !isNaN(num) && num > 0 ? num : 0;
-}
-
-// CHIP
-const chipNum = Number(x.chip);
-decoded.chip = !isNaN(chipNum) && chipNum > 0 ? chipNum : 0;
-
-// iPhone detect
-const iphone = detectIphoneFromNAND(x.code);
-
-if(iphone){
-decoded.rom = iphone.rom;
-decoded.rom = iphone.rom;
-}
-
-
- const mmcLevel = getMMCLevel(
-  decoded.rom,
-  decoded.storage,
-  x.type
-);
-
-
-/* ===== RENDER KẾT QUẢ CHIP ===== */
-
-html += `
-<div class="result-card ${chip.class}">
-
-${
-ADMIN_MODE
-? `
-<div class="admin-tools">
-
-  <button
-    class="admin-btn"
-    onclick="editCode('${x._id}')"
-  >
-    ✏️
-  </button>
-
-</div>
-`
-: ""
-}
-
-<div class="code-main">${x.code}</div>
-
-<div class="badge-row">
-
-${
-decoded.ram > 0 && decoded.rom > 0
-? '<div class="ram-badge">' + decoded.ram + '/' + decoded.rom + '</div>'
-: decoded.rom > 0
-? '<div class="ram-badge">' + decoded.rom + 'GB</div>'
-: decoded.ram > 0
-? '<div class="ram-badge">' + decoded.ram + 'GB RAM</div>'
-: ''
-}
-
-${
-decoded.chip > 0
-? '<div class="ram-badge">' + decoded.chip + ' CHIP</div>'
-:
-(
-  (typeof decoded.vip === "string" && decoded.vip.includes("?")) ||
-  decoded.vip > 0
-)
-? '<div class="vip-badge ' +
-    (
-      (typeof decoded.vip === "string" && decoded.vip.includes("?"))
-      ? 'vip-unknown'
-      : 'vip-' + String(decoded.vip).replace(".", "-")
-    ) +
-  '">' +
-  '<span class="vip-dot"></span> VIP ' +
-  (
-    (typeof decoded.vip === "string" && decoded.vip.includes("?"))
-    ? "?"
-    : (decoded.vip % 1 ? Math.floor(decoded.vip) + '+' : decoded.vip)
-  ) +
-  '</div>'
-:
-(
-  mmcLevel
-  ? '<div class="ram-badge mmc-badge mmc-' + mmcLevel.replace("MMC","") + '">' +
-      '<span class="mmc-dot"></span> ' + mmcLevel +
-    '</div>'
-  : ''
-)
-}
-
-</div>
-
-<div class="card-footer">
-
-<div class="chip-info" style="color:${chip.color}">
-<span class="chip-dot" style="background:${chip.color}"></span>
-
-${chip.name === "Apple NAND" ? "🍏 Apple NAND" : chip.name}
-
-${
-decoded.storage && chip.name !== "Apple NAND"
-? `<span style="opacity:.6;">${decoded.storage}</span>`
-: chip.name === "Apple NAND"
-? `<span style="opacity:.6;">iPhone Storage</span>`
-: ""
-}
-
-</div>
-
-</div>
-
-${
-Array.isArray(x.models) && x.models.length
-? `<div class="model-line">${
-    chip.name === "Samsung"
-
-    ? formatSamsungModels(
-
-        x.models.map(m=>{
-
-          if(typeof m === "string"){
-            return m;
-          }
-
-          if(typeof m === "object" && m !== null){
-            return (m.brand || "") + " " + (m.model || "");
-          }
-
-          return "";
-
-        }).join(", ")
-
-      )
-
-    : (()=>{
-
-        const grouped = {};
-
-        x.models.forEach(m=>{
-
-          /* ===== STRING ===== */
-
-          if(typeof m === "string"){
-
-            if(!grouped["OTHER"]){
-              grouped["OTHER"] = [];
-            }
-
-            grouped["OTHER"].push(m);
-
-            return;
-          }
-
-          /* ===== OBJECT ===== */
-
-          if(typeof m === "object" && m !== null){
-
-            const brand = (m.brand || "OTHER")
-              .toUpperCase()
-              .trim();
-
-            const model = (m.model || "")
-              .toUpperCase()
-              .trim();
-
-            if(!grouped[brand]){
-              grouped[brand] = [];
-            }
-
-            if(model){
-              grouped[brand].push(model);
-            }
-
-          }
-
-        });
-
-        return Object.entries(grouped)
-
-          .filter(([brand,list])=>
-            brand &&
-            list.length
-          )
-
-          .map(([brand,list])=>
-            `${brand} : ${list.join(" / ")}`
-          )
-
-          .join("<br>");
-
-      })()
-
-}</div>`
-
-: `<div class="model-placeholder">Chưa có model</div>`
-}
-
-</div>
-`;
-
-});
-
-
-html += `</div>`;
-
-turboCache.set(q, html);
-
-out.innerHTML = html;
-
-}
-catch(err){
-
-  console.error(err);
-
-  out.innerHTML = `
-  <div style="color:#ef4444;text-align:center;">
-    ⚠️ Lỗi hệ thống
-  </div>
-  `;
-
-}
-finally{
-
-  btn.disabled = false;
-  btn.style.opacity = "1";
-
-}
-
-}
-// ===== LOGIN =====
-async function secureLogin(){
-  const email = document.getElementById("loginEmail").value.trim();
-  const pass = document.getElementById("loginPass").value.trim();
-  const err = document.getElementById("loginError");
-
-  err.style.display = "none";
-
-  try{
-    await auth.signInWithEmailAndPassword(email, pass);
-    // KHÔNG làm gì thêm
-  }catch(e){
-    err.style.display = "block";
-    err.innerText = "Sai tài khoản hoặc mật khẩu!";
-    return; // QUAN TRỌNG
-  }
-}
-
-
-
-// ===== TOGGLE PASSWORD =====
-function togglePassword(){
-  const passInput = document.getElementById("loginPass");
-
-  if(passInput.type === "password"){
-    passInput.type = "text";
-  }else{
-    passInput.type = "password";
-  }
-}
-
-
-// ===== CHECK ROLE =====
-auth.onAuthStateChanged(async (user) => {
-
-  const hasShareLink = window.location.search.includes("u=");
-
-  /* ===== USER SHARE MODE ===== */
-  if(hasShareLink){
-    return; // Không can thiệp login khi ở ?u=
-  }
-
-  /* ===== CHƯA LOGIN ===== */
-  if(!user){
-
-    // Hiện màn hình login bình thường
-    document.getElementById("loginScreen").style.display = "block";
-    document.getElementById("adminPanel").style.display = "none";
-    return;
-  }
-
-  try{
-
-    const snap = await db.collection("users")
-      .doc(user.email)
-      .get();
-
-    if(!snap.exists || snap.data().role !== "admin"){
-      await auth.signOut();
-      return;
-    }
-
-    // Login thành công
-    document.getElementById("loginScreen").style.display = "none";
-    document.getElementById("adminPanel").style.display = "block";
-    preloadCodesRealtime();   // ⭐ THÊM DÒNG NÀY
-    preloadPriceTable();
-    loadLinks();
-
-  }catch(err){
-    console.error(err);
-  }
-});
-
-
-
-
-async function createLink(){
-  const id = Date.now().toString(36) + Math.random().toString(36).substring(2,6);
-
-  await db.collection("shareLinks").doc(id).set({
-    active: true,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    expiresAt: null,
-    views: 0
-  });
-
- 
-}
-
-
-async function loadLinks(){
-
-  db.collection("shareLinks").onSnapshot(snap=>{
-
-  let html = "";
-
-  snap.forEach(doc=>{
-
-    const d = doc.data();
-    const id = doc.id;
-    const displayName =
-      d.alias && d.alias.trim() !== "" ? d.alias : id;
-
-    html += `
-      <div class="link-card">
-        
-        <div class="link-left">
-
-          <div class="link-id-row">
-            <div class="link-id editable-name"
-                 contenteditable="false"
-                 data-id="${id}">
-              ${displayName}
-            </div>
-            
-          </div>
-
-          <div class="link-status ${d.active?'open':'lock'}">
-            ${d.active?'🟢 Đang mở':'🟡 Đang khóa'}
-          </div>
-
-          <div id="remain-${id}" style="margin-top:6px;font-size:12px;color:#facc15;">
-            ${d.expiresAt ? '⏳ Đang tính...' : '♾ Không giới hạn'}
-          </div>
-
-<div style="margin-top:4px;font-size:12px;color:#22c55e;">
-  👁 Views: ${d.views || 0}
-</div>
-
-<div style="display:flex;gap:12px;margin-top:6px;font-size:11px;flex-wrap:wrap;">
-
-  <div id="online-${id}" style="color:#22c55e;">
-    🟢 online: 0
-  </div>
-
-  <div id="visitDetail-${id}" style="color:#94a3b8;">
-    📊 loading...
-  </div>
-
-</div>
-
-        </div>
-
-        <div class="link-actions">
-
-          <button class="icon-btn" onclick="copyLink('${id}',this)">📋</button>
-
-          <button class="icon-btn"
-            style="background:${d.active?'#16a34a':'#f59e0b'};color:white"
-            onclick="toggleLink('${id}',${d.active})">
-            ${d.active?'🔓':'🔒'}
-          </button>
-
-          <button class="icon-btn" onclick="configExpire('${id}')">⏰</button>
-
-          <button class="icon-btn delete"
-            style="background:#dc2626;color:white"
-            onclick="deleteLink('${id}')">
-            🗑
-          </button>
-
-        </div>
-
-      </div>
-    `;
-  });
-
-/* ===== RENDER LIST ===== */
-document.getElementById("linkList").innerHTML = html;
-
-/* ===== VISIT ANALYTICS ===== */
-snap.forEach(async (doc) => {
-
-  const id = doc.id;
-
-  const now = Date.now();
-  const dayAgo = new Date(now - 86400000); // 24h
-  const onlineAgo = new Date(now - 30000); // 30s
-
-  // ===== VISIT 24H =====
-  const visitSnap = await db.collection("link_visits")
-    .where("linkId", "==", id)
-    .where("time", ">=", dayAgo)
-    .get();
-
-  let mobile = 0;
-  let desktop = 0;
-  let countries = {};
-
-  visitSnap.forEach(v => {
-    const d = v.data();
-
-    if (d.device === "mobile") mobile++;
-    else desktop++;
-
-    if (d.country) {
-      countries[d.country] = (countries[d.country] || 0) + 1;
-    }
-  });
-
-  const topCountry = Object.entries(countries)
-    .sort((a, b) => b[1] - a[1])[0];
-
-  const el = document.getElementById("visitDetail-" + id);
-
-  if (el) {
-    el.innerText =
-      "📊 24h: " + visitSnap.size +
-      " • 📱 " + mobile +
-      " • 💻 " + desktop +
-      "🌍 " + (topCountry ? "🇦🇺".replace("AU",topCountry[0]) : "--")
-  }
-
-  // ===== ONLINE =====
-  const onlineSnap = await db.collection("link_visits")
-    .where("linkId", "==", id)
-    .where("time", ">=", onlineAgo)
-    .get();
-
-  const onlineEl = document.getElementById("online-" + id);
-
-  if (onlineEl) {
-    onlineEl.innerText = "🟢 online: " + onlineSnap.size;
-  }
-
-});
-
-
-/* ===== INLINE RENAME SAVE ===== */
-document.querySelectorAll(".editable-name").forEach(el => {
-
-  const id = el.dataset.id;
-
-  el.addEventListener("keydown", e => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      el.blur();
-    }
-  });
-
-  el.addEventListener("blur", async () => {
-
-    const value = el.innerText.trim();
-    const ref = db.collection("shareLinks").doc(id);
-
-    try {
-
-      if (!value) {
-        await ref.update({
-          alias: firebase.firestore.FieldValue.delete()
-        });
-      } else {
-        await ref.update({
-          alias: value
-        });
-      }
-
-    } catch (err) {
-      console.error("Rename error:", err);
-    }
-
-  });
-
-});
-
-  /* ===== COUNTDOWN REALTIME ===== */
-
-  snap.forEach(doc=>{
-
-    const d = doc.data();
-    const id = doc.id;
-
-    if(!d.expiresAt) return;
-
-    const end = d.expiresAt.toDate();
-    const el = document.getElementById(`remain-${id}`);
-    if(!el) return;
-
-    clearInterval(window.adminTimers?.[id]);
-
-    window.adminTimers = window.adminTimers || {};
-
-    window.adminTimers[id] = setInterval(async ()=>{
-
-      const diff = end - new Date();
-
-      if(diff <= 0){
-
-        clearInterval(window.adminTimers[id]);
-        el.innerText = "⛔ Đã hết hạn";
-
-        if(d.active){
-          await db.collection("shareLinks")
-            .doc(id)
-            .update({active:false});
-          loadLinks();
-        }
-
-        return;
-      }
-
-      const days = Math.floor(diff/86400000);
-      const hours = Math.floor((diff/3600000)%24);
-      const minutes = Math.floor((diff/60000)%60);
-      const seconds = Math.floor((diff/1000)%60);
-
-el.innerText =
-  `⏳ ${days}d ${hours}h ${minutes}m ${seconds}s`;
-
-},1000);
-
-  });
-
-  });   // thêm dòng này để đóng onSnapshot
-
-}
-
-
-/* ===== EDIT LINK ALIAS (ADMIN ONLY) ===== */
-async function editAlias(id, current){
-
-  const name = prompt("Nhập tên để nhớ cho link:", current);
-  if(name === null) return;
-
-  const ref = db.collection("shareLinks").doc(id);
-
-  try{
-
-    if(name.trim() === ""){
-      await ref.update({
-        alias: firebase.firestore.FieldValue.delete()
-      });
-    }else{
-      await ref.update({
-        alias: name.trim()
-      });
-    }
-
-    loadLinks();
-
-  }catch(e){
-    alert("Không lưu được tên");
-    console.error(e);
-  }
-}
-
-// ===== POPUP CÀI THỜI GIAN (ADMIN) =====
-
-async function configExpire(id){
-
-  closeExpireBox();
-
-  let days = "";
-  let hours = "";
-  let minutes = "";
-
-  try{
-    const doc = await db.collection("shareLinks").doc(id).get();
-    if(doc.exists && doc.data().expiresAt){
-      const now = new Date();
-      const end = doc.data().expiresAt.toDate();
-      let diff = Math.max(0, end - now);
-
-      days = Math.floor(diff / (1000*60*60*24));
-      diff %= (1000*60*60*24);
-      hours = Math.floor(diff / (1000*60*60));
-      diff %= (1000*60*60);
-      minutes = Math.floor(diff / (1000*60));
-    }
-  }catch(e){
-    console.warn("Không đọc được expiresAt", e);
-  }
-
-  const html = `
-  <div id="expireBox" style="
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,0.6);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    z-index:9999;
-  ">
-    <div style="
-      background:#0f172a;
-      padding:25px;
-      border-radius:18px;
-      width:340px;
-      box-shadow:0 20px 50px rgba(0,0,0,0.6);
-    ">
-      <h3 style="margin-bottom:15px;">⏰ Cài thời gian hết hạn</h3>
-
-<div style="margin-bottom:4px;font-size:13px;color:#cbd5e1;">📅 Số ngày</div>
-<input id="expireDays" type="number"
-  value="${days}"
-  style="width:100%;height:42px;margin-bottom:10px;
-  border-radius:10px;border:1px solid #333;
-  background:#020617;color:white;padding:0 12px">
-
-<div style="margin-bottom:4px;font-size:13px;color:#cbd5e1;">⏰ Giờ</div>
-<input id="expireHours" type="number"
-  value="${hours}"
-  style="width:100%;height:42px;margin-bottom:10px;
-  border-radius:10px;border:1px solid #333;
-  background:#020617;color:white;padding:0 12px">
-
-<div style="margin-bottom:4px;font-size:13px;color:#cbd5e1;">⏱ Phút</div>
-<input id="expireMinutes" type="number"
-  value="${minutes}"
-  style="width:100%;height:42px;margin-bottom:15px;
-  border-radius:10px;border:1px solid #333;
-  background:#020617;color:white;padding:0 12px">
-
-
-      <div style="display:flex;justify-content:flex-end;gap:10px;">
-        <button onclick="closeExpireBox()"
-          style="padding:6px 12px;border-radius:8px;
-          border:1px solid #444;background:#1f2937;color:white">
-          Hủy
-        </button>
-
-        <button onclick="saveExpire('${id}')"
-          style="padding:6px 12px;border-radius:8px;
-          background:#2563eb;color:white;border:none">
-          Lưu
-        </button>
-      </div>
-    </div>
-  </div>
-  `;
-
-  document.body.insertAdjacentHTML("beforeend", html);
-}
-
-function closeExpireBox(){
-  const box = document.getElementById("expireBox");
-  if(box) box.remove();
-}
-
-async function saveExpire(id){
-  const d = parseInt(document.getElementById("expireDays").value || 0);
-  const h = parseInt(document.getElementById("expireHours").value || 0);
-  const m = parseInt(document.getElementById("expireMinutes").value || 0);
-
-  if(d === 0 && h === 0 && m === 0){
-    await db.collection("shareLinks").doc(id).update({
-      expiresAt: null
-    });
-  }else{
-    const future = new Date();
-    future.setDate(future.getDate() + d);
-    future.setHours(future.getHours() + h);
-    future.setMinutes(future.getMinutes() + m);
-
-    await db.collection("shareLinks").doc(id).update({
-      expiresAt: firebase.firestore.Timestamp.fromDate(future)
-    });
-  }
-
-  closeExpireBox();
-  loadLinks();
-}
-// ===== COPY LINK =====
-function copyLink(id, btn){
-  const link = window.location.origin + window.location.pathname + "?u=" + id;
-  navigator.clipboard.writeText(link);
-
-  const old = btn.innerText;
-  btn.innerText = "✓";
-  btn.style.background = "#16a34a";
-  btn.style.color = "white";
-
-  setTimeout(()=>{
-    btn.innerText = old;
-    btn.style.background = "";
-    btn.style.color = "";
-  },1500);
-}
-
-// ===== DELETE LINK =====
-function deleteLink(id){
-  if(!confirm("Xóa link này?")) return;
-
-  db.collection("shareLinks")
-    .doc(id)
-    .delete();
-}
-
-// ===== RENAME HIỂN THỊ (FINAL FIX) =====
-async function startRename(id){
-
-  const name = prompt("Tên hiển thị:");
-
-  if(!name || !name.trim()) return;
-
-  try{
-
-    await db.collection("shareLinks")
-      .doc(id)
-      .set({
-        alias: name.trim()
-      },{ merge:true });
-
-    await loadLinks(); // reload lại UI
-
-  }catch(e){
-    console.error(e);
-    alert("Đổi tên lỗi");
-  }
-}
-
-
-// ===== TOGGLE LINK (MỞ / KHÓA) =====
-async function toggleLink(id, current){
-
-  try{
-
-    await db.collection("shareLinks")
-      .doc(id)
-      .update({
-        active: !current
-      });
-
-    loadLinks();
-
-  }catch(e){
-    console.error(e);
-  }
-
-}
-
-
-// ===== DELETE LINK (POPUP ĐẸP) =====
-function deleteLink(id){
-
-  const html = `
-  <div id="deleteBox" style="
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,0.6);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    z-index:9999;
-  ">
-    <div style="
-      background:#0f172a;
-      padding:24px;
-      border-radius:18px;
-      width:320px;
-      box-shadow:0 20px 50px rgba(0,0,0,0.6);
-      text-align:center;
-    ">
-      <div style="font-size:18px;margin-bottom:10px;">🗑 Xóa link</div>
-      <div style="font-size:14px;color:#94a3b8;margin-bottom:20px;">
-        Bạn có chắc muốn xóa link này?
-      </div>
-
-      <div style="display:flex;justify-content:center;gap:12px;">
-        <button onclick="closeDeleteBox()"
-          style="padding:8px 16px;border-radius:10px;
-          border:1px solid #334155;background:#1f2937;color:white">
-          Hủy
-        </button>
-
-        <button onclick="confirmDelete('${id}')"
-          style="padding:8px 16px;border-radius:10px;
-          background:#dc2626;color:white;border:none">
-          Xóa
-        </button>
-      </div>
-    </div>
-  </div>
-  `;
-
-  document.body.insertAdjacentHTML("beforeend", html);
-}
-
-function closeDeleteBox(){
-  const box = document.getElementById("deleteBox");
-  if(box) box.remove();
-}
-
-async function confirmDelete(id){
-  await db.collection("shareLinks").doc(id).delete();
-  closeDeleteBox();
-  loadLinks();
-}
-function startRename(id){
-  const el = document.getElementById("name-" + id);
-  if(!el || el.querySelector("input")) return;
-
-  const oldText = el.innerText;
-  const input = document.createElement("input");
-
-  input.type = "text";
-  input.value = oldText;
-  input.style.width = "100%";
-  input.style.background = "transparent";
-  input.style.color = "inherit";
-  input.style.border = "1px solid rgba(255,255,255,0.3)";
-  input.style.borderRadius = "6px";
-  input.style.padding = "4px 6px";
-  input.style.fontSize = "14px";
-
-  el.innerHTML = "";
-  el.appendChild(input);
-  input.focus();
-  input.select();
-
-  function finish(){
-    const val = input.value.trim();
-    el.innerText = val || oldText;
-
-    if(val){
-      // ✅ GIỮ TÊN KỂ CẢ ĐÓNG TAB
-      localStorage.setItem("alias_" + id, val);
-    }
-  }
-
-  input.addEventListener("blur", finish);
-  input.addEventListener("keydown", e=>{
-    if(e.key === "Enter") input.blur();
-    if(e.key === "Escape") el.innerText = oldText;
-  });
-}
-
-const qInput = document.getElementById("q");
-qInput.addEventListener("input", function(){
-
-  const pos = this.selectionStart;
-
-  this.value = this.value.toUpperCase();
-
-  this.setSelectionRange(pos, pos);
-
-});
-
-qInput.addEventListener("keydown", function(e){
-  if(e.key === "Enter"){
-    check();
-  }
-});
-
-/* 🔥 AUTO SEARCH REALTIME */
-let autoTimer;
-
-qInput.addEventListener("input", function(){
-
-  clearTimeout(autoTimer);
-
-  autoTimer = setTimeout(()=>{
-
-    const v = qInput.value.trim();
-
-    if(v.length >= 3){
-      check();
-    }
-
-  },120);
-
-});
-/* ===== TOGGLE ADMIN ===== */
-
-function toggleAdmin(){
-
-  const content =
-    document.getElementById("adminContent");
-
-  const toggleBtn =
-    document.getElementById("adminToggle");
-
-  const createBtn =
-    document.querySelector(".create-link-btn");
-
-  if(!content) return;
-
-  const isOpen =
-    content.classList.contains("open");
-
-  /* ===== CLOSE ADMIN ===== */
-
-  if(isOpen){
-
-    content.classList.remove("open");
-
-    toggleBtn?.classList.remove("active");
-
-    createBtn?.classList.remove("show");
-
-    ADMIN_MODE = false;
-
-  }
-
-  /* ===== OPEN ADMIN ===== */
-
-  else{
-
-    content.classList.add("open");
-
-    toggleBtn?.classList.add("active");
-
-    createBtn?.classList.add("show");
-
-    ADMIN_MODE = true;
-
-  }
-
-  /* ===== RENDER LẠI ===== */
-
-  turboCache.clear();
-check();
-
-}
-function getBrandLogo(name){
-
-  const logo={
-    "Samsung":"🟢",
-    "SK hynix":"🟣",
-    "Micron":"🔵",
-    "Kioxia":"🟠",
-    "SanDisk / WD":"🔴",
-    "YMTC":"🔷",
-    "FORESEE":"🟩",
-    "UNKNOWN":"⚪"
-  };
-
-  return logo[name]||"⚪";
-}
-/* ===============================
-   🌍 ULTRA LANGUAGE SYSTEM
-===============================*/
-
-const I18N = {
-
-vi:{
-  admin:"Admin",
-  login:"ĐĂNG NHẬP",
-  search:"Nhập mã hoặc model cần kiểm tra"
-},
-
-en:{
-  admin:"Admin",
-  login:"LOGIN",
-  search:"Enter code or model to check"
-}
-
-};
-
-const Lang={
-
-current:"vi",
-
-init(){
-  const saved=localStorage.getItem("lang");
-  this.current=saved||"vi";
-  this.apply(this.current);
-},
-
-set(lang){
-  this.current=lang;
-  localStorage.setItem("lang",lang);
-  this.apply(lang);
-},
-
-apply(lang){
-
-  document.querySelectorAll("[data-i18n]").forEach(el=>{
-    const key=el.dataset.i18n;
-    el.innerText=I18N[lang][key];
-  });
-
-  document.querySelectorAll("[data-i18n-placeholder]").forEach(el=>{
-    const key=el.dataset.i18nPlaceholder;
-    el.placeholder=I18N[lang][key];
-  });
-
-}
-
-};
-
-window.addEventListener("DOMContentLoaded",()=>Lang.init());
-
-const MSG = {
-
-  vi:{
-    analyzing:"🔍 Đang phân tích dữ liệu...",
-    code_not_found:"🔄 Mã đang cập nhật.",
-    link_not_found:"🔄 Nội dung đang cập nhật.",
-    link_locked:"🔄 Nội dung đang cập nhật.",
-    link_expired:"🔄 Nội dung đang cập nhật.",
-    access_error:"⚠️ Lỗi hệ thống.",
-    countdown:"⏳ Còn {d} ngày {h} giờ {m} phút {s} giây",
-    no_model:"📱 Chưa có model"
-  },
-
-  en:{
-    analyzing:"🔍 Analyzing data...",
-    code_not_found:"🔄 Code updating.",
-    link_not_found:"🔄 Content updating.",
-    link_locked:"🔄 Content updating.",
-    link_expired:"🔄 Content updating.",
-    access_error:"⚠️ System error.",
-    countdown:"⏳ {d} days {h} hours {m} minutes {s} seconds left",
-    no_model:"📱 No model available"
-  }
-
-};
-
-function L(key){
-  const urlLang = new URLSearchParams(window.location.search).get("lang");
-  const lang = urlLang || localStorage.getItem("lang") || "vi";
-  return MSG[lang]?.[key] || key;
-}
-
-function getModelName(code){
-
-  code = code.toUpperCase();
-
-  if(!CODE_CACHE.size) return code;
-
-  for(const [key,items] of CODE_CACHE){
-
-    for(const d of items){
-
-      let models = "";
-
-      if(Array.isArray(d.models)){
-        models = d.models.map(m=>{
-          if(typeof m==="string") return m;
-          if(typeof m==="object")
-            return (m.brand||"")+" "+(m.model||"");
-          return "";
-        }).join(" ");
-      }
-      else if(d.model){
-        models = d.model;
-      }
-
-      models = models.toUpperCase();
-
-      if(models.includes(code)){
-        return models + " ("+code+")";
-      }
+        return
 
     }
 
-  }
+    /* HÀNG MỚI */
 
-  return code;
+    nhapRows[index].ma =
+    keyword
 
-}
 
-function getSamsungName(code){
-
-  code = code.toUpperCase();
-
-  const list = CODE_CACHE.get(code);
-
-  if(!list) return null;
-
-  const d = list[0];
-
-  if(!d.models) return code;
-
-  const m = d.models[0];
-
-  if(typeof m === "object")
-    return (m.brand || "") + " " + (m.model || "") + " ("+code+")";
-
-  if(typeof m === "string")
-    return m + " ("+code+")";
-
-  return code;
-
-}
-/* ===== ADMIN MODE ===== */
-
-let ADMIN_MODE = false;
-
-
-/* ===== FULL CARD CMS EDITOR ===== */
-
-async function editCode(id){
-
-  try{
-
-    /* ===== LOAD FIRESTORE ===== */
-
-    const snap = await db
-      .collection("codes")
-      .doc(id)
-      .get();
-
-    if(!snap.exists){
-
-      alert("Không tìm thấy data");
-
-      return;
-    }
-
-    const x = snap.data();
-
-    /* ===== MODEL TEXT ===== */
-
-    const modelText = Array.isArray(x.models)
-
-      ? x.models.map(m=>{
-
-          if(typeof m === "string"){
-            return m;
-          }
-
-          return `${m.brand || ""}:${m.model || ""}`;
-
-        }).join("\n")
-
-      : "";
-
-    /* ===== HTML EDITOR ===== */
-
-    const html = `
-    <div class="cms-overlay" id="cmsOverlay">
-
-      <div class="cms-box">
-
-        <div class="cms-title">
-          ✏️ EDITOR FULL CARD PRO
-        </div>
-
-        <input
-          id="e_code"
-          value="${x.code || ""}"
-          placeholder="CODE"
-        >
-
-        <input
-          id="e_ram"
-          value="${x.ram || ""}"
-          placeholder="RAM"
-        >
-
-        <input
-          id="e_rom"
-          value="${x.rom || ""}"
-          placeholder="ROM"
-        >
-
-        <input
-          id="e_vip"
-          value="${x.vip || ""}"
-          placeholder="VIP"
-        >
-
-        <input
-          id="e_storage"
-          value="${x.storage || ""}"
-          placeholder="STORAGE"
-        >
-
-        <textarea
-          id="e_models"
-          placeholder="OPPO:A5S"
-        >${modelText}</textarea>
-
-        <div class="cms-actions">
-
-          <button
-            class="cms-save"
-            onclick="saveCode('${id}')"
-          >
-            💾 SAVE
-          </button>
-
-          <button
-            class="cms-close"
-            onclick="closeEditor()"
-          >
-            ❌ CLOSE
-          </button>
-
-        </div>
-
-      </div>
-
-    </div>
-    `;
-
-    document.body.insertAdjacentHTML(
-      "beforeend",
-      html
-    );
-
-  }
-  catch(err){
-
-    console.error(err);
-
-    alert("Lỗi editor");
-
-  }
-
-}
-
-
-/* ===== ĐÓNG EDITOR ===== */
-
-function closeEditor(){
-
-  document
-    .getElementById("cmsOverlay")
-    ?.remove();
-
-}
-
-
-/* ===== SAVE FIRESTORE ===== */
-
-async function saveCode(id){
-
-  try{
-
-    /* ===== LẤY DATA ===== */
-
-    const code = document
-      .getElementById("e_code")
-      .value
-      .trim()
-      .toUpperCase();
-
-    const ram = parseInt(
-      document.getElementById("e_ram").value
-    ) || 0;
-
-    const rom = parseInt(
-      document.getElementById("e_rom").value
-    ) || 0;
-
-    const vip = parseFloat(
-      document.getElementById("e_vip").value
-    ) || 0;
-
-    const storage = document
-      .getElementById("e_storage")
-      .value
-      .trim();
-
-    /* ===== MODELS ===== */
-
-    const modelsRaw = document
-      .getElementById("e_models")
-      .value
-      .trim();
-
-    const models = modelsRaw
-      .split("\n")
-      .map(v=>v.trim())
-      .filter(Boolean)
-      .map(v=>{
-
-        const sp = v.split(":");
-
-        return {
-          brand:(sp[0] || "").trim(),
-          model:(sp[1] || "").trim()
-        };
-
-      });
-
-    /* ===== UPDATE FIRESTORE ===== */
-
-    await db
-      .collection("codes")
-      .doc(id)
-      .update({
-
-        code,
-        ram,
-        rom,
-        vip,
-        storage,
-        models
-
-      });
-
-    /* ===== TOAST SAVE SUCCESS ===== */
-
-const toast = document.createElement("div");
-
-toast.className = "save-toast";
-
-toast.innerHTML = "✅ Đã lưu";
-
-document.body.appendChild(toast);
+    renderNhap()
 
 setTimeout(()=>{
 
-  toast.remove();
+    const nextInput =
+    document.getElementById(
+        `tenInput${index}`
+    )
 
-},1500);
+    if(nextInput){
 
-    closeEditor();
+        nextInput.focus()
 
-  }
-  catch(err){
+    }
 
-    console.error(err);
-
-    alert("Lỗi save");
-
-  }
+},50)
 
 }
+
+/* ====== ĐỔI MÃ ====== */
+
+window.changeMa = function(index,val){
+
+    nhapRows[index].ma = val
+
+    const found =
+    products.find(
+        p=>p.ma===val
+    )
+
+    if(found){
+
+        nhapRows[index].ten =
+        found.ten
+
+        nhapRows[index].gia =
+        found.gia_nhap
+
+        nhapRows[index].giaBan =
+        found.gia_ban
+
+    }
+
+    renderNhap()
+
+}
+
+/* ====== ĐỔI TÊN ====== */
+
+window.changeTen = function(index,val){
+
+    nhapRows[index].ten = val
+
+}
+
+/* ====== ĐỔI SỐ LƯỢNG ====== */
+
+window.changeSl = function(index,val){
+
+    val = Number(val)
+
+    if(val < 0){
+
+        val = 0
+
+    }
+
+    nhapRows[index].sl = val
+
+}
+
+/* ====== ĐỔI GIÁ NHẬP ====== */
+
+window.changeGia = function(index,val){
+
+    val = Number(val)
+
+    if(val < 0){
+
+        val = 0
+
+    }
+
+    nhapRows[index].gia = val
+
+}
+/* ====== ĐỔI GIÁ BÁN ====== */
+
+window.changeGiaBan = function(index,val){
+
+    val = Number(val)
+
+    if(val < 0){
+
+        val = 0
+
+    }
+
+    nhapRows[index].giaBan = val
+
+}
+
+/* ====== ENTER CHUYỂN Ô ====== */
+
+window.focusNextNhap =
+function(e,id){
+
+    if(e.key !== "Enter")
+    return
+
+    e.preventDefault()
+
+    setTimeout(()=>{
+
+        const next =
+        document.getElementById(id)
+
+        if(next){
+
+            next.focus()
+
+            next.select?.()
+
+        }
+
+    },10)
+
+}
+/* ====== ENTER GIÁ BÁN ====== */
+
+window.handleGiaBanEnter =
+function(e,index){
+
+    if(e.key !== "Enter")
+    return
+
+    e.preventDefault()
+
+    /* THÊM DÒNG MỚI */
+
+    nhapRows.push({
+
+        ma:"",
+        ten:"",
+        sl:"",
+        gia:0,
+        giaBan:0
+
+    })
+
+    renderNhap()
+
+    /* FOCUS DÒNG MỚI */
+
+    setTimeout(()=>{
+
+        const nextInput =
+        document.getElementById(
+            `maInput${index+1}`
+        )
+
+        if(nextInput){
+
+            nextInput.focus()
+
+        }
+
+    },50)
+
+}
+/* ====== XÓA DÒNG ====== */
+
+window.removeNhap = function(index){
+
+    nhapRows.splice(index,1)
+
+    renderNhap()
+
+}
+
+/* ====== LƯU NHẬP HÀNG ====== */
+
+window.saveNhap = async function(){
+
+    if(nhapRows.length === 0){
+
+        alert("Chưa có sản phẩm")
+
+        return
+
+    }
+
+    let tong = 0
+
+    const items = []
+
+nhapRows.forEach(r=>{
+
+    if(
+
+        !r.ma
+        ||
+        !r.ten
+
+    ){
+
+        return
+
+    }
+
+    tong +=
+    Number(r.sl) *
+    Number(r.gia)
+
+    items.push({
+
+        ma:r.ma,
+
+        ten:r.ten,
+
+        sl:Number(r.sl),
+
+        gia:Number(r.gia),
+
+        giaBan:Number(r.giaBan),
+
+        thanhTien:
+        Number(r.sl) *
+        Number(r.gia)
+
+    })
+
+})
+    /* LƯU PHIẾU */
+
+await push(
+
+    importOrdersRef,
+
+    {
+
+        maPhieu:
+        "PN" + Date.now(),
+
+        supplier:
+        supplierInput.value || "",
+
+        note:
+        noteInput.value || "",
+
+        time:
+        new Date()
+        .toLocaleString(
+            "vi-VN"
+        ),
+
+        tong:tong,
+
+        items:items
+
+    }
+
+)
+    /* CỘNG TỒN */
+
+    nhapRows.forEach(r=>{
+
+        const found =
+        products.find(
+            p=>p.ma===r.ma
+        )
+
+       if(found){
+
+    update(
+
+        ref(
+            db,
+            "products/" + found.id
+        ),
+
+        {
+
+            ton:
+            Number(found.ton) +
+            Number(r.sl),
+
+            gia_nhap:
+            Number(r.gia),
+
+            gia_ban:
+            Number(r.giaBan),
+
+            gia_si:
+            Number(r.giaBan)
+
+        }
+
+    )
+
+}
+
+/* ====== TẠO SẢN PHẨM MỚI ====== */
+
+else{
+
+    push(productsRef,{
+
+        ma:r.ma,
+
+        ten:r.ten,
+
+        gia_nhap:Number(r.gia),
+
+        gia_ban:Number(r.giaBan),
+
+        gia_si:Number(r.giaBan),
+
+        ton:Number(r.sl)
+
+    })
+
+}
+    })
+
+nhapRows = []
+
+supplierInput.value = ""
+
+noteInput.value = ""
+
+renderNhap()
+
+alert("Đã lưu phiếu nhập")
+
+}
+/* ====== XEM PHIẾU NHẬP ====== */
+
+window.viewImportOrder = function(id){
+
+    const order =
+    importOrders.find(
+        x=>x.id===id
+    )
+
+    if(!order) return
+
+    let html = ""
+
+    ;(order.items || [])
+    .forEach(item=>{
+
+        html += `
+        <tr>
+
+            <td>
+
+                ${item.ma || ""}
+
+            </td>
+
+            <td>
+
+                ${item.ten || ""}
+
+            </td>
+
+            <td>
+
+                ${item.sl || 0}
+
+            </td>
+
+            <td>
+
+                ${(Number(item.gia)||0)
+                .toLocaleString()}đ
+
+            </td>
+
+            <td>
+
+                ${(Number(item.giaBan)||0)
+                .toLocaleString()}đ
+
+            </td>
+
+            <td style="
+            color:#2563eb;
+            font-weight:700;
+            ">
+
+                ${(Number(item.thanhTien)||0)
+                .toLocaleString()}đ
+
+            </td>
+
+        </tr>
+        `
+
+    })
+
+    viewOrderTable.innerHTML =
+    html
+
+    viewOrderModal.style.display =
+    "flex"
+
+}
+
+/* ====== ĐÓNG CHI TIẾT PHIẾU ====== */
+
+window.closeViewOrder = function(){
+
+    viewOrderModal.style.display =
+    "none"
+
+}  
+/* ====== CLICK NGOÀI MODAL ====== */
+
+window.onclick = function(e){
+
+    if(e.target === modal){
+
+        closeModal()
+
+    }
+
+    if(e.target === viewOrderModal){
+
+        closeViewOrder()
+
+    }
+
+}
+    
+/* ====== RENDER LỊCH SỬ ====== */
+
+window.renderHistory = function(){
+
+    let html = ""
+
+    importOrders
+    .slice()
+    .reverse()
+    .forEach(p=>{
+
+        html += `
+        <tr>
+
+              <td>
+
+              ${p.maPhieu || ""}
+
+              </td>
+              <td>
+
+             ${p.supplier || ""}
+
+            </td>
+              <td>
+
+                ${p.time || ""}
+
+             </td>
+
+            <td style="
+            color:#2563eb;
+            font-weight:700;
+            ">
+
+                ${(Number(p.tong)||0)
+                .toLocaleString()}đ
+
+            </td>
+
+            <td>
+
+                ${(p.items || []).length}
+
+            </td>
+           <td>
+
+    <button
+    class="btn btn-blue"
+    onclick="viewImportOrder('${p.id}')">
+
+        Xem
+
+    </button>
+
+</td>
+        </tr>
+        `
+
+    })
+
+    historyTable.innerHTML = html
+
+}
+/* ====== MENU ====== */
+
+btnDashboard.onclick = ()=>{
+
+    showPage("dashboard")
+
+}
+
+btnProducts.onclick = ()=>{
+
+    showPage("products")
+
+}
+
+btnNhap.onclick = ()=>{
+
+    showPage("nhap")
+
+}
+
+btnHistory.onclick = ()=>{
+
+    showPage("history")
+
+}
+
+/* ====== THỜI GIAN ====== */
+
+window.updateTime = function(){
+
+    timeInput.value =
+    new Date()
+    .toLocaleString(
+        "vi-VN",
+        {
+
+            hour12:false,
+
+            year:"numeric",
+
+            month:"2-digit",
+
+            day:"2-digit",
+
+            hour:"2-digit",
+
+            minute:"2-digit"
+
+        }
+
+    )
+
+}
+
+setInterval(updateTime,1000)
+
+/* ====== KHỞI TẠO ====== */
+
+updateTime()
+
+showPage("products")
+
 </script>
+
 </body>
 </html>
