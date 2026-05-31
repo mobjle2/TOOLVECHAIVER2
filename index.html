@@ -1993,177 +1993,6 @@ async function preloadPriceTable(){
 
 }
 
-
-/* ================= TÌM GIÁ THEO MODEL ================= */
-
-function findPriceByModel(input){
-
-  if(!input) return null;
-
-  const key = String(input)
-    .toUpperCase()
-    .replace("SM-","")
-    .replace(/F/g,"")
-    .replace(/[^A-Z0-9]/g,"");
-
-  for(const p of PRICE_TABLE){
-
-    let pm = String(p.model || "")
-      .toUpperCase()
-      .replace("SM-","")
-      .replace(/F/g,"")
-      .replace(/[^A-Z0-9]/g,"");
-
-    if(
-      pm.includes(key) ||
-      key.includes(pm)
-    ){
-      return p;
-    }
-
-  }
-
-  return null;
-}
-
-
-/* =====================================================
-   TRA CỨU MODEL (ĐÃ FIX FULL)
-   - Fix S10 không ra
-   - Fix G973 không ra
-   - Chuẩn hóa toàn bộ model
-===================================================== */
-
-function searchPriceModel(q){
-
-  function normalize(x){
-    return String(x || "")
-      .toUpperCase()
-      .replace("SM-","")
-      .replace(/F/g,"")
-      .replace(/[^A-Z0-9]/g,"")
-      .trim();
-  }
-
-  let qn = normalize(q)
-    .replace("+","PLUS")
-    .replace(/\s+/g,"");
-
-  const result = [];
-
-  /* ===== BẢNG MAP DÒNG MÁY ===== */
-  const seriesMap = {
-
-    "S6":["G920"],
-    "S6EDGE":["G925"],
-    "S6EDGEPLUS":["G928"],
-
-    "S7":["G930"],
-    "S7EDGE":["G935"],
-
-    "S8":["G950"],
-    "S8PLUS":["G955"],
-
-    "S9":["G960"],
-    "S9PLUS":["G965"],
-
-    "S10":["G973"],
-    "S10PLUS":["G975"],
-    "S10LITE":["G770"],
-
-    "S20":["G980","G981"],
-    "S20PLUS":["G985"],
-    "S20ULTRA":["G988"],
-
-    "S21":["G991"],
-    "S21PLUS":["G996"],
-    "S21ULTRA":["G998"],
-
-    "S22":["G901"],
-    "S22ULTRA":["G908"],
-
-    "S23":["G911"],
-    "S23ULTRA":["G918"],
-
-    "NOTE5":["N920"],
-    "NOTE7":["N930"],
-    "NOTEFE":["N935"],
-    "NOTE8":["N950"],
-    "NOTE9":["N960"],
-    "NOTE10":["N970"],
-    "NOTE20":["N980"],
-    "NOTE20ULTRA":["N986"],
-
-    "J2PRIME":["G532"],
-    "J5":["J500","J530"],
-    "J7":["J700","J710","J730"],
-
-    "GRANDPRIME":["G530","G531"]
-  };
-
-/* ===== XÁC ĐỊNH DÒNG MÁY ===== */
-const key = Object.keys(seriesMap).find(k => qn.includes(k));
-
-for(const p of PRICE_TABLE){
-
-  let raw = String(p.model || "").toUpperCase();
-
-  let match = raw.match(/\(([^)]+)\)/);
-
-  let extracted = match
-    ? match[1]
-    : raw;
-
-  // 🔥 TÁCH MODEL NHIỀU BIẾN THỂ (G920F/G920I)
-  const modelParts = extracted
-    .split("/")
-    .map(x => normalize(x));
-
-  const short = normalize(p.short);
-
-  /* ===== TRA THEO DÒNG (S / NOTE / J...) ===== */
-  if(key){
-
-    const codes = seriesMap[key];
-
-    if(codes.some(c =>
-      modelParts.some(m => m.includes(c)) ||
-      short.includes(c)
-    )){
-result.push({
-  model: p.model,
-  short: p.short || modelParts.join(" / "), // 🔥 FIX CHÍNH
-  type: p.type,
-  pin: p.pin,
-  no_pin: p.no_pin,
-  main: p.main
-});;
-    }
-
-    continue;
-  }
-
-  /* ===== TRA TRỰC TIẾP ===== */
-  if(
-    modelParts.some(m => m.includes(qn)) ||
-    qn.includes(modelParts[0]) ||
-    short.includes(qn) ||
-    qn.includes(short)
-  ){
-    result.push({
-      source:"price",
-      model:p.model,
-      type:p.type,
-      pin:p.pin,
-      no_pin:p.no_pin,
-      main:p.main
-    });
-  }
-
-}
-
-  return result;
-}
   
 /* ===== PHÁT HIỆN USER MODE AN TOÀN + ẨN ADMIN NGAY ===== */
 
@@ -2193,8 +2022,7 @@ if(userParam){
     /* ⭐ LOAD CACHE CHO USER MODE */
     try{
       await preloadCodesRealtime();
-      await preloadPriceTable();
-    }catch(e){
+          }catch(e){
       console.error("Cache load error:",e);
     }
 
@@ -3942,8 +3770,7 @@ async function check(){
   q = chuẩnHóaModel(q);
   q = q.toUpperCase();
 
-  const priceResults = searchPriceModel(q);
-
+ 
 
 /* ===== CHUYỂN MODEL PHỔ BIẾN SANG MÃ CHIP (FORCE MODEL SEARCH) ===== */
 
@@ -3989,124 +3816,7 @@ if(modelMatch){
 
   /* ===== TÌM TẤT CẢ MODEL TRONG BẢNG GIÁ ===== */
 
-  const priceList = searchPriceModel(modelKey);
-
-  if(priceList && priceList.length){
-
-    let html = `<div class="result-grid">`;
-
-for(const price of priceList){
-
-  const modelCode = price.model;
-
-  // 🔥 xử lý trước (KHÔNG viết trong template nữa)
-  const cleanModel = (price.model || "")
-    .replace(/^Samsung\s+/i,"")
-    .trim();
-
-  const short =
-    price.short ||
-    modelKey || ""; // fallback chắc chắn có
-
-  const cleanShort = short
-    .replace(/F$/,"")
-    .replace(/\//g," • ");
-
-/* ===== RENDER CARD GIÁ SAMSUNG ===== */
-
-html += `
-<div class="result-card">
-
-  ${
-  ADMIN_MODE
-  ? `
-  <div class="admin-tools">
-
-    <button
-      class="admin-btn"
-      onclick="editCode('${cleanModel || q}')"
-    >
-      ✏️
-    </button>
-
-  </div>
-  `
-  : ""
-  }
-
-  <div class="code-title">
-
-    <span class="code-badge">
-      ${cleanModel ? "Samsung " + cleanModel : ""}
-      ${cleanShort ? " (" + cleanShort + ")" : ""}
-    </span>
-
-    <div class="model-type">
-      📱 <b>${price.type || "Samsung loại ?"}</b>
-    </div>
-
-  </div>
-
-  <div class="price-box">
-
-    <div class="price-title">
-      💰 Giá tham khảo
-    </div>
-
-    <div class="price-item">
-
-      <span class="price-label">
-        🔋 Có pin
-      </span>
-
-      <span class="price-value">
-        ${price.pin ? Math.round(price.pin/1000)+"k" : "-"}
-      </span>
-
-    </div>
-
-    <div class="price-item">
-
-      <span class="price-label">
-        ⚡ Không pin
-      </span>
-
-      <span class="price-value">
-        ${price.no_pin ? Math.round(price.no_pin/1000)+"k" : "-"}
-      </span>
-
-    </div>
-
-    <div class="price-item">
-
-      <span class="price-label">
-        🧠 Main
-      </span>
-
-      <span class="price-value">
-        ${price.main ? Math.round(price.main/1000)+"k" : "-"}
-      </span>
-
-    </div>
-
-  </div>
-
-</div>
-`;
-
-}
-
-/* ===== HOÀN TẤT RENDER ===== */
-
-html += `</div>`;
-
-out.innerHTML = html;
-
-turboCache.set(q, html);
-
-return;
-
-}
+ 
 
 }
 
@@ -4282,53 +3992,73 @@ if(docsMap.size === 0){
 
   }
 
-  /* ===== KIỂM TRA MODEL TỪ BẢNG GIÁ ===== */
+  /* ===== TÌM MODEL SAMSUNG ===== */
 
-  const modelMatch = key.match(/[A-Z]\d{2,3}/);
+  const modelSnap = await db.collection("models").get();
+  
+  console.log("MODELS:", modelSnap.size);
 
-  if(modelMatch){
+  const found = [];
 
-    const modelKey = modelMatch[0];
+  const cleanKey = key
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, "");
 
-    const price = findPriceByModel(modelKey);
+  modelSnap.forEach(doc => {
 
-    if(price){
+    const d = doc.data();
 
-      const html = `
-<div class="result-grid">
-<div class="result-card">
+    const model = String(d.model || "")
+      .toUpperCase();
 
-<div class="code-title">
-<span class="code-badge">${getModelName(modelKey)}</span>
-</div>
+    const cleanModel = model
+      .replace(/[^A-Z0-9]/g, "");
 
-<div class="model-row">
-Samsung loại ${price.type || "Không rõ"}
-</div>
-
-<div style="margin-top:10px;line-height:1.6;">
-<div>📦 Có pin: ${price.pin ? Math.round(price.pin/1000)+"k" : "-"}</div>
-<div>📦 Không pin: ${price.no_pin ? Math.round(price.no_pin/1000)+"k" : "-"}</div>
-<div>📦 Main: ${price.main ? Math.round(price.main/1000)+"k" : "-"}</div>
-</div>
-
-</div>
-</div>
-`;
-
-      out.innerHTML = html;
-
-      /* ===== LƯU KẾT QUẢ VÀO CACHE ===== */
-
-      turboCache.set(key, html);
-
-      return;
+    if (cleanModel.includes(cleanKey)) {
+      found.push(d);
     }
+
+  });
+
+  console.log("MODEL SEARCH:", cleanKey);
+  console.log("FOUND:", found.length);
+  console.log("KEY:", cleanKey);
+  console.log("FOUND:", found.length);
+  if (found.length) {
+
+    let html = `<div class="result-grid">`;
+
+    found.forEach(item => {
+
+      html += `
+    <div class="result-card">
+
+      <div class="code-title">
+
+        <span class="code-badge">
+          ${item.model}
+        </span>
+
+        <div class="model-type">
+          📱 <b>Samsung loại ${item.loai}</b>
+        </div>
+
+      </div>
+
+    </div>
+    `;
+
+    });
+
+    html += `</div>`;
+
+    out.innerHTML = html;
+
+    turboCache.set(key, html);
+
+  return;
   }
-
 }
-
-
 /* ===== HIỂN THỊ KẾT QUẢ CHIP ===== */
 
 let html = `<div class="result-grid">`;
@@ -5120,28 +4850,6 @@ function deleteLink(id){
     .delete();
 }
 
-// ===== RENAME HIỂN THỊ (FINAL FIX) =====
-async function startRename(id){
-
-  const name = prompt("Tên hiển thị:");
-
-  if(!name || !name.trim()) return;
-
-  try{
-
-    await db.collection("shareLinks")
-      .doc(id)
-      .set({
-        alias: name.trim()
-      },{ merge:true });
-
-    await loadLinks(); // reload lại UI
-
-  }catch(e){
-    console.error(e);
-    alert("Đổi tên lỗi");
-  }
-}
 
 
 // ===== TOGGLE LINK (MỞ / KHÓA) =====
