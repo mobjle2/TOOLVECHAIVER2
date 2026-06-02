@@ -271,6 +271,47 @@ font-weight:500;
   border:1px solid rgba(56,225,255,.55);
   box-shadow:0 0 14px rgba(0,194,255,.30);
 }
+.ram-badge.r16{
+  color:#22c55e;
+  border-color:#22c55e;
+  background:rgba(34,197,94,.12);
+  box-shadow:0 0 22px rgba(34,197,94,.50);
+}
+
+.ram-badge.r32{
+  color:#ec4899;
+  border-color:#ec4899;
+  background:rgba(236,72,153,.12);
+  box-shadow:0 0 22px rgba(236,72,153,.55);
+}
+
+.ram-badge.r64{
+  color:#a855f7;
+  border-color:#a855f7;
+  background:rgba(168,85,247,.12);
+  box-shadow:0 0 22px rgba(168,85,247,.55);
+}
+
+.ram-badge.r128{
+  color:#f97316;
+  border-color:#f97316;
+  background:rgba(249,115,22,.12);
+  box-shadow:0 0 22px rgba(249,115,22,.55);
+}
+
+.ram-badge.r256{
+  color:#eab308;
+  border-color:#eab308;
+  background:rgba(234,179,8,.12);
+  box-shadow:0 0 22px rgba(234,179,8,.60);
+}
+
+.ram-badge.r512{
+  color:#ef4444;
+  border-color:#ef4444;
+  background:rgba(239,68,68,.12);
+  box-shadow:0 0 22px rgba(239,68,68,.60);
+}
 
 .result-card:hover .ram-badge{
   box-shadow:0 0 22px rgba(0,194,255,.45);
@@ -297,91 +338,150 @@ font-weight:500;
 .cms-overlay{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.7);
-  z-index:99999;
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:20px;
+
+  background:rgba(0,0,0,.75);
+
+  overflow-y:auto;
+  padding:15px;
+  z-index:999999;
 }
 
 .cms-box{
-  width:100%;
-  max-width:520px;
-  background:#0f172a;
-  border:1px solid #334155;
-  border-radius:18px;
-  padding:18px;
-  display:flex;
-  flex-direction:column;
-  gap:12px;
+  width:480px;
+  max-width:90vw;
+
+  max-height:85vh;
+
+  overflow-y:auto;
+
+  padding:15px;
+
+  border-radius:12px;
+
+  background:#ffffff;
+
+  color:#111827;
+
+  box-shadow:
+    0 15px 40px rgba(0,0,0,.35);
 }
 
 .cms-title{
-  color:#fff;
-  font-size:20px;
+  color:#111827;
+  font-size:18px;
   font-weight:700;
-  margin-bottom:8px;
+  margin-bottom:12px;
 }
+
+/* ===== LABEL ===== */
+
+.cms-label{
+  margin:8px 0 3px;
+
+  color:#374151;
+
+  font-size:11px;
+
+  font-weight:700;
+
+  text-transform:uppercase;
+
+  letter-spacing:.3px;
+}
+
+/* ===== INPUT ===== */
 
 .cms-box input,
 .cms-box textarea{
   width:100%;
-  background:#020617;
-  border:1px solid #334155;
-  color:#fff;
-  border-radius:12px;
-  padding:12px;
-  font-size:15px;
+
+  background:#f8fafc;
+
+  border:1px solid #d1d5db;
+
+  color:#111827;
+
+  border-radius:8px;
+
+  padding:8px 10px;
+
+  font-size:14px;
+
   box-sizing:border-box;
+
+  margin-bottom:6px;
+}
+
+.cms-box input:focus,
+.cms-box textarea:focus{
+  outline:none;
+
+  border-color:#2563eb;
+
+  box-shadow:
+    0 0 0 2px rgba(37,99,235,.12);
 }
 
 .cms-box textarea{
-  min-height:140px;
+  min-height:90px;
   resize:vertical;
 }
 
+/* ===== BUTTON ===== */
+
 .cms-actions{
   display:flex;
-  gap:10px;
+  justify-content:center;
+  gap:8px;
+  margin-top:10px;
 }
 
 .cms-save,
+.cms-delete,
 .cms-close{
-  flex:1;
+  flex:none;
+
+  min-width:110px;
+
   border:none;
-  border-radius:12px;
-  padding:12px;
-  font-size:15px;
+
+  border-radius:8px;
+
+  padding:8px 14px;
+
+  font-size:13px;
+
   font-weight:700;
+
   cursor:pointer;
 }
-
 .cms-save{
   background:#22c55e;
   color:#fff;
 }
 
+.cms-delete{
+  background:#dc2626;
+  color:#fff;
+}
+
 .cms-close{
-  background:#ef4444;
-  color:#fff;
+  background:#334155;
+  color:#e2e8f0;
 }
-/* ===== SAVE TOAST ===== */
+/* ===== SCROLLBAR ===== */
 
-.save-toast{
-  position:fixed;
-  top:20px;
-  right:20px;
-  background:#22c55e;
-  color:#fff;
-  padding:12px 18px;
-  border-radius:12px;
-  font-weight:700;
-  z-index:999999;
-  box-shadow:0 10px 30px rgba(0,0,0,.3);
-  animation:toastIn .25s ease;
+.cms-box::-webkit-scrollbar{
+  width:6px;
 }
 
+.cms-box::-webkit-scrollbar-thumb{
+  background:#cbd5e1;
+  border-radius:20px;
+}
 @keyframes toastIn{
 
   from{
@@ -630,35 +730,34 @@ font-weight:500;
 .chip-info{
   display:flex;
   align-items:center;
-  gap:8px;
-  font-size:14px;
-  font-weight:500;
+  gap:10px;
+  font-size:18px;
+  font-weight:700;
   color:#22c55e;
 }
 
 .chip-dot{
-  width:8px;
-  height:8px;
+  width:10px;
+  height:10px;
   border-radius:50%;
 }
 
 /* ===== NHÃN MÃ CHIP ===== */
 .code-title{
-  margin-bottom:12px;
+  margin-bottom:16px;
 }
 
 .code-badge{
   display:inline-flex;
   align-items:center;
   gap:8px;
-  padding:6px 14px;
+  padding:8px 14px;
   border-radius:14px;
   background:rgba(255,255,255,0.05);
   border:1px solid rgba(255,255,255,0.08);
-  font-size:15px;
-  font-weight:600;
+  font-size:16px;
+  font-weight:700;
 }
-
 
 /* ===== NHÃN VIP ===== */
 .vip-badge{
@@ -667,8 +766,6 @@ font-weight:500;
   font-size:14px;
   font-weight:700;
 }
-
-
 
 .chip-vip-line{
   display:flex;
@@ -681,10 +778,10 @@ font-weight:500;
 /* ================= TỐI ƯU GIAO DIỆN MOBILE ================= */
 
 
-  /* Main container */
-  .main-container{
-    padding:20px 15px !important;
-  }
+/* Main container */
+.main-container{
+  padding:20px 15px !important;
+}
 /* ===== CENTER HEADER + INPUT ===== */
 
 .title{
@@ -3772,38 +3869,36 @@ async function check(){
 
  
 
-/* ===== CHUYỂN MODEL PHỔ BIẾN SANG MÃ CHIP (FORCE MODEL SEARCH) ===== */
+  /* ===== GALAXY S SERIES ===== */
 
-if(q.startsWith("S8")) q = "G950";
+  if (q.startsWith("S24 ULTRA")) q = "S928";
+  else if (q.startsWith("S24")) q = "S921";
 
-if(q.startsWith("S20 ULTRA")) q = "G988";
-else if(q.startsWith("S20")) q = "G980";
+  else if (q.startsWith("S23 ULTRA")) q = "S918";
+  else if (q.startsWith("S23")) q = "S911";
 
-if(q.startsWith("S21 ULTRA")) q = "G998";
-else if(q.startsWith("S21")) q = "G991";
+  else if (q.startsWith("S22 ULTRA")) q = "S908";
+  else if (q.startsWith("S22")) q = "S901";
 
+  else if (q.startsWith("S21 ULTRA")) q = "G998";
+  else if (q.startsWith("S21")) q = "G991";
 
-/* ===== DÒNG GALAXY S22 ===== */
+  else if (q.startsWith("S20 ULTRA")) q = "G988";
+  else if (q.startsWith("S20")) q = "G980";
 
-if(q.startsWith("S22 ULTRA")) q = "G908";
-else if(q.startsWith("S22+")) q = "G906";
-else if(q.startsWith("S22")) q = "G901"
+  else if (q.startsWith("S10")) q = "G973";
 
+  else if (q.startsWith("S9 PLUS")) q = "G965";
+  else if (q.startsWith("S9")) q = "G960";
 
-/* ===== DÒNG GALAXY S23 ===== */
+  else if (q.startsWith("S8 PLUS")) q = "G955";
+  else if (q.startsWith("S8")) q = "G950";
 
-if(q.startsWith("S23 ULTRA")) q = "G918";
-else if(q.startsWith("S23+")) q = "G916";
-else if(q.startsWith("S23")) q = "G911";
+  else if (q.startsWith("S7 EDGE")) q = "G935";
+  else if (q.startsWith("S7")) q = "G930";
 
-
-/* ===== DÒNG GALAXY S24 ===== */
-
-if(q.startsWith("S24 ULTRA")) q = "S928";
-else if(q.startsWith("S24+")) q = "S926";
-else if(q.startsWith("S24")) q = "S921";
-
-
+  else if (q.startsWith("S6 EDGE")) q = "G920";
+  else if (q.startsWith("S6")) q = "G920";
 /* =================================================
    TÌM MODEL TỪ CHUỖI NHẬP
 ================================================= */
@@ -3917,11 +4012,83 @@ if(docsMap.size === 0){
 
   const key = q.toUpperCase().trim();
 
+
+    /* ===== TÌM MODEL SAMSUNG ===== */
+
+  const modelSnap = await db.collection("models").get();
+  console.log(modelSnap.docs.slice(0, 10).map(x => x.data()));
+
+  console.log("MODELS:", modelSnap.size);
+
+  const found = [];
+
+  const cleanKey = key
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, "");
+
+  modelSnap.forEach(doc => {
+
+    const d = doc.data();
+
+    const model = String(d.model || "")
+      .toUpperCase();
+
+    const cleanModel = model
+      .replace(/[^A-Z0-9]/g, "");
+
+    if (
+
+      cleanModel.includes(cleanKey)
+
+    ) {
+      found.push(d);
+    }
+  });
+
+  console.log("MODEL SEARCH:", cleanKey);
+  console.log("FOUND:", found.length);
+  console.log("KEY:", cleanKey);
+  console.log("FOUND:", found.length);
+  if (found.length) {
+
+    let html = `<div class="result-grid">`;
+
+    found.forEach(item => {
+
+      html += `
+    <div class="result-card">
+
+      <div class="code-title">
+
+        <span class="code-badge">
+          ${item.model}
+        </span>
+
+        <div class="model-type">
+          📱 <b>Samsung loại ${item.loai}</b>
+        </div>
+
+      </div>
+
+    </div>
+    `;
+
+    });
+
+    html += `</div>`;
+
+    out.innerHTML = html;
+
+    turboCache.set(key, html);
+
+    return;
+  }
+
   /* ===== AUTO PHÂN TÍCH CHIP ===== */
 
   const hw = autoDecodeChip(key);
 
-  if(hw){
+  if (false && hw) {
 
     /* ===== RENDER CARD KẾT QUẢ ===== */
 
@@ -3992,72 +4159,7 @@ if(docsMap.size === 0){
 
   }
 
-  /* ===== TÌM MODEL SAMSUNG ===== */
 
-  const modelSnap = await db.collection("models").get();
-  
-  console.log("MODELS:", modelSnap.size);
-
-  const found = [];
-
-  const cleanKey = key
-    .toUpperCase()
-    .replace(/[^A-Z0-9]/g, "");
-
-  modelSnap.forEach(doc => {
-
-    const d = doc.data();
-
-    const model = String(d.model || "")
-      .toUpperCase();
-
-    const cleanModel = model
-      .replace(/[^A-Z0-9]/g, "");
-
-    if (cleanModel.includes(cleanKey)) {
-      found.push(d);
-    }
-
-  });
-
-  console.log("MODEL SEARCH:", cleanKey);
-  console.log("FOUND:", found.length);
-  console.log("KEY:", cleanKey);
-  console.log("FOUND:", found.length);
-  if (found.length) {
-
-    let html = `<div class="result-grid">`;
-
-    found.forEach(item => {
-
-      html += `
-    <div class="result-card">
-
-      <div class="code-title">
-
-        <span class="code-badge">
-          ${item.model}
-        </span>
-
-        <div class="model-type">
-          📱 <b>Samsung loại ${item.loai}</b>
-        </div>
-
-      </div>
-
-    </div>
-    `;
-
-    });
-
-    html += `</div>`;
-
-    out.innerHTML = html;
-
-    turboCache.set(key, html);
-
-  return;
-  }
 }
 /* ===== HIỂN THỊ KẾT QUẢ CHIP ===== */
 
@@ -4085,7 +4187,12 @@ docsMap.forEach(doc => {
   if(x.vip != null){
   decoded.vip = typeof x.vip === "string" ? x.vip.trim() : x.vip;
 }
-  if(x.storage != null) decoded.storage = x.storage;
+  if (
+    x.storage != null &&
+    String(x.storage).toUpperCase() !== "VIP"
+  ) {
+    decoded.storage = x.storage;
+  }
   decoded.type = x.type || null;
 
 
@@ -4107,7 +4214,11 @@ docsMap.forEach(doc => {
 
     const hw = autoDecodeChip(x.code,x) || {};
 
-    decoded.storage = hw.storage ?? null;
+    decoded.storage =
+      hw.storage &&
+        String(hw.storage).toUpperCase() !== "VIP"
+        ? hw.storage
+        : null;
   }
 
 // RAM
@@ -4181,13 +4292,17 @@ ADMIN_MODE
 <div class="badge-row">
 
 ${
-decoded.ram > 0 && decoded.rom > 0
-? '<div class="ram-badge">' + decoded.ram + '/' + decoded.rom + '</div>'
-: decoded.rom > 0
-? '<div class="ram-badge">' + decoded.rom + 'GB</div>'
-: decoded.ram > 0
-? '<div class="ram-badge">' + decoded.ram + 'GB RAM</div>'
-: ''
+  decoded.ram > 0 && decoded.rom > 0
+    ? '<div class="ram-badge r' + decoded.rom + '">' +
+    decoded.ram + '/' + decoded.rom +
+    '</div>'
+    : decoded.rom > 0
+      ? '<div class="ram-badge r' + decoded.rom + '">' +
+      decoded.rom + 'GB</div>'
+      : decoded.ram > 0
+        ? '<div class="ram-badge">' +
+        decoded.ram + 'GB RAM</div>'
+        : ''
 }
 
 ${
@@ -5262,64 +5377,103 @@ async function editCode(id){
     /* ===== HTML EDITOR ===== */
 
     const html = `
-    <div class="cms-overlay" id="cmsOverlay">
+<div class="cms-overlay" id="cmsOverlay">
 
-      <div class="cms-box">
+  <div class="cms-box">
 
-        <div class="cms-title">
-          ✏️ EDITOR FULL CARD PRO
-        </div>
+    <div class="cms-title">
+      ✏️ EDITOR FULL CARD PRO
+    </div>
 
-        <input
-          id="e_code"
-          value="${x.code || ""}"
-          placeholder="CODE"
-        >
+    <div class="cms-label">MÃ CHIP</div>
+    <input
+      id="e_code"
+      value="${x.code || ""}"
+      placeholder="VD: YMEC6A2TB1A2C3"
+    >
 
-        <input
-          id="e_ram"
-          value="${x.ram || ""}"
-          placeholder="RAM"
-        >
+    <div class="cms-label">RAM (GB)</div>
+    <input
+      id="e_ram"
+      value="${x.ram || ""}"
+      placeholder="VD: 8"
+    >
 
-        <input
-          id="e_rom"
-          value="${x.rom || ""}"
-          placeholder="ROM"
-        >
+    <div class="cms-label">ROM (GB)</div>
+    <input
+      id="e_rom"
+      value="${x.rom || ""}"
+      placeholder="VD: 128"
+    >
 
-        <input
-          id="e_vip"
-          value="${x.vip || ""}"
-          placeholder="VIP"
-        >
+    <div class="cms-label">VIP LEVEL</div>
+    <input
+      id="e_vip"
+      value="${x.vip || ""}"
+      placeholder="VD: 8 hoặc 8+"
+    >
 
-        <input
-          id="e_storage"
-          value="${x.storage || ""}"
-          placeholder="STORAGE"
-        >
+    <div class="cms-label">MMC LEVEL</div>
+    <input
+      id="e_mmc"
+      value="${x.mmc || ""}"
+      placeholder="VD: 5"
+    >
 
-        <textarea
-          id="e_models"
-          placeholder="OPPO:A5S"
-        >${modelText}</textarea>
+    <div class="cms-label">SỐ CHIP</div>
+    <input
+      id="e_chip"
+      value="${x.chip || ""}"
+      placeholder="VD: 3"
+    >
+
+    <div class="cms-label">LOẠI BỘ NHỚ</div>
+    <input
+      id="e_type"
+      value="${x.type || ""}"
+      placeholder="eMMC / UFS / eMCP"
+    >
+
+    <div class="cms-label">PHIÊN BẢN STORAGE</div>
+    <input
+      id="e_storage"
+      value="${x.storage || ""}"
+      placeholder="VD: eMMC 5.1 hoặc UFS 3.1"
+    >
+
+    <div class="cms-label">MODEL HỖ TRỢ</div>
+
+    <textarea
+      id="e_models"
+      placeholder="OPPO:A5S"
+    >${modelText}</textarea>
 
         <div class="cms-actions">
 
-          <button
-            class="cms-save"
-            onclick="saveCode('${id}')"
-          >
-            💾 SAVE
-          </button>
+          <div class="cms-actions">
 
-          <button
-            class="cms-close"
-            onclick="closeEditor()"
-          >
-            ❌ CLOSE
-          </button>
+  <button
+    class="cms-save"
+    onclick="saveCode('${id}')"
+  >
+    💾 SAVE
+  </button>
+
+  <button
+    class="cms-delete"
+    onclick="deleteCode('${id}','${x.code || ""}')"
+  >
+    🗑 DELETE
+  </button>
+
+  <button
+    class="cms-close"
+    onclick="closeEditor()"
+  >
+    ❌ CLOSE
+  </button>
+
+</div>
 
         </div>
 
@@ -5381,7 +5535,18 @@ async function saveCode(id){
     const vip = parseFloat(
       document.getElementById("e_vip").value
     ) || 0;
+    const mmc = parseInt(
+      document.getElementById("e_mmc").value
+    ) || 0;
 
+    const chip = parseInt(
+      document.getElementById("e_chip").value
+    ) || 0;
+
+    const type = document
+      .getElementById("e_type")
+      .value
+      .trim();
     const storage = document
       .getElementById("e_storage")
       .value
@@ -5420,6 +5585,9 @@ async function saveCode(id){
         ram,
         rom,
         vip,
+        mmc,
+        chip,
+        type,
         storage,
         models
 
@@ -5444,6 +5612,9 @@ setTimeout(()=>{
     closeEditor();
 
   }
+
+
+  
   catch(err){
 
     console.error(err);
@@ -5451,7 +5622,43 @@ setTimeout(()=>{
     alert("Lỗi save");
 
   }
+  /* ===== DELETE CODE ===== */
 
+  async function deleteCode(id, code) {
+
+    try {
+
+      const ans = prompt(
+        `Xóa mã ${code} ? (Y/N)`
+      );
+
+      if (!ans) return;
+
+      if (ans.trim().toUpperCase() !== "Y") {
+        return;
+      }
+
+      await db
+        .collection("codes")
+        .doc(id)
+        .delete();
+
+      closeEditor();
+
+      showSaveToast("🗑 Đã xóa mã");
+
+      searchCode();
+
+    }
+    catch (err) {
+
+      console.error(err);
+
+      alert("Xóa thất bại");
+
+    }
+
+  }
 }
 </script>
 </body>
