@@ -2031,29 +2031,30 @@ const CODE_CACHE = new Map();
 /* ===== PRICE TABLE ===== */
 let PRICE_TABLE = [];
 
-/* ================= TURBO CACHE ENGINE ================= */
+  /* ================= TURBO CACHE ENGINE ================= */
 
-function preloadCodesRealtime(){
+  async function preloadCodesRealtime() {
 
-  console.log("Realtime cache loading...");
+    console.log("Cache loading...");
 
-  db.collection("codes")
-  .onSnapshot((snap)=>{
+    const snap = await db
+      .collection("codes")
+      .get();
 
     CODE_CACHE.clear();
 
-    snap.forEach(doc=>{
+    snap.forEach(doc => {
 
       const d = doc.data();
 
-      if(!d.code) return;
+      if (!d.code) return;
 
       const key = String(d.code)
         .toUpperCase()
         .trim();
 
-      if(!CODE_CACHE.has(key)){
-        CODE_CACHE.set(key,[]);
+      if (!CODE_CACHE.has(key)) {
+        CODE_CACHE.set(key, []);
       }
 
       CODE_CACHE.get(key).push({
@@ -2064,14 +2065,11 @@ function preloadCodesRealtime(){
     });
 
     console.log(
-      "Realtime cache updated:",
+      "Cache loaded:",
       CODE_CACHE.size
     );
 
-  });
-
-}
-
+  }
 /* ================= BỘ NHỚ ĐỆM BẢNG GIÁ ================= */
 
 async function preloadPriceTable(){
@@ -3937,73 +3935,74 @@ try{
   }
 
 
-/* ===== TẢI DỮ LIỆU TỪ FIRESTORE ===== */
+  /* ===== TẢI DỮ LIỆU TỪ FIRESTORE ===== */
 
-const snapSearch = await db.collection("codes")
-  .orderBy("code")
-  .limit(1000)
-  .get();
+  const snapCode = await db.collection("codes")
+    .where("code", ">=", q)
+    .where("code", "<=", q + "\uf8ff")
+    .limit(30)
+    .get();
 
-const snapCode = await db.collection("codes")
-  .where("code", ">=", q)
-  .where("code", "<=", q + "\uf8ff")
-  .limit(30)
-  .get();
+  const docsMap = new Map();
 
 
-const docsMap = new Map();
+  /* ===== TÌM KIẾM TỪ CACHE ===== */
+
+  CODE_CACHE.forEach(list => {
+
+    list.forEach(d => {
+
+      const code = (d.code || "").toUpperCase();
+
+      let models = "";
+
+      if (Array.isArray(d.models)) {
+        models = d.models.map(m => {
+          if (typeof m === "string") return m;
+          if (typeof m === "object" && m)
+            return (m.brand || "") + " " + (m.model || "");
+          return "";
+        }).join(" ");
+      }
+      else if (d.model) {
+        models = d.model;
+      }
+
+      const text = (code + " " + models).toUpperCase();
+
+      const cleanCode = String(code || "")
+        .replace(/[^A-Z0-9]/g, "");
+
+      const cleanText = String(text || "")
+        .replace(/[^A-Z0-9]/g, "");
+
+      const cleanQ = String(q || "")
+        .replace(/[^A-Z0-9]/g, "");
+
+      if (
+        cleanCode.startsWith(cleanQ) ||
+        cleanText.startsWith(cleanQ) ||
+        cleanText.includes(cleanQ)
+      ) {
+        docsMap.set(
+          d._id || code,
+          {
+            id: d._id || code,
+            data: () => d
+          }
+        );
+      }
+
+    });
+
+  });
 
 
-/* ===== TÌM KIẾM THEO NỘI DUNG ===== */
+  /* ===== LƯU DANH SÁCH CODE THEO PREFIX ===== */
 
-snapSearch.forEach(doc=>{
-
-  const d = doc.data();
-
-  const code = (d.code || "").toUpperCase();
-
-  let models = "";
-
-  if(Array.isArray(d.models)){
-    models = d.models.map(m=>{
-      if(typeof m === "string") return m;
-      if(typeof m === "object" && m)
-        return (m.brand || "") + " " + (m.model || "");
-      return "";
-    }).join(" ");
-  }
-  else if(d.model){
-    models = d.model;
-  }
-
-  const text = (code + " " + models).toUpperCase();
-
-const cleanCode = String(code || "")
-  .replace(/[^A-Z0-9]/g,"");
-
-const cleanText = String(text || "")
-  .replace(/[^A-Z0-9]/g,"");
-
-const cleanQ = String(q || "")
-  .replace(/[^A-Z0-9]/g,"");
-
-if(
-
-  cleanCode.startsWith(cleanQ) ||
-
-  cleanText.startsWith(cleanQ) ||
-
-  cleanText.includes(cleanQ)
-
-){
-  docsMap.set(doc.id, doc);
-}
-});
-/* ===== LƯU DANH SÁCH CODE THEO PREFIX ===== */
-
-snapCode.forEach(doc=>{
-  docsMap.set(doc.id, doc);
-});
+  snapCode.forEach(doc => {
+    docsMap.set(doc.id, doc);
+  });
 
 
 /* ===== TRƯỜNG HỢP KHÔNG TÌM THẤY TRONG FIRESTORE ===== */
@@ -4644,65 +4643,69 @@ async function loadLinks(){
     `;
   });
 
-/* ===== RENDER LIST ===== */
-document.getElementById("linkList").innerHTML = html;
+    /* ===== RENDER LIST ===== */
+    document.getElementById("linkList").innerHTML = html;
 
-/* ===== VISIT ANALYTICS ===== */
-snap.forEach(async (doc) => {
+    /* ===== VISIT ANALYTICS TẠM TẮT ĐỂ GIẢM READS ===== */
 
-  const id = doc.id;
-
-  const now = Date.now();
-  const dayAgo = new Date(now - 86400000); // 24h
-  const onlineAgo = new Date(now - 30000); // 30s
-
-  // ===== VISIT 24H =====
-  const visitSnap = await db.collection("link_visits")
-    .where("linkId", "==", id)
-    .where("time", ">=", dayAgo)
-    .get();
-
-  let mobile = 0;
-  let desktop = 0;
-  let countries = {};
-
-  visitSnap.forEach(v => {
-    const d = v.data();
-
-    if (d.device === "mobile") mobile++;
-    else desktop++;
-
-    if (d.country) {
-      countries[d.country] = (countries[d.country] || 0) + 1;
-    }
-  });
-
-  const topCountry = Object.entries(countries)
-    .sort((a, b) => b[1] - a[1])[0];
-
-  const el = document.getElementById("visitDetail-" + id);
-
-  if (el) {
-    el.innerText =
-      "📊 24h: " + visitSnap.size +
-      " • 📱 " + mobile +
-      " • 💻 " + desktop +
-      "🌍 " + (topCountry ? "🇦🇺".replace("AU",topCountry[0]) : "--")
-  }
-
-  // ===== ONLINE =====
-  const onlineSnap = await db.collection("link_visits")
-    .where("linkId", "==", id)
-    .where("time", ">=", onlineAgo)
-    .get();
-
-  const onlineEl = document.getElementById("online-" + id);
-
-  if (onlineEl) {
-    onlineEl.innerText = "🟢 online: " + onlineSnap.size;
-  }
-
-});
+    /*
+    snap.forEach(async (doc) => {
+    
+      const id = doc.id;
+    
+      const now = Date.now();
+      const dayAgo = new Date(now - 86400000);
+      const onlineAgo = new Date(now - 30000);
+    
+      const visitSnap = await db.collection("link_visits")
+        .where("linkId", "==", id)
+        .where("time", ">=", dayAgo)
+        .get();
+    
+      let mobile = 0;
+      let desktop = 0;
+      let countries = {};
+    
+      visitSnap.forEach(v => {
+        const d = v.data();
+    
+        if (d.device === "mobile") mobile++;
+        else desktop++;
+    
+        if (d.country) {
+          countries[d.country] =
+            (countries[d.country] || 0) + 1;
+        }
+      });
+    
+      const topCountry = Object.entries(countries)
+        .sort((a, b) => b[1] - a[1])[0];
+    
+      const el = document.getElementById("visitDetail-" + id);
+    
+      if (el) {
+        el.innerText =
+          "📊 24h: " + visitSnap.size +
+          " • 📱 " + mobile +
+          " • 💻 " + desktop +
+          " 🌍 " +
+          (topCountry ? topCountry[0] : "--");
+      }
+    
+      const onlineSnap = await db.collection("link_visits")
+        .where("linkId", "==", id)
+        .where("time", ">=", onlineAgo)
+        .get();
+    
+      const onlineEl = document.getElementById("online-" + id);
+    
+      if (onlineEl) {
+        onlineEl.innerText =
+          "🟢 online: " + onlineSnap.size;
+      }
+    
+    });
+    */
 
 
 /* ===== INLINE RENAME SAVE ===== */
